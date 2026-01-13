@@ -1,0 +1,24 @@
+```markdown
+# Curse of Knowledge (Fantasy Study Quest)
+
+This repository contains a small React single-page application game built with Vite. The game is a study/productivity themed RPG where you complete tasks to level up, fight bosses, and progress through a 7-day loop.
+
+Quickstart (local)
+1. Install Node.js (v16+): https://nodejs.org/
+2. Clone or download this repo
+3. Install dependencies:
+   - `npm install`
+4. Start the development server:
+   - `npm run dev`
+5. Open the URL shown in the console (usually http://localhost:5173)
+
+Quick demo (no install):
+- Use CodeSandbox or StackBlitz: create a React (Vite) sandbox and paste `src/App.jsx` and `src/hooks/useBattle.jsx` along with `src/main.jsx` and `index.html`. Add `lucide-react` as a dependency.
+
+Deploy:
+- Recommended: Vercel — connect this GitHub repository and Vercel will auto-detect Vite.
+
+Notes:
+- Tailwind is included via CDN in index.html for quick demos. For production, install Tailwind properly.
+- Audio may require user interaction before playback in some browsers.
+```
