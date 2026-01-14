@@ -18,8 +18,8 @@ const GAME_CONSTANTS = {
   LATE_START_HOUR: 8,
   MAX_HP: 100,
   MAX_STAMINA: 100,
-  BASE_ATTACK: 10,
-  BASE_DEFENSE: 5,
+  BASE_ATTACK: 15, // Increased from 10
+  BASE_DEFENSE: 10, // Increased from 5
   
   // Player scaling per day (moderate growth)
   PLAYER_HP_PER_DAY: 8,
@@ -33,11 +33,19 @@ const GAME_CONSTANTS = {
   CLEANSE_POTION_COST: 100, // XP cost to craft cleanse potion
   
   LOOT_RATES: {
-    HEALTH_POTION: 0.20,  // 20% (reduced from 25%)
-    STAMINA_POTION: 0.50, // 50% (increased from 40%!)
-    WEAPON: 0.70,         // 20%
-    ARMOR: 0.90           // 20%
-    // Nothing: 10% (implicit)
+    HEALTH_POTION: 0.25,  // 25% (equal with stamina)
+    STAMINA_POTION: 0.50, // 25% (equal with health)
+    WEAPON: 0.75,         // 25%
+    ARMOR: 1.00           // 25%
+    // Nothing: 0% (all drops give something)
+  },
+  
+  MINI_BOSS_LOOT_RATES: {
+    HEALTH_POTION: 0.25,  // 25% (equal with stamina)
+    STAMINA_POTION: 0.50, // 25% (equal with health)
+    WEAPON: 0.75,         // 25%
+    ARMOR: 1.00           // 25%
+    // Nothing: 0% (all drops give something)
   },
   
   XP_REWARDS: {
@@ -64,16 +72,16 @@ const GAME_CONSTANTS = {
     { name: 'Endday', subtitle: 'Day of Liberation', theme: 'Today you break free or die trying.' }
   ],
   
-  MINI_BOSS_BASE: 60,
-  MINI_BOSS_DAY_SCALING: 30, // Aggressive scaling
+  MINI_BOSS_BASE: 66, // Increased from 60 (+10%)
+  MINI_BOSS_DAY_SCALING: 33, // Increased from 30 (+10%)
   MINI_BOSS_ATK_BASE: 15,
-  MINI_BOSS_ATK_SCALING: 3,
+  MINI_BOSS_ATK_SCALING: 3.06, // Increased from 3 (+2%)
   
-  FINAL_BOSS_BASE: 200,
-  FINAL_BOSS_DAY_SCALING: 40, // Reduced from 50 for permanent progression balance
+  FINAL_BOSS_BASE: 220, // Increased from 200 (+10%)
+  FINAL_BOSS_DAY_SCALING: 44, // Increased from 40 (+10%)
   
-  BOSS_ATTACK_BASE: 18,
-  BOSS_ATTACK_DAY_SCALING: 4.5, // Reduced from 5 for permanent progression balance
+  BOSS_ATTACK_BASE: 18.36, // Increased from 18 (+2%)
+  BOSS_ATTACK_DAY_SCALING: 4.59, // Increased from 4.5 (+2%)
   BOSS_ATTACK_DELAY: 1000,
   
   LOG_MAX_ENTRIES: 8,
@@ -104,11 +112,11 @@ const GAME_CONSTANTS = {
   
   // Class special attacks
   SPECIAL_ATTACKS: {
-    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 3.0, effect: 'Massive damage but costs 15 HP' },
-    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 2.0, effect: 'Boss stunned - no counter-attack this turn' },
-    Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.3, effect: 'Boss takes 5 damage per turn. Poisoned enemies take +15% damage from all attacks' },
-    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 1.5, effect: 'Heals you for 20 HP' },
-    Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.5, effect: 'Boss takes +25% damage from your next attack. Creates devastating combos' }
+    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 3.3, effect: 'Massive damage but costs 15 HP' }, // 3.0 → 3.3
+    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 2.3, effect: 'Boss stunned - no counter-attack this turn' }, // 2.0 → 2.3
+    Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 5 damage per turn. Poisoned enemies take +15% damage from all attacks' }, // 1.3 → 1.6
+    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 1.8, effect: 'Heals you for 20 HP' }, // 1.5 → 1.8
+    Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: 'Boss takes +35% damage from your next attack. Creates devastating combos' } // 1.5 → 1.8
   }
 };
 
@@ -774,9 +782,9 @@ const FantasyStudyQuest = () => {
     let bonusMessages = [];
     
     if (bossDebuffs.marked) {
-      const markBonus = Math.floor(damage * 0.25);
+      const markBonus = Math.floor(damage * 0.35); // Increased from 0.25 to 0.35
       finalDamage = damage + markBonus;
-      bonusMessages.push(`🎯 Weak point exploited! +${markBonus} damage`);
+      bonusMessages.push(`🎯 WEAK POINT! +${markBonus} bonus damage (Mark consumed)`);
       // Clear mark after use
       setBossDebuffs(prev => ({ ...prev, marked: false }));
     }
@@ -791,8 +799,14 @@ const FantasyStudyQuest = () => {
     const newBossHp = Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
     
-    addLog(`⚔️ Dealt ${finalDamage} damage!`);
-    bonusMessages.forEach(msg => addLog(msg));
+    // Show damage breakdown
+    if (bossDebuffs.marked || bossDebuffs.poisonTurns > 0) {
+      addLog(`⚔️ Attack: ${damage} base damage`);
+      bonusMessages.forEach(msg => addLog(msg));
+      addLog(`💥 TOTAL DAMAGE: ${finalDamage}!`);
+    } else {
+      addLog(`⚔️ Dealt ${finalDamage} damage!`);
+    }
     
     // FIXED: Boss damage flash - shorter duration, brighter
     setBossFlash(true);
@@ -816,13 +830,13 @@ const FantasyStudyQuest = () => {
       // Random loot for mini-boss victories - PERMANENT upgrades
       if (!isFinalBoss) {
         const lootRoll = Math.random();
-        if (lootRoll < 0.25) {
+        if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
           setHealthPots(h => h + 1);
           addLog('💎 Looted: Health Potion!');
-        } else if (lootRoll < 0.60) {
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
           setStaminaPots(s => s + 1);
           addLog('💎 Looted: Stamina Potion!');
-        } else if (lootRoll < 0.80) {
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
           const gain = 4 + Math.floor(currentDay / 3); // +4 to +6 (scales with day)
           setWeapon(w => w + gain);
           addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
@@ -981,7 +995,7 @@ const FantasyStudyQuest = () => {
     const wasMarked = bossDebuffs.marked;
     if (wasMarked && hero.class.name !== 'Ranger') {
       // Non-Ranger specials consume and benefit from mark
-      const markBonus = Math.floor(damage * 0.25);
+      const markBonus = Math.floor(damage * 0.35); // Increased from 0.25 to 0.35
       damage += markBonus;
     }
     
@@ -1021,9 +1035,9 @@ const FantasyStudyQuest = () => {
         setBossDebuffs(prev => ({ ...prev, marked: false }));
       }
     } else if (hero.class.name === 'Ranger') {
-      // Marked Shot: Next attack deals +25% damage (doesn't consume existing mark)
+      // Marked Shot: Next attack deals +35% damage (doesn't consume existing mark)
       setBossDebuffs(prev => ({ ...prev, marked: true }));
-      effectMessage = '🎯 Target marked! Next attack +25% damage!';
+      effectMessage = '🎯 TARGET MARKED! Your next attack will deal +35% bonus damage!';
     }
     
     const newBossHp = Math.max(0, bossHp - damage);
@@ -1070,13 +1084,13 @@ const FantasyStudyQuest = () => {
       // Random loot for mini-boss victories - PERMANENT upgrades
       if (!isFinalBoss) {
         const lootRoll = Math.random();
-        if (lootRoll < 0.25) {
+        if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
           setHealthPots(h => h + 1);
           addLog('💎 Looted: Health Potion!');
-        } else if (lootRoll < 0.60) {
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
           setStaminaPots(s => s + 1);
           addLog('💎 Looted: Stamina Potion!');
-        } else if (lootRoll < 0.80) {
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
           const gain = 4 + Math.floor(currentDay / 3); // +4 to +6 (scales with day)
           setWeapon(w => w + gain);
           addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
