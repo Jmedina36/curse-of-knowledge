@@ -164,6 +164,7 @@ const FantasyStudyQuest = () => {
   const [activeTask, setActiveTask] = useState(null);
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(false);
+  const [timerEndTime, setTimerEndTime] = useState(null); // Track when timer should end
   
   // Boss
   const [showBoss, setShowBoss] = useState(false);
@@ -315,6 +316,11 @@ const FantasyStudyQuest = () => {
       }
     }
     if (!hero) setHero(makeName());
+    
+    // Request notification permission for timer alerts
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, []);
   
   // Define addLog early so it can be used in effects
@@ -351,27 +357,38 @@ const FantasyStudyQuest = () => {
     }
   }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, isCursed, studyStats]);
   
-  // Timer effect
+  // Timer effect - uses elapsed time for background tab reliability
   useEffect(() => {
     let int;
-    if (running && timer > 0) {
+    if (running && timerEndTime) {
       int = setInterval(() => {
-        setTimer(t => {
-          if (t <= 1) {
-            setRunning(false);
-            // FIXED: Notify instead of auto-completing
-            if (activeTask) {
-              const task = tasks.find(task => task.id === activeTask);
-              addLog(`⏰ Time's up for: ${task?.title || 'task'}! Complete it when ready.`);
-            }
-            return 0;
+        const now = Date.now();
+        const remaining = Math.max(0, Math.ceil((timerEndTime - now) / 1000));
+        
+        setTimer(remaining);
+        
+        if (remaining <= 0) {
+          setRunning(false);
+          setTimerEndTime(null);
+          
+          // Browser notification
+          if (Notification.permission === "granted" && activeTask) {
+            const task = tasks.find(t => t.id === activeTask);
+            new Notification("⏰ Task Complete!", {
+              body: `${task?.title || 'Task'} - Time to mark it done!`,
+              icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>⏰</text></svg>"
+            });
           }
-          return t - 1;
-        });
+          
+          if (activeTask) {
+            const task = tasks.find(t => t.id === activeTask);
+            addLog(`⏰ Time's up for: ${task?.title || 'task'}! Complete it when ready.`);
+          }
+        }
       }, 1000);
     }
     return () => clearInterval(int);
-  }, [running, timer, activeTask, tasks, addLog]);
+  }, [running, timerEndTime, activeTask, tasks, addLog]);
   
   // Level up effect
   useEffect(() => {
@@ -383,6 +400,19 @@ const FantasyStudyQuest = () => {
       setHp(h => Math.min(getMaxHp(), h + 20));
     }
   }, [xp, level, addLog, getMaxHp]);
+  
+  // Tab visibility tracking - warn if timer running in background
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && running && timer > 0) {
+        // Tab hidden while timer running - notification will handle alert
+        console.log('Timer running in background - notifications will alert when complete');
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [running, timer]);
   
   const applySkipPenalty = useCallback(() => {
     const newSkipCount = skipCount + 1;
@@ -536,7 +566,9 @@ const FantasyStudyQuest = () => {
     const task = tasks.find(t => t.id === id);
     if (task && !task.done && !activeTask) {
       setActiveTask(id);
-      setTimer(task.time * 60);
+      const seconds = task.time * 60;
+      setTimer(seconds);
+      setTimerEndTime(Date.now() + (seconds * 1000)); // Set end time
       setRunning(true);
       setSessionStartTime(Date.now()); // Track session start
       setTaskPauseCount(0); // Reset pause count
@@ -1983,10 +2015,15 @@ const FantasyStudyQuest = () => {
                                   )}
                                   <button 
                                     onClick={() => {
-                                      setRunning(!running);
                                       if (running) {
-                                        // Pausing - increment pause count
+                                        // Pausing - save remaining time
+                                        setRunning(false);
+                                        setTimerEndTime(null);
                                         setTaskPauseCount(c => c + 1);
+                                      } else {
+                                        // Resuming - set new end time based on remaining timer
+                                        setRunning(true);
+                                        setTimerEndTime(Date.now() + (timer * 1000));
                                       }
                                     }} 
                                     className="bg-yellow-600 px-3 py-1 rounded hover:bg-yellow-700 transition-all"
