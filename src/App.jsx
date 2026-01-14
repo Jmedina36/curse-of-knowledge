@@ -10,7 +10,7 @@
 //   - Mini-bosses only spawn when HP > 50%
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar } from 'lucide-react';
 
 // Game constants
 const GAME_CONSTANTS = {
@@ -167,6 +167,28 @@ const FantasyStudyQuest = () => {
   const [timerEndTime, setTimerEndTime] = useState(null); // Track when timer should end
   const [overdueTask, setOverdueTask] = useState(null); // Track which task ran out of time
   
+  // Weekly Planner
+  const [weeklyPlan, setWeeklyPlan] = useState({
+    Monday: [],
+    Tuesday: [],
+    Wednesday: [],
+    Thursday: [],
+    Friday: [],
+    Saturday: [],
+    Sunday: []
+  });
+  const [showPlanModal, setShowPlanModal] = useState(false);
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [newPlanItem, setNewPlanItem] = useState({ title: '', time: '', notes: '' });
+  
+  // Monthly Calendar - persistent, doesn't reset on death
+  const [calendarTasks, setCalendarTasks] = useState({}); // Format: { "2026-01-15": [{title, done}] }
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [newCalendarTask, setNewCalendarTask] = useState('');
+  
   // Boss
   const [showBoss, setShowBoss] = useState(false);
   const [bossHp, setBossHp] = useState(0);
@@ -312,6 +334,8 @@ const FantasyStudyQuest = () => {
         if (data.lastPlayedDate) setLastPlayedDate(data.lastPlayedDate);
         if (data.isCursed !== undefined) setIsCursed(data.isCursed);
         if (data.studyStats) setStudyStats(data.studyStats);
+        if (data.weeklyPlan) setWeeklyPlan(data.weeklyPlan);
+        if (data.calendarTasks) setCalendarTasks(data.calendarTasks);
       } catch (e) {
         console.error('Failed to load save:', e);
       }
@@ -352,11 +376,13 @@ const FantasyStudyQuest = () => {
         consecutiveDays,
         lastPlayedDate,
         isCursed,
-        studyStats
+        studyStats,
+        weeklyPlan,
+        calendarTasks
       };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
-  }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, isCursed, studyStats]);
+  }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, isCursed, studyStats, weeklyPlan, calendarTasks]);
   
   // Timer effect - uses elapsed time for background tab reliability
   useEffect(() => {
@@ -510,6 +536,9 @@ const FantasyStudyQuest = () => {
   const start = () => {
     const today = new Date().toDateString();
     const currentHour = new Date().getHours();
+    const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    const dateKey = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD"
+    
     setLastPlayedDate(today);
     
     // Check if new day - reset daily stats
@@ -529,6 +558,46 @@ const FantasyStudyQuest = () => {
     if (isCursed) {
       setIsCursed(false);
       addLog('✨ The curse lifts... for now.');
+    }
+    
+    // Auto-populate quests from weekly planner for today
+    const plannedTasks = weeklyPlan[dayOfWeek] || [];
+    const todaysCalendarTasks = calendarTasks[dateKey] || [];
+    
+    // Convert planned tasks to quests (if not already added today)
+    if (tasks.length === 0) {
+      const newTasks = [];
+      
+      // Add from weekly planner
+      plannedTasks.forEach((item, idx) => {
+        // Parse time from "2:00 PM - 4:00 PM" format or just use default
+        let minutes = 30; // default
+        if (item.time) {
+          // Try to extract duration from time string
+          const timeMatch = item.time.match(/(\d+)\s*(hr|hour|min|minute)/i);
+          if (timeMatch) {
+            const value = parseInt(timeMatch[1]);
+            const unit = timeMatch[2].toLowerCase();
+            minutes = unit.startsWith('hr') || unit.startsWith('hour') ? value * 60 : value;
+          }
+        }
+        
+        const difficulty = getDifficulty(minutes);
+        newTasks.push({
+          title: item.title + (item.notes ? ` (${item.notes})` : ''),
+          time: minutes,
+          originalTime: minutes,
+          difficulty,
+          priority: 'important',
+          id: Date.now() + idx,
+          done: false
+        });
+      });
+      
+      if (newTasks.length > 0) {
+        setTasks(newTasks);
+        addLog(`📋 Loaded ${newTasks.length} tasks from ${dayOfWeek}'s plan`);
+      }
     }
     
     // Early bird bonus
@@ -1801,6 +1870,8 @@ const FantasyStudyQuest = () => {
           <nav className="flex gap-2 mb-6 justify-center flex-wrap">
             {[
               {id:'quest', icon:Sword, label:'Quests'},
+              {id:'planner', icon:Calendar, label:'Weekly Planner'},
+              {id:'calendar', icon:Calendar, label:'Calendar'},
               {id:'progress', icon:Trophy, label:'Progress'},
               {id:'inv', icon:Heart, label:'Inventory'},
               {id:'grave', icon:Skull, label:'The Consumed'},
@@ -2010,6 +2081,17 @@ const FantasyStudyQuest = () => {
                   >
                     Clear LocalStorage
                   </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Clear all calendar tasks?')) {
+                        setCalendarTasks({});
+                        addLog('Debug: Calendar cleared');
+                      }
+                    }}
+                    className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all"
+                  >
+                    Clear Calendar
+                  </button>
                 </div>
               </div>
 
@@ -2023,10 +2105,13 @@ const FantasyStudyQuest = () => {
             <div className="space-y-6">
               {!hasStarted ? (
                 <div className="bg-black bg-opacity-50 rounded-xl p-8 text-center border-2 border-red-900">
-                  <h2 className="text-3xl font-bold text-yellow-400 mb-2">{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].name}</h2>
-                  <p className="text-lg text-gray-300 mb-2">{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].subtitle}</p>
-                  <p className="text-sm text-gray-400 italic mb-4">"{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].theme}"</p>
-                  <p className="mb-2 text-gray-300">Day {currentDay}/7 • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * 100)}%</p>
+                  <h2 className="text-3xl font-bold text-yellow-400 mb-2">
+                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                  </h2>
+                  <p className="text-lg text-gray-300 mb-2">
+                    {new Date().toLocaleDateString('en-US', { year: 'numeric' })}
+                  </p>
+                  <p className="text-sm text-gray-400 italic mb-4">"Begin your trials for today..."</p>
                   <p className="mb-4 text-sm text-gray-400">⚠️ Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
                   <button 
                     onClick={start} 
@@ -2210,6 +2295,193 @@ const FantasyStudyQuest = () => {
                   </div>
                 </>
               )}
+            </div>
+          )}
+
+          {activeTab === 'planner' && (
+            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-blue-900">
+              <h2 className="text-2xl font-bold text-blue-400 mb-2 text-center">📅 WEEKLY PLANNER</h2>
+              <p className="text-gray-400 text-sm mb-6 italic text-center">"Plan your studies, conquer your week..."</p>
+              
+              <div className="grid gap-4">
+                {Object.keys(weeklyPlan).map(day => (
+                  <div key={day} className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-xl font-bold text-blue-300">{day}</h3>
+                      <button
+                        onClick={() => {
+                          setSelectedDay(day);
+                          setShowPlanModal(true);
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-all flex items-center gap-1"
+                      >
+                        <Plus size={16}/> Add Task
+                      </button>
+                    </div>
+                    
+                    {weeklyPlan[day].length === 0 ? (
+                      <p className="text-gray-500 text-sm italic">No tasks planned</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {weeklyPlan[day].map((item, idx) => (
+                          <div key={idx} className="bg-gray-900 rounded p-3 flex justify-between items-start">
+                            <div className="flex-1">
+                              <p className="text-white font-medium">{item.title}</p>
+                              {item.time && (
+                                <p className="text-sm text-gray-400">⏰ {item.time}</p>
+                              )}
+                              {item.notes && (
+                                <p className="text-sm text-gray-500 italic mt-1">{item.notes}</p>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => {
+                                setWeeklyPlan(prev => ({
+                                  ...prev,
+                                  [day]: prev[day].filter((_, i) => i !== idx)
+                                }));
+                              }}
+                              className="text-red-400 hover:text-red-300 ml-2"
+                            >
+                              <X size={16}/>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'calendar' && (
+            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-green-900">
+              <h2 className="text-2xl font-bold text-green-400 mb-2 text-center">📆 MONTHLY CALENDAR</h2>
+              <p className="text-gray-400 text-sm mb-6 italic text-center">"Track your progress across time..."</p>
+              
+              {/* Month Navigation */}
+              <div className="flex justify-between items-center mb-6">
+                <button
+                  onClick={() => {
+                    if (currentMonth === 0) {
+                      setCurrentMonth(11);
+                      setCurrentYear(currentYear - 1);
+                    } else {
+                      setCurrentMonth(currentMonth - 1);
+                    }
+                  }}
+                  className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all"
+                >
+                  ← Previous
+                </button>
+                <h3 className="text-2xl font-bold text-green-300">
+                  {new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} {currentYear}
+                </h3>
+                <button
+                  onClick={() => {
+                    if (currentMonth === 11) {
+                      setCurrentMonth(0);
+                      setCurrentYear(currentYear + 1);
+                    } else {
+                      setCurrentMonth(currentMonth + 1);
+                    }
+                  }}
+                  className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all"
+                >
+                  Next →
+                </button>
+              </div>
+              
+              {/* Calendar Grid */}
+              <div className="bg-gray-800 rounded-lg p-4">
+                {/* Day Headers */}
+                <div className="grid grid-cols-7 gap-2 mb-2">
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="text-center text-gray-400 font-bold text-sm py-2">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Calendar Days */}
+                <div className="grid grid-cols-7 gap-2">
+                  {(() => {
+                    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+                    const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+                    const today = new Date();
+                    const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+                    
+                    const days = [];
+                    
+                    // Empty cells for days before month starts
+                    for (let i = 0; i < firstDay; i++) {
+                      days.push(<div key={`empty-${i}`} className="aspect-square"></div>);
+                    }
+                    
+                    // Actual days
+                    for (let day = 1; day <= daysInMonth; day++) {
+                      const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      const dayTasks = calendarTasks[dateKey] || [];
+                      const isToday = isCurrentMonth && today.getDate() === day;
+                      const hasTasks = dayTasks.length > 0;
+                      const completedTasks = dayTasks.filter(t => t.done).length;
+                      const allDone = hasTasks && completedTasks === dayTasks.length;
+                      
+                      days.push(
+                        <button
+                          key={day}
+                          onClick={() => {
+                            setSelectedDate(dateKey);
+                            setShowCalendarModal(true);
+                          }}
+                          className={`aspect-square rounded-lg p-2 transition-all hover:scale-105 relative ${
+                            isToday 
+                              ? 'bg-blue-600 border-2 border-blue-400 shadow-lg' 
+                              : hasTasks
+                                ? allDone
+                                  ? 'bg-green-700 border-2 border-green-500'
+                                  : 'bg-yellow-700 border-2 border-yellow-500'
+                                : 'bg-gray-700 hover:bg-gray-600'
+                          }`}
+                        >
+                          <div className="text-lg font-bold text-white">{day}</div>
+                          {hasTasks && (
+                            <div className="text-xs text-white mt-1">
+                              {completedTasks}/{dayTasks.length}
+                            </div>
+                          )}
+                          {isToday && (
+                            <div className="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                          )}
+                        </button>
+                      );
+                    }
+                    
+                    return days;
+                  })()}
+                </div>
+              </div>
+              
+              {/* Legend */}
+              <div className="mt-4 flex flex-wrap gap-4 justify-center text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-blue-600 border-2 border-blue-400 rounded"></div>
+                  <span className="text-gray-300">Today</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-yellow-700 border-2 border-yellow-500 rounded"></div>
+                  <span className="text-gray-300">Has Tasks (In Progress)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-green-700 border-2 border-green-500 rounded"></div>
+                  <span className="text-gray-300">All Tasks Complete</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 bg-gray-700 rounded"></div>
+                  <span className="text-gray-300">No Tasks</span>
+                </div>
+              </div>
             </div>
           )}
 
@@ -2618,6 +2890,188 @@ const FantasyStudyQuest = () => {
                   >
                     Cancel
                   </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Weekly Planner Modal */}
+          {showPlanModal && selectedDay && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
+              <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-blue-400">Plan for {selectedDay}</h3>
+                  <button onClick={() => setShowPlanModal(false)} className="text-gray-400 hover:text-white">
+                    <X size={24}/>
+                  </button>
+                </div>
+                
+                <input 
+                  type="text" 
+                  placeholder="Task name (e.g., Study Math Chapter 3)" 
+                  value={newPlanItem.title} 
+                  onChange={e => setNewPlanItem({...newPlanItem, title: e.target.value})} 
+                  className="w-full p-3 bg-gray-800 text-white rounded-lg mb-3 border border-gray-700 focus:border-blue-500 focus:outline-none"
+                  autoFocus
+                />
+                
+                <input 
+                  type="text" 
+                  placeholder="Time (e.g., 2:00 PM - 4:00 PM)" 
+                  value={newPlanItem.time} 
+                  onChange={e => setNewPlanItem({...newPlanItem, time: e.target.value})} 
+                  className="w-full p-3 bg-gray-800 text-white rounded-lg mb-3 border border-gray-700 focus:border-blue-500 focus:outline-none"
+                />
+                
+                <textarea 
+                  placeholder="Notes (optional)" 
+                  value={newPlanItem.notes} 
+                  onChange={e => setNewPlanItem({...newPlanItem, notes: e.target.value})} 
+                  className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-blue-500 focus:outline-none"
+                  rows="3"
+                />
+                
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => {
+                      if (newPlanItem.title) {
+                        // Add to weekly planner
+                        setWeeklyPlan(prev => ({
+                          ...prev,
+                          [selectedDay]: [...prev[selectedDay], {...newPlanItem}]
+                        }));
+                        
+                        // Also add to calendar for the next occurrence of this day
+                        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                        const targetDayIndex = daysOfWeek.indexOf(selectedDay);
+                        const today = new Date();
+                        const todayIndex = today.getDay();
+                        
+                        // Calculate days until target day (0-6)
+                        let daysUntil = targetDayIndex - todayIndex;
+                        if (daysUntil < 0) daysUntil += 7; // If day has passed this week, schedule for next week
+                        if (daysUntil === 0 && hasStarted) daysUntil = 7; // If today and already started, schedule for next week
+                        
+                        const targetDate = new Date(today);
+                        targetDate.setDate(today.getDate() + daysUntil);
+                        const dateKey = targetDate.toISOString().split('T')[0];
+                        
+                        // Add to calendar
+                        setCalendarTasks(prev => ({
+                          ...prev,
+                          [dateKey]: [...(prev[dateKey] || []), { title: newPlanItem.title, done: false }]
+                        }));
+                        
+                        setNewPlanItem({ title: '', time: '', notes: '' });
+                        setShowPlanModal(false);
+                        addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay} plan and calendar`);
+                      }
+                    }}
+                    disabled={!newPlanItem.title}
+                    className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+                  >
+                    Add to Plan & Calendar
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setShowPlanModal(false);
+                      setNewPlanItem({ title: '', time: '', notes: '' });
+                    }}
+                    className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Calendar Task Modal */}
+          {showCalendarModal && selectedDate && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
+              <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-bold text-green-400">
+                    {new Date(selectedDate).toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                  </h3>
+                  <button onClick={() => setShowCalendarModal(false)} className="text-gray-400 hover:text-white">
+                    <X size={24}/>
+                  </button>
+                </div>
+                
+                {/* Task Input */}
+                <div className="mb-4">
+                  <input 
+                    type="text" 
+                    placeholder="Add new task..." 
+                    value={newCalendarTask} 
+                    onChange={e => setNewCalendarTask(e.target.value)} 
+                    onKeyPress={e => {
+                      if (e.key === 'Enter' && newCalendarTask.trim()) {
+                        setCalendarTasks(prev => ({
+                          ...prev,
+                          [selectedDate]: [...(prev[selectedDate] || []), { title: newCalendarTask, done: false }]
+                        }));
+                        setNewCalendarTask('');
+                      }
+                    }}
+                    className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-green-500 focus:outline-none"
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => {
+                      if (newCalendarTask.trim()) {
+                        setCalendarTasks(prev => ({
+                          ...prev,
+                          [selectedDate]: [...(prev[selectedDate] || []), { title: newCalendarTask, done: false }]
+                        }));
+                        setNewCalendarTask('');
+                      }
+                    }}
+                    disabled={!newCalendarTask.trim()}
+                    className="w-full mt-2 bg-green-600 py-2 rounded-lg hover:bg-green-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+                  >
+                    Add Task
+                  </button>
+                </div>
+                
+                {/* Task List */}
+                <div className="space-y-2 max-h-96 overflow-y-auto">
+                  {(!calendarTasks[selectedDate] || calendarTasks[selectedDate].length === 0) ? (
+                    <p className="text-gray-500 text-center py-4 italic">No tasks for this day</p>
+                  ) : (
+                    calendarTasks[selectedDate].map((task, idx) => (
+                      <div key={idx} className="bg-gray-800 rounded-lg p-3 flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={task.done}
+                          onChange={() => {
+                            setCalendarTasks(prev => ({
+                              ...prev,
+                              [selectedDate]: prev[selectedDate].map((t, i) => 
+                                i === idx ? { ...t, done: !t.done } : t
+                              )
+                            }));
+                          }}
+                          className="w-5 h-5 cursor-pointer"
+                        />
+                        <span className={`flex-1 ${task.done ? 'line-through text-gray-500' : 'text-white'}`}>
+                          {task.title}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setCalendarTasks(prev => ({
+                              ...prev,
+                              [selectedDate]: prev[selectedDate].filter((_, i) => i !== idx)
+                            }));
+                          }}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <X size={18}/>
+                        </button>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
