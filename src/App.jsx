@@ -240,7 +240,7 @@ const [customClass, setCustomClass] = useState(null);
     const todayIndex = today.getDay();
     
     let daysUntil = targetDayIndex - todayIndex;
-    if (daysUntil <= 0) daysUntil += 7; // Always get next occurrence
+    if (daysUntil < 0) daysUntil += 7; // Always get current occurence
     
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysUntil);
