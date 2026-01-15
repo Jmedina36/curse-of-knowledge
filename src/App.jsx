@@ -1419,8 +1419,7 @@ const FantasyStudyQuest = () => {
         }
       `}</style>
 
-// END OF PART 3 - Continue with part 4
-// PART 4 OF 6 - Copy this after part 3
+
 
       <div className="absolute inset-0 bg-gradient-to-b from-red-950 via-black to-purple-950 opacity-60"></div>
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-black to-black opacity-80"></div>
