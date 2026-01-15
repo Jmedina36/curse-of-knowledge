@@ -170,6 +170,10 @@ const FantasyStudyQuest = () => {
   const [playerFlash, setPlayerFlash] = useState(false);
   const [victoryFlash, setVictoryFlash] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
+  const [canCustomize, setCanCustomize] = useState(true);
+const [showCustomizeModal, setShowCustomizeModal] = useState(false);
+const [customName, setCustomName] = useState('');
+const [customClass, setCustomClass] = useState(null);
   const [log, setLog] = useState([]);
   const [graveyard, setGraveyard] = useState([]);
   const [heroes, setHeroes] = useState([]);
@@ -505,6 +509,9 @@ const FantasyStudyQuest = () => {
   };
   
   const startTask = (id) => {
+    if (canCustomize) {
+  setCanCustomize(false);
+}
     const task = tasks.find(t => t.id === id);
     if (task && !task.done && !activeTask) {
       setActiveTask(id);
@@ -1157,6 +1164,7 @@ if (calendarTasks[today]) {
     
     const newHero = makeName();
     setHero(newHero);
+    setCanCustomize(true);
     setCurrentDay(1);
     setHp(GAME_CONSTANTS.MAX_HP);
     setStamina(GAME_CONSTANTS.MAX_STAMINA);
@@ -1212,6 +1220,7 @@ if (calendarTasks[today]) {
       
       const newHero = makeName();
       setHero(newHero);
+      setCanCustomize(true);
       setCurrentDay(1);
       setHp(GAME_CONSTANTS.MAX_HP);
       setStamina(GAME_CONSTANTS.MAX_STAMINA);
@@ -1627,6 +1636,16 @@ if (calendarTasks[today]) {
                     </button>
                   )}
                 </div>
+                {canCustomize && (
+  <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
+    <button 
+      onClick={() => setShowCustomizeModal(true)}
+      className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg transition-all font-bold text-white"
+    >
+      Customize Your Hero!
+    </button>
+  </div>
+)}
               </div>
             </div>
           </header>
@@ -1984,6 +2003,82 @@ if (calendarTasks[today]) {
             </div>
           )}
 
+          {showCustomizeModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-blue-400">CUSTOMIZE YOUR HERO</h3>
+        <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white">
+          <X size={24}/>
+        </button>
+      </div>
+      
+      <div className="mb-4">
+        <label className="block text-sm text-gray-400 mb-2">Hero Name</label>
+        <input 
+          type="text" 
+          placeholder="Enter your hero's name" 
+          value={customName}
+          onChange={e => setCustomName(e.target.value)}
+          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none" 
+          autoFocus 
+        />
+      </div>
+      
+      <div className="mb-4">
+        <label className="block text-sm text-gray-400 mb-2">Choose Your Class</label>
+        <div className="grid grid-cols-2 gap-2">
+          {classes.map(cls => (
+            <button
+              key={cls.name}
+              type="button"
+              onClick={() => setCustomClass(cls)}
+              className={`p-4 rounded-lg border-2 transition-all ${
+                customClass?.name === cls.name 
+                  ? `bg-${cls.color}-900 border-${cls.color}-500` 
+                  : 'bg-gray-800 border-gray-700 hover:border-gray-500'
+              }`}
+            >
+              <div className="text-4xl mb-2">{cls.emblem}</div>
+              <div className="font-bold text-white">{cls.name}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="flex gap-2">
+        <button 
+          onClick={() => {
+            if (customName.trim() || customClass) {
+              setHero(prev => ({
+                ...prev,
+                name: customName.trim() || prev.name,
+                class: customClass || prev.class
+              }));
+              setCustomName('');
+              setCustomClass(null);
+              setShowCustomizeModal(false);
+              addLog(`✨ Hero customized! ${customName.trim() ? `Name: ${customName.trim()}` : ''} ${customClass ? `Class: ${customClass.name}` : ''}`);
+            }
+          }}
+          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all"
+        >
+          Confirm
+        </button>
+        <button 
+          onClick={() => {
+            setCustomName('');
+            setCustomClass(null);
+            setShowCustomizeModal(false);
+          }} 
+          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           {showModal && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
               <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500" onClick={e => e.stopPropagation()}>
