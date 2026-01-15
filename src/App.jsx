@@ -583,6 +583,16 @@ const FantasyStudyQuest = () => {
       }
       
       setTasks(prev => prev.map(t => t.id === id ? { ...t, done: true } : t));
+      // Sync completion to calendar
+const today = new Date().toISOString().split('T')[0];
+if (calendarTasks[today]) {
+  setCalendarTasks(prev => ({
+    ...prev,
+    [today]: prev[today].map(ct => 
+      ct.title === task.title ? { ...ct, done: true } : ct
+    )
+  }));
+}
       setActiveTask(null);
       setRunning(false);
       setSessionStartTime(null);
