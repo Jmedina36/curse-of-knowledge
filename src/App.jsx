@@ -1185,7 +1185,7 @@ const FantasyStudyQuest = () => {
     setTimeout(() => setActiveTab('grave'), 1000);
   };
 
-// END OF PART 2 - Continue with part 3
+
 // PART 3 OF 6 - Copy this after part 2
 
   const advance = () => {
@@ -1702,9 +1702,7 @@ const FantasyStudyQuest = () => {
             </div>
           )}
 
-// END OF PART 4 - Continue with part 5
-// PART 5 OF 6 - Copy this after part 4
-// This file is too large - I'll need to break it further. Creating quest and planner tabs only.
+
 
           {activeTab === 'quest' && (
             <div className="space-y-6">
@@ -1844,9 +1842,7 @@ const FantasyStudyQuest = () => {
             </div>
           )}
 
-// This file is getting too long - continuing in part 6 with calendar, progress, inventory, grave, hall, and modals
-// PART 6 OF 6 - Copy this after part 5 - FINAL PART
-// Contains: Calendar, Progress, Inventory, Grave, Hall tabs + All Modals + Closing tags
+
 
           {activeTab === 'calendar' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-green-900">
