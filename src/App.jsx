@@ -1862,18 +1862,83 @@ setCalendarTasks(prev => {
                       <p className="text-gray-500 text-sm italic">No tasks planned</p>
                     ) : (
                       <div className="space-y-2">
-                        {weeklyPlan[day].map((item, idx) => (
-                          <div key={idx} className="bg-gray-900 rounded p-3 flex justify-between items-start">
-                            <div className="flex-1">
-                              <p className="text-white font-medium">{item.title}</p>
-                              {item.time && (<p className="text-sm text-gray-400">⏰ {item.time}</p>)}
-                              {item.notes && (<p className="text-sm text-gray-500 italic mt-1">{item.notes}</p>)}
-                            </div>
-                            <button onClick={() => { setWeeklyPlan(prev => ({ ...prev, [day]: prev[day].filter((_, i) => i !== idx) })); }} className="text-red-400 hover:text-red-300 ml-2">
-                              <X size={16}/>
-                            </button>
-                          </div>
-                        ))}
+                      {weeklyPlan[day].map((item, idx) => (
+  <div key={idx} className={`bg-gray-900 rounded p-3 flex justify-between items-start ${item.completed ? 'opacity-60' : ''}`}>
+    <div className="flex-1">
+      <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+        {item.completed && '✓ '}{item.title}
+      </p>
+      {item.time && (<p className="text-sm text-gray-400">⏰ {item.time}</p>)}
+      {item.notes && (<p className="text-sm text-gray-500 italic mt-1">{item.notes}</p>)}
+    </div>
+    <div className="flex gap-2 ml-2">
+      {!item.completed ? (
+        <button 
+          onClick={() => {
+            setWeeklyPlan(prev => ({
+              ...prev,
+              [day]: prev[day].map((t, i) => i === idx ? { ...t, completed: true } : t)
+            }));
+            addLog(`✓ Completed planner task: ${item.title}`);
+          }}
+          className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm text-white font-medium transition-all"
+        >
+          ✓ Complete
+        </button>
+      ) : (
+        <button 
+          onClick={() => {
+            setWeeklyPlan(prev => ({
+              ...prev,
+              [day]: prev[day].map((t, i) => i === idx ? { ...t, completed: false } : t)
+            }));
+            addLog(`↩️ Unmarked: ${item.title}`);
+          }}
+          className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm text-white font-medium transition-all"
+        >
+          Undo
+        </button>
+      )}
+      <button 
+        onClick={() => {
+          if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
+            // Remove from planner
+            setWeeklyPlan(prev => ({
+              ...prev,
+              [day]: prev[day].filter((_, i) => i !== idx)
+            }));
+            
+            // Remove from all future calendar dates
+            setCalendarTasks(prev => {
+              const updated = { ...prev };
+              Object.keys(updated).forEach(dateKey => {
+                const date = new Date(dateKey);
+                const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                
+                // Only remove from future dates that match this day of week
+                if (dateDayName === day && date >= new Date()) {
+                  updated[dateKey] = updated[dateKey].filter(t => 
+                    !(t.title === item.title && t.fromPlanner === true)
+                  );
+                  // Clean up empty date entries
+                  if (updated[dateKey].length === 0) {
+                    delete updated[dateKey];
+                  }
+                }
+              });
+              return updated;
+            });
+            
+            addLog(`🗑️ Deleted "${item.title}" from ${day} plan and future calendar dates`);
+          }
+        }}
+        className="text-red-400 hover:text-red-300"
+      >
+        <X size={16}/>
+      </button>
+    </div>
+  </div>
+))}  
                       </div>
                     )}
                   </div>
@@ -2111,7 +2176,31 @@ setCalendarTasks(prev => {
                 <input type="text" placeholder="Time (e.g., 2:00 PM - 4:00 PM)" value={newPlanItem.time} onChange={e => setNewPlanItem({...newPlanItem, time: e.target.value})} className="w-full p-3 bg-gray-800 text-white rounded-lg mb-3 border border-gray-700 focus:border-blue-500 focus:outline-none" />
                 <textarea placeholder="Notes (optional)" value={newPlanItem.notes} onChange={e => setNewPlanItem({...newPlanItem, notes: e.target.value})} className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-blue-500 focus:outline-none" rows="3" />
                 <div className="flex gap-2">
-                  <button onClick={() => { if (newPlanItem.title) { setWeeklyPlan(prev => ({ ...prev, [selectedDay]: [...prev[selectedDay], {...newPlanItem}] })); const targetDate = getNextDayOfWeek(selectedDay); const dateKey = targetDate.toISOString().split('T')[0]; setCalendarTasks(prev => ({ ...prev, [dateKey]: [...(prev[dateKey] || []), { title: newPlanItem.title, done: false }] })); setNewPlanItem({ title: '', time: '', notes: '' }); setShowPlanModal(false); addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay} plan and calendar (${targetDate.toLocaleDateString()})`); } }} disabled={!newPlanItem.title} className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed">Add to Plan & Calendar</button>
+                  <button onClick={() => { 
+  if (newPlanItem.title) { 
+    // Add to planner with completed: false
+    setWeeklyPlan(prev => ({ 
+      ...prev, 
+      [selectedDay]: [...prev[selectedDay], {...newPlanItem, completed: false}] 
+    })); 
+    
+    // Add to calendar with fromPlanner flag
+    const targetDate = getNextDayOfWeek(selectedDay); 
+    const dateKey = targetDate.toISOString().split('T')[0]; 
+    setCalendarTasks(prev => ({ 
+      ...prev, 
+      [dateKey]: [...(prev[dateKey] || []), { 
+        title: newPlanItem.title, 
+        done: false, 
+        fromPlanner: true 
+      }] 
+    })); 
+    
+    setNewPlanItem({ title: '', time: '', notes: '' }); 
+    setShowPlanModal(false); 
+    addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay} plan and calendar (${targetDate.toLocaleDateString()})`); 
+  } 
+}}disabled={!newPlanItem.title} className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed">Add to Plan & Calendar</button>
                   <button onClick={() => { setShowPlanModal(false); setNewPlanItem({ title: '', time: '', notes: '' }); }} className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all">Cancel</button>
                 </div>
               </div>
