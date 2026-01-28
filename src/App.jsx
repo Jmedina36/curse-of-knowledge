@@ -1841,9 +1841,17 @@ setCalendarTasks(prev => {
                     <div className="flex justify-between items-center mb-3">
                       <div>
                         <h3 className="text-xl font-bold text-blue-300">{day}</h3>
-                        <p className="text-xs text-gray-400">
-                          Next: {getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </p>
+                        <p className="text-xs">
+  {(() => {
+    const today = new Date();
+    const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+    if (day === todayDayName) {
+      return <span className="text-yellow-400 font-bold">Today</span>;
+    } else {
+      return <span className="text-gray-400">{getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
+    }
+  })()}
+</p>
                       </div>
                       <button onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-all flex items-center gap-1">
                         <Plus size={16}/> Add Task
