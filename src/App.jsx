@@ -239,8 +239,8 @@ const [customClass, setCustomClass] = useState(null);
     const today = new Date();
     const todayIndex = today.getDay();
     
-    let daysUntil = targetDayIndex - todayIndex;
-    if (daysUntil < 0) daysUntil += 7; // Always get current occurence
+   let daysUntil = targetDayIndex - todayIndex;
+if (daysUntil <= 0) daysUntil += 7; // FIXED: Changed < to <= so today counts as next week
     
     const targetDate = new Date(today);
     targetDate.setDate(today.getDate() + daysUntil);
@@ -629,7 +629,7 @@ setCalendarTasks(prev => {
         setTimeout(() => spawnRandomMiniBoss(), 1000);
       }
     }
-  }, [tasks, currentDay, addLog, consecutiveDays, skipCount, isCursed, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask]);
+}, [tasks, currentDay, addLog, consecutiveDays, skipCount, isCursed, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask, calendarTasks, setCalendarTasks]);
   
   const spawnRandomMiniBoss = (force = false) => {
     const completedTasks = tasks.filter(t => t.done).length;
@@ -2145,5 +2145,3 @@ setCalendarTasks(prev => {
 };
 
 export default FantasyStudyQuest;
-
-
