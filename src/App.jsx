@@ -1901,37 +1901,40 @@ setCalendarTasks(prev => {
       )}
       <button 
         onClick={() => {
-          if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
-            // Remove from planner
-            setWeeklyPlan(prev => ({
-              ...prev,
-              [day]: prev[day].filter((_, i) => i !== idx)
-            }));
-            
-            // Remove from all future calendar dates
-            setCalendarTasks(prev => {
-              const updated = { ...prev };
-              Object.keys(updated).forEach(dateKey => {
-                const date = new Date(dateKey);
-                const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-                
-                // Only remove from future dates that match this day of week
-                if (dateDayName === day && date >= new Date()) {
-                  updated[dateKey] = updated[dateKey].filter(t => 
-                    !(t.title === item.title && t.fromPlanner === true)
-                  );
-                  // Clean up empty date entries
-                  if (updated[dateKey].length === 0) {
-                    delete updated[dateKey];
-                  }
-                }
-              });
-              return updated;
-            });
-            
-            addLog(`🗑️ Deleted "${item.title}" from ${day} plan and future calendar dates`);
+  if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
+    // Remove from planner
+    setWeeklyPlan(prev => ({
+      ...prev,
+      [day]: prev[day].filter((_, i) => i !== idx)
+    }));
+    
+    // Remove from all future calendar dates
+    setCalendarTasks(prev => {
+      const updated = { ...prev };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
+      
+      Object.keys(updated).forEach(dateKey => {
+        const date = new Date(dateKey);
+        const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        // Only remove from dates that match this day of week (including today and future)
+        if (dateDayName === day && date >= today) {
+          updated[dateKey] = updated[dateKey].filter(t => 
+            !(t.title === item.title && t.fromPlanner === true)
+          );
+          // Clean up empty date entries
+          if (updated[dateKey].length === 0) {
+            delete updated[dateKey];
           }
-        }}
+        }
+      });
+      return updated;
+    });
+    
+    addLog(`🗑️ Deleted "${item.title}" from ${day} plan and future calendar dates`);
+  }
+}}
         className="text-red-400 hover:text-red-300"
       >
         <X size={16}/>
