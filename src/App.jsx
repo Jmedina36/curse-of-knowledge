@@ -590,16 +590,20 @@ const [customClass, setCustomClass] = useState(null);
       }
       
       setTasks(prev => prev.map(t => t.id === id ? { ...t, done: true } : t));
-      // Sync completion to calendar
+
+// FIXED: Calendar sync with proper date matching
 const today = new Date().toISOString().split('T')[0];
-if (calendarTasks[today]) {
-  setCalendarTasks(prev => ({
-    ...prev,
-    [today]: prev[today].map(ct => 
-      ct.title === task.title ? { ...ct, done: true } : ct
-    )
-  }));
-}
+setCalendarTasks(prev => {
+  if (prev[today]) {
+    return {
+      ...prev,
+      [today]: prev[today].map(ct => 
+        ct.title === task.title ? { ...ct, done: true } : ct
+      )
+    };
+  }
+  return prev;
+});
       setActiveTask(null);
       setRunning(false);
       setSessionStartTime(null);
