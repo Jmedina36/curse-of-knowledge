@@ -2188,8 +2188,11 @@ setCalendarTasks(prev => {
     })); 
     
     // Add to calendar with fromPlanner flag
-    const targetDate = getNextDayOfWeek(selectedDay); 
-    const dateKey = targetDate.toISOString().split('T')[0]; 
+   const targetDate = getNextDayOfWeek(selectedDay);
+const year = targetDate.getFullYear();
+const month = String(targetDate.getMonth() + 1).padStart(2, '0');
+const day = String(targetDate.getDate()).padStart(2, '0');
+const dateKey = `${year}-${month}-${day}`;
     setCalendarTasks(prev => ({ 
       ...prev, 
       [dateKey]: [...(prev[dateKey] || []), { 
