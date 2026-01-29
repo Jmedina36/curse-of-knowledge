@@ -2181,45 +2181,80 @@ const date = new Date(year, month - 1, dayNum);
             </div>
           )}
 
-          {showPlanModal && selectedDay && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4"><h3 className="text-xl font-bold text-blue-400">Plan for {selectedDay}</h3><button onClick={() => setShowPlanModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button></div>
-                <input type="text" placeholder="Task name (e.g., Study Math Chapter 3)" value={newPlanItem.title} onChange={e => setNewPlanItem({...newPlanItem, title: e.target.value})} className="w-full p-3 bg-gray-800 text-white rounded-lg mb-3 border border-gray-700 focus:border-blue-500 focus:outline-none" autoFocus />
-                <input type="text" placeholder="Time (e.g., 2:00 PM - 4:00 PM)" value={newPlanItem.time} onChange={e => setNewPlanItem({...newPlanItem, time: e.target.value})} className="w-full p-3 bg-gray-800 text-white rounded-lg mb-3 border border-gray-700 focus:border-blue-500 focus:outline-none" />
-                <textarea placeholder="Notes (optional)" value={newPlanItem.notes} onChange={e => setNewPlanItem({...newPlanItem, notes: e.target.value})} className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-blue-500 focus:outline-none" rows="3" />
-                <div className="flex gap-2">
-                  <button onClick={() => { 
-  if (newPlanItem.title) { 
-    // Add to planner with completed: false
-    setWeeklyPlan(prev => ({ 
-      ...prev, 
-      [selectedDay]: [...prev[selectedDay], {...newPlanItem, completed: false}] 
-    })); 
-    
-    // Add to calendar with fromPlanner flag
-  const targetDate = getNextDayOfWeek(selectedDay);
-const dateKey = getDateKey(targetDate);
-    setCalendarTasks(prev => ({ 
-      ...prev, 
-      [dateKey]: [...(prev[dateKey] || []), { 
-        title: newPlanItem.title, 
-        done: false, 
-        fromPlanner: true 
-      }] 
-    })); 
-    
-    setNewPlanItem({ title: '', time: '', notes: '' }); 
-    setShowPlanModal(false); 
-    addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay} plan and calendar (${targetDate.toLocaleDateString()})`); 
-  } 
-}}disabled={!newPlanItem.title} className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed">Add to Plan & Calendar</button>
-                  <button onClick={() => { setShowPlanModal(false); setNewPlanItem({ title: '', time: '', notes: '' }); }} className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all">Cancel</button>
-                </div>
-              </div>
-            </div>
-          )}
-
+         {showPlanModal && selectedDay && (
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-blue-400">Plan for {selectedDay}</h3>
+        <button onClick={() => setShowPlanModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+      </div>
+      <input 
+        type="text" 
+        placeholder="What do you need to do?" 
+        value={newPlanItem.title} 
+        onChange={e => setNewPlanItem({...newPlanItem, title: e.target.value})} 
+        onKeyPress={e => {
+          if (e.key === 'Enter' && newPlanItem.title) {
+            setWeeklyPlan(prev => ({ 
+              ...prev, 
+              [selectedDay]: [...prev[selectedDay], {...newPlanItem, completed: false}] 
+            })); 
+            const targetDate = getNextDayOfWeek(selectedDay);
+            const dateKey = getDateKey(targetDate);
+            setCalendarTasks(prev => ({ 
+              ...prev, 
+              [dateKey]: [...(prev[dateKey] || []), { 
+                title: newPlanItem.title, 
+                done: false, 
+                fromPlanner: true 
+              }] 
+            })); 
+            setNewPlanItem({ title: '', time: '', notes: '' }); 
+            setShowPlanModal(false); 
+            addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay}`);
+          }
+        }}
+        className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-blue-500 focus:outline-none" 
+        autoFocus 
+      />
+      <div className="flex gap-2">
+        <button 
+          onClick={() => { 
+            if (newPlanItem.title) { 
+              setWeeklyPlan(prev => ({ 
+                ...prev, 
+                [selectedDay]: [...prev[selectedDay], {...newPlanItem, completed: false}] 
+              })); 
+              const targetDate = getNextDayOfWeek(selectedDay);
+              const dateKey = getDateKey(targetDate);
+              setCalendarTasks(prev => ({ 
+                ...prev, 
+                [dateKey]: [...(prev[dateKey] || []), { 
+                  title: newPlanItem.title, 
+                  done: false, 
+                  fromPlanner: true 
+                }] 
+              })); 
+              setNewPlanItem({ title: '', time: '', notes: '' }); 
+              setShowPlanModal(false); 
+              addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay}`); 
+            } 
+          }}
+          disabled={!newPlanItem.title} 
+          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+        >
+          Add Task
+        </button>
+        <button 
+          onClick={() => { setShowPlanModal(false); setNewPlanItem({ title: '', time: '', notes: '' }); }} 
+          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           {showCalendarModal && selectedDate && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
               <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
