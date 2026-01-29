@@ -1924,8 +1924,8 @@ setCalendarTasks(prev => {
       
       Object.keys(updated).forEach(dateKey => {
   // Parse the date string in local timezone
-  const [year, month, day] = dateKey.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
+  const [year, month, dayNum] = dateKey.split('-').map(Number);
+const date = new Date(year, month - 1, dayNum);
   const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
         
         // Only remove from dates that match this day of week (including today and future)
