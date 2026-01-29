@@ -232,21 +232,6 @@ const [customClass, setCustomClass] = useState(null);
     return `${first[Math.floor(Math.random() * first.length)]} ${last[Math.floor(Math.random() * last.length)]}`;
   };
   
-  // FIXED: Helper function to get next occurrence of a day of week
-  const getNextDayOfWeek = useCallback((dayName) => {
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const targetDayIndex = daysOfWeek.indexOf(dayName);
-    const today = new Date();
-    const todayIndex = today.getDay();
-    
-   let daysUntil = targetDayIndex - todayIndex;
-if (daysUntil <= 0) daysUntil += 7; // FIXED: Changed < to <= so today counts as next week
-    
-    const targetDate = new Date(today);
-    targetDate.setDate(today.getDate() + daysUntil);
-    return targetDate;
-  }, []);
-
 // FIXED: Helper function to get next occurrence of a day of week
 const getNextDayOfWeek = useCallback((dayName) => {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
