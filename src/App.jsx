@@ -124,6 +124,12 @@ const FantasyStudyQuest = () => {
   const [activeTask, setActiveTask] = useState(null);
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(false);
+  const [showPomodoro, setShowPomodoro] = useState(false);
+const [pomodoroTask, setPomodoroTask] = useState(null);
+const [pomodoroTimer, setPomodoroTimer] = useState(25 * 60);
+const [pomodoroRunning, setPomodoroRunning] = useState(false);
+const [isBreak, setIsBreak] = useState(false);
+const [pomodorosCompleted, setPomodorosCompleted] = useState(0);
   const [timerEndTime, setTimerEndTime] = useState(null);
   const [overdueTask, setOverdueTask] = useState(null);
   
@@ -368,6 +374,45 @@ const getDateKey = useCallback((date) => {
     }
     return () => clearInterval(int);
   }, [running, timerEndTime, activeTask, tasks, addLog]);
+
+  useEffect(() => {
+  let interval;
+  if (pomodoroRunning && pomodoroTimer > 0) {
+    interval = setInterval(() => {
+      setPomodoroTimer(t => {
+        if (t <= 1) {
+          // Timer finished
+          setPomodoroRunning(false);
+          
+          // Play sound and show notification
+          if (Notification.permission === "granted") {
+            new Notification(isBreak ? "Break Over! 🎯" : "Pomodoro Complete! 🍅", {
+              body: isBreak ? "Time to get back to work!" : "Great work! Take a 5 minute break.",
+              icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><text y='75' font-size='75'>🍅</text></svg>"
+            });
+          }
+          
+          if (!isBreak) {
+            // Work session done - start break
+            setPomodorosCompleted(p => p + 1);
+            addLog(`🍅 Pomodoro #${pomodorosCompleted + 1} completed!`);
+            setIsBreak(true);
+            setPomodoroTimer(5 * 60); // 5 minute break
+          } else {
+            // Break done - start work session
+            addLog(`✨ Break over! Ready for another pomodoro?`);
+            setIsBreak(false);
+            setPomodoroTimer(25 * 60); // 25 minute work session
+          }
+          
+          return 0;
+        }
+        return t - 1;
+      });
+    }, 1000);
+  }
+  return () => clearInterval(interval);
+}, [pomodoroRunning, pomodoroTimer, isBreak, pomodorosCompleted, addLog]);
   
   useEffect(() => {
     const newLevel = Math.floor(xp / GAME_CONSTANTS.XP_PER_LEVEL) + 1;
@@ -1792,26 +1837,31 @@ setCalendarTasks(prev => {
                                 {t.priority === 'important' && (<span className="px-2 py-1 rounded text-xs font-bold bg-yellow-900 text-yellow-400 border border-yellow-700">IMPORTANT</span>)}
                                 <span className={`px-3 py-1 rounded text-xs font-bold ${getColor(t.difficulty)}`}>{t.difficulty.toUpperCase()}</span>
                               </div>
-                              {!t.done && (<button onClick={() => startTask(t.id)} disabled={activeTask !== null} className="bg-blue-600 px-3 py-1 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700 transition-all flex items-center gap-1"><Play size={16}/> Start</button>)}
-                              {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">✓ Done</span>)}
-                            </div>
-                            {activeTask === t.id && (
-                              <div className={`mt-3 p-3 rounded border ${overdueTask === t.id ? 'bg-red-900 bg-opacity-50 border-red-500' : 'bg-blue-900 bg-opacity-50 border-blue-700'}`}>
-                                {overdueTask === t.id && (
-                                  <div className="mb-2 bg-red-600 border-2 border-red-400 rounded px-3 py-2 text-center">
-                                    <p className="text-white font-bold flex items-center justify-center gap-2">TIME'S UP! You lost 10 HP. Complete or add time!</p>
-                                  </div>
-                                )}
-                                <div className="flex justify-between items-center mb-2">
-                                  <span className={`font-bold text-xl ${overdueTask === t.id ? 'text-red-300' : 'text-yellow-300'}`}>{fmt(timer)}</span>
-                                  <div className="flex gap-2">
-                                    {stamina >= 5 && (<button onClick={useStamina} className="bg-purple-600 px-3 py-1 rounded text-sm hover:bg-purple-700 transition-all flex items-center gap-1"><Zap size={16}/> +5 min (-5 SP)</button>)}
-                                    <button onClick={() => { if (running) { setRunning(false); setTimerEndTime(null); setTaskPauseCount(c => c + 1); } else { setRunning(true); setTimerEndTime(Date.now() + (timer * 1000)); } }} className="bg-yellow-600 px-3 py-1 rounded hover:bg-yellow-700 transition-all">{running ? <Pause size={16}/> : <Play size={16}/>}</button>
-                                    <button onClick={() => complete(t.id)} disabled={activeTask === t.id && running} className="bg-green-600 px-4 py-1 rounded font-bold hover:bg-green-700 transition-all disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center gap-1">✓ Complete</button>
-                                  </div>
-                                </div>
-                              </div>
-                            )}
+                             {!t.done && (
+  <div className="flex gap-2">
+    <button 
+      onClick={() => {
+        setPomodoroTask(t);
+        setShowPomodoro(true);
+        setPomodoroTimer(25 * 60);
+        setPomodorosCompleted(0);
+        setIsBreak(false);
+        setPomodoroRunning(true);
+        addLog(`🍅 Starting focus session: ${t.title}`);
+      }} 
+      className="bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 transition-all flex items-center gap-1"
+    >
+      🍅 Focus
+    </button>
+    <button 
+      onClick={() => complete(t.id)} 
+      className="bg-green-600 px-4 py-1 rounded font-bold hover:bg-green-700 transition-all flex items-center gap-1"
+    >
+      ✓ Complete
+    </button>
+  </div>
+)}
+{t.done && (<span className="text-green-400 font-bold flex items-center gap-1">✓ Done</span>)}
                           </div>
                         ))}
                       </div>
@@ -2278,6 +2328,75 @@ const date = new Date(year, month - 1, dayNum);
               </div>
             </div>
           )}
+          {showPomodoro && pomodoroTask && (
+  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+    <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-12 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-purple-400 mb-2">
+          {isBreak ? '☕ BREAK TIME' : '🍅 FOCUS SESSION'}
+        </h2>
+        <p className="text-xl text-gray-300 mb-8">{pomodoroTask.title}</p>
+        
+        <div className="mb-8">
+          <div className="text-8xl font-bold text-white mb-4">
+            {Math.floor(pomodoroTimer / 60)}:{String(pomodoroTimer % 60).padStart(2, '0')}
+          </div>
+          <div className="text-gray-400 text-lg">
+            {isBreak ? '5 minute break' : '25 minute work session'}
+          </div>
+        </div>
+        
+        <div className="mb-6">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <span className="text-yellow-400 text-2xl">🍅</span>
+            <span className="text-white text-xl">Pomodoros Completed: {pomodorosCompleted}</span>
+          </div>
+          <div className="bg-gray-800 rounded-full h-3 overflow-hidden">
+            <div 
+              className={`h-3 rounded-full transition-all ${isBreak ? 'bg-green-500' : 'bg-purple-500'}`} 
+              style={{width: `${((isBreak ? 5 * 60 : 25 * 60) - pomodoroTimer) / (isBreak ? 5 * 60 : 25 * 60) * 100}%`}}
+            ></div>
+          </div>
+        </div>
+        
+        <div className="flex gap-4 justify-center mb-6">
+          <button 
+            onClick={() => setPomodoroRunning(!pomodoroRunning)}
+            className="bg-blue-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-blue-700 transition-all"
+          >
+            {pomodoroRunning ? '⏸️ Pause' : '▶️ Resume'}
+          </button>
+          
+          {isBreak && (
+            <button 
+              onClick={() => {
+                setIsBreak(false);
+                setPomodoroTimer(25 * 60);
+                setPomodoroRunning(true);
+                addLog('⏭️ Skipped break - back to work!');
+              }}
+              className="bg-yellow-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-700 transition-all"
+            >
+              ⏭️ Skip Break
+            </button>
+          )}
+        </div>
+        
+        <button 
+          onClick={() => {
+            setShowPomodoro(false);
+            setPomodoroTask(null);
+            setPomodoroRunning(false);
+            addLog(`📊 Focus session ended. Completed ${pomodorosCompleted} pomodoro${pomodorosCompleted !== 1 ? 's' : ''}.`);
+          }}
+          className="bg-gray-700 px-8 py-3 rounded-lg font-bold hover:bg-gray-600 transition-all"
+        >
+          🏁 Finish Task & Return
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
         
         <div className="flex justify-center mt-8 pb-6">
