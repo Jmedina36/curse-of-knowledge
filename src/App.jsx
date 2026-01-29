@@ -255,8 +255,6 @@ const getDateKey = useCallback((date) => {
   return `${year}-${month}-${day}`;
 }, []);
 
-const getCardStyle = (heroClass, day) => {
-  
   const getCardStyle = (heroClass, day) => {
     const borders = ['3px solid', '3px solid', '3px solid', '4px solid', '4px solid', '5px solid', '5px solid'];
     const borderColors = {
