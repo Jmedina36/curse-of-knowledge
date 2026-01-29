@@ -246,6 +246,31 @@ if (daysUntil <= 0) daysUntil += 7; // FIXED: Changed < to <= so today counts as
     targetDate.setDate(today.getDate() + daysUntil);
     return targetDate;
   }, []);
+
+// FIXED: Helper function to get next occurrence of a day of week
+const getNextDayOfWeek = useCallback((dayName) => {
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const targetDayIndex = daysOfWeek.indexOf(dayName);
+  const today = new Date();
+  const todayIndex = today.getDay();
+  
+  let daysUntil = targetDayIndex - todayIndex;
+  if (daysUntil <= 0) daysUntil += 7;
+  
+  const targetDate = new Date(today);
+  targetDate.setDate(today.getDate() + daysUntil);
+  return targetDate;
+}, []);
+
+// Helper to create consistent date keys
+const getDateKey = useCallback((date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}, []);
+
+const getCardStyle = (heroClass, day) => {
   
   const getCardStyle = (heroClass, day) => {
     const borders = ['3px solid', '3px solid', '3px solid', '4px solid', '4px solid', '5px solid', '5px solid'];
@@ -1915,8 +1940,10 @@ setCalendarTasks(prev => {
       today.setHours(0, 0, 0, 0); // Reset time to midnight for accurate comparison
       
       Object.keys(updated).forEach(dateKey => {
-        const date = new Date(dateKey);
-        const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+  // Parse the date string in local timezone
+  const [year, month, day] = dateKey.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
         
         // Only remove from dates that match this day of week (including today and future)
         if (dateDayName === day && date >= today) {
@@ -2188,11 +2215,8 @@ setCalendarTasks(prev => {
     })); 
     
     // Add to calendar with fromPlanner flag
-   const targetDate = getNextDayOfWeek(selectedDay);
-const year = targetDate.getFullYear();
-const month = String(targetDate.getMonth() + 1).padStart(2, '0');
-const day = String(targetDate.getDate()).padStart(2, '0');
-const dateKey = `${year}-${month}-${day}`;
+  const targetDate = getNextDayOfWeek(selectedDay);
+const dateKey = getDateKey(targetDate);
     setCalendarTasks(prev => ({ 
       ...prev, 
       [dateKey]: [...(prev[dateKey] || []), { 
