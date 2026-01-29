@@ -1837,7 +1837,7 @@ setCalendarTasks(prev => {
                                 {t.priority === 'important' && (<span className="px-2 py-1 rounded text-xs font-bold bg-yellow-900 text-yellow-400 border border-yellow-700">IMPORTANT</span>)}
                                 <span className={`px-3 py-1 rounded text-xs font-bold ${getColor(t.difficulty)}`}>{t.difficulty.toUpperCase()}</span>
                               </div>
-                             {!t.done && (
+                         {!t.done && (
   <div className="flex gap-2">
     <button 
       onClick={() => {
@@ -1862,8 +1862,9 @@ setCalendarTasks(prev => {
   </div>
 )}
 {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">✓ Done</span>)}
+                            </div>
                           </div>
-                        ))}
+                        ))}   
                       </div>
                     )}
                   </div>
