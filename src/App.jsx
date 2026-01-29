@@ -120,7 +120,7 @@ const FantasyStudyQuest = () => {
   const [armor, setArmor] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [newTask, setNewTask] = useState({ title: '', time: 30, priority: 'important' });
+ const [newTask, setNewTask] = useState({ title: '', priority: 'routine' });
   const [activeTask, setActiveTask] = useState(null);
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(false);
@@ -144,14 +144,14 @@ const [pomodorosCompleted, setPomodorosCompleted] = useState(0);
   });
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
-  const [newPlanItem, setNewPlanItem] = useState({ title: '', time: '', notes: '' });
+  const [newPlanItem, setNewPlanItem] = useState({ title: '', priority: 'routine' });
   
   const [calendarTasks, setCalendarTasks] = useState({});
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [newCalendarTask, setNewCalendarTask] = useState('');
+  const [newCalendarTask, setNewCalendarTask] = useState({ title: '', priority: 'routine' });
   
   const [showBoss, setShowBoss] = useState(false);
   const [bossHp, setBossHp] = useState(0);
@@ -458,12 +458,6 @@ const getDateKey = useCallback((date) => {
     }
   }, [skipCount, addLog]);
   
-  const getDifficulty = (timeInMinutes) => {
-    if (timeInMinutes <= 20) return 'easy';
-    if (timeInMinutes <= 45) return 'medium';
-    return 'hard';
-  };
-  
   const start = () => {
     const today = new Date().toDateString();
     const currentHour = new Date().getHours();
@@ -488,32 +482,18 @@ const getDateKey = useCallback((date) => {
     }
     
     const plannedTasks = weeklyPlan[dayOfWeek] || [];
-    
-    if (tasks.length === 0) {
-      const newTasks = [];
-      
-      plannedTasks.forEach((item, idx) => {
-        let minutes = 30;
-        if (item.time) {
-          const timeMatch = item.time.match(/(\d+)\s*(hr|hour|min|minute)/i);
-          if (timeMatch) {
-            const value = parseInt(timeMatch[1]);
-            const unit = timeMatch[2].toLowerCase();
-            minutes = unit.startsWith('hr') || unit.startsWith('hour') ? value * 60 : value;
-          }
-        }
-        
-        const difficulty = getDifficulty(minutes);
-        newTasks.push({
-          title: item.title + (item.notes ? ` (${item.notes})` : ''),
-          time: minutes,
-          originalTime: minutes,
-          difficulty,
-          priority: 'important',
-          id: Date.now() + idx,
-          done: false
-        });
-      });
+
+if (tasks.length === 0) {
+  const newTasks = [];
+  
+  plannedTasks.forEach((item, idx) => {
+    newTasks.push({
+      title: item.title,
+      priority: item.priority || 'routine',
+      id: Date.now() + idx,
+      done: false
+    });
+  });
       
       if (newTasks.length > 0) {
         setTasks(newTasks);
@@ -543,23 +523,46 @@ const getDateKey = useCallback((date) => {
 // PART 2 OF 3 - Copy this after part 1
 
   const addTask = () => {
-    if (newTask.title && newTask.time > 0) {
-      const difficulty = getDifficulty(newTask.time);
-      
-      setTasks(prev => [...prev, { 
-        ...newTask,
-        difficulty,
-        id: Date.now(), 
-        done: false, 
-        time: newTask.time,
-        originalTime: newTask.time,
-        priority: newTask.priority
-      }]);
-      setNewTask({ title: '', time: 30, priority: 'important' });
-      setShowModal(false);
-      addLog(`📜 New trial: ${newTask.title}`);
-    }
-  };
+  if (newTask.title) {
+    const today = new Date();
+    const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+    const dateKey = getDateKey(today);
+    
+    // Add to tasks
+    const newTaskObj = {
+      title: newTask.title,
+      priority: newTask.priority,
+      id: Date.now(),
+      done: false
+    };
+    
+    setTasks(prev => [...prev, newTaskObj]);
+    
+    // Add to today's planner
+    setWeeklyPlan(prev => ({
+      ...prev,
+      [todayDayName]: [...prev[todayDayName], { 
+        title: newTask.title, 
+        priority: newTask.priority,
+        completed: false 
+      }]
+    }));
+    
+    // Add to today's calendar
+    setCalendarTasks(prev => ({
+      ...prev,
+      [dateKey]: [...(prev[dateKey] || []), {
+        title: newTask.title,
+        priority: newTask.priority,
+        done: false
+      }]
+    }));
+    
+    setNewTask({ title: '', priority: 'routine' });
+    setShowModal(false);
+    addLog(`📜 New trial: ${newTask.title}`);
+  }
+};
   
   const startTask = (id) => {
     if (canCustomize) {
@@ -580,12 +583,102 @@ const getDateKey = useCallback((date) => {
   
   // FIXED: Added weapon, armor, overdueTask to dependencies
   const complete = useCallback((id) => {
-    const task = tasks.find(t => t.id === id);
-    if (task && !task.done) {
-      const sessionDuration = sessionStartTime ? Math.floor((Date.now() - sessionStartTime) / 1000 / 60) : task.time;
-      const isDeepWork = sessionDuration >= 60 && taskPauseCount === 0;
+  const task = tasks.find(t => t.id === id);
+  if (task && !task.done) {
+    // Base XP for completing a task
+    const baseXp = 25;
+    
+    // Apply priority multiplier
+    const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
+    let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * priorityMultiplier;
+    
+    // Apply curse debuff if cursed
+    if (isCursed) {
+      xpMultiplier *= 0.5;
+    }
+    
+    let xpGain = Math.floor(baseXp * xpMultiplier);
+    
+    setXp(x => x + xpGain);
+    
+    setStudyStats(prev => ({
+      ...prev,
+      tasksCompletedToday: prev.tasksCompletedToday + 1
+    }));
+    
+    // Check for redemption
+    const completedCount = tasks.filter(t => t.done).length + 1;
+    if (completedCount === 1) {
+      const newConsecutive = consecutiveDays + 1;
+      setConsecutiveDays(newConsecutive);
       
-      const baseXp = GAME_CONSTANTS.XP_REWARDS[task.difficulty];
+      if (newConsecutive >= GAME_CONSTANTS.SKIP_REDEMPTION_DAYS && skipCount > 0) {
+        setSkipCount(s => s - 1);
+        setConsecutiveDays(0);
+        addLog(`🙏 REDEMPTION! ${GAME_CONSTANTS.SKIP_REDEMPTION_DAYS} days of dedication. Skip forgiven.`);
+      }
+    }
+    
+    // Loot drop
+    const roll = Math.random();
+    if (roll < GAME_CONSTANTS.LOOT_RATES.HEALTH_POTION) {
+      setHealthPots(h => h + 1);
+      addLog('💊 Found Health Potion!');
+    } else if (roll < GAME_CONSTANTS.LOOT_RATES.STAMINA_POTION) {
+      setStaminaPots(s => s + 1);
+      addLog('⚡ Found Stamina Potion!');
+    } else if (roll < GAME_CONSTANTS.LOOT_RATES.WEAPON) {
+      const gain = 1 + Math.floor(currentDay / 2);
+      setWeapon(w => w + gain);
+      addLog(`⚔️ Weapon upgraded! +${gain}`);
+    } else if (roll < GAME_CONSTANTS.LOOT_RATES.ARMOR) {
+      const gain = 1 + Math.floor(currentDay / 2);
+      setArmor(a => a + gain);
+      addLog(`🛡️ Armor upgraded! +${gain}`);
+    }
+    
+    // Mark task as done
+    setTasks(prev => prev.map(t => t.id === id ? { ...t, done: true } : t));
+    
+    // Sync with calendar
+    const today = new Date().toISOString().split('T')[0];
+    setCalendarTasks(prev => {
+      if (prev[today]) {
+        return {
+          ...prev,
+          [today]: prev[today].map(ct => 
+            ct.title === task.title ? { ...ct, done: true } : ct
+          )
+        };
+      }
+      return prev;
+    });
+    
+    // Sync with planner
+    const todayDayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+    setWeeklyPlan(prev => ({
+      ...prev,
+      [todayDayName]: prev[todayDayName].map(item =>
+        item.title === task.title ? { ...item, completed: true } : item
+      )
+    }));
+    
+    setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_PER_TASK));
+    
+    let completionMsg = `✅ Completed: ${task.title} (+${xpGain} XP`;
+    if (task.priority === 'important') completionMsg += ' • IMPORTANT';
+    if (isCursed) completionMsg += ' • CURSED';
+    completionMsg += `)`;
+    
+    addLog(completionMsg);
+    
+    // Random mini-boss spawn
+    const spawnRoll = Math.random();
+    if (spawnRoll < 0.25 && hp > getMaxHp() * 0.5) {
+      setTimeout(() => spawnRandomMiniBoss(), 1000);
+    }
+  }
+}, [tasks, currentDay, addLog, consecutiveDays, skipCount, isCursed, hp, getMaxHp, getMaxStamina, weapon, armor, calendarTasks, setCalendarTasks]);
       let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1];
       const priorityMultiplier = GAME_CONSTANTS.PRIORITY_XP_MULTIPLIERS[task.priority || 'important'];
       xpMultiplier *= priorityMultiplier;
@@ -1820,8 +1913,31 @@ setCalendarTasks(prev => {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {tasks.map(t => (
-                          <div key={t.id} className={`bg-gray-800 rounded-lg p-4 border-2 ${t.done ? 'border-green-700 opacity-60' : overdueTask === t.id ? 'border-red-500 animate-pulse' : 'border-gray-700'}`}>
+                        {[...tasks].sort((a, b) => {
+  // Important tasks first
+  if (a.priority === 'important' && b.priority !== 'important') return -1;
+  if (a.priority !== 'important' && b.priority === 'important') return 1;
+  return 0;
+}).map(t => (
+  <div key={t.id} className={`rounded-lg p-4 border-2 ${
+    t.done 
+      ? 'bg-gray-800 border-green-700 opacity-60' 
+      : t.priority === 'important'
+        ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500 shadow-lg shadow-yellow-500/20'
+        : 'bg-gray-800 border-gray-700'
+  }`}>
+    <div className="flex items-center gap-3">
+      {t.priority === 'important' && !t.done && (
+        <span className="text-2xl">⭐</span>
+      )}
+      <div className="flex-1">
+        <p className={t.done ? 'line-through text-gray-500' : 'text-white font-medium text-lg'}>
+          {t.title}
+        </p>
+        <p className="text-sm text-gray-400 mt-1">
+          {t.priority === 'important' ? '⭐ IMPORTANT • 1.25x XP' : '📋 ROUTINE • 1.0x XP'}
+        </p>
+      </div>
                             <div className="flex items-center gap-3">
                               <div className="flex-1">
                                 <p className={t.done ? 'line-through text-gray-500' : 'text-white font-medium text-lg'}>{t.title}</p>
@@ -1921,8 +2037,78 @@ setCalendarTasks(prev => {
                       <p className="text-gray-500 text-sm italic">No tasks planned</p>
                     ) : (
                       <div className="space-y-2">
-                      {weeklyPlan[day].map((item, idx) => (
-  <div key={idx} className={`bg-gray-900 rounded p-3 flex justify-between items-start ${item.completed ? 'opacity-60' : ''}`}>
+                      {[...weeklyPlan[day]].sort((a, b) => {
+  if (a.priority === 'important' && b.priority !== 'important') return -1;
+  if (a.priority !== 'important' && b.priority === 'important') return 1;
+  return 0;
+}).map((item) => {
+  const idx = weeklyPlan[day].indexOf(item);
+  return (
+    <div 
+      key={idx} 
+      className={`rounded p-3 flex justify-between items-start ${
+        item.completed 
+          ? 'bg-gray-900 opacity-60' 
+          : item.priority === 'important'
+            ? 'bg-gradient-to-r from-yellow-900/30 to-gray-900 border border-yellow-500'
+            : 'bg-gray-900'
+      }`}
+    >
+      <div className="flex-1 flex items-start gap-2">
+        {item.priority === 'important' && !item.completed && (
+          <span className="text-xl">⭐</span>
+        )}
+        <div>
+          <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+            {item.completed && '✓ '}{item.title}
+          </p>
+          {item.priority === 'important' && (
+            <p className="text-xs text-yellow-400 mt-1">IMPORTANT • 1.25x XP</p>
+          )}
+        </div>
+      </div>
+      <div className="flex gap-2 ml-2">
+        <button 
+          onClick={() => {
+            if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
+              setWeeklyPlan(prev => ({
+                ...prev,
+                [day]: prev[day].filter((_, i) => i !== idx)
+              }));
+              
+              setCalendarTasks(prev => {
+                const updated = { ...prev };
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                Object.keys(updated).forEach(dateKey => {
+                  const [year, month, dayNum] = dateKey.split('-').map(Number);
+                  const date = new Date(year, month - 1, dayNum);
+                  const dateDayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                  
+                  if (dateDayName === day && date >= today) {
+                    updated[dateKey] = updated[dateKey].filter(t => 
+                      !(t.title === item.title && t.fromPlanner === true)
+                    );
+                    if (updated[dateKey].length === 0) {
+                      delete updated[dateKey];
+                    }
+                  }
+                });
+                return updated;
+              });
+              
+              addLog(`🗑️ Deleted "${item.title}" from ${day} plan and future calendar dates`);
+            }
+          }}
+          className="text-red-400 hover:text-red-300"
+        >
+          <X size={16}/>
+        </button>
+      </div>
+    </div>
+  );
+})}
     <div className="flex-1">
       <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
         {item.completed && '✓ '}{item.title}
@@ -1931,35 +2117,8 @@ setCalendarTasks(prev => {
       {item.notes && (<p className="text-sm text-gray-500 italic mt-1">{item.notes}</p>)}
     </div>
     <div className="flex gap-2 ml-2">
-      {!item.completed ? (
-        <button 
-          onClick={() => {
-            setWeeklyPlan(prev => ({
-              ...prev,
-              [day]: prev[day].map((t, i) => i === idx ? { ...t, completed: true } : t)
-            }));
-            addLog(`✓ Completed planner task: ${item.title}`);
-          }}
-          className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm text-white font-medium transition-all"
-        >
-          ✓ Complete
-        </button>
-      ) : (
-        <button 
-          onClick={() => {
-            setWeeklyPlan(prev => ({
-              ...prev,
-              [day]: prev[day].map((t, i) => i === idx ? { ...t, completed: false } : t)
-            }));
-            addLog(`↩️ Unmarked: ${item.title}`);
-          }}
-          className="bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-sm text-white font-medium transition-all"
-        >
-          Undo
-        </button>
-      )}
-      <button 
-        onClick={() => {
+  <button 
+    onClick={() => {
   if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
     // Remove from planner
     setWeeklyPlan(prev => ({
@@ -2220,17 +2379,74 @@ const date = new Date(year, month - 1, dayNum);
     </div>
   </div>
 )}
-          {showModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4"><h3 className="text-xl font-bold text-red-400">Accept New Trial</h3><button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button></div>
-                <input type="text" placeholder="Trial name (e.g., Study Chapter 5)" value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} className="w-full p-3 bg-gray-800 text-white rounded-lg mb-3 border border-gray-700 focus:border-red-500 focus:outline-none" autoFocus />
-                <div className="mb-3"><label className="block text-sm text-gray-400 mb-2">Priority Level</label><div className="grid grid-cols-3 gap-2"><button type="button" onClick={() => setNewTask({...newTask, priority: 'urgent'})} className={`p-3 rounded-lg border-2 transition-all ${newTask.priority === 'urgent' ? 'bg-red-900 border-red-500 text-red-200' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-red-700'}`}><div className="font-bold">🔥 URGENT</div><div className="text-xs">1.5x XP</div></button><button type="button" onClick={() => setNewTask({...newTask, priority: 'important'})} className={`p-3 rounded-lg border-2 transition-all ${newTask.priority === 'important' ? 'bg-yellow-900 border-yellow-500 text-yellow-200' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-yellow-700'}`}><div className="font-bold">⭐ IMPORTANT</div><div className="text-xs">1.25x XP</div></button><button type="button" onClick={() => setNewTask({...newTask, priority: 'routine'})} className={`p-3 rounded-lg border-2 transition-all ${newTask.priority === 'routine' ? 'bg-blue-900 border-blue-500 text-blue-200' : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-blue-700'}`}><div className="font-bold">📋 ROUTINE</div><div className="text-xs">1.0x XP</div></button></div></div>
-                <div className="mb-4"><label className="block text-sm text-gray-400 mb-2">Time (minutes)</label><input type="number" placeholder="Minutes" value={newTask.time} onChange={e => setNewTask({...newTask, time: Math.max(1, parseInt(e.target.value) || 30)})} className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-red-500 focus:outline-none" min="1" /><div className="mt-2 flex items-center justify-between text-xs"><span className={`px-2 py-1 rounded ${getDifficulty(newTask.time) === 'easy' ? 'bg-green-900 text-green-400' : getDifficulty(newTask.time) === 'medium' ? 'bg-yellow-900 text-yellow-400' : 'bg-red-900 text-red-400'}`}>{getDifficulty(newTask.time).toUpperCase()} • {GAME_CONSTANTS.XP_REWARDS[getDifficulty(newTask.time)]} XP base</span><span className="text-gray-500">XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * 100)}%</span></div><p className="text-xs text-gray-500 mt-1">0-20 min = Easy • 21-45 min = Medium • 46+ min = Hard</p></div>
-                <div className="flex gap-2"><button onClick={addTask} disabled={!newTask.title || newTask.time < 1} className="flex-1 bg-red-600 py-2 rounded-lg hover:bg-red-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed">Accept Trial</button><button onClick={() => setShowModal(false)} className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all">Cancel</button></div>
-              </div>
-            </div>
-          )}
+         {showModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-red-400">Accept New Trial</h3>
+        <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+      </div>
+      
+      <input 
+        type="text" 
+        placeholder="Task name (e.g., Study for Biology test)" 
+        value={newTask.title} 
+        onChange={e => setNewTask({...newTask, title: e.target.value})} 
+        className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-red-500 focus:outline-none" 
+        autoFocus 
+      />
+      
+      <div className="mb-4">
+        <label className="block text-sm text-gray-400 mb-2">Priority Level</label>
+        <div className="grid grid-cols-2 gap-3">
+          <button 
+            type="button" 
+            onClick={() => setNewTask({...newTask, priority: 'important'})} 
+            className={`p-4 rounded-lg border-2 transition-all ${
+              newTask.priority === 'important' 
+                ? 'bg-yellow-900 border-yellow-500 text-yellow-200 shadow-lg shadow-yellow-500/50' 
+                : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-yellow-700'
+            }`}
+          >
+            <div className="text-2xl mb-1">⭐</div>
+            <div className="font-bold">IMPORTANT</div>
+            <div className="text-xs mt-1">1.25x XP</div>
+          </button>
+          
+          <button 
+            type="button" 
+            onClick={() => setNewTask({...newTask, priority: 'routine'})} 
+            className={`p-4 rounded-lg border-2 transition-all ${
+              newTask.priority === 'routine' 
+                ? 'bg-blue-900 border-blue-500 text-blue-200 shadow-lg shadow-blue-500/50' 
+                : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-blue-700'
+            }`}
+          >
+            <div className="text-2xl mb-1">📋</div>
+            <div className="font-bold">ROUTINE</div>
+            <div className="text-xs mt-1">1.0x XP</div>
+          </button>
+        </div>
+      </div>
+      
+      <div className="flex gap-2">
+        <button 
+          onClick={addTask} 
+          disabled={!newTask.title} 
+          className="flex-1 bg-red-600 py-2 rounded-lg hover:bg-red-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+        >
+          Accept Trial
+        </button>
+        <button 
+          onClick={() => setShowModal(false)} 
+          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
          {showPlanModal && selectedDay && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
@@ -2239,54 +2455,72 @@ const date = new Date(year, month - 1, dayNum);
         <h3 className="text-xl font-bold text-blue-400">Plan for {selectedDay}</h3>
         <button onClick={() => setShowPlanModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
       </div>
+      
       <input 
         type="text" 
         placeholder="What do you need to do?" 
         value={newPlanItem.title} 
         onChange={e => setNewPlanItem({...newPlanItem, title: e.target.value})} 
-        onKeyPress={e => {
-          if (e.key === 'Enter' && newPlanItem.title) {
-            setWeeklyPlan(prev => ({ 
-              ...prev, 
-              [selectedDay]: [...prev[selectedDay], {...newPlanItem, completed: false}] 
-            })); 
-            const targetDate = getNextDayOfWeek(selectedDay);
-            const dateKey = getDateKey(targetDate);
-            setCalendarTasks(prev => ({ 
-              ...prev, 
-              [dateKey]: [...(prev[dateKey] || []), { 
-                title: newPlanItem.title, 
-                done: false, 
-                fromPlanner: true 
-              }] 
-            })); 
-            setNewPlanItem({ title: '', time: '', notes: '' }); 
-            setShowPlanModal(false); 
-            addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay}`);
-          }
-        }}
         className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-blue-500 focus:outline-none" 
         autoFocus 
       />
+      
+      <div className="mb-4">
+        <label className="block text-sm text-gray-400 mb-2">Priority Level</label>
+        <div className="grid grid-cols-2 gap-3">
+          <button 
+            type="button" 
+            onClick={() => setNewPlanItem({...newPlanItem, priority: 'important'})} 
+            className={`p-4 rounded-lg border-2 transition-all ${
+              newPlanItem.priority === 'important' 
+                ? 'bg-yellow-900 border-yellow-500 text-yellow-200 shadow-lg shadow-yellow-500/50' 
+                : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-yellow-700'
+            }`}
+          >
+            <div className="text-2xl mb-1">⭐</div>
+            <div className="font-bold">IMPORTANT</div>
+            <div className="text-xs mt-1">1.25x XP</div>
+          </button>
+          
+          <button 
+            type="button" 
+            onClick={() => setNewPlanItem({...newPlanItem, priority: 'routine'})} 
+            className={`p-4 rounded-lg border-2 transition-all ${
+              newPlanItem.priority === 'routine' 
+                ? 'bg-blue-900 border-blue-500 text-blue-200 shadow-lg shadow-blue-500/50' 
+                : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-blue-700'
+            }`}
+          >
+            <div className="text-2xl mb-1">📋</div>
+            <div className="font-bold">ROUTINE</div>
+            <div className="text-xs mt-1">1.0x XP</div>
+          </button>
+        </div>
+      </div>
+      
       <div className="flex gap-2">
         <button 
           onClick={() => { 
             if (newPlanItem.title) { 
               setWeeklyPlan(prev => ({ 
                 ...prev, 
-                [selectedDay]: [...prev[selectedDay], {...newPlanItem, completed: false}] 
+                [selectedDay]: [...prev[selectedDay], {
+                  ...newPlanItem, 
+                  completed: false
+                }] 
               })); 
               const targetDate = getNextDayOfWeek(selectedDay);
               const dateKey = getDateKey(targetDate);
               setCalendarTasks(prev => ({ 
                 ...prev, 
                 [dateKey]: [...(prev[dateKey] || []), { 
-                  title: newPlanItem.title, 
+                  title: newPlanItem.title,
+                  priority: newPlanItem.priority || 'routine',
                   done: false, 
                   fromPlanner: true 
                 }] 
               })); 
-              setNewPlanItem({ title: '', time: '', notes: '' }); 
+              setNewPlanItem({ title: '', priority: 'routine' }); 
               setShowPlanModal(false); 
               addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay}`); 
             } 
@@ -2297,7 +2531,10 @@ const date = new Date(year, month - 1, dayNum);
           Add Task
         </button>
         <button 
-          onClick={() => { setShowPlanModal(false); setNewPlanItem({ title: '', time: '', notes: '' }); }} 
+          onClick={() => { 
+            setShowPlanModal(false); 
+            setNewPlanItem({ title: '', priority: 'routine' }); 
+          }} 
           className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
         >
           Cancel
@@ -2307,14 +2544,151 @@ const date = new Date(year, month - 1, dayNum);
   </div>
 )}
           {showCalendarModal && selectedDate && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-4"><h3 className="text-xl font-bold text-green-400">{new Date(selectedDate).toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h3><button onClick={() => setShowCalendarModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button></div>
-                <div className="mb-4"><input type="text" placeholder="Add new task..." value={newCalendarTask} onChange={e => setNewCalendarTask(e.target.value)} onKeyPress={e => { if (e.key === 'Enter' && newCalendarTask.trim()) { setCalendarTasks(prev => ({ ...prev, [selectedDate]: [...(prev[selectedDate] || []), { title: newCalendarTask, done: false }] })); setNewCalendarTask(''); } }} className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-green-500 focus:outline-none" autoFocus /><button onClick={() => { if (newCalendarTask.trim()) { setCalendarTasks(prev => ({ ...prev, [selectedDate]: [...(prev[selectedDate] || []), { title: newCalendarTask, done: false }] })); setNewCalendarTask(''); } }} disabled={!newCalendarTask.trim()} className="w-full mt-2 bg-green-600 py-2 rounded-lg hover:bg-green-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed">Add Task</button></div>
-                <div className="space-y-2 max-h-96 overflow-y-auto">{(!calendarTasks[selectedDate] || calendarTasks[selectedDate].length === 0) ? (<p className="text-gray-500 text-center py-4 italic">No tasks for this day</p>) : (calendarTasks[selectedDate].map((task, idx) => (<div key={idx} className="bg-gray-800 rounded-lg p-3 flex items-center gap-3"><input type="checkbox" checked={task.done} onChange={() => { setCalendarTasks(prev => ({ ...prev, [selectedDate]: prev[selectedDate].map((t, i) => i === idx ? { ...t, done: !t.done } : t) })); }} className="w-5 h-5 cursor-pointer" /><span className={`flex-1 ${task.done ? 'line-through text-gray-500' : 'text-white'}`}>{task.title}</span><button onClick={() => { setCalendarTasks(prev => ({ ...prev, [selectedDate]: prev[selectedDate].filter((_, i) => i !== idx) })); }} className="text-red-400 hover:text-red-300"><X size={18}/></button></div>)))}</div>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-green-400">
+          {new Date(selectedDate).toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+        </h3>
+        <button onClick={() => setShowCalendarModal(false)} className="text-gray-400 hover:text-white">
+          <X size={24}/>
+        </button>
+      </div>
+      
+      <div className="mb-4">
+        <input 
+          type="text" 
+          placeholder="Add new task..." 
+          value={newCalendarTask.title} 
+          onChange={e => setNewCalendarTask({...newCalendarTask, title: e.target.value})} 
+          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-green-500 focus:outline-none mb-3" 
+          autoFocus 
+        />
+        
+        <div className="mb-3">
+          <label className="block text-sm text-gray-400 mb-2">Priority Level</label>
+          <div className="grid grid-cols-2 gap-2">
+            <button 
+              type="button" 
+              onClick={() => setNewCalendarTask({...newCalendarTask, priority: 'important'})} 
+              className={`p-3 rounded-lg border-2 transition-all ${
+                newCalendarTask.priority === 'important' 
+                  ? 'bg-yellow-900 border-yellow-500 text-yellow-200' 
+                  : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-yellow-700'
+              }`}
+            >
+              <div className="text-xl mb-1">⭐</div>
+              <div className="font-bold text-sm">IMPORTANT</div>
+            </button>
+            
+            <button 
+              type="button" 
+              onClick={() => setNewCalendarTask({...newCalendarTask, priority: 'routine'})} 
+              className={`p-3 rounded-lg border-2 transition-all ${
+                newCalendarTask.priority === 'routine' 
+                  ? 'bg-blue-900 border-blue-500 text-blue-200' 
+                  : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-blue-700'
+              }`}
+            >
+              <div className="text-xl mb-1">📋</div>
+              <div className="font-bold text-sm">ROUTINE</div>
+            </button>
+          </div>
+        </div>
+        
+        <button 
+          onClick={() => { 
+            if (newCalendarTask.title.trim()) { 
+              const date = new Date(selectedDate);
+              const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+              
+              // Add to calendar
+              setCalendarTasks(prev => ({ 
+                ...prev, 
+                [selectedDate]: [...(prev[selectedDate] || []), { 
+                  title: newCalendarTask.title,
+                  priority: newCalendarTask.priority,
+                  done: false 
+                }] 
+              }));
+              
+              // Add to planner for that day
+              setWeeklyPlan(prev => ({
+                ...prev,
+                [dayName]: [...prev[dayName], {
+                  title: newCalendarTask.title,
+                  priority: newCalendarTask.priority,
+                  completed: false
+                }]
+              }));
+              
+              setNewCalendarTask({ title: '', priority: 'routine' }); 
+            } 
+          }} 
+          disabled={!newCalendarTask.title.trim()} 
+          className="w-full bg-green-600 py-2 rounded-lg hover:bg-green-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+        >
+          Add Task
+        </button>
+      </div>
+      
+      <div className="space-y-2 max-h-96 overflow-y-auto">
+        {(!calendarTasks[selectedDate] || calendarTasks[selectedDate].length === 0) ? (
+          <p className="text-gray-500 text-center py-4 italic">No tasks for this day</p>
+        ) : (
+          [...calendarTasks[selectedDate]].sort((a, b) => {
+            if (a.priority === 'important' && b.priority !== 'important') return -1;
+            if (a.priority !== 'important' && b.priority === 'important') return 1;
+            return 0;
+          }).map((task, idx) => {
+            const originalIdx = calendarTasks[selectedDate].indexOf(task);
+            return (
+              <div 
+                key={originalIdx} 
+                className={`rounded-lg p-3 flex items-center gap-3 ${
+                  task.priority === 'important' && !task.done
+                    ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border border-yellow-500'
+                    : 'bg-gray-800'
+                }`}
+              >
+                {task.priority === 'important' && !task.done && (
+                  <span className="text-xl">⭐</span>
+                )}
+                <input 
+                  type="checkbox" 
+                  checked={task.done} 
+                  onChange={() => { 
+                    setCalendarTasks(prev => ({ 
+                      ...prev, 
+                      [selectedDate]: prev[selectedDate].map((t, i) => 
+                        i === originalIdx ? { ...t, done: !t.done } : t
+                      ) 
+                    })); 
+                  }} 
+                  className="w-5 h-5 cursor-pointer" 
+                />
+                <span className={`flex-1 ${task.done ? 'line-through text-gray-500' : 'text-white'}`}>
+                  {task.title}
+                </span>
+                <button 
+                  onClick={() => { 
+                    setCalendarTasks(prev => ({ 
+                      ...prev, 
+                      [selectedDate]: prev[selectedDate].filter((_, i) => i !== originalIdx) 
+                    })); 
+                  }} 
+                  className="text-red-400 hover:text-red-300"
+                >
+                  <X size={18}/>
+                </button>
               </div>
-            </div>
-          )}
+            );
+          })
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
           {showBoss && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
