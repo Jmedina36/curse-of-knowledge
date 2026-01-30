@@ -1842,8 +1842,35 @@ if (tasks.length === 0) {
           {t.priority === 'important' ? '⭐ IMPORTANT • 1.25x XP' : '📋 ROUTINE • 1.0x XP'}
         </p>
       </div>
-                           
-                        ))}   
+      
+      {!t.done && (
+        <div className="flex gap-2">
+          <button 
+            onClick={() => {
+              setPomodoroTask(t);
+              setShowPomodoro(true);
+              setPomodoroTimer(25 * 60);
+              setPomodorosCompleted(0);
+              setIsBreak(false);
+              setPomodoroRunning(true);
+              addLog(`🍅 Starting focus session: ${t.title}`);
+            }} 
+            className="bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 transition-all flex items-center gap-1"
+          >
+            🍅 Focus
+          </button>
+          <button 
+            onClick={() => complete(t.id)} 
+            className="bg-green-600 px-4 py-1 rounded font-bold hover:bg-green-700 transition-all flex items-center gap-1"
+          >
+            ✓ Complete
+          </button>
+        </div>
+      )}
+      {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">✓ Done</span>)}
+    </div>
+  </div>
+))}   
                       </div>
                     )}
                   </div>
