@@ -1768,15 +1768,52 @@ if (tasks.length === 0) {
               </div>
 
               <div>
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Chronicle</button>
-                  <button onClick={() => { setGraveyard([]); setHeroes([]); addLog('Debug: Consumed tab cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Consumed</button>
-                  <button onClick={() => { if (window.confirm('Clear ALL achievements & history?')) { setGraveyard([]); setHeroes([]); setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] }); addLog('Debug: Achievements cleared'); } }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Clear Achievements</button>
-                  <button onClick={() => { localStorage.removeItem('fantasyStudyQuest'); alert('LocalStorage cleared! Refresh the page to start fresh.'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Clear LocalStorage</button>
-                  <button onClick={() => { if (window.confirm('Clear all calendar tasks?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Clear Calendar</button>
-                </div>
-              </div>
+  <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+    <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Chronicle</button>
+    <button onClick={() => { setGraveyard([]); setHeroes([]); addLog('Debug: Consumed tab cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Consumed</button>
+    <button onClick={() => { if (window.confirm('Clear ALL achievements & history?')) { setGraveyard([]); setHeroes([]); setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] }); addLog('Debug: Achievements cleared'); } }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Clear Achievements</button>
+    <button onClick={() => { if (window.confirm('Clear all calendar tasks?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Clear Calendar</button>
+    <button onClick={() => { if (window.confirm('Clear weekly planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Clear Planner</button>
+    <button onClick={() => { localStorage.removeItem('fantasyStudyQuest'); alert('LocalStorage cleared! Refresh the page to start fresh.'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Clear LocalStorage</button>
+  </div>
+  
+  <button 
+    onClick={() => { 
+      if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start completely fresh? This cannot be undone!')) {
+        const newHero = makeName();
+        setHero(newHero);
+        setCanCustomize(true);
+        setCurrentDay(1);
+        setHasStarted(false);
+        setHp(GAME_CONSTANTS.MAX_HP);
+        setStamina(GAME_CONSTANTS.MAX_STAMINA);
+        setXp(0);
+        setLevel(1);
+        setHealthPots(0);
+        setStaminaPots(0);
+        setCleansePots(0);
+        setWeapon(0);
+        setArmor(0);
+        setTasks([]);
+        setActiveTask(null);
+        setTimer(0);
+        setRunning(false);
+        setShowPomodoro(false);
+        setPomodoroTask(null);
+        setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
+        setCalendarTasks({});
+        setShowBoss(false);
+        setBattling(false);
+        setLog([]);
+        setGraveyard([]);
+        setHeroes([]);
+        setSkipCount(0);
+        setConsecutiveDays(0);
+        setLastPlayedDate(null);
+        setIsCursed(false);
+        setMiniBossCount(0);
+        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, cur
 
               <p className="text-xs text-gray-400 mt-3 italic">
                 Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Cursed: {isCursed ? 'YES' : 'NO'} • Cleanse: {cleansePots}
