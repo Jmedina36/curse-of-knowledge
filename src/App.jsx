@@ -984,8 +984,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       // Regular enemies hit softer
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
-  baseAttack = 8;
-  attackScaling = 1.5;
+  baseAttack = 25;
+  attackScaling = 2;
 } else {
   // Elite and Final bosses use normal stats
   baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE;
