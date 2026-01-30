@@ -1813,7 +1813,17 @@ if (tasks.length === 0) {
         setLastPlayedDate(null);
         setIsCursed(false);
         setMiniBossCount(0);
-        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, cur
+        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
+        localStorage.removeItem('fantasyStudyQuest');
+        addLog('🔄 FULL RESET - Everything cleared!');
+        setActiveTab('quest');
+      }
+    }}
+    className="w-full mt-3 bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-500 animate-pulse"
+  >
+    🔄 FULL RESET - Delete Everything
+  </button>
+</div>
 
               <p className="text-xs text-gray-400 mt-3 italic">
                 Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Cursed: {isCursed ? 'YES' : 'NO'} • Cleanse: {cleansePots}
