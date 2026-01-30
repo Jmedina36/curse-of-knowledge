@@ -147,6 +147,15 @@ const [pomodorosCompleted, setPomodorosCompleted] = useState(0);
   const [newPlanItem, setNewPlanItem] = useState({ title: '', priority: 'routine' });
   
   const [calendarTasks, setCalendarTasks] = useState({});
+  const [flashcardDecks, setFlashcardDecks] = useState([]);
+const [showDeckModal, setShowDeckModal] = useState(false);
+const [showCardModal, setShowCardModal] = useState(false);
+const [showStudyModal, setShowStudyModal] = useState(false);
+const [selectedDeck, setSelectedDeck] = useState(null);
+const [currentCardIndex, setCurrentCardIndex] = useState(0);
+const [isFlipped, setIsFlipped] = useState(false);
+const [newDeck, setNewDeck] = useState({ name: '' });
+const [newCard, setNewCard] = useState({ front: '', back: '' });
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -310,6 +319,7 @@ const getDateKey = useCallback((date) => {
         if (data.weapon !== undefined) setWeapon(data.weapon);
         if (data.armor !== undefined) setArmor(data.armor);
         if (data.tasks) setTasks(data.tasks);
+        if (data.flashcardDecks) setFlashcardDecks(data.flashcardDecks);
         if (data.graveyard) setGraveyard(data.graveyard);
         if (data.heroes) setHeroes(data.heroes);
         if (data.hasStarted !== undefined) setHasStarted(data.hasStarted);
@@ -335,7 +345,7 @@ const getDateKey = useCallback((date) => {
     if (hero) {
       const saveData = {
         hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots,
-        weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
+        weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
         lastPlayedDate, isCursed, studyStats, weeklyPlan, calendarTasks
       };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
@@ -1709,10 +1719,11 @@ if (tasks.length === 0) {
               {id:'quest', icon:Sword, label:'Quests'},
               {id:'planner', icon:Calendar, label:'Weekly Planner'},
               {id:'calendar', icon:Calendar, label:'Calendar'},
-              {id:'progress', icon:Trophy, label:'Progress'},
+              {id:'study', icon:Calendar, label:'Study'},
               {id:'inv', icon:Heart, label:'Inventory'},
               {id:'grave', icon:Skull, label:'The Consumed'},
               {id:'hall', icon:Trophy, label:'The Liberated'}
+              {id:'progress', icon:Trophy, label:'Progress'},
             ].map(t => (
               <button 
                 key={t.id} 
@@ -2108,6 +2119,114 @@ if (tasks.length === 0) {
             </div>
           )}
 
+          {activeTab === 'study' && (
+  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-purple-900">
+    <h2 className="text-2xl font-bold text-purple-400 mb-2 text-center">📚 FLASHCARD STUDY</h2>
+    <p className="text-gray-400 text-sm mb-6 italic text-center">"Master your knowledge, earn rewards..."</p>
+    
+    <div className="flex justify-between items-center mb-6">
+      <div>
+        <p className="text-lg text-gray-300">Your Decks: <span className="font-bold text-purple-400">{flashcardDecks.length}</span></p>
+        <p className="text-sm text-gray-500">Study to earn XP and loot!</p>
+      </div>
+      <button 
+        onClick={() => setShowDeckModal(true)}
+        className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all flex items-center gap-2"
+      >
+        <Plus size={20}/> New Deck
+      </button>
+    </div>
+    
+    {flashcardDecks.length === 0 ? (
+      <div className="text-center py-12 bg-gray-800 rounded-lg border-2 border-gray-700">
+        <div className="text-6xl mb-4">📚</div>
+        <p className="text-gray-400 mb-2">No flashcard decks yet</p>
+        <p className="text-sm text-gray-500">Create your first deck to start studying!</p>
+      </div>
+    ) : (
+      <div className="space-y-4">
+        {flashcardDecks.map((deck, idx) => (
+          <div key={idx} className="bg-gray-800 rounded-lg p-4 border-2 border-purple-700">
+            <div className="flex justify-between items-start mb-2">
+              <div className="flex-1">
+                <h3 className="text-xl font-bold text-purple-300">{deck.name}</h3>
+                <p className="text-sm text-gray-400">
+                  {deck.cards.length} card{deck.cards.length !== 1 ? 's' : ''} • 
+                  {deck.cards.filter(c => c.mastered).length} mastered
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  if (window.confirm(`Delete deck "${deck.name}"?`)) {
+                    setFlashcardDecks(prev => prev.filter((_, i) => i !== idx));
+                    addLog(`🗑️ Deleted deck: ${deck.name}`);
+                  }
+                }}
+                className="text-red-400 hover:text-red-300"
+              >
+                <X size={20}/>
+              </button>
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  if (deck.cards.length === 0) {
+                    alert('Add some cards first!');
+                    return;
+                  }
+                  setSelectedDeck(idx);
+                  setCurrentCardIndex(0);
+                  setIsFlipped(false);
+                  setShowStudyModal(true);
+                }}
+                disabled={deck.cards.length === 0}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
+              >
+                📖 Study Deck
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedDeck(idx);
+                  setShowCardModal(true);
+                }}
+                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-all"
+              >
+                ➕ Add Card
+              </button>
+            </div>
+            
+            {deck.cards.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-700">
+                <p className="text-xs text-gray-500 mb-2">Cards in this deck:</p>
+                <div className="space-y-1 max-h-32 overflow-y-auto">
+                  {deck.cards.map((card, cardIdx) => (
+                    <div key={cardIdx} className="flex justify-between items-center text-sm bg-gray-900 rounded p-2">
+                      <span className="text-gray-300 flex-1 truncate">
+                        {card.mastered && '✓ '}{card.front}
+                      </span>
+                      <button
+                        onClick={() => {
+                          setFlashcardDecks(prev => prev.map((d, i) => 
+                            i === idx ? {...d, cards: d.cards.filter((_, ci) => ci !== cardIdx)} : d
+                          ));
+                        }}
+                        className="text-red-400 hover:text-red-300 ml-2"
+                      >
+                        <X size={14}/>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
+
           {activeTab === 'progress' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
               <h2 className="text-2xl font-bold text-yellow-400 mb-2 text-center">STUDY PROGRESS</h2>
@@ -2259,6 +2378,244 @@ if (tasks.length === 0) {
           Cancel
         </button>
       </div>
+    </div>
+  </div>
+)}
+
+{showDeckModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowDeckModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-purple-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-purple-400">Create New Deck</h3>
+        <button onClick={() => setShowDeckModal(false)} className="text-gray-400 hover:text-white">
+          <X size={24}/>
+        </button>
+      </div>
+      
+      <input 
+        type="text" 
+        placeholder="Deck name (e.g., Spanish Vocabulary)" 
+        value={newDeck.name} 
+        onChange={e => setNewDeck({name: e.target.value})} 
+        className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-purple-500 focus:outline-none" 
+        autoFocus 
+      />
+      
+      <div className="flex gap-2">
+        <button 
+          onClick={() => {
+            if (newDeck.name.trim()) {
+              setFlashcardDecks(prev => [...prev, { name: newDeck.name, cards: [] }]);
+              addLog(`📚 Created deck: ${newDeck.name}`);
+              setNewDeck({name: ''});
+              setShowDeckModal(false);
+            }
+          }}
+          disabled={!newDeck.name.trim()} 
+          className="flex-1 bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+        >
+          Create Deck
+        </button>
+        <button 
+          onClick={() => { setShowDeckModal(false); setNewDeck({name: ''}); }} 
+          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showCardModal && selectedDeck !== null && (
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCardModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-blue-400">Add Card to {flashcardDecks[selectedDeck]?.name}</h3>
+        <button onClick={() => setShowCardModal(false)} className="text-gray-400 hover:text-white">
+          <X size={24}/>
+        </button>
+      </div>
+      
+      <div className="mb-4">
+        <label className="block text-sm text-gray-400 mb-2">Front (Question)</label>
+        <textarea 
+          placeholder="e.g., What is the capital of France?" 
+          value={newCard.front} 
+          onChange={e => setNewCard({...newCard, front: e.target.value})} 
+          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none resize-none" 
+          rows="3"
+          autoFocus 
+        />
+      </div>
+      
+      <div className="mb-4">
+        <label className="block text-sm text-gray-400 mb-2">Back (Answer)</label>
+        <textarea 
+          placeholder="e.g., Paris" 
+          value={newCard.back} 
+          onChange={e => setNewCard({...newCard, back: e.target.value})} 
+          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none resize-none" 
+          rows="3"
+        />
+      </div>
+      
+      <div className="flex gap-2">
+        <button 
+          onClick={() => {
+            if (newCard.front.trim() && newCard.back.trim()) {
+              setFlashcardDecks(prev => prev.map((deck, idx) => 
+                idx === selectedDeck 
+                  ? {...deck, cards: [...deck.cards, {...newCard, mastered: false}]}
+                  : deck
+              ));
+              addLog(`📝 Added card to ${flashcardDecks[selectedDeck].name}`);
+              setNewCard({front: '', back: ''});
+              setShowCardModal(false);
+            }
+          }}
+          disabled={!newCard.front.trim() || !newCard.back.trim()} 
+          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+        >
+          Add Card
+        </button>
+        <button 
+          onClick={() => { setShowCardModal(false); setNewCard({front: '', back: ''}); }} 
+          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showStudyModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
+  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+    <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
+      <div className="mb-6 flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold text-purple-400">{flashcardDecks[selectedDeck].name}</h2>
+          <p className="text-gray-400">Card {currentCardIndex + 1} of {flashcardDecks[selectedDeck].cards.length}</p>
+        </div>
+        <button 
+          onClick={() => {
+            setShowStudyModal(false);
+            setSelectedDeck(null);
+            setCurrentCardIndex(0);
+            setIsFlipped(false);
+          }}
+          className="text-gray-400 hover:text-white"
+        >
+          <X size={32}/>
+        </button>
+      </div>
+      
+      <div 
+        onClick={() => setIsFlipped(!isFlipped)}
+        className="bg-gray-800 rounded-xl p-12 mb-6 min-h-[300px] flex items-center justify-center cursor-pointer hover:bg-gray-750 transition-all border-2 border-purple-500"
+      >
+        <div className="text-center">
+          <p className="text-sm text-gray-500 mb-4">{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
+          <p className="text-2xl text-white whitespace-pre-wrap">
+            {isFlipped 
+              ? flashcardDecks[selectedDeck].cards[currentCardIndex].back 
+              : flashcardDecks[selectedDeck].cards[currentCardIndex].front}
+          </p>
+          <p className="text-sm text-gray-500 mt-6 italic">Click to flip</p>
+        </div>
+      </div>
+      
+      <div className="bg-gray-800 rounded-full h-2 mb-6">
+        <div 
+          className="bg-purple-500 h-2 rounded-full transition-all" 
+          style={{width: `${((currentCardIndex + 1) / flashcardDecks[selectedDeck].cards.length) * 100}%`}}
+        />
+      </div>
+      
+      {isFlipped && (
+        <div className="flex gap-4">
+          <button
+            onClick={() => {
+              // Mark as needs review, move to next
+              const nextIndex = currentCardIndex + 1;
+              if (nextIndex >= flashcardDecks[selectedDeck].cards.length) {
+                // Deck complete
+                const cardsStudied = flashcardDecks[selectedDeck].cards.length;
+                const xpGain = cardsStudied * 5 + 25;
+                setXp(x => x + xpGain);
+                addLog(`🎓 Completed deck! +${xpGain} XP`);
+                
+                // Loot chance
+                const roll = Math.random();
+                if (roll < 0.3) {
+                  setHealthPots(h => h + 1);
+                  addLog('💊 Found Health Potion!');
+                } else if (roll < 0.5) {
+                  setStaminaPots(s => s + 1);
+                  addLog('⚡ Found Stamina Potion!');
+                }
+                
+                setShowStudyModal(false);
+                setSelectedDeck(null);
+                setCurrentCardIndex(0);
+                setIsFlipped(false);
+              } else {
+                setCurrentCardIndex(nextIndex);
+                setIsFlipped(false);
+              }
+            }}
+            className="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-lg font-bold text-lg transition-all"
+          >
+            ❌ Review Again
+          </button>
+          
+          <button
+            onClick={() => {
+              // Mark as mastered, give XP, move to next
+              setFlashcardDecks(prev => prev.map((deck, idx) => 
+                idx === selectedDeck 
+                  ? {...deck, cards: deck.cards.map((card, cardIdx) => 
+                      cardIdx === currentCardIndex ? {...card, mastered: true} : card
+                    )}
+                  : deck
+              ));
+              
+              setXp(x => x + 5);
+              
+              const nextIndex = currentCardIndex + 1;
+              if (nextIndex >= flashcardDecks[selectedDeck].cards.length) {
+                // Deck complete
+                const cardsStudied = flashcardDecks[selectedDeck].cards.length;
+                const xpGain = 25;
+                setXp(x => x + xpGain);
+                addLog(`🎓 Completed deck! +${xpGain} bonus XP`);
+                
+                // Loot chance
+                const roll = Math.random();
+                if (roll < 0.3) {
+                  setHealthPots(h => h + 1);
+                  addLog('💊 Found Health Potion!');
+                } else if (roll < 0.5) {
+                  setStaminaPots(s => s + 1);
+                  addLog('⚡ Found Stamina Potion!');
+                }
+                
+                setShowStudyModal(false);
+                setSelectedDeck(null);
+                setCurrentCardIndex(0);
+                setIsFlipped(false);
+              } else {
+                setCurrentCardIndex(nextIndex);
+                setIsFlipped(false);
+              }
+            }}
+            className="flex-1 bg-green-600 hover:bg-green-700 py-4 rounded-lg font-bold text-lg transition-all"
+          >
+            ✓ Got It! (+5 XP)
+          </button>
+        </div>
+      )}
     </div>
   </div>
 )}
@@ -2431,8 +2788,12 @@ if (tasks.length === 0) {
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-green-400">
-          {new Date(selectedDate).toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-        </h3>
+  {(() => {
+    const [year, month, day] = selectedDate.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  })()}
+</h3>
         <button onClick={() => setShowCalendarModal(false)} className="text-gray-400 hover:text-white">
           <X size={24}/>
         </button>
