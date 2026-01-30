@@ -1999,16 +1999,7 @@ if (tasks.length === 0) {
     </div>
   );
 })}
-    <div className="flex-1">
-      <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
-        {item.completed && '✓ '}{item.title}
-      </p>
-      {item.time && (<p className="text-sm text-gray-400">⏰ {item.time}</p>)}
-      {item.notes && (<p className="text-sm text-gray-500 italic mt-1">{item.notes}</p>)}
-    </div>
-    <div className="flex gap-2 ml-2">
-  <button 
-    onClick={() => {
+   
   if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
     // Remove from planner
     setWeeklyPlan(prev => ({
