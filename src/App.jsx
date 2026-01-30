@@ -1722,7 +1722,7 @@ if (tasks.length === 0) {
               {id:'study', icon:Calendar, label:'Study'},
               {id:'inv', icon:Heart, label:'Inventory'},
               {id:'grave', icon:Skull, label:'The Consumed'},
-              {id:'hall', icon:Trophy, label:'The Liberated'}
+              {id:'hall', icon:Trophy, label:'The Liberated'},
               {id:'progress', icon:Trophy, label:'Progress'},
             ].map(t => (
               <button 
