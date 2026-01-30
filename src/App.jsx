@@ -165,6 +165,10 @@ const [newCard, setNewCard] = useState({ front: '', back: '' });
   const [showBoss, setShowBoss] = useState(false);
   const [bossHp, setBossHp] = useState(0);
   const [bossMax, setBossMax] = useState(0);
+  const [battleType, setBattleType] = useState('regular');
+const [waveCount, setWaveCount] = useState(0);
+const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
+const [totalWaveEnemies, setTotalWaveEnemies] = useState(0);
   const [battling, setBattling] = useState(false);
   const [isFinalBoss, setIsFinalBoss] = useState(false);
   const [miniBossCount, setMiniBossCount] = useState(0);
@@ -681,16 +685,58 @@ if (tasks.length === 0) {
     completionMsg += `)`;
     
     addLog(completionMsg);
-    
-    // Random mini-boss spawn
-    const spawnRoll = Math.random();
-    if (spawnRoll < 0.25 && hp > getMaxHp() * 0.5) {
-      setTimeout(() => spawnRandomMiniBoss(), 1000);
-    }
+
+// Always spawn enemy after task completion
+setTimeout(() => {
+  // 20% chance for wave attack
+  const waveRoll = Math.random();
+  if (waveRoll < 0.2) {
+    // Wave attack: 2-4 enemies
+    const numEnemies = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4
+    setWaveCount(numEnemies);
+    addLog(`⚠️ WAVE INCOMING! ${numEnemies} enemies detected!`);
+    setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
+  } else {
+    // Regular single enemy
+    spawnRegularEnemy(false, 0, 1);
+  }
+}, 1000);
   }
 
 }, [tasks, currentDay, addLog, consecutiveDays, skipCount, isCursed, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask, calendarTasks, setCalendarTasks]);
   
+const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
+  if (canCustomize) setCanCustomize(false);
+  
+  const baseHp = 25;
+  const dayScaling = 25;
+  const enemyHp = baseHp + (currentDay * dayScaling);
+  
+  setCurrentAnimation('screen-shake');
+  setTimeout(() => setCurrentAnimation(null), 500);
+  
+  const enemyName = makeBossName();
+  setBossName(enemyName);
+  setBossHp(enemyHp);
+  setBossMax(enemyHp);
+  setShowBoss(true);
+  setBattling(true);
+  setBattleMode(true);
+  setIsFinalBoss(false);
+  setCanFlee(false);
+  setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
+  
+  if (isWave) {
+    setBattleType('wave');
+    setCurrentWaveEnemy(waveIndex);
+    setTotalWaveEnemies(totalWaves);
+    addLog(`⚠️ WAVE ASSAULT - Enemy ${waveIndex}/${totalWaves}: ${enemyName}`);
+  } else {
+    setBattleType('regular');
+    addLog(`⚔️ ${enemyName} appears!`);
+  }
+}, [currentDay, canCustomize, addLog]);
+
   const spawnRandomMiniBoss = (force = false) => {
     const completedTasks = tasks.filter(t => t.done).length;
     const totalTasks = tasks.length;
@@ -782,6 +828,7 @@ if (tasks.length === 0) {
       return;
     }
     
+    setBattleType('elite');
     spawnRandomMiniBoss();
     setCanFlee(false);
   };
@@ -811,6 +858,7 @@ if (tasks.length === 0) {
     setBossName(bossNameGenerated);
     setBossHp(bossHealth);
     setBossMax(bossHealth);
+    setBattleType('final');
     setShowBoss(true);
     setBattling(true);
     setBattleMode(true);
@@ -859,17 +907,46 @@ if (tasks.length === 0) {
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
-      setTimeout(() => {
-        setCurrentAnimation('battle-shake');
-        setTimeout(() => setCurrentAnimation(null), 250);
-      }, 100);
-      
-      setRecklessStacks(0);
-      const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-      setXp(x => x + xpGain);
-      addLog(`🎊 VICTORY! +${xpGain} XP`);
-      setBattling(false);
-      setBattleMode(false);
+  setTimeout(() => {
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+  }, 100);
+  
+  setRecklessStacks(0);
+  
+  // Different XP based on battle type
+  let xpGain;
+  if (isFinalBoss) {
+    xpGain = GAME_CONSTANTS.XP_REWARDS.finalBoss;
+  } else if (battleType === 'elite') {
+    xpGain = GAME_CONSTANTS.XP_REWARDS.miniBoss;
+  } else {
+    xpGain = 25; // Regular enemy
+  }
+  
+  setXp(x => x + xpGain);
+  addLog(`🎊 VICTORY! +${xpGain} XP`);
+  
+  // Check if wave continues
+  if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
+    // More enemies in wave
+    const nextEnemy = currentWaveEnemy + 1;
+    addLog(`⚠️ Next wave enemy incoming...`);
+    setTimeout(() => spawnRegularEnemy(true, nextEnemy, totalWaveEnemies), 1500);
+    setShowBoss(false);
+    setBattling(false);
+    setBattleMode(false);
+    return;
+  }
+  
+  // Wave complete bonus
+  if (battleType === 'wave') {
+    setXp(x => x + 25);
+    addLog(`🌊 Wave defeated! +25 bonus XP`);
+  }
+  
+  setBattling(false);
+  setBattleMode(false);
       
       if (!isFinalBoss) {
         const lootRoll = Math.random();
@@ -904,11 +981,22 @@ if (tasks.length === 0) {
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
       
-      const bossDamage = Math.max(1, Math.floor(
-        GAME_CONSTANTS.BOSS_ATTACK_BASE + 
-        (currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING) - 
-        (getBaseDefense() + armor)
-      ));
+      // Regular enemies hit softer
+let baseAttack, attackScaling;
+if (battleType === 'regular' || battleType === 'wave') {
+  baseAttack = 8;
+  attackScaling = 1.5;
+} else {
+  // Elite and Final bosses use normal stats
+  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE;
+  attackScaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+}
+
+const bossDamage = Math.max(1, Math.floor(
+  baseAttack + 
+  (currentDay * attackScaling) - 
+  (getBaseDefense() + armor)
+));
       
       setPlayerFlash(true);
       setTimeout(() => setPlayerFlash(false), 200);
@@ -1086,22 +1174,35 @@ if (tasks.length === 0) {
       setBattleMode(false);
       
       if (!isFinalBoss) {
-        const lootRoll = Math.random();
-        if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
-          setHealthPots(h => h + 1);
-          addLog('💎 Looted: Health Potion!');
-        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
-          setStaminaPots(s => s + 1);
-          addLog('💎 Looted: Stamina Potion!');
-        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-          const gain = 4 + Math.floor(currentDay / 3);
-          setWeapon(w => w + gain);
-          addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
-        } else {
-          const gain = 4 + Math.floor(currentDay / 3);
-          setArmor(a => a + gain);
-          addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
-        }
+  // Regular/wave enemies: potions only
+  if (battleType === 'regular' || battleType === 'wave') {
+    const lootRoll = Math.random();
+    if (lootRoll < 0.2) {
+      setHealthPots(h => h + 1);
+      addLog('💊 Looted: Health Potion!');
+    } else if (lootRoll < 0.55) {
+      setStaminaPots(s => s + 1);
+      addLog('⚡ Looted: Stamina Potion!');
+    }
+  } else {
+    // Elite bosses: weapon/armor upgrades
+    const lootRoll = Math.random();
+    if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
+      setHealthPots(h => h + 1);
+      addLog('💎 Looted: Health Potion!');
+    } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
+      setStaminaPots(s => s + 1);
+      addLog('💎 Looted: Stamina Potion!');
+    } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
+      const gain = 4 + Math.floor(currentDay / 3);
+      setWeapon(w => w + gain);
+      addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
+    } else {
+      const gain = 4 + Math.floor(currentDay / 3);
+      setArmor(a => a + gain);
+      addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
+    }
+  }
         
         setHp(getMaxHp());
         addLog('✨ Fully healed!');
@@ -1763,13 +1864,45 @@ if (tasks.length === 0) {
               </div>
 
               <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">⚔️ Combat & Progression</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => spawnRandomMiniBoss(true)} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Mini-Boss</button>
-                  <button onClick={() => { const currentIndex = classes.findIndex(c => c.name === hero.class.name); const nextIndex = (currentIndex + 1) % classes.length; setHero(prev => ({ ...prev, class: classes[nextIndex] })); addLog(`Debug: Changed to ${classes[nextIndex].name}`); }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Change Class</button>
-                  <button onClick={() => { setSkipCount(s => Math.min(3, s + 1)); addLog('Debug: +1 skip count'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">+1 Skip Count</button>
-                </div>
-              </div>
+  <h4 className="text-sm font-semibold text-purple-200 mb-2">⚔️ Combat & Progression</h4>
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+    <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Spawn Regular Enemy</button>
+    <button onClick={() => {
+      const numEnemies = Math.floor(Math.random() * 3) + 2;
+      setWaveCount(numEnemies);
+      addLog(`⚠️ DEBUG WAVE: ${numEnemies} enemies`);
+      spawnRegularEnemy(true, 1, numEnemies);
+    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Wave (2-4)</button>
+    <button onClick={() => { 
+      setBattleType('elite'); 
+      spawnRandomMiniBoss(true); 
+    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Elite Boss</button>
+    <button onClick={() => {
+      setBattleType('final');
+      const bossHealth = 300;
+      const bossNameGenerated = makeBossName();
+      setBossName(bossNameGenerated);
+      setBossHp(bossHealth);
+      setBossMax(bossHealth);
+      setShowBoss(true);
+      setBattling(true);
+      setBattleMode(true);
+      setIsFinalBoss(true);
+      setCanFlee(false);
+      addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
+    }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Spawn Final Boss</button>
+    <button onClick={() => { 
+      const currentIndex = classes.findIndex(c => c.name === hero.class.name); 
+      const nextIndex = (currentIndex + 1) % classes.length; 
+      setHero(prev => ({ ...prev, class: classes[nextIndex] })); 
+      addLog(`Debug: Changed to ${classes[nextIndex].name}`); 
+    }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Change Class</button>
+    <button onClick={() => { 
+      setSkipCount(s => Math.min(3, s + 1)); 
+      addLog('Debug: +1 skip count'); 
+    }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">+1 Skip Count</button>
+  </div>
+</div>
 
               <div className="mb-3">
                 <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse & Status</h4>
@@ -1938,10 +2071,18 @@ if (tasks.length === 0) {
                       Face the Darkness
                       {tasks.length > 0 && (<div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{Math.ceil(tasks.length * 0.75)} required)</div>)}
                     </button>
-                    <button onClick={finalBoss} disabled={tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} className="bg-purple-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-purple-800 transition-all shadow-lg shadow-purple-900/50 border-2 border-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600">
-                      THE FINAL RECKONING
-                      {tasks.length > 0 && (<div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{tasks.length} required)</div>)}
-                    </button>
+                    <button 
+  onClick={finalBoss} 
+  disabled={currentDay !== 7 || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
+  className="bg-purple-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-purple-800 transition-all shadow-lg shadow-purple-900/50 border-2 border-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
+>
+  THE FINAL RECKONING
+  {currentDay !== 7 ? (
+    <div className="text-sm font-normal mt-1">🔒 Locked until Day 7</div>
+  ) : tasks.length > 0 ? (
+    <div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{tasks.length} required)</div>
+  ) : null}
+</button>
                   </div>
                   
                   <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
@@ -2937,7 +3078,12 @@ if (tasks.length === 0) {
           {showBoss && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
               <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter ${bossFlash ? 'damage-flash-boss' : ''}`}>
-                <h2 className="text-4xl font-bold text-center text-red-400 mb-2">{isFinalBoss ? 'FINAL BOSS' : 'BOSS BATTLE'}</h2>
+               <h2 className="text-4xl font-bold text-center text-red-400 mb-2">
+  {isFinalBoss ? '👹 THE UNDYING' : 
+   battleType === 'elite' ? '🔥 TORMENTED CHAMPION' : 
+   battleType === 'wave' ? `⚠️ WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
+   '⚔️ ENEMY ENCOUNTER'}
+</h2>
                 {bossName && (<p className="text-2xl text-center text-yellow-400 mb-4 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</p>)}
                 <div className="space-y-6"><div><div className="flex justify-between mb-2"><span className="text-red-400 font-bold">{bossName || 'Boss'}</span><span className="text-red-400">{bossHp}/{bossMax}</span></div><div className="bg-gray-800 rounded-full h-6 overflow-hidden"><div className={`bg-red-600 h-6 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div></div></div><div><div className="flex justify-between mb-2"><span className="text-green-400 font-bold">{hero.name}</span><span className="text-green-400">HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span></div><div className="bg-gray-800 rounded-full h-6 overflow-hidden mb-2"><div className={`bg-green-600 h-6 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div></div><div className="bg-gray-800 rounded-full h-4 overflow-hidden"><div className="bg-cyan-500 h-4 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div></div></div>
                   {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button>)}</>)}
