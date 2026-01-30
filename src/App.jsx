@@ -358,7 +358,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
-  }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, isCursed, studyStats, weeklyPlan, calendarTasks]);
+ }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks]);
   
   useEffect(() => {
     let int;
