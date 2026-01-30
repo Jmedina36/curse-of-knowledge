@@ -1223,11 +1223,22 @@ const bossDamage = Math.max(1, Math.floor(
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
         
-        const bossDamage = Math.max(1, Math.floor(
-          GAME_CONSTANTS.BOSS_ATTACK_BASE + 
-          (currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING) - 
-          (getBaseDefense() + armor)
-        ));
+        // Regular enemies hit softer
+let baseAttack, attackScaling;
+if (battleType === 'regular' || battleType === 'wave') {
+  baseAttack = 8;
+  attackScaling = 1.5;
+} else {
+  // Elite and Final bosses use normal stats
+  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE;
+  attackScaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+}
+
+const bossDamage = Math.max(1, Math.floor(
+  baseAttack + 
+  (currentDay * attackScaling) - 
+  (getBaseDefense() + armor)
+));
         
         setPlayerFlash(true);
         setTimeout(() => setPlayerFlash(false), 200);
@@ -3079,8 +3090,8 @@ const bossDamage = Math.max(1, Math.floor(
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
               <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter ${bossFlash ? 'damage-flash-boss' : ''}`}>
                <h2 className="text-4xl font-bold text-center text-red-400 mb-2">
-  {isFinalBoss ? '👹 THE UNDYING' : 
-   battleType === 'elite' ? '🔥 TORMENTED CHAMPION' : 
+  {isFinalBoss ? 'THE UNDYING LEGEND' : 
+   battleType === 'elite' ? 'TORMENTED CHAMPION' : 
    battleType === 'wave' ? `⚠️ WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
    '⚔️ ENEMY ENCOUNTER'}
 </h2>
