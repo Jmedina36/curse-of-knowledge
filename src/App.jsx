@@ -199,7 +199,9 @@ const [customClass, setCustomClass] = useState(null);
   const [skipCount, setSkipCount] = useState(0);
   const [consecutiveDays, setConsecutiveDays] = useState(0);
   const [lastPlayedDate, setLastPlayedDate] = useState(null);
-  const [isCursed, setIsCursed] = useState(false);
+  const [curseLevel, setCurseLevel] = useState(0); // 0 = none, 1-3 = curse levels
+const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
+const [lastRealDay, setLastRealDay] = useState(null);
   
   const [studyStats, setStudyStats] = useState({
     totalMinutesToday: 0,
@@ -330,7 +332,9 @@ const getDateKey = useCallback((date) => {
         if (data.skipCount !== undefined) setSkipCount(data.skipCount);
         if (data.consecutiveDays !== undefined) setConsecutiveDays(data.consecutiveDays);
         if (data.lastPlayedDate) setLastPlayedDate(data.lastPlayedDate);
-        if (data.isCursed !== undefined) setIsCursed(data.isCursed);
+       if (data.curseLevel !== undefined) setCurseLevel(data.curseLevel);
+if (data.eliteBossDefeatedToday !== undefined) setEliteBossDefeatedToday(data.eliteBossDefeatedToday);
+if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.studyStats) setStudyStats(data.studyStats);
         if (data.weeklyPlan) setWeeklyPlan(data.weeklyPlan);
         if (data.calendarTasks) setCalendarTasks(data.calendarTasks);
@@ -350,7 +354,7 @@ const getDateKey = useCallback((date) => {
       const saveData = {
         hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots,
         weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
-        lastPlayedDate, isCursed, studyStats, weeklyPlan, calendarTasks
+        lastPlayedDate, curseLevel, studyStats, weeklyPlan, calendarTasks
       };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
@@ -473,10 +477,58 @@ const getDateKey = useCallback((date) => {
   }, [skipCount, addLog]);
   
   const start = () => {
-    const today = new Date().toDateString();
-    const currentHour = new Date().getHours();
-    const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  // === DAILY CHECK SYSTEM ===
+  const today = new Date().toDateString();
+  const todayDayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, etc.
+  const gameDayNumber = todayDayOfWeek === 0 ? 7 : todayDayOfWeek; // Sunday=7, Mon=1, Tue=2...
+  
+  // Check if real day has changed
+  if (lastRealDay && lastRealDay !== today) {
+    // New real day started!
     
+    // Check if we defeated yesterday's elite boss
+    if (!eliteBossDefeatedToday) {
+      // Didn't beat boss - apply curse penalty
+      const newCurseLevel = curseLevel + 1;
+      setCurseLevel(newCurseLevel);
+      
+      if (newCurseLevel >= 4) {
+        // 4th missed boss = death
+        addLog('☠️ THE CURSE CONSUMES YOU. Four failures... the abyss claims your soul.');
+        setTimeout(() => die(), 2000);
+        return;
+      }
+      
+      // Apply curse penalties
+      const cursePenalties = [
+        { hp: 20, msg: '🌑 CURSED. The curse takes root... -20 HP', xpDebuff: 0.5 },
+        { hp: 40, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -40 HP', xpDebuff: 0.25 },
+        { hp: 60, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -60 HP', xpDebuff: 0.1 }
+      ];
+      
+      const penalty = cursePenalties[newCurseLevel - 1];
+      setHp(h => Math.max(1, h - penalty.hp));
+      addLog(penalty.msg);
+    } else {
+      // Beat yesterday's boss - clear curse flag for today
+      addLog('✨ New day begins. Yesterday\'s trials complete.');
+    }
+    
+    // Reset daily flags
+    setEliteBossDefeatedToday(false);
+    setCurrentDay(gameDayNumber);
+  }
+  
+  // Set today as last played day
+  setLastRealDay(today);
+  
+  // === END DAILY CHECK ===
+  
+  // ... rest of start function continues below
+    
+const currentHour = new Date().getHours();
+  const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+
     setLastPlayedDate(today);
     
     if (lastPlayedDate && lastPlayedDate !== today) {
@@ -602,14 +654,18 @@ if (tasks.length === 0) {
     // Base XP for completing a task
     const baseXp = 25;
     
-    // Apply priority multiplier
-    const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
-    let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * priorityMultiplier;
-    
-    // Apply curse debuff if cursed
-    if (isCursed) {
-      xpMultiplier *= 0.5;
-    }
+   // Apply priority multiplier
+const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
+let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * priorityMultiplier;
+
+// Apply curse debuff based on level
+if (curseLevel === 1) {
+  xpMultiplier *= 0.5; // 50% XP
+} else if (curseLevel === 2) {
+  xpMultiplier *= 0.25; // 25% XP
+} else if (curseLevel === 3) {
+  xpMultiplier *= 0.1; // 10% XP
+}
     
     let xpGain = Math.floor(baseXp * xpMultiplier);
     
@@ -768,13 +824,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
   
   const useHealth = () => {
-    if (healthPots > 0 && hp < getMaxHp()) {
-      setHealthPots(h => h - 1);
-      setHp(h => Math.min(getMaxHp(), h + GAME_CONSTANTS.HEALTH_POTION_HEAL));
-      addLog(`💊 Used Health Potion! +${GAME_CONSTANTS.HEALTH_POTION_HEAL} HP`);
-    }
-  };
-  
+  if (curseLevel === 3) {
+    addLog('☠️ CONDEMNED - Cannot use Health Potions!');
+    return;
+  }
+  if (healthPots > 0 && hp < getMaxHp()) {
+    setHealthPots(h => h - 1);
+    setHp(h => Math.min(getMaxHp(), h + 50));
+    addLog('💊 Used Health Potion! +50 HP');
+  }
+};
   const useStamina = () => {
     const staminaCost = 5;
     const timeBonus = 5 * 60;
@@ -798,13 +857,14 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
   };
   
-  const useCleanse = () => {
-    if (cleansePots > 0 && isCursed) {
-      setCleansePots(c => c - 1);
-      setIsCursed(false);
-      addLog('✨ Used Cleanse Potion! Curse removed!');
-    }
-  };
+ const useCleanse = () => {
+  if (cleansePots > 0 && curseLevel > 0) {
+    setCleansePots(c => c - 1);
+    const removedLevel = curseLevel;
+    setCurseLevel(0);
+    addLog(`✨ Used Cleanse Potion! ${removedLevel === 3 ? 'CONDEMNATION' : removedLevel === 2 ? 'DEEP CURSE' : 'CURSE'} removed!`);
+  }
+};
   
   const craftCleanse = () => {
     if (xp >= GAME_CONSTANTS.CLEANSE_POTION_COST) {
@@ -926,6 +986,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   setXp(x => x + xpGain);
   addLog(`🎊 VICTORY! +${xpGain} XP`);
+
+  // Elite boss defeated - remove curses and set daily flag
+if (battleType === 'elite') {
+  if (curseLevel > 0) {
+    setCurseLevel(0);
+    addLog('🌅 THE CURSE BREAKS! You are free... for now.');
+  }
+  setEliteBossDefeatedToday(true);
+  addLog('✨ Today\'s trial complete. You may advance when ready.');
+}
   
   // Check if wave continues
   if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
@@ -992,11 +1062,18 @@ if (battleType === 'regular' || battleType === 'wave') {
   attackScaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
 }
 
-const bossDamage = Math.max(1, Math.floor(
+let bossDamage = Math.max(1, Math.floor(
   baseAttack + 
   (currentDay * attackScaling) - 
   (getBaseDefense() + armor)
 ));
+
+// Curse level increases enemy damage
+if (curseLevel === 2) {
+  bossDamage = Math.floor(bossDamage * 1.2); // 20% harder
+} else if (curseLevel === 3) {
+  bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
+}
       
       setPlayerFlash(true);
       setTimeout(() => setPlayerFlash(false), 200);
@@ -1226,19 +1303,26 @@ const bossDamage = Math.max(1, Math.floor(
         // Regular enemies hit softer
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
-  baseAttack = 8;
-  attackScaling = 1.5;
+  baseAttack = 25;
+  attackScaling = 2;
 } else {
   // Elite and Final bosses use normal stats
   baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE;
   attackScaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
 }
 
-const bossDamage = Math.max(1, Math.floor(
+let bossDamage = Math.max(1, Math.floor(
   baseAttack + 
   (currentDay * attackScaling) - 
   (getBaseDefense() + armor)
 ));
+
+// Curse level increases enemy damage
+if (curseLevel === 2) {
+  bossDamage = Math.floor(bossDamage * 1.2); // 20% harder
+} else if (curseLevel === 3) {
+  bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
+}
         
         setPlayerFlash(true);
         setTimeout(() => setPlayerFlash(false), 200);
@@ -1511,7 +1595,9 @@ const bossDamage = Math.max(1, Math.floor(
   );
 
   return (
-    <div className={`min-h-screen bg-black text-white relative overflow-hidden ${currentAnimation || ''}`}>
+  <div className={`min-h-screen bg-black text-white relative overflow-hidden ${currentAnimation || ''} ${
+    curseLevel === 3 ? 'border-8 border-red-600 animate-pulse' : ''
+  }`}>
       {victoryFlash && (
         <div className="fixed inset-0 pointer-events-none z-50 victory-flash"></div>
       )}
@@ -1698,17 +1784,33 @@ const bossDamage = Math.max(1, Math.floor(
                   </div>
                 )}
                 
-                {isCursed && (
-                  <div className="mb-4 bg-purple-950 bg-opacity-70 rounded-lg p-3 border-2 border-purple-600 animate-pulse">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">🌑</span>
-                      <div>
-                        <p className="font-bold text-purple-300 uppercase">CURSED</p>
-                        <p className="text-xs text-purple-400">XP gains reduced by 50%</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {curseLevel > 0 && (
+  <div className={`mb-4 rounded-lg p-3 border-2 animate-pulse ${
+    curseLevel === 3 ? 'bg-red-950 bg-opacity-90 border-red-500' :
+    curseLevel === 2 ? 'bg-purple-950 bg-opacity-80 border-purple-500' :
+    'bg-purple-950 bg-opacity-70 border-purple-600'
+  }`}>
+    <div className="flex items-center gap-2">
+      <span className="text-2xl">
+        {curseLevel === 3 ? '☠️' : curseLevel === 2 ? '🌑🌑' : '🌑'}
+      </span>
+      <div>
+        <p className={`font-bold uppercase ${
+          curseLevel === 3 ? 'text-red-300' : 'text-purple-300'
+        }`}>
+          {curseLevel === 3 ? 'CONDEMNED' : curseLevel === 2 ? 'DEEPLY CURSED' : 'CURSED'}
+        </p>
+        <p className={`text-xs ${
+          curseLevel === 3 ? 'text-red-400' : 'text-purple-400'
+        }`}>
+          {curseLevel === 3 ? '90% XP penalty • One failure from death' :
+           curseLevel === 2 ? '75% XP penalty • Enemies hit harder' :
+           '50% XP penalty'}
+        </p>
+      </div>
+    </div>
+  </div>
+)}
                 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-red-500 border-opacity-30">
@@ -2078,10 +2180,20 @@ const bossDamage = Math.max(1, Math.floor(
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-4">
-                    <button onClick={miniBoss} disabled={tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} className="bg-red-600 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-700 transition-all shadow-lg shadow-red-900/50 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none">
-                      Face the Darkness
-                      {tasks.length > 0 && (<div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{Math.ceil(tasks.length * 0.75)} required)</div>)}
-                    </button>
+                    <button 
+  onClick={miniBoss} 
+  disabled={eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
+  className="bg-red-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-800 transition-all shadow-lg shadow-red-900/50 border-2 border-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
+>
+  Face the Darkness
+  {eliteBossDefeatedToday ? (
+    <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
+  ) : tasks.length > 0 ? (
+    <div className="text-sm font-normal mt-1">
+      ({Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}% complete - need 75%)
+    </div>
+  ) : null}
+</button>
                     <button 
   onClick={finalBoss} 
   disabled={currentDay !== 7 || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
