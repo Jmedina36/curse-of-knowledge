@@ -470,10 +470,6 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       addLog(`⚠️ Equipment weakened by ${penalty.equipmentDebuff * 100}%!`);
     }
     
-    if (penalty.cursed) {
-      setIsCursed(true);
-      addLog('🌑 YOU ARE CURSED. XP gains halved until tomorrow.');
-    }
   }, [skipCount, addLog]);
   
   const start = () => {
@@ -542,10 +538,6 @@ const currentHour = new Date().getHours();
       }));
     }
     
-    if (isCursed) {
-      setIsCursed(false);
-      addLog('✨ The curse lifts... for now.');
-    }
     
     const plannedTasks = weeklyPlan[dayOfWeek] || [];
 
@@ -737,7 +729,6 @@ if (curseLevel === 1) {
     
     let completionMsg = `✅ Completed: ${task.title} (+${xpGain} XP`;
     if (task.priority === 'important') completionMsg += ' • IMPORTANT';
-    if (isCursed) completionMsg += ' • CURSED';
     completionMsg += `)`;
     
     addLog(completionMsg);
@@ -759,7 +750,7 @@ setTimeout(() => {
 }, 1000);
   }
 
-}, [tasks, currentDay, addLog, consecutiveDays, skipCount, isCursed, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask, calendarTasks, setCalendarTasks]);
+}, [tasks, currentDay, addLog, consecutiveDays, skipCount, curseLevel, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask, calendarTasks, setCalendarTasks]);
   
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
@@ -1409,16 +1400,15 @@ if (curseLevel === 2) {
     setBattleMode(false);
     setRecklessStacks(0);
     
-    setGraveyard(prev => [...prev, { 
-      ...hero, 
-      day: currentDay, 
-      lvl: level,
-      xp: xp,
-      tasks: completedTasks, 
-      total: totalTasks,
-      skipCount: skipCount,
-      cursed: isCursed
-    }]);
+   setGraveyard(prev => [...prev, { 
+  ...hero, 
+  day: currentDay, 
+  lvl: level,
+  xp: xp,
+  tasks: completedTasks, 
+  total: totalTasks,
+  skipCount: skipCount
+}]);
     
     addLog('💀 You have fallen...');
     
@@ -1449,16 +1439,15 @@ if (curseLevel === 2) {
       weeklyHistory: []
     }));
     
-    setTasks([]);
-    setActiveTask(null);
-    setTimer(0);
-    setRunning(false);
-    setHasStarted(false);
-    setSkipCount(0);
-    setConsecutiveDays(0);
-    setLastPlayedDate(null);
-    setIsCursed(false);
-    setMiniBossCount(0);
+   setTasks([]);
+setActiveTask(null);
+setTimer(0);
+setRunning(false);
+setHasStarted(false);
+setSkipCount(0);
+setConsecutiveDays(0);
+setLastPlayedDate(null);
+setMiniBossCount(0);
     
     setTimeout(() => setActiveTab('grave'), 1000);
   };
@@ -1506,17 +1495,16 @@ if (curseLevel === 2) {
       }));
       
       setTasks([]);
-      setActiveTask(null);
-      setTimer(0);
-      setRunning(false);
-      setHasStarted(false);
-      setShowBoss(false);
-      setSkipCount(0);
-      setConsecutiveDays(0);
-      setLastPlayedDate(null);
-      setIsCursed(false);
-      setMiniBossCount(0);
-      setBattleMode(false);
+setActiveTask(null);
+setTimer(0);
+setRunning(false);
+setHasStarted(false);
+setShowBoss(false);
+setSkipCount(0);
+setConsecutiveDays(0);
+setLastPlayedDate(null);
+setMiniBossCount(0);
+setBattleMode(false);
       
       setTimeout(() => setActiveTab('hall'), 1000);
     } else if (!isFinalBoss && bossHp <= 0) {
@@ -1562,7 +1550,6 @@ if (curseLevel === 2) {
       setRunning(false);
       setHasStarted(false);
       setShowBoss(false);
-      setIsCursed(false);
       setMiniBossCount(0);
       setBattling(false);
       setBattleMode(false);
@@ -1854,7 +1841,7 @@ if (curseLevel === 2) {
                   </div>
                 </div>
                 
-                <div className={`grid ${isCursed ? 'grid-cols-2' : 'grid-cols-2'} gap-3 pt-3 border-t-2 border-white border-opacity-20`}>
+                <div className={`grid grid-cols-2 gap-3 pt-3 border-t-2 border-white border-opacity-20`}>
                   <button 
                     onClick={useHealth}
                     disabled={healthPots === 0 || hp >= getMaxHp()}
@@ -1895,10 +1882,10 @@ if (curseLevel === 2) {
                     </div>
                   </button>
                   
-                  {isCursed && (
-                    <button 
-                      onClick={useCleanse}
-                      disabled={cleansePots === 0}
+                 {curseLevel > 0 && (
+  <button 
+    onClick={useCleanse}
+    disabled={cleansePots === 0}
                       className="bg-black bg-opacity-40 rounded-lg p-3 border border-purple-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed col-span-2 animate-pulse"
                     >
                       <div className="flex items-center justify-between">
@@ -2018,11 +2005,14 @@ if (curseLevel === 2) {
 </div>
 
               <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse & Status</h4>
-                <div className="grid grid-cols-2 md:grid-cols-2 gap-2">
-                  <button onClick={() => { setIsCursed(!isCursed); addLog(`Debug: Curse ${!isCursed ? 'ON' : 'OFF'}`); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-sm transition-all">Toggle Curse</button>
-                </div>
-              </div>
+  <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse Level</h4>
+  <div className="grid grid-cols-4 gap-2">
+    <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear</button>
+    <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed (Lvl 1)'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-sm transition-all">Lvl 1</button>
+    <button onClick={() => { setCurseLevel(2); addLog('Debug: Deep Curse (Lvl 2)'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-sm transition-all">Lvl 2</button>
+    <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED (Lvl 3)'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">Lvl 3</button>
+  </div>
+</div>
 
               <div>
   <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
@@ -2068,7 +2058,6 @@ if (curseLevel === 2) {
         setSkipCount(0);
         setConsecutiveDays(0);
         setLastPlayedDate(null);
-        setIsCursed(false);
         setMiniBossCount(0);
         setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
         localStorage.removeItem('fantasyStudyQuest');
@@ -2083,8 +2072,8 @@ if (curseLevel === 2) {
 </div>
 
               <p className="text-xs text-gray-400 mt-3 italic">
-                Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Cursed: {isCursed ? 'YES' : 'NO'} • Cleanse: {cleansePots}
-              </p>
+  Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Curse Lvl: {curseLevel} • Cleanse: {cleansePots}
+</p>
             </div>
           )}
 
@@ -2541,17 +2530,17 @@ if (curseLevel === 2) {
           )}
 
           {activeTab === 'inv' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-red-900">
-              <h2 className="text-2xl font-bold text-red-400 mb-6 text-center">Cursed Arsenal</h2>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-red-900 bg-opacity-50 rounded-lg p-4 flex justify-between items-center border border-red-700"><div className="flex items-center gap-3"><Heart className="text-red-400" size={32}/><div><p className="font-bold text-white">Health Potions</p><p className="text-2xl text-red-400">{healthPots}</p><p className="text-xs text-gray-400">Restores {GAME_CONSTANTS.HEALTH_POTION_HEAL} HP</p></div></div><button onClick={useHealth} disabled={healthPots === 0 || hp >= getMaxHp()} className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all">Use</button></div>
-                <div className="bg-cyan-900 bg-opacity-50 rounded-lg p-4 flex justify-between items-center border border-cyan-700"><div className="flex items-center gap-3"><Zap className="text-cyan-400" size={32}/><div><p className="font-bold text-white">Stamina Potions</p><p className="text-2xl text-cyan-400">{staminaPots}</p><p className="text-xs text-gray-400">Restores {GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP</p></div></div><button onClick={() => { if (staminaPots > 0 && stamina < getMaxStamina()) { setStaminaPots(s => s - 1); setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); } }} disabled={staminaPots === 0 || stamina >= getMaxStamina()} className="bg-cyan-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-cyan-700 transition-all">Use</button></div>
-                <div className={`bg-purple-900 bg-opacity-50 rounded-lg p-4 border-2 ${isCursed ? 'border-purple-400 ring-2 ring-purple-500 animate-pulse' : 'border-purple-700'}`}><div className="flex justify-between items-center mb-3"><div className="flex items-center gap-3"><span className="text-4xl">✨</span><div><p className="font-bold text-white">Cleanse Potions</p><p className="text-2xl text-purple-400">{cleansePots}</p><p className="text-xs text-gray-400">Removes curse</p></div></div><button onClick={useCleanse} disabled={cleansePots === 0 || !isCursed} className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all">Use</button></div><div className="pt-3 border-t-2 border-purple-600"><p className="text-xs text-gray-300 mb-2 text-center font-bold">CRAFT POTION</p><button onClick={craftCleanse} disabled={xp < GAME_CONSTANTS.CLEANSE_POTION_COST} className={`w-full px-4 py-3 rounded transition-all text-sm font-bold ${xp >= GAME_CONSTANTS.CLEANSE_POTION_COST ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}>{xp >= GAME_CONSTANTS.CLEANSE_POTION_COST ? `Craft Cleanse Potion (-${GAME_CONSTANTS.CLEANSE_POTION_COST} XP)` : `Need ${GAME_CONSTANTS.CLEANSE_POTION_COST - xp} more XP`}</button><p className="text-xs text-gray-400 mt-2 text-center">Sacrifice XP to create cleanse potion</p></div></div>
-                <div className="bg-orange-900 bg-opacity-50 rounded-lg p-4 flex items-center gap-3 border border-orange-700"><Sword className="text-orange-400" size={32}/><div><p className="font-bold text-white">Weapon Power</p><p className="text-2xl text-orange-400">+{weapon}</p><p className="text-xs text-gray-400">Total Attack: {getBaseAttack() + weapon + (level - 1) * 2}</p></div></div>
-                <div className="bg-blue-900 bg-opacity-50 rounded-lg p-4 flex items-center gap-3 border border-blue-700"><Shield className="text-blue-400" size={32}/><div><p className="font-bold text-white">Armor Rating</p><p className="text-2xl text-blue-400">+{armor}</p><p className="text-xs text-gray-400">Total Defense: {getBaseDefense() + armor}</p></div></div>
-              </div>
-            </div>
-          )}
+  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-red-900">
+    <h2 className="text-2xl font-bold text-red-400 mb-6 text-center">Cursed Arsenal</h2>
+    <div className="grid md:grid-cols-2 gap-6">
+      <div className="bg-red-900 bg-opacity-50 rounded-lg p-4 flex justify-between items-center border border-red-700"><div className="flex items-center gap-3"><Heart className="text-red-400" size={32}/><div><p className="font-bold text-white">Health Potions</p><p className="text-2xl text-red-400">{healthPots}</p><p className="text-xs text-gray-400">Restores {GAME_CONSTANTS.HEALTH_POTION_HEAL} HP</p></div></div><button onClick={useHealth} disabled={healthPots === 0 || hp >= getMaxHp()} className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all">Use</button></div>
+      <div className="bg-cyan-900 bg-opacity-50 rounded-lg p-4 flex justify-between items-center border border-cyan-700"><div className="flex items-center gap-3"><Zap className="text-cyan-400" size={32}/><div><p className="font-bold text-white">Stamina Potions</p><p className="text-2xl text-cyan-400">{staminaPots}</p><p className="text-xs text-gray-400">Restores {GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP</p></div></div><button onClick={() => { if (staminaPots > 0 && stamina < getMaxStamina()) { setStaminaPots(s => s - 1); setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); } }} disabled={staminaPots === 0 || stamina >= getMaxStamina()} className="bg-cyan-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-cyan-700 transition-all">Use</button></div>
+      <div className={`bg-purple-900 bg-opacity-50 rounded-lg p-4 border-2 ${curseLevel > 0 ? 'border-purple-400 ring-2 ring-purple-500 animate-pulse' : 'border-purple-700'}`}><div className="flex justify-between items-center mb-3"><div className="flex items-center gap-3"><span className="text-4xl">✨</span><div><p className="font-bold text-white">Cleanse Potions</p><p className="text-2xl text-purple-400">{cleansePots}</p><p className="text-xs text-gray-400">Removes curse</p></div></div><button onClick={useCleanse} disabled={cleansePots === 0 || curseLevel === 0} className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all">Use</button></div><div className="pt-3 border-t-2 border-purple-600"><p className="text-xs text-gray-300 mb-2 text-center font-bold">CRAFT POTION</p><button onClick={craftCleanse} disabled={xp < GAME_CONSTANTS.CLEANSE_POTION_COST} className={`w-full px-4 py-3 rounded transition-all text-sm font-bold ${xp >= GAME_CONSTANTS.CLEANSE_POTION_COST ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}>{xp >= GAME_CONSTANTS.CLEANSE_POTION_COST ? `Craft Cleanse Potion (-${GAME_CONSTANTS.CLEANSE_POTION_COST} XP)` : `Need ${GAME_CONSTANTS.CLEANSE_POTION_COST - xp} more XP`}</button><p className="text-xs text-gray-400 mt-2 text-center">Sacrifice XP to create cleanse potion</p></div></div>
+      <div className="bg-orange-900 bg-opacity-50 rounded-lg p-4 flex items-center gap-3 border border-orange-700"><Sword className="text-orange-400" size={32}/><div><p className="font-bold text-white">Weapon Power</p><p className="text-2xl text-orange-400">+{weapon}</p><p className="text-xs text-gray-400">Total Attack: {getBaseAttack() + weapon + (level - 1) * 2}</p></div></div>
+      <div className="bg-blue-900 bg-opacity-50 rounded-lg p-4 flex items-center gap-3 border border-blue-700"><Shield className="text-blue-400" size={32}/><div><p className="font-bold text-white">Armor Rating</p><p className="text-2xl text-blue-400">+{armor}</p><p className="text-xs text-gray-400">Total Defense: {getBaseDefense() + armor}</p></div></div>
+    </div>
+  </div>
+)}
 
           {activeTab === 'grave' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-gray-800">
