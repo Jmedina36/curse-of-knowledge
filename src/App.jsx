@@ -3381,9 +3381,10 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
         
         <div className="flex justify-center mt-8 pb-6">
           <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
-        </div>
+       </div>
       </div>
-    </div>
+    )}
+  </div>
   );
 };
 
