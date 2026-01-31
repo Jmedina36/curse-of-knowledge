@@ -996,25 +996,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setCanFlee(false);
   addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
 };
-    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
-    const bossHealth = Math.floor(baseHp * (1.5 - completionRate * 0.5));
-    
-    setCurrentAnimation('screen-shake');
-    setTimeout(() => setCurrentAnimation(null), 500);
-    
-    const bossNameGenerated = makeBossName();
-    setBossName(bossNameGenerated);
-    setBossHp(bossHealth);
-    setBossMax(bossHealth);
-    setBattleType('final');
-    setShowBoss(true);
-    setBattling(true);
-    setBattleMode(true);
-    setIsFinalBoss(true);
-    setCanFlee(false);
-    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
-  };
-  
+   
   const attack = () => {
     if (!battling || bossHp <= 0) return;
     
