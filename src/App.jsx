@@ -3139,7 +3139,6 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
     </div>
   </div>
 )}
-          </div>  // ← ADD THIS - closes max-w-6xl container
         
         {showCalendarModal && selectedDate && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
@@ -3389,7 +3388,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
     )}                // closes ternary operator
   </div>              // closes outer wrapper
   );                  // ✅ semicolon, not closing brace!
-}                   // closes component
+};                    // closes component
 
 export default FantasyStudyQuest;
 
