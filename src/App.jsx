@@ -3139,7 +3139,9 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
     </div>
   </div>
 )}
-          {showCalendarModal && selectedDate && (
+          </div>  // ← ADD THIS - closes max-w-6xl container
+        
+        {showCalendarModal && selectedDate && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
