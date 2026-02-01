@@ -3377,17 +3377,16 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
     </div>
   </div>
 )}
-        </div>
+       </div>
         
         <div className="flex justify-center mt-8 pb-6">
-          <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
-
-          </div>    // 3384 - closes debug button container
-      </div>      // 3385 - closes inner wrapper (NEW)
-    </div>        // 3385 - closes main game content
-  )}              // 3387 - CLOSES TERNARY OPERATOR
-</div>            // 3387 - closes outer wrapper
-);                // 3388 - closes return
-};                // 3389 - closes component
-      
+          <button onClick={() => setShowDebug(!showDebug)}>
+            {showDebug ? '▲ Hide' : '▼ Show'} Debug Panel
+          </button>
+        </div>
+      </div>      // ✅ closes "relative z-10 p-6"
+    )}            // ✅ closes ternary operator
+  </div>          // ✅ closes outer wrapper
+  );              // ✅ closes return
+};                // ✅ closes component
 export default FantasyStudyQuest;
