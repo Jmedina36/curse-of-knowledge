@@ -404,7 +404,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           
           // Play sound and show notification
           if (Notification.permission === "granted") {
-            new Notification(isBreak ? "Break Over! 🎯" : "Pomodoro Complete! 🍅", {
+            new Notification(isBreak ? "Break Over!" : "Pomodoro Complete!", {
               body: isBreak ? "Time to get back to work!" : "Great work! Take a 5 minute break.",
               icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><text y='75' font-size='75'>🍅</text></svg>"
             });
@@ -413,7 +413,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           if (!isBreak) {
             // Work session done - start break
             setPomodorosCompleted(p => p + 1);
-            addLog(`🍅 Pomodoro #${pomodorosCompleted + 1} completed!`);
+            addLog(`Pomodoro #${pomodorosCompleted + 1} completed!`);
             setIsBreak(true);
             setPomodoroTimer(5 * 60); // 5 minute break
           } else {
@@ -2146,11 +2146,11 @@ setBattleMode(false);
               setPomodorosCompleted(0);
               setIsBreak(false);
               setPomodoroRunning(true);
-              addLog(`🍅 Starting focus session: ${t.title}`);
+              addLog(`Starting focus session: ${t.title}`);
             }} 
             className="bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 transition-all flex items-center gap-1"
           >
-            🍅 Focus
+            Focus
           </button>
           <button 
             onClick={() => complete(t.id)} 
@@ -3210,7 +3210,7 @@ setBattleMode(false);
     <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-12 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-purple-400 mb-2">
-          {isBreak ? '☕ BREAK TIME' : '🍅 FOCUS SESSION'}
+          {isBreak ? '☕ BREAK TIME' : 'FOCUS SESSION'}
         </h2>
         <p className="text-xl text-gray-300 mb-8">{pomodoroTask.title}</p>
         
