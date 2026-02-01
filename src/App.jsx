@@ -351,11 +351,11 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   
   useEffect(() => {
     if (hero) {
-      const saveData = {
-        hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots,
-        weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
-        lastPlayedDate, curseLevel, studyStats, weeklyPlan, calendarTasks
-      };
+     const saveData = {
+  hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots,
+  weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
+  lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks
+};
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
  }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks]);
