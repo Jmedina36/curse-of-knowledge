@@ -90,13 +90,6 @@ const GAME_CONSTANTS = {
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [currentDay, setCurrentDay] = useState(1);
-  const [playerProgressDay, setPlayerProgressDay] = useState(1); // Your actual progression (1-7)
-
-// Helper to get real calendar day (1=Mon, 7=Sun)
-const getRealDayNumber = useCallback(() => {
-  const dayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, 2=Tue...
-  return dayOfWeek === 0 ? 7 : dayOfWeek; // Convert Sunday to 7
-}, []);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
   const [hp, setHp] = useState(GAME_CONSTANTS.MAX_HP);
@@ -105,20 +98,20 @@ const getRealDayNumber = useCallback(() => {
   const [level, setLevel] = useState(1);
   
   const getMaxHp = useCallback(() => {
-  return GAME_CONSTANTS.MAX_HP + (playerProgressDay - 1) * GAME_CONSTANTS.PLAYER_HP_PER_DAY;
-}, [playerProgressDay]);
-
-const getMaxStamina = useCallback(() => {
-  return GAME_CONSTANTS.MAX_STAMINA + (playerProgressDay - 1) * GAME_CONSTANTS.PLAYER_SP_PER_DAY;
-}, [playerProgressDay]);
-
-const getBaseAttack = useCallback(() => {
-  return GAME_CONSTANTS.BASE_ATTACK + (playerProgressDay - 1) * GAME_CONSTANTS.PLAYER_ATK_PER_DAY;
-}, [playerProgressDay]);
-
-const getBaseDefense = useCallback(() => {
-  return GAME_CONSTANTS.BASE_DEFENSE + (playerProgressDay - 1) * GAME_CONSTANTS.PLAYER_DEF_PER_DAY;
-}, [playerProgressDay]);
+    return GAME_CONSTANTS.MAX_HP + (currentDay - 1) * GAME_CONSTANTS.PLAYER_HP_PER_DAY;
+  }, [currentDay]);
+  
+  const getMaxStamina = useCallback(() => {
+    return GAME_CONSTANTS.MAX_STAMINA + (currentDay - 1) * GAME_CONSTANTS.PLAYER_SP_PER_DAY;
+  }, [currentDay]);
+  
+  const getBaseAttack = useCallback(() => {
+    return GAME_CONSTANTS.BASE_ATTACK + (currentDay - 1) * GAME_CONSTANTS.PLAYER_ATK_PER_DAY;
+  }, [currentDay]);
+  
+  const getBaseDefense = useCallback(() => {
+    return GAME_CONSTANTS.BASE_DEFENSE + (currentDay - 1) * GAME_CONSTANTS.PLAYER_DEF_PER_DAY;
+  }, [currentDay]);
   
   const [healthPots, setHealthPots] = useState(0);
   const [staminaPots, setStaminaPots] = useState(0);
@@ -340,7 +333,6 @@ const getDateKey = useCallback((date) => {
         if (data.consecutiveDays !== undefined) setConsecutiveDays(data.consecutiveDays);
         if (data.lastPlayedDate) setLastPlayedDate(data.lastPlayedDate);
        if (data.curseLevel !== undefined) setCurseLevel(data.curseLevel);
-       if (data.playerProgressDay !== undefined) setPlayerProgressDay(data.playerProgressDay);
 if (data.eliteBossDefeatedToday !== undefined) setEliteBossDefeatedToday(data.eliteBossDefeatedToday);
 if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.studyStats) setStudyStats(data.studyStats);
@@ -350,12 +342,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         console.error('Failed to load save:', e);
       }
     }
-   if (!hero) {
-  const newHero = makeName();
-  setHero(newHero);
-}
-// Always sync currentDay to real calendar day
-setCurrentDay(getRealDayNumber());
+    if (!hero) setHero(makeName());
     
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -365,13 +352,13 @@ setCurrentDay(getRealDayNumber());
   useEffect(() => {
     if (hero) {
       const saveData = {
-  hero, currentDay, playerProgressDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots,
-  weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
-  lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks
-};
+        hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots,
+        weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
+        lastPlayedDate, curseLevel, studyStats, weeklyPlan, calendarTasks
+      };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, playerProgressDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks]);
+ }, [hero, currentDay, hp, stamina, xp, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks]);
   
   useEffect(() => {
     let int;
@@ -485,10 +472,11 @@ setCurrentDay(getRealDayNumber());
     
   }, [skipCount, addLog]);
   
- const start = () => {
+  const start = () => {
   // === DAILY CHECK SYSTEM ===
   const today = new Date().toDateString();
-  const realDay = getRealDayNumber();
+  const todayDayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, etc.
+  const gameDayNumber = todayDayOfWeek === 0 ? 7 : todayDayOfWeek; // Sunday=7, Mon=1, Tue=2...
   
   // Check if real day has changed
   if (lastRealDay && lastRealDay !== today) {
@@ -509,84 +497,28 @@ setCurrentDay(getRealDayNumber());
       
       // Apply curse penalties
       const cursePenalties = [
-        { hp: 20, msg: '🌑 CURSED. The curse takes root... -20 HP' },
-        { hp: 40, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -40 HP' },
-        { hp: 60, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -60 HP' }
+        { hp: 20, msg: '🌑 CURSED. The curse takes root... -20 HP', xpDebuff: 0.5 },
+        { hp: 40, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -40 HP', xpDebuff: 0.25 },
+        { hp: 60, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -60 HP', xpDebuff: 0.1 }
       ];
       
       const penalty = cursePenalties[newCurseLevel - 1];
       setHp(h => Math.max(1, h - penalty.hp));
       addLog(penalty.msg);
+    } else {
+      // Beat yesterday's boss - clear curse flag for today
+      addLog('✨ New day begins. Yesterday\'s trials complete.');
     }
     
     // Reset daily flags
     setEliteBossDefeatedToday(false);
-    
-    // Increment player progression
-    setPlayerProgressDay(d => d + 1);
+    setCurrentDay(gameDayNumber);
   }
-  
-  // Always sync currentDay to real calendar
-  setCurrentDay(realDay);
   
   // Set today as last played day
   setLastRealDay(today);
   
   // === END DAILY CHECK ===
-  
-  const currentHour = new Date().getHours();
-  const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-
-  if (lastPlayedDate && lastPlayedDate !== today) {
-    setStudyStats(prev => ({
-      ...prev,
-      weeklyHistory: [...prev.weeklyHistory, prev.totalMinutesToday].slice(-7),
-      totalMinutesToday: 0,
-      sessionsToday: 0,
-      tasksCompletedToday: 0,
-      deepWorkSessions: 0
-    }));
-  }
-  
-  setLastPlayedDate(today);
-  
-  const plannedTasks = weeklyPlan[dayOfWeek] || [];
-
-  if (tasks.length === 0) {
-    const newTasks = [];
-    
-    plannedTasks.forEach((item, idx) => {
-      newTasks.push({
-        title: item.title,
-        priority: item.priority || 'routine',
-        id: Date.now() + idx,
-        done: false
-      });
-    });
-    
-    if (newTasks.length > 0) {
-      setTasks(newTasks);
-      addLog(`📋 Loaded ${newTasks.length} tasks from ${dayOfWeek}'s plan`);
-    }
-  }
-  
-  let earlyBirdBonus = false;
-  if (currentHour < GAME_CONSTANTS.LATE_START_HOUR) {
-    setXp(x => x + GAME_CONSTANTS.EARLY_BIRD_BONUS);
-    setStudyStats(prev => ({ ...prev, earlyBirdDays: prev.earlyBirdDays + 1 }));
-    addLog(`🌅 Early Bird! +${GAME_CONSTANTS.EARLY_BIRD_BONUS} XP`);
-    earlyBirdBonus = true;
-  }
-  
-  if (currentHour >= GAME_CONSTANTS.LATE_START_HOUR && !earlyBirdBonus) {
-    setHp(h => Math.max(0, h - GAME_CONSTANTS.LATE_START_PENALTY));
-    addLog(`⚠️ Late start! -${GAME_CONSTANTS.LATE_START_PENALTY} HP`);
-  } else if (!earlyBirdBonus) {
-    addLog('✨ Day begins...');
-  }
-  
-  setHasStarted(true);
-};
   
   // ... rest of start function continues below
     
@@ -716,7 +648,7 @@ if (tasks.length === 0) {
     
    // Apply priority multiplier
 const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
-let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[playerProgressDay - 1] * priorityMultiplier;
+let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * priorityMultiplier;
 
 // Apply curse debuff based on level
 if (curseLevel === 1) {
@@ -818,14 +750,14 @@ setTimeout(() => {
 }, 1000);
   }
 
-}, [tasks, playerProgressDay, addLog, consecutiveDays, skipCount, curseLevel, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask, calendarTasks, setCalendarTasks]);
+}, [tasks, currentDay, addLog, consecutiveDays, skipCount, curseLevel, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask, calendarTasks, setCalendarTasks]);
   
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
   
   const baseHp = 25;
   const dayScaling = 25;
-  const enemyHp = baseHp + (playerProgressDay * dayScaling);
+  const enemyHp = baseHp + (currentDay * dayScaling);
   
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
@@ -850,7 +782,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleType('regular');
     addLog(`⚔️ ${enemyName} appears!`);
   }
-}, [playerProgressDay, canCustomize, addLog]);
+}, [currentDay, canCustomize, addLog]);
 
   const spawnRandomMiniBoss = (force = false) => {
     const completedTasks = tasks.filter(t => t.done).length;
@@ -861,7 +793,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     const bossNumber = miniBossCount + 1;
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
-    const baseHp = GAME_CONSTANTS.MINI_BOSS_BASE + (playerProgressDay * GAME_CONSTANTS.MINI_BOSS_DAY_SCALING);
+    const baseHp = GAME_CONSTANTS.MINI_BOSS_BASE + (currentDay * GAME_CONSTANTS.MINI_BOSS_DAY_SCALING);
     const scaledHp = Math.floor(baseHp * (1 + bossNumber * 0.2));
     const bossHealth = Math.floor(scaledHp * (2 - completionRate));
     
@@ -934,69 +866,58 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
   
   const miniBoss = () => {
-  const completedTasks = tasks.filter(t => t.done).length;
-  const totalTasks = tasks.length;
-  
-  if (totalTasks === 0) {
-    addLog('⚠️ No trials accepted! Create some first.');
-    return;
-  }
-  
-  if (totalTasks < 5) {
-    addLog(`⚠️ Need at least 5 tasks! (Currently have ${totalTasks})`);
-    return;
-  }
-  
-  if (completedTasks < totalTasks * 0.9) {
-    addLog(`⚠️ Need 90% completion! (${completedTasks}/${totalTasks} = ${Math.floor(completedTasks/totalTasks*100)}%)`);
-    return;
-  }
-  
-  setBattleType('elite');
-  spawnRandomMiniBoss();
-  setCanFlee(false);
-};
+    const completedTasks = tasks.filter(t => t.done).length;
+    const totalTasks = tasks.length;
+    
+    if (totalTasks === 0) {
+      addLog('⚠️ No trials accepted! Create some first.');
+      return;
+    }
+    
+    if (completedTasks < totalTasks * 0.75) {
+      addLog(`⚠️ Need 75% completion! (${completedTasks}/${totalTasks} done)`);
+      return;
+    }
+    
+    setBattleType('elite');
+    spawnRandomMiniBoss();
+    setCanFlee(false);
+  };
   
   const finalBoss = () => {
-  const completedTasks = tasks.filter(t => t.done).length;
-  const totalTasks = tasks.length;
-  const isRealSunday = new Date().getDay() === 0;
+    const completedTasks = tasks.filter(t => t.done).length;
+    const totalTasks = tasks.length;
+    
+    if (totalTasks === 0) {
+      addLog('⚠️ No trials accepted! Create some first.');
+      return;
+    }
+    
+    if (completedTasks < totalTasks) {
+      addLog(`⚠️ Must complete ALL trials! (${completedTasks}/${totalTasks} done)`);
+      return;
+    }
+    
+    const baseHp = GAME_CONSTANTS.FINAL_BOSS_BASE + (currentDay * GAME_CONSTANTS.FINAL_BOSS_DAY_SCALING);
+    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
+    const bossHealth = Math.floor(baseHp * (1.5 - completionRate * 0.5));
+    
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+    
+    const bossNameGenerated = makeBossName();
+    setBossName(bossNameGenerated);
+    setBossHp(bossHealth);
+    setBossMax(bossHealth);
+    setBattleType('final');
+    setShowBoss(true);
+    setBattling(true);
+    setBattleMode(true);
+    setIsFinalBoss(true);
+    setCanFlee(false);
+    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
+  };
   
-  if (!isRealSunday) {
-    addLog('⚠️ THE FINAL RECKONING only available on Sunday!');
-    return;
-  }
-  
-  if (totalTasks === 0) {
-    addLog('⚠️ No trials accepted! Create some first.');
-    return;
-  }
-  
-  if (completedTasks < totalTasks) {
-    addLog(`⚠️ Must complete ALL trials! (${completedTasks}/${totalTasks} done)`);
-    return;
-  }
-  
-  const baseHp = GAME_CONSTANTS.FINAL_BOSS_BASE + (playerProgressDay * GAME_CONSTANTS.FINAL_BOSS_DAY_SCALING);
-  const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
-  const bossHealth = Math.floor(baseHp * (1.5 - completionRate * 0.5));
-  
-  setCurrentAnimation('screen-shake');
-  setTimeout(() => setCurrentAnimation(null), 500);
-  
-  const bossNameGenerated = makeBossName();
-  setBossName(bossNameGenerated);
-  setBossHp(bossHealth);
-  setBossMax(bossHealth);
-  setBattleType('final');
-  setShowBoss(true);
-  setBattling(true);
-  setBattleMode(true);
-  setIsFinalBoss(true);
-  setCanFlee(false);
-  addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
-};
-   
   const attack = () => {
     if (!battling || bossHp <= 0) return;
     
@@ -1134,7 +1055,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 
 let bossDamage = Math.max(1, Math.floor(
   baseAttack + 
-  (playerProgressDay * attackScaling) - 
+  (currentDay * attackScaling) - 
   (getBaseDefense() + armor)
 ));
 
@@ -1383,7 +1304,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 
 let bossDamage = Math.max(1, Math.floor(
   baseAttack + 
-  (playerProgressDay * attackScaling) - 
+  (currentDay * attackScaling) - 
   (getBaseDefense() + armor)
 ));
 
@@ -1527,7 +1448,6 @@ setSkipCount(0);
 setConsecutiveDays(0);
 setLastPlayedDate(null);
 setMiniBossCount(0);
-setPlayerProgressDay(1);
     
     setTimeout(() => setActiveTab('grave'), 1000);
   };
@@ -1551,7 +1471,6 @@ setPlayerProgressDay(1);
       setHero(newHero);
       setCanCustomize(true);
       setCurrentDay(1);
-      setPlayerProgressDay(1);
       setHp(GAME_CONSTANTS.MAX_HP);
       setStamina(GAME_CONSTANTS.MAX_STAMINA);
       setXp(0);
@@ -1599,21 +1518,16 @@ setBattleMode(false);
         addLog(`⭐ PERFECT DAY! +${GAME_CONSTANTS.PERFECT_DAY_BONUS} XP`);
       }
       
-    // Increment player progression
-setPlayerProgressDay(d => Math.min(7, d + 1));
-
-// Sync display to real calendar
-const realDay = getRealDayNumber();
-setCurrentDay(realDay);
-
-setHero(prev => ({
-  ...prev,
-  day: playerProgressDay + 1,
-  survived: prev.survived + 1,
-  title: titles[Math.min(playerProgressDay, 6)]
-}));
-
-addLog(`Day ${playerProgressDay + 1} begins...`);
+      if (nextDay <= GAME_CONSTANTS.TOTAL_DAYS) {
+        setCurrentDay(nextDay);
+        setHero(prev => ({
+          ...prev,
+          day: nextDay,
+          title: titles[nextDay - 1],
+          survived: prev.survived + 1
+        }));
+        addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
+      }
       
       setHp(getMaxHp());
       setStamina(getMaxStamina());
@@ -1810,7 +1724,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
                     <div className="text-5xl">{getCardStyle(hero.class, currentDay).emblem}</div>
                     <div className="text-right">
                       <p className="text-xs text-white text-opacity-70 uppercase tracking-wide">{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].name}</p>
-<p className="text-sm text-white text-opacity-80">Progress: Day {playerProgressDay}/7</p>
+                      <p className="text-sm text-white text-opacity-80">Day {currentDay}/7</p>
                       <p className="text-2xl font-bold text-white">Lvl {level}</p>
                     </div>
                   </div>
@@ -2118,7 +2032,6 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
         setHero(newHero);
         setCanCustomize(true);
         setCurrentDay(1);
-        setPlayerProgressDay(1);
         setHasStarted(false);
         setHp(GAME_CONSTANTS.MAX_HP);
         setStamina(GAME_CONSTANTS.MAX_STAMINA);
@@ -2256,46 +2169,30 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
                   </div>
                   
                   <div className="grid md:grid-cols-2 gap-4">
-                 <button 
+                    <button 
   onClick={miniBoss} 
-  disabled={
-    eliteBossDefeatedToday || 
-    tasks.length < 5 || 
-    tasks.filter(t => t.done).length < tasks.length * 0.9
-  } 
+  disabled={eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
   className="bg-red-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-800 transition-all shadow-lg shadow-red-900/50 border-2 border-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
   Face the Darkness
   {eliteBossDefeatedToday ? (
     <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
-  ) : tasks.length < 5 ? (
-    <div className="text-sm font-normal mt-1 text-red-400">Need at least 5 tasks ({tasks.length}/5)</div>
   ) : tasks.length > 0 ? (
     <div className="text-sm font-normal mt-1">
-      {Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}% complete - need 90%
-      <div className="text-xs text-gray-400 mt-1">
-        ({tasks.filter(t => t.done).length}/{tasks.length} tasks done)
-      </div>
+      ({Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}% complete - need 75%)
     </div>
   ) : null}
 </button>
-                 <button 
+                    <button 
   onClick={finalBoss} 
-  disabled={
-    new Date().getDay() !== 0 || 
-    tasks.length === 0 || 
-    tasks.filter(t => t.done).length < tasks.length
-  } 
+  disabled={currentDay !== 7 || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
   className="bg-purple-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-purple-800 transition-all shadow-lg shadow-purple-900/50 border-2 border-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
   THE FINAL RECKONING
-  {new Date().getDay() !== 0 ? (
-    <div className="text-sm font-normal mt-1">🔒 Only available on Sunday (Endday)</div>
+  {currentDay !== 7 ? (
+    <div className="text-sm font-normal mt-1">🔒 Locked until Day 7</div>
   ) : tasks.length > 0 ? (
-    <div className="text-sm font-normal mt-1">
-      ({tasks.filter(t => t.done).length}/{tasks.length} required)
-      <div className="text-xs text-gray-400 mt-1">Day {playerProgressDay} difficulty</div>
-    </div>
+    <div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{tasks.length} required)</div>
   ) : null}
 </button>
                   </div>
@@ -3139,8 +3036,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
     </div>
   </div>
 )}
-        
-        {showCalendarModal && selectedDate && (
+          {showCalendarModal && selectedDate && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
@@ -3358,7 +3254,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
               }}
               className="bg-yellow-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-700 transition-all"
             >
-             ⏭️ Skip Break
+              ⏭️ Skip Break
             </button>
           )}
         </div>
