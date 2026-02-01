@@ -3386,7 +3386,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
       </div>          // closes "relative z-10 p-6"
     )}                // closes ternary operator
   </div>              // closes outer wrapper
-  );                  // closes return
+  )}                  // closes return
 };                    // closes component
 
 export default FantasyStudyQuest;
