@@ -3376,17 +3376,18 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
       </div>
     </div>
   </div>
-)}
-       </div>
+)}                    // closes pomodoro modal
         
         <div className="flex justify-center mt-8 pb-6">
           <button onClick={() => setShowDebug(!showDebug)}>
             {showDebug ? '▲ Hide' : '▼ Show'} Debug Panel
           </button>
         </div>
-      </div>      // ✅ closes "relative z-10 p-6"
-    )}            // ✅ closes ternary operator
-  </div>          // ✅ closes outer wrapper
-  );              // ✅ closes return
-};                // ✅ closes component
+      </div>          // closes "relative z-10 p-6"
+    )}                // closes ternary operator
+  </div>              // closes outer wrapper
+  );                  // closes return
+};                    // closes component
+
 export default FantasyStudyQuest;
+
