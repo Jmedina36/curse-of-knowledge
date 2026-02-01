@@ -3358,7 +3358,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
               }}
               className="bg-yellow-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-700 transition-all"
             >
-              ⏭️ Skip Break
+             ⏭️ Skip Break
             </button>
           )}
         </div>
@@ -3377,25 +3377,16 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
       </div>
     </div>
   </div>
-)}                    // closes pomodoro modal
+)}
+        </div>
         
         <div className="flex justify-center mt-8 pb-6">
-          <button onClick={() => setShowDebug(!showDebug)}>
-            {showDebug ? '▲ Hide' : '▼ Show'} Debug Panel
-          </button>
+          <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
         </div>
-   </div>              {/* ✅ CLOSES max-w-6xl container */}
-        
-        <div className="flex justify-center mt-8 pb-6">
-          <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">
-            {showDebug ? '▲ Hide' : '▼ Show'} Debug Panel
-          </button>
-        </div>
-      </div>                {/* closes "relative z-10 p-6" */}
-      )}                    {/* closes ternary operator */}
-    </div>                  {/* closes outer wrapper */}
+      </div>
+      )}
+    </div>
   );
-};                    // closes component
+};
 
 export default FantasyStudyQuest;
-
