@@ -3389,7 +3389,7 @@ addLog(`Day ${playerProgressDay + 1} begins...`);
     )}                // closes ternary operator
   </div>              // closes outer wrapper
   );                  // ✅ semicolon, not closing brace!
-};                    // closes component
+}                   // closes component
 
 export default FantasyStudyQuest;
 
