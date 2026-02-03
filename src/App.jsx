@@ -1907,7 +1907,7 @@ setBattleMode(false);
       onClick={() => setShowCustomizeModal(true)}
       className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg transition-all font-bold text-white"
     >
-      Customize Your Hero!
+      You're Gay!
     </button>
   </div>
 )}
@@ -2562,7 +2562,7 @@ setBattleMode(false);
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-blue-400">CUSTOMIZE YOUR HERO</h3>
+        <h3 className="text-xl font-bold text-blue-400">YOU'RE GAY</h3>
         <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white">
           <X size={24}/>
         </button>
