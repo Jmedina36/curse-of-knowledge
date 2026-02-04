@@ -145,6 +145,7 @@ const [pomodorosCompleted, setPomodorosCompleted] = useState(0);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [newPlanItem, setNewPlanItem] = useState({ title: '', priority: 'routine' });
+  const [showImportModal, setShowImportModal] = useState(false);
   
   const [calendarTasks, setCalendarTasks] = useState({});
   const [flashcardDecks, setFlashcardDecks] = useState([]);
@@ -625,6 +626,30 @@ if (tasks.length === 0) {
     addLog(`📜 New trial: ${newTask.title}`);
   }
 };
+
+  const importFromPlanner = (dayName) => {
+    const plannedTasks = weeklyPlan[dayName] || [];
+    
+    if (plannedTasks.length === 0) {
+      addLog(`⚠️ No tasks planned for ${dayName}`);
+      return;
+    }
+    
+    const newTasks = [];
+    plannedTasks.forEach((item, idx) => {
+      newTasks.push({
+        title: item.title,
+        priority: item.priority || 'routine',
+        id: Date.now() + idx + Math.random(),
+        done: false
+      });
+    });
+    
+    setTasks(newTasks);
+    setHasStarted(true);
+    addLog(`📋 Imported ${newTasks.length} tasks from ${dayName}'s plan`);
+    setShowImportModal(false);
+  };
   
   const startTask = (id) => {
     if (canCustomize) {
@@ -1583,7 +1608,6 @@ setBattleMode(false);
           title: titles[nextDay - 1],
           survived: prev.survived + 1
         }));
-        addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
         
         // Auto-load next day's planner tasks
         const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -1595,17 +1619,26 @@ setBattleMode(false);
           newTasks.push({
             title: item.title,
             priority: item.priority || 'routine',
-            id: Date.now() + idx,
+            id: Date.now() + idx + Math.random(), // Ensure unique IDs
             done: false
           });
         });
         
+        // Set tasks BEFORE logging to ensure state updates
         if (newTasks.length > 0) {
           setTasks(newTasks);
-          addLog(`📋 Loaded ${newTasks.length} tasks from ${plannerDayName}'s plan`);
+          setHasStarted(true); // Explicitly ensure we're in "started" mode
+          setTimeout(() => {
+            addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
+            addLog(`📋 Loaded ${newTasks.length} tasks from ${plannerDayName}'s plan`);
+          }, 100);
         } else {
           setTasks([]);
-          addLog(`📋 No tasks planned for ${plannerDayName}`);
+          setHasStarted(true);
+          setTimeout(() => {
+            addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
+            addLog(`📋 No tasks planned for ${plannerDayName} - use "Import from Planner" or "Accept Trial"`);
+          }, 100);
         }
       }
       
@@ -2181,9 +2214,14 @@ setBattleMode(false);
                         <h2 className="text-2xl font-bold text-red-400">Trials of the Cursed</h2>
                         <p className="text-sm text-gray-400">{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * 100)}%</p>
                       </div>
-                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-all">
-                        <Plus size={20}/>Accept Trial
-                      </button>
+                      <div className="flex gap-2">
+                        <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">
+                          <Calendar size={20}/>Import from Planner
+                        </button>
+                        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-all">
+                          <Plus size={20}/>Accept Trial
+                        </button>
+                      </div>
                     </div>
                     
                     {tasks.length === 0 ? (
@@ -3023,6 +3061,58 @@ setBattleMode(false);
   </div>
 )}
 
+{showImportModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-blue-400">Import from Planner</h3>
+        <button onClick={() => setShowImportModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+      </div>
+      
+      <p className="text-gray-400 text-sm mb-4">Select which day's tasks to import:</p>
+      
+      <div className="space-y-2">
+        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, idx) => {
+          const taskCount = weeklyPlan[day]?.length || 0;
+          const isCurrentDay = idx === (currentDay - 1);
+          
+          return (
+            <button
+              key={day}
+              onClick={() => importFromPlanner(day)}
+              disabled={taskCount === 0}
+              className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+                isCurrentDay
+                  ? 'bg-blue-900 border-blue-500 hover:bg-blue-800'
+                  : taskCount > 0
+                    ? 'bg-gray-800 border-gray-700 hover:border-blue-500 hover:bg-gray-750'
+                    : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'
+              }`}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="font-bold text-white">{day}</span>
+                  {isCurrentDay && <span className="ml-2 text-xs text-blue-400">(Current Day)</span>}
+                </div>
+                <span className={`text-sm ${taskCount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
+                  {taskCount} task{taskCount !== 1 ? 's' : ''}
+                </span>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+      
+      <button 
+        onClick={() => setShowImportModal(false)} 
+        className="w-full mt-4 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
          {showPlanModal && selectedDay && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
@@ -3386,7 +3476,7 @@ setBattleMode(false);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.3.2 - Auto-Load Planner Tasks</p>
+          <p className="text-xs text-gray-600">v3.3.3 - Import from Planner</p>
         </div>
       </div>
       )}
