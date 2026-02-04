@@ -342,9 +342,13 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.calendarTasks) setCalendarTasks(data.calendarTasks);
       } catch (e) {
         console.error('Failed to load save:', e);
+        // If saved data is corrupted, generate new hero
+        setHero(makeName());
       }
+    } else {
+      // No saved data exists - generate new hero
+      setHero(makeName());
     }
-    if (!hero) setHero(makeName());
     
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
@@ -3480,7 +3484,7 @@ setBattleMode(false);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.3.3 - Import from Planner</p>
+          <p className="text-xs text-gray-600">v3.3.4 - Hero Save Fix</p>
         </div>
       </div>
       )}
