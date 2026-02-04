@@ -3074,7 +3074,11 @@ setBattleMode(false);
       <div className="space-y-2">
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, idx) => {
           const taskCount = weeklyPlan[day]?.length || 0;
-          const isCurrentDay = idx === (currentDay - 1);
+          // Highlight real-world current day, not game day
+          const today = new Date();
+          const todayDayIndex = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+          const realWorldDayIndex = todayDayIndex === 0 ? 6 : todayDayIndex - 1; // Convert to 0=Monday, 6=Sunday
+          const isRealWorldToday = idx === realWorldDayIndex;
           
           return (
             <button
@@ -3082,7 +3086,7 @@ setBattleMode(false);
               onClick={() => importFromPlanner(day)}
               disabled={taskCount === 0}
               className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                isCurrentDay
+                isRealWorldToday
                   ? 'bg-blue-900 border-blue-500 hover:bg-blue-800'
                   : taskCount > 0
                     ? 'bg-gray-800 border-gray-700 hover:border-blue-500 hover:bg-gray-750'
@@ -3092,7 +3096,7 @@ setBattleMode(false);
               <div className="flex justify-between items-center">
                 <div>
                   <span className="font-bold text-white">{day}</span>
-                  {isCurrentDay && <span className="ml-2 text-xs text-blue-400">(Current Day)</span>}
+                  {isRealWorldToday && <span className="ml-2 text-xs text-blue-400">(Today)</span>}
                 </div>
                 <span className={`text-sm ${taskCount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
                   {taskCount} task{taskCount !== 1 ? 's' : ''}
