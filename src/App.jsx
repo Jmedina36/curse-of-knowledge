@@ -120,7 +120,7 @@ const FantasyStudyQuest = () => {
   const [armor, setArmor] = useState(0);
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
- const [newTask, setNewTask] = useState({ title: '', priority: 'routine' });
+  const [newTask, setNewTask] = useState({ title: '', priority: 'routine' });
   const [activeTask, setActiveTask] = useState(null);
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(false);
@@ -188,6 +188,7 @@ const [totalWaveEnemies, setTotalWaveEnemies] = useState(0);
   const [bossFlash, setBossFlash] = useState(false);
   const [playerFlash, setPlayerFlash] = useState(false);
   const [victoryFlash, setVictoryFlash] = useState(false);
+  const [victoryLoot, setVictoryLoot] = useState([]);
   const [showDebug, setShowDebug] = useState(false);
   const [canCustomize, setCanCustomize] = useState(true);
 const [showCustomizeModal, setShowCustomizeModal] = useState(false);
@@ -404,7 +405,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           
           // Play sound and show notification
           if (Notification.permission === "granted") {
-            new Notification(isBreak ? "Break Over!" : "Pomodoro Complete!", {
+            new Notification(isBreak ? "Break Over! 🎯" : "Pomodoro Complete! 🍅", {
               body: isBreak ? "Time to get back to work!" : "Great work! Take a 5 minute break.",
               icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><text y='75' font-size='75'>🍅</text></svg>"
             });
@@ -413,7 +414,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           if (!isBreak) {
             // Work session done - start break
             setPomodorosCompleted(p => p + 1);
-            addLog(`Pomodoro #${pomodorosCompleted + 1} completed!`);
+            addLog(`🍅 Pomodoro #${pomodorosCompleted + 1} completed!`);
             setIsBreak(true);
             setPomodoroTimer(5 * 60); // 5 minute break
           } else {
@@ -523,7 +524,10 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   // ... rest of start function continues below
     
 const currentHour = new Date().getHours();
-  const dayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  
+  // Map game day (1-7) to planner day name
+  const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const plannerDayName = dayNames[currentDay - 1]; // currentDay is 1-7, array is 0-6
 
     setLastPlayedDate(today);
     
@@ -539,7 +543,7 @@ const currentHour = new Date().getHours();
     }
     
     
-    const plannedTasks = weeklyPlan[dayOfWeek] || [];
+    const plannedTasks = weeklyPlan[plannerDayName] || [];
 
 if (tasks.length === 0) {
   const newTasks = [];
@@ -555,7 +559,7 @@ if (tasks.length === 0) {
       
       if (newTasks.length > 0) {
         setTasks(newTasks);
-        addLog(`📋 Loaded ${newTasks.length} tasks from ${dayOfWeek}'s plan`);
+        addLog(`📋 Loaded ${newTasks.length} tasks from ${plannerDayName}'s plan`);
       }
     }
     
@@ -772,6 +776,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setIsFinalBoss(false);
   setCanFlee(false);
   setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
+  setVictoryLoot([]); // Clear previous loot
   
   if (isWave) {
     setBattleType('wave');
@@ -811,6 +816,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCanFlee(true);
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
+    setVictoryLoot([]); // Clear previous loot
     addLog(`⚔️ AMBUSH! ${bossNameGenerated} appears!`);
   };
   
@@ -915,6 +921,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleMode(true);
     setIsFinalBoss(true);
     setCanFlee(false);
+    setVictoryLoot([]); // Clear previous loot
     addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
   };
   
@@ -1009,30 +1016,62 @@ if (battleType === 'elite') {
   setBattling(false);
   setBattleMode(false);
       
+      const lootMessages = [];
+      
       if (!isFinalBoss) {
-        const lootRoll = Math.random();
-        if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
-          setHealthPots(h => h + 1);
-          addLog('💎 Looted: Health Potion!');
-        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
-          setStaminaPots(s => s + 1);
-          addLog('💎 Looted: Stamina Potion!');
-        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-          const gain = 4 + Math.floor(currentDay / 3);
-          setWeapon(w => w + gain);
-          addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
+        // Regular/wave enemies: potions only
+        if (battleType === 'regular' || battleType === 'wave') {
+          const lootRoll = Math.random();
+          if (lootRoll < 0.2) {
+            setHealthPots(h => h + 1);
+            lootMessages.push('💊 Health Potion');
+            addLog('💊 Looted: Health Potion!');
+          } else if (lootRoll < 0.55) {
+            setStaminaPots(s => s + 1);
+            lootMessages.push('⚡ Stamina Potion');
+            addLog('⚡ Looted: Stamina Potion!');
+          }
         } else {
-          const gain = 4 + Math.floor(currentDay / 3);
-          setArmor(a => a + gain);
-          addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
+          // Elite bosses: weapon/armor upgrades
+          const lootRoll = Math.random();
+          if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
+            setHealthPots(h => h + 1);
+            lootMessages.push('💎 Health Potion');
+            addLog('💎 Looted: Health Potion!');
+          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
+            setStaminaPots(s => s + 1);
+            lootMessages.push('💎 Stamina Potion');
+            addLog('💎 Looted: Stamina Potion!');
+          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
+            const gain = 4 + Math.floor(currentDay / 3);
+            setWeapon(w => w + gain);
+            lootMessages.push(`⚔️ Weapon +${gain}`);
+            addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
+          } else {
+            const gain = 4 + Math.floor(currentDay / 3);
+            setArmor(a => a + gain);
+            lootMessages.push(`🛡️ Armor +${gain}`);
+            addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
+          }
         }
         
+        lootMessages.push('✨ Fully Healed');
         setHp(getMaxHp());
         addLog('✨ Fully healed!');
       }
       
+      setVictoryLoot(lootMessages);
       setVictoryFlash(true);
       setTimeout(() => setVictoryFlash(false), 400);
+      
+      // CRITICAL FIX: Auto-close for regular/wave enemies, keep open for elite/final
+      if (battleType === 'regular' || battleType === 'wave') {
+        setTimeout(() => {
+          setShowBoss(false);
+          addLog('⚔️ Ready for your next trial...');
+        }, 2000);
+      }
+      
       return;
     }
     
@@ -1241,15 +1280,19 @@ if (curseLevel === 2) {
       setBattling(false);
       setBattleMode(false);
       
+      const lootMessages = [];
+      
       if (!isFinalBoss) {
   // Regular/wave enemies: potions only
   if (battleType === 'regular' || battleType === 'wave') {
     const lootRoll = Math.random();
     if (lootRoll < 0.2) {
       setHealthPots(h => h + 1);
+      lootMessages.push('💊 Health Potion');
       addLog('💊 Looted: Health Potion!');
     } else if (lootRoll < 0.55) {
       setStaminaPots(s => s + 1);
+      lootMessages.push('⚡ Stamina Potion');
       addLog('⚡ Looted: Stamina Potion!');
     }
   } else {
@@ -1257,27 +1300,41 @@ if (curseLevel === 2) {
     const lootRoll = Math.random();
     if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
       setHealthPots(h => h + 1);
+      lootMessages.push('💎 Health Potion');
       addLog('💎 Looted: Health Potion!');
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
       setStaminaPots(s => s + 1);
+      lootMessages.push('💎 Stamina Potion');
       addLog('💎 Looted: Stamina Potion!');
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
       const gain = 4 + Math.floor(currentDay / 3);
       setWeapon(w => w + gain);
+      lootMessages.push(`⚔️ Weapon +${gain}`);
       addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
     } else {
       const gain = 4 + Math.floor(currentDay / 3);
       setArmor(a => a + gain);
+      lootMessages.push(`🛡️ Armor +${gain}`);
       addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
     }
   }
         
+        lootMessages.push('✨ Fully Healed');
         setHp(getMaxHp());
         addLog('✨ Fully healed!');
       }
       
+      setVictoryLoot(lootMessages);
       setVictoryFlash(true);
       setTimeout(() => setVictoryFlash(false), 400);
+      
+      // CRITICAL FIX: Auto-close for regular/wave enemies, keep open for elite/final
+      if (battleType === 'regular' || battleType === 'wave') {
+        setTimeout(() => {
+          setShowBoss(false);
+          addLog('⚔️ Ready for your next trial...');
+        }, 2000);
+      }
       
       return;
     }
@@ -1544,11 +1601,13 @@ setBattleMode(false);
         deepWorkSessions: 0
       }));
       
+      // CRITICAL: Clear all tasks and reset daily flags
       setTasks([]);
       setActiveTask(null);
       setTimer(0);
       setRunning(false);
       setHasStarted(false);
+      setEliteBossDefeatedToday(false); // Reset elite boss flag for new day
       setShowBoss(false);
       setMiniBossCount(0);
       setBattling(false);
@@ -1907,7 +1966,7 @@ setBattleMode(false);
       onClick={() => setShowCustomizeModal(true)}
       className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg transition-all font-bold text-white"
     >
-      You're Gay!
+      Customize Your Hero!
     </button>
   </div>
 )}
@@ -1989,6 +2048,7 @@ setBattleMode(false);
       setBattleMode(true);
       setIsFinalBoss(true);
       setCanFlee(false);
+      setVictoryLoot([]); // Clear previous loot
       addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
     }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Spawn Final Boss</button>
     <button onClick={() => { 
@@ -2146,11 +2206,11 @@ setBattleMode(false);
               setPomodorosCompleted(0);
               setIsBreak(false);
               setPomodoroRunning(true);
-              addLog(`Starting focus session: ${t.title}`);
+              addLog(`🍅 Starting focus session: ${t.title}`);
             }} 
             className="bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 transition-all flex items-center gap-1"
           >
-            Focus
+            🍅 Focus
           </button>
           <button 
             onClick={() => complete(t.id)} 
@@ -2562,7 +2622,7 @@ setBattleMode(false);
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-blue-400">YOU'RE GAY</h3>
+        <h3 className="text-xl font-bold text-blue-400">CUSTOMIZE YOUR HERO</h3>
         <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white">
           <X size={24}/>
         </button>
@@ -3199,7 +3259,30 @@ setBattleMode(false);
                 {bossName && (<p className="text-2xl text-center text-yellow-400 mb-4 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</p>)}
                 <div className="space-y-6"><div><div className="flex justify-between mb-2"><span className="text-red-400 font-bold">{bossName || 'Boss'}</span><span className="text-red-400">{bossHp}/{bossMax}</span></div><div className="bg-gray-800 rounded-full h-6 overflow-hidden"><div className={`bg-red-600 h-6 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div></div></div><div><div className="flex justify-between mb-2"><span className="text-green-400 font-bold">{hero.name}</span><span className="text-green-400">HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span></div><div className="bg-gray-800 rounded-full h-6 overflow-hidden mb-2"><div className={`bg-green-600 h-6 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div></div><div className="bg-gray-800 rounded-full h-4 overflow-hidden"><div className="bg-cyan-500 h-4 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div></div></div>
                   {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button>)}</>)}
-                  {bossHp <= 0 && (<div className="text-center"><p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p><p className="text-gray-400 text-sm mb-4 italic">{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p><button onClick={advance} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">{isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}</button></div>)}
+                  {bossHp <= 0 && (
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p>
+                      <p className="text-gray-400 text-sm mb-4 italic">{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p>
+                      
+                      {victoryLoot.length > 0 && (
+                        <div className="bg-black bg-opacity-60 rounded-lg p-4 mb-4 border-2 border-yellow-500">
+                          <p className="text-yellow-400 font-bold mb-2 text-lg">⚔️ SPOILS OF BATTLE ⚔️</p>
+                          <div className="space-y-1">
+                            {victoryLoot.map((loot, idx) => (
+                              <p key={idx} className="text-white text-sm animate-pulse">{loot}</p>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {(battleType === 'elite' || isFinalBoss) && (
+                        <button onClick={advance} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">{isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}</button>
+                      )}
+                      {(battleType === 'regular' || battleType === 'wave') && (
+                        <p className="text-green-300 text-sm animate-pulse">Returning to quest...</p>
+                      )}
+                    </div>
+                  )}
                   {hp <= 0 && (<div className="text-center"><p className="text-3xl font-bold text-red-400 mb-2">DEFEATED</p><p className="text-gray-400 text-sm mb-4 italic">"The curse claims another victim..."</p><button onClick={() => { setShowBoss(false); die(); }} className="bg-red-600 text-white px-8 py-3 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg shadow-red-600/50">CONTINUE</button></div>)}
                 </div>
               </div>
@@ -3210,7 +3293,7 @@ setBattleMode(false);
     <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-12 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-purple-400 mb-2">
-          {isBreak ? '☕ BREAK TIME' : 'FOCUS SESSION'}
+          {isBreak ? '☕ BREAK TIME' : '🍅 FOCUS SESSION'}
         </h2>
         <p className="text-xl text-gray-300 mb-8">{pomodoroTask.title}</p>
         
@@ -3278,6 +3361,10 @@ setBattleMode(false);
         
         <div className="flex justify-center mt-8 pb-6">
           <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
+        </div>
+        
+        <div className="text-center pb-4">
+          <p className="text-xs text-gray-600">v3.3.1 - Battle Victory Fix</p>
         </div>
       </div>
       )}
