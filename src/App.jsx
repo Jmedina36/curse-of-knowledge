@@ -4,7 +4,7 @@
 // FIXES: Calendar sync, date display on planner, missing dependencies, poison bug
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer } from 'lucide-react';
 
 const GAME_CONSTANTS = {
   LATE_START_PENALTY: 15,
@@ -195,6 +195,11 @@ const [totalWaveEnemies, setTotalWaveEnemies] = useState(0);
 const [showCustomizeModal, setShowCustomizeModal] = useState(false);
 const [customName, setCustomName] = useState('');
 const [customClass, setCustomClass] = useState(null);
+  const [showInventoryModal, setShowInventoryModal] = useState(false);
+  const [showCraftingModal, setShowCraftingModal] = useState(false);
+  const [weaponOilActive, setWeaponOilActive] = useState(false);
+  const [armorPolishActive, setArmorPolishActive] = useState(false);
+  const [luckyCharmActive, setLuckyCharmActive] = useState(false);
   const [log, setLog] = useState([]);
   const [graveyard, setGraveyard] = useState([]);
   const [heroes, setHeroes] = useState([]);
@@ -654,6 +659,49 @@ if (tasks.length === 0) {
     addLog(`📋 Imported ${newTasks.length} tasks from ${dayName}'s plan`);
     setShowImportModal(false);
   };
+
+  const craftItem = (itemType) => {
+    const craftingRecipes = {
+      healthPotion: { cost: 50, name: 'Health Potion', emoji: '💊' },
+      staminaPotion: { cost: 40, name: 'Stamina Potion', emoji: '⚡' },
+      cleansePotion: { cost: 100, name: 'Cleanse Potion', emoji: '🧪' },
+      weaponOil: { cost: 75, name: 'Weapon Oil', emoji: '⚔️' },
+      armorPolish: { cost: 75, name: 'Armor Polish', emoji: '🛡️' },
+      luckyCharm: { cost: 150, name: 'Lucky Charm', emoji: '🍀' }
+    };
+    
+    const recipe = craftingRecipes[itemType];
+    
+    if (xp < recipe.cost) {
+      addLog(`⚠️ Need ${recipe.cost} XP to craft ${recipe.name} (have ${xp})`);
+      return;
+    }
+    
+    setXp(x => x - recipe.cost);
+    
+    switch(itemType) {
+      case 'healthPotion':
+        setHealthPots(h => h + 1);
+        break;
+      case 'staminaPotion':
+        setStaminaPots(s => s + 1);
+        break;
+      case 'cleansePotion':
+        setCleansePots(c => c + 1);
+        break;
+      case 'weaponOil':
+        setWeaponOilActive(true);
+        break;
+      case 'armorPolish':
+        setArmorPolishActive(true);
+        break;
+      case 'luckyCharm':
+        setLuckyCharmActive(true);
+        break;
+    }
+    
+    addLog(`⚒️ Crafted: ${recipe.emoji} ${recipe.name} (-${recipe.cost} XP)`);
+  };
   
   const startTask = (id) => {
     if (canCustomize) {
@@ -962,7 +1010,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
     
-    const damage = getBaseAttack() + weapon + Math.floor(Math.random() * 10) + (level - 1) * 2;
+    const damage = getBaseAttack() + weapon + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10) + (level - 1) * 2;
     let finalDamage = damage;
     let bonusMessages = [];
     
@@ -1063,24 +1111,31 @@ if (battleType === 'elite') {
         } else {
           // Elite bosses: weapon/armor upgrades
           const lootRoll = Math.random();
+          const luckMultiplier = luckyCharmActive ? 2 : 1;
+          
           if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
-            setHealthPots(h => h + 1);
-            lootMessages.push('💎 Health Potion');
-            addLog('💎 Looted: Health Potion!');
+            setHealthPots(h => h + luckMultiplier);
+            lootMessages.push(`💎 Health Potion${luckyCharmActive ? ' x2' : ''}`);
+            addLog(`💎 Looted: Health Potion${luckyCharmActive ? ' x2 (Lucky Charm!)' : '!'}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
-            setStaminaPots(s => s + 1);
-            lootMessages.push('💎 Stamina Potion');
-            addLog('💎 Looted: Stamina Potion!');
+            setStaminaPots(s => s + luckMultiplier);
+            lootMessages.push(`💎 Stamina Potion${luckyCharmActive ? ' x2' : ''}`);
+            addLog(`💎 Looted: Stamina Potion${luckyCharmActive ? ' x2 (Lucky Charm!)' : '!'}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-            const gain = 4 + Math.floor(currentDay / 3);
+            const gain = (4 + Math.floor(currentDay / 3)) * luckMultiplier;
             setWeapon(w => w + gain);
-            lootMessages.push(`⚔️ Weapon +${gain}`);
-            addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
+            lootMessages.push(`⚔️ Weapon +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
+            addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})${luckyCharmActive ? ' (Lucky Charm!)' : ''}`);
           } else {
-            const gain = 4 + Math.floor(currentDay / 3);
+            const gain = (4 + Math.floor(currentDay / 3)) * luckMultiplier;
             setArmor(a => a + gain);
-            lootMessages.push(`🛡️ Armor +${gain}`);
-            addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
+            lootMessages.push(`🛡️ Armor +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
+            addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})${luckyCharmActive ? ' (Lucky Charm!)' : ''}`);
+          }
+          
+          if (luckyCharmActive) {
+            setLuckyCharmActive(false);
+            addLog('🍀 Lucky Charm consumed!');
           }
         }
         
@@ -1124,7 +1179,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 let bossDamage = Math.max(1, Math.floor(
   baseAttack + 
   (currentDay * attackScaling) - 
-  (getBaseDefense() + armor)
+  (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
 ));
 
 // Curse level increases enemy damage
@@ -1327,24 +1382,31 @@ if (curseLevel === 2) {
   } else {
     // Elite bosses: weapon/armor upgrades
     const lootRoll = Math.random();
+    const luckMultiplier = luckyCharmActive ? 2 : 1;
+    
     if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
-      setHealthPots(h => h + 1);
-      lootMessages.push('💎 Health Potion');
-      addLog('💎 Looted: Health Potion!');
+      setHealthPots(h => h + luckMultiplier);
+      lootMessages.push(`💎 Health Potion${luckyCharmActive ? ' x2' : ''}`);
+      addLog(`💎 Looted: Health Potion${luckyCharmActive ? ' x2 (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
-      setStaminaPots(s => s + 1);
-      lootMessages.push('💎 Stamina Potion');
-      addLog('💎 Looted: Stamina Potion!');
+      setStaminaPots(s => s + luckMultiplier);
+      lootMessages.push(`💎 Stamina Potion${luckyCharmActive ? ' x2' : ''}`);
+      addLog(`💎 Looted: Stamina Potion${luckyCharmActive ? ' x2 (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-      const gain = 4 + Math.floor(currentDay / 3);
+      const gain = (4 + Math.floor(currentDay / 3)) * luckMultiplier;
       setWeapon(w => w + gain);
-      lootMessages.push(`⚔️ Weapon +${gain}`);
-      addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})`);
+      lootMessages.push(`⚔️ Weapon +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
+      addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})${luckyCharmActive ? ' (Lucky Charm!)' : ''}`);
     } else {
-      const gain = 4 + Math.floor(currentDay / 3);
+      const gain = (4 + Math.floor(currentDay / 3)) * luckMultiplier;
       setArmor(a => a + gain);
-      lootMessages.push(`🛡️ Armor +${gain}`);
-      addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})`);
+      lootMessages.push(`🛡️ Armor +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
+      addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})${luckyCharmActive ? ' (Lucky Charm!)' : ''}`);
+    }
+    
+    if (luckyCharmActive) {
+      setLuckyCharmActive(false);
+      addLog('🍀 Lucky Charm consumed!');
     }
   }
         
@@ -1391,7 +1453,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 let bossDamage = Math.max(1, Math.floor(
   baseAttack + 
   (currentDay * attackScaling) - 
-  (getBaseDefense() + armor)
+  (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
 ));
 
 // Curse level increases enemy damage
@@ -1673,6 +1735,11 @@ setBattleMode(false);
       setBattleMode(false);
       setRecklessStacks(0);
       setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
+      
+      // Clear crafted buffs
+      setWeaponOilActive(false);
+      setArmorPolishActive(false);
+      setLuckyCharmActive(false);
       
       addLog(`🌅 New day! Fully rested. HP: ${getMaxHp()} | SP: ${getMaxStamina()}`);
     }
@@ -2029,6 +2096,16 @@ setBattleMode(false);
     </button>
   </div>
 )}
+                
+                <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
+                  <button 
+                    onClick={() => setShowInventoryModal(true)}
+                    className="w-full bg-gradient-to-r from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center gap-2"
+                  >
+                    <Heart size={20}/>
+                    Inventory & Crafting
+                  </button>
+                </div>
               </div>
             </div>
           </header>
@@ -2039,7 +2116,6 @@ setBattleMode(false);
               {id:'planner', icon:Calendar, label:'Weekly Planner'},
               {id:'calendar', icon:Calendar, label:'Calendar'},
               {id:'study', icon:Calendar, label:'Study'},
-              {id:'inv', icon:Heart, label:'Inventory'},
               {id:'grave', icon:Skull, label:'The Consumed'},
               {id:'hall', icon:Trophy, label:'The Liberated'},
               {id:'progress', icon:Trophy, label:'Progress'},
@@ -2653,19 +2729,6 @@ setBattleMode(false);
             </div>
           )}
 
-          {activeTab === 'inv' && (
-  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-red-900">
-    <h2 className="text-2xl font-bold text-red-400 mb-6 text-center">Cursed Arsenal</h2>
-    <div className="grid md:grid-cols-2 gap-6">
-      <div className="bg-red-900 bg-opacity-50 rounded-lg p-4 flex justify-between items-center border border-red-700"><div className="flex items-center gap-3"><Heart className="text-red-400" size={32}/><div><p className="font-bold text-white">Health Potions</p><p className="text-2xl text-red-400">{healthPots}</p><p className="text-xs text-gray-400">Restores {GAME_CONSTANTS.HEALTH_POTION_HEAL} HP</p></div></div><button onClick={useHealth} disabled={healthPots === 0 || hp >= getMaxHp()} className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all">Use</button></div>
-      <div className="bg-cyan-900 bg-opacity-50 rounded-lg p-4 flex justify-between items-center border border-cyan-700"><div className="flex items-center gap-3"><Zap className="text-cyan-400" size={32}/><div><p className="font-bold text-white">Stamina Potions</p><p className="text-2xl text-cyan-400">{staminaPots}</p><p className="text-xs text-gray-400">Restores {GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP</p></div></div><button onClick={() => { if (staminaPots > 0 && stamina < getMaxStamina()) { setStaminaPots(s => s - 1); setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); } }} disabled={staminaPots === 0 || stamina >= getMaxStamina()} className="bg-cyan-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-cyan-700 transition-all">Use</button></div>
-      <div className={`bg-purple-900 bg-opacity-50 rounded-lg p-4 border-2 ${curseLevel > 0 ? 'border-purple-400 ring-2 ring-purple-500 animate-pulse' : 'border-purple-700'}`}><div className="flex justify-between items-center mb-3"><div className="flex items-center gap-3"><span className="text-4xl">✨</span><div><p className="font-bold text-white">Cleanse Potions</p><p className="text-2xl text-purple-400">{cleansePots}</p><p className="text-xs text-gray-400">Removes curse</p></div></div><button onClick={useCleanse} disabled={cleansePots === 0 || curseLevel === 0} className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all">Use</button></div><div className="pt-3 border-t-2 border-purple-600"><p className="text-xs text-gray-300 mb-2 text-center font-bold">CRAFT POTION</p><button onClick={craftCleanse} disabled={xp < GAME_CONSTANTS.CLEANSE_POTION_COST} className={`w-full px-4 py-3 rounded transition-all text-sm font-bold ${xp >= GAME_CONSTANTS.CLEANSE_POTION_COST ? 'bg-purple-700 hover:bg-purple-600 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}>{xp >= GAME_CONSTANTS.CLEANSE_POTION_COST ? `Craft Cleanse Potion (-${GAME_CONSTANTS.CLEANSE_POTION_COST} XP)` : `Need ${GAME_CONSTANTS.CLEANSE_POTION_COST - xp} more XP`}</button><p className="text-xs text-gray-400 mt-2 text-center">Sacrifice XP to create cleanse potion</p></div></div>
-      <div className="bg-orange-900 bg-opacity-50 rounded-lg p-4 flex items-center gap-3 border border-orange-700"><Sword className="text-orange-400" size={32}/><div><p className="font-bold text-white">Weapon Power</p><p className="text-2xl text-orange-400">+{weapon}</p><p className="text-xs text-gray-400">Total Attack: {getBaseAttack() + weapon + (level - 1) * 2}</p></div></div>
-      <div className="bg-blue-900 bg-opacity-50 rounded-lg p-4 flex items-center gap-3 border border-blue-700"><Shield className="text-blue-400" size={32}/><div><p className="font-bold text-white">Armor Rating</p><p className="text-2xl text-blue-400">+{armor}</p><p className="text-xs text-gray-400">Total Defense: {getBaseDefense() + armor}</p></div></div>
-    </div>
-  </div>
-)}
-
           {activeTab === 'grave' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-gray-800">
               <h2 className="text-2xl font-bold text-gray-400 mb-2 text-center">THE CONSUMED</h2>
@@ -2679,6 +2742,202 @@ setBattleMode(false);
               <h2 className="text-2xl font-bold text-yellow-400 mb-2 text-center">THE LIBERATED</h2>
               <p className="text-green-400 text-sm mb-6 italic text-center">"Those who broke free from the curse..."</p>
               {heroes.length === 0 ? (<div className="text-center py-12"><Trophy size={64} className="mx-auto mb-4 text-gray-700"/><p className="text-gray-400">None have escaped the curse... yet.</p><p className="text-sm text-gray-500 mt-2">Survive all 7 days to break free!</p></div>) : (<div className="space-y-4">{heroes.slice().reverse().map((hero, i) => (<div key={i} className={`bg-gradient-to-r ${hero.class ? hero.class.gradient[3] : 'from-yellow-900'} ${hero.class && hero.class.color === 'yellow' ? 'to-orange-400' : hero.class && hero.class.color === 'red' ? 'to-orange-500' : hero.class && hero.class.color === 'purple' ? 'to-pink-500' : hero.class && hero.class.color === 'green' ? 'to-teal-500' : 'to-yellow-500'} rounded-lg p-6 border-4 border-yellow-400 shadow-2xl shadow-yellow-500/50`}><div className="flex items-center gap-4"><div className="text-6xl animate-pulse">{hero.class ? hero.class.emblem : '✨'}</div><div className="flex-1"><h3 className="text-2xl font-bold text-white">{hero.name}</h3><p className="text-xl text-white text-opacity-90">{hero.title} {hero.class ? hero.class.name : ''}</p><p className="text-white">Level {hero.lvl} • {hero.xp} XP</p>{hero.skipCount !== undefined && hero.skipCount === 0 && (<p className="text-green-300 font-bold mt-1">✨ FLAWLESS RUN - No skips!</p>)}{hero.skipCount > 0 && (<p className="text-yellow-200 text-sm mt-1">Overcame {hero.skipCount} skip{hero.skipCount > 1 ? 's' : ''}</p>)}<p className="text-yellow-300 font-bold mt-2">✨ CURSE BROKEN ✨</p><p className="text-green-400 text-sm italic">"Free at last from the eternal torment..."</p></div></div></div>))}</div>)}
+            </div>
+          )}
+
+          {showInventoryModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowInventoryModal(false)}>
+              <div className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full border-2 border-yellow-500 my-8" onClick={e => e.stopPropagation()}>
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-yellow-400">📦 INVENTORY & CRAFTING</h2>
+                  <button onClick={() => setShowInventoryModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+                </div>
+                
+                {/* INVENTORY SECTION */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Heart size={20} className="text-red-400"/>
+                    Current Inventory
+                  </h3>
+                  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-red-900 bg-opacity-50 rounded-lg p-4 border-2 border-red-700">
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">💊</span>
+                        <div>
+                          <p className="font-bold text-white">Health Potions</p>
+                          <p className="text-2xl text-red-400">{healthPots}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-blue-900 bg-opacity-50 rounded-lg p-4 border-2 border-blue-700">
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">⚡</span>
+                        <div>
+                          <p className="font-bold text-white">Stamina Potions</p>
+                          <p className="text-2xl text-blue-400">{staminaPots}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-purple-900 bg-opacity-50 rounded-lg p-4 border-2 border-purple-700">
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">🧪</span>
+                        <div>
+                          <p className="font-bold text-white">Cleanse Potions</p>
+                          <p className="text-2xl text-purple-400">{cleansePots}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">⚔️</span>
+                        <div>
+                          <p className="font-bold text-white">Weapon</p>
+                          <p className="text-2xl text-yellow-400">+{weapon}</p>
+                          {weaponOilActive && <p className="text-xs text-green-400">+5 Oil Active</p>}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
+                      <div className="flex items-center gap-3">
+                        <span className="text-4xl">🛡️</span>
+                        <div>
+                          <p className="font-bold text-white">Armor</p>
+                          <p className="text-2xl text-blue-300">+{armor}</p>
+                          {armorPolishActive && <p className="text-xs text-green-400">+5 Polish Active</p>}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {luckyCharmActive && (
+                      <div className="bg-green-900 bg-opacity-50 rounded-lg p-4 border-2 border-green-500">
+                        <div className="flex items-center gap-3">
+                          <span className="text-4xl">🍀</span>
+                          <div>
+                            <p className="font-bold text-white">Lucky Charm</p>
+                            <p className="text-sm text-green-300">Active</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* CRAFTING SECTION */}
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <Hammer size={20} className="text-orange-400"/>
+                    The Dark Forge
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4">Sacrifice XP to craft powerful items. Current XP: <span className="text-yellow-400 font-bold">{xp}</span></p>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <button 
+                      onClick={() => craftItem('healthPotion')} 
+                      disabled={xp < 50}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${xp >= 50 ? 'bg-red-900 bg-opacity-50 border-red-700 hover:bg-red-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl">💊</span>
+                        <div>
+                          <p className="font-bold text-white">Health Potion</p>
+                          <p className="text-sm text-yellow-400">50 XP</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">Restores +30 HP</p>
+                    </button>
+                    
+                    <button 
+                      onClick={() => craftItem('staminaPotion')} 
+                      disabled={xp < 40}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${xp >= 40 ? 'bg-blue-900 bg-opacity-50 border-blue-700 hover:bg-blue-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl">⚡</span>
+                        <div>
+                          <p className="font-bold text-white">Stamina Potion</p>
+                          <p className="text-sm text-yellow-400">40 XP</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">Restores +50 SP</p>
+                    </button>
+                    
+                    <button 
+                      onClick={() => craftItem('cleansePotion')} 
+                      disabled={xp < 100}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${xp >= 100 ? 'bg-purple-900 bg-opacity-50 border-purple-700 hover:bg-purple-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl">🧪</span>
+                        <div>
+                          <p className="font-bold text-white">Cleanse Potion</p>
+                          <p className="text-sm text-yellow-400">100 XP</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">Removes curse</p>
+                    </button>
+                    
+                    <button 
+                      onClick={() => craftItem('weaponOil')} 
+                      disabled={xp < 75 || weaponOilActive}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${xp >= 75 && !weaponOilActive ? 'bg-orange-900 bg-opacity-50 border-orange-700 hover:bg-orange-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl">⚔️</span>
+                        <div>
+                          <p className="font-bold text-white">Weapon Oil</p>
+                          <p className="text-sm text-yellow-400">75 XP</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">+5 weapon until next day</p>
+                      {weaponOilActive && <p className="text-xs text-green-400 mt-1">✓ Active</p>}
+                    </button>
+                    
+                    <button 
+                      onClick={() => craftItem('armorPolish')} 
+                      disabled={xp < 75 || armorPolishActive}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${xp >= 75 && !armorPolishActive ? 'bg-cyan-900 bg-opacity-50 border-cyan-700 hover:bg-cyan-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl">🛡️</span>
+                        <div>
+                          <p className="font-bold text-white">Armor Polish</p>
+                          <p className="text-sm text-yellow-400">75 XP</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">+5 armor until next day</p>
+                      {armorPolishActive && <p className="text-xs text-green-400 mt-1">✓ Active</p>}
+                    </button>
+                    
+                    <button 
+                      onClick={() => craftItem('luckyCharm')} 
+                      disabled={xp < 150 || luckyCharmActive}
+                      className={`p-4 rounded-lg border-2 transition-all text-left ${xp >= 150 && !luckyCharmActive ? 'bg-green-900 bg-opacity-50 border-green-700 hover:bg-green-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-3xl">🍀</span>
+                        <div>
+                          <p className="font-bold text-white">Lucky Charm</p>
+                          <p className="text-sm text-yellow-400">150 XP</p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400">2x loot from next elite boss</p>
+                      {luckyCharmActive && <p className="text-xs text-green-400 mt-1">✓ Active</p>}
+                    </button>
+                  </div>
+                </div>
+                
+                <button 
+                  onClick={() => setShowInventoryModal(false)} 
+                  className="w-full mt-6 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           )}
 
@@ -3484,7 +3743,7 @@ setBattleMode(false);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.3.4 - Hero Save Fix</p>
+          <p className="text-xs text-gray-600">v3.4.0 - Inventory & Crafting System</p>
         </div>
       </div>
       )}
