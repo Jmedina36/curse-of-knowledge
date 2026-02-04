@@ -1584,6 +1584,29 @@ setBattleMode(false);
           survived: prev.survived + 1
         }));
         addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
+        
+        // Auto-load next day's planner tasks
+        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const plannerDayName = dayNames[nextDay - 1];
+        const plannedTasks = weeklyPlan[plannerDayName] || [];
+        
+        const newTasks = [];
+        plannedTasks.forEach((item, idx) => {
+          newTasks.push({
+            title: item.title,
+            priority: item.priority || 'routine',
+            id: Date.now() + idx,
+            done: false
+          });
+        });
+        
+        if (newTasks.length > 0) {
+          setTasks(newTasks);
+          addLog(`📋 Loaded ${newTasks.length} tasks from ${plannerDayName}'s plan`);
+        } else {
+          setTasks([]);
+          addLog(`📋 No tasks planned for ${plannerDayName}`);
+        }
       }
       
       setHp(getMaxHp());
@@ -1601,12 +1624,11 @@ setBattleMode(false);
         deepWorkSessions: 0
       }));
       
-      // CRITICAL: Clear all tasks and reset daily flags
-      setTasks([]);
+      // CRITICAL: Reset daily flags
       setActiveTask(null);
       setTimer(0);
       setRunning(false);
-      setHasStarted(false);
+      // Keep hasStarted = true so tasks show immediately
       setEliteBossDefeatedToday(false); // Reset elite boss flag for new day
       setShowBoss(false);
       setMiniBossCount(0);
@@ -3364,7 +3386,7 @@ setBattleMode(false);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.3.1 - Battle Victory Fix</p>
+          <p className="text-xs text-gray-600">v3.3.2 - Auto-Load Planner Tasks</p>
         </div>
       </div>
       )}
