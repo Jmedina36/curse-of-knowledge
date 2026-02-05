@@ -2505,7 +2505,7 @@ setBattleMode(false);
                     </button>
                   </div>
                   )}
-                </div>
+                
                 {canCustomize && (
   <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
     <button 
@@ -4054,7 +4054,7 @@ setBattleMode(false);
               
               setNewCalendarTask({ title: '', priority: 'routine' }); 
             } 
-          }}} 
+          }} 
           disabled={!newCalendarTask.title.trim()} 
           className="w-full bg-green-600 py-2 rounded-lg hover:bg-green-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
         >
