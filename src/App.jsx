@@ -339,6 +339,10 @@ const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
 const [quizScore, setQuizScore] = useState(0);
 const [selectedAnswer, setSelectedAnswer] = useState(null);
 const [showQuizResults, setShowQuizResults] = useState(false);
+const [wrongCardIndices, setWrongCardIndices] = useState([]);
+const [isRetakeQuiz, setIsRetakeQuiz] = useState(false);
+const [mistakesReviewed, setMistakesReviewed] = useState(false);
+const [reviewingMistakes, setReviewingMistakes] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -502,7 +506,7 @@ const getDateKey = useCallback((date) => {
     setLog(prev => [...prev, msg].slice(-GAME_CONSTANTS.LOG_MAX_ENTRIES));
   }, []);
   
-  const generateQuiz = useCallback((deckIndex) => {
+  const generateQuiz = useCallback((deckIndex, isRetake = false) => {
     const deck = flashcardDecks[deckIndex];
     if (!deck || deck.cards.length < 4) {
       alert('Need at least 4 cards to generate a quiz!');
@@ -513,8 +517,11 @@ const getDateKey = useCallback((date) => {
     const shuffledCards = [...deck.cards].sort(() => Math.random() - 0.5);
     
     const questions = shuffledCards.map((card, idx) => {
+      // Get the original index of this card in the deck
+      const originalIndex = deck.cards.indexOf(card);
+      
       // Get 3 random wrong answers from other cards
-      const otherCards = deck.cards.filter((_, i) => i !== deck.cards.indexOf(card));
+      const otherCards = deck.cards.filter((_, i) => i !== originalIndex);
       const wrongAnswers = otherCards
         .sort(() => Math.random() - 0.5)
         .slice(0, 3)
@@ -526,7 +533,8 @@ const getDateKey = useCallback((date) => {
       return {
         question: card.front,
         correctAnswer: card.back,
-        choices: allChoices
+        choices: allChoices,
+        cardIndex: originalIndex // Store original index
       };
     });
     
@@ -535,6 +543,10 @@ const getDateKey = useCallback((date) => {
     setQuizScore(0);
     setSelectedAnswer(null);
     setShowQuizResults(false);
+    setWrongCardIndices([]);
+    setIsRetakeQuiz(isRetake);
+    setMistakesReviewed(false);
+    setReviewingMistakes(false);
     setShowQuizModal(true);
   }, [flashcardDecks]);
   
@@ -1310,7 +1322,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Consume taunt
     setIsTauntAvailable(false);
     
-    addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt for 3 turns)`);
+    addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt, -25% accuracy for 3 turns)`);
   };
   
   const attack = () => {
@@ -1566,6 +1578,28 @@ if (curseLevel === 2) {
 if (enragedTurns > 0) {
   const enragedBonus = Math.floor(bossDamage * 0.15);
   bossDamage += enragedBonus;
+  
+  // 25% miss chance when enraged (wild swings)
+  if (Math.random() < 0.25) {
+    addLog(`💨 Boss's ENRAGED attack missed!`);
+    
+    // Decrement enraged turns even on miss
+    setEnragedTurns(prev => {
+      const newTurns = prev - 1;
+      if (newTurns === 0) {
+        addLog(`😤 Enemy is no longer ENRAGED`);
+        setPlayerTaunt('');
+      }
+      return newTurns;
+    });
+    
+    // Taunt becomes available on enemy miss
+    if (!isTauntAvailable) {
+      setIsTauntAvailable(true);
+      addLog(`💬 [TAUNT AVAILABLE] - Enemy missed! Opening spotted!`);
+    }
+    return; // Skip damage entirely
+  }
 }
       
       setPlayerFlash(true);
@@ -1929,6 +1963,28 @@ if (curseLevel === 2) {
 if (enragedTurns > 0) {
   const enragedBonus = Math.floor(bossDamage * 0.15);
   bossDamage += enragedBonus;
+  
+  // 25% miss chance when enraged (wild swings)
+  if (Math.random() < 0.25) {
+    addLog(`💨 Boss's ENRAGED attack missed!`);
+    
+    // Decrement enraged turns even on miss
+    setEnragedTurns(prev => {
+      const newTurns = prev - 1;
+      if (newTurns === 0) {
+        addLog(`😤 Enemy is no longer ENRAGED`);
+        setPlayerTaunt('');
+      }
+      return newTurns;
+    });
+    
+    // Taunt becomes available on enemy miss
+    if (!isTauntAvailable) {
+      setIsTauntAvailable(true);
+      addLog(`💬 [TAUNT AVAILABLE] - Enemy missed! Opening spotted!`);
+    }
+    return; // Skip damage entirely
+  }
 }
         
         setPlayerFlash(true);
@@ -3689,11 +3745,21 @@ setBattleMode(false);
         </div>
         <button 
           onClick={() => {
-            setShowStudyModal(false);
-            setSelectedDeck(null);
-            setCurrentCardIndex(0);
-            setStudyQueue([]);
-            setIsFlipped(false);
+            if (reviewingMistakes) {
+              // Return to quiz results without marking as reviewed
+              setShowStudyModal(false);
+              setReviewingMistakes(false);
+              setStudyQueue([]);
+              setIsFlipped(false);
+              setShowQuizModal(true);
+              setShowQuizResults(true);
+            } else {
+              setShowStudyModal(false);
+              setSelectedDeck(null);
+              setCurrentCardIndex(0);
+              setStudyQueue([]);
+              setIsFlipped(false);
+            }
           }}
           className="text-gray-400 hover:text-white"
         >
@@ -3772,11 +3838,22 @@ setBattleMode(false);
                   addLog('⚡ Found Stamina Potion!');
                 }
                 
-                setShowStudyModal(false);
-                setSelectedDeck(null);
-                setCurrentCardIndex(0);
-                setStudyQueue([]);
-                setIsFlipped(false);
+                // If we were reviewing mistakes, mark as reviewed and return to quiz results
+                if (reviewingMistakes) {
+                  setMistakesReviewed(true);
+                  setReviewingMistakes(false);
+                  setShowStudyModal(false);
+                  setShowQuizModal(true);
+                  setShowQuizResults(true);
+                  setIsFlipped(false);
+                  addLog('✅ Mistakes reviewed! Retake unlocked.');
+                } else {
+                  setShowStudyModal(false);
+                  setSelectedDeck(null);
+                  setCurrentCardIndex(0);
+                  setStudyQueue([]);
+                  setIsFlipped(false);
+                }
               } else {
                 setStudyQueue(newQueue);
                 setIsFlipped(false);
@@ -3811,6 +3888,10 @@ setBattleMode(false);
                 setQuizScore(0);
                 setSelectedAnswer(null);
                 setShowQuizResults(false);
+                setWrongCardIndices([]);
+                setIsRetakeQuiz(false);
+                setMistakesReviewed(false);
+                setReviewingMistakes(false);
               }}
               className="text-gray-400 hover:text-white"
             >
@@ -3857,12 +3938,37 @@ setBattleMode(false);
           {selectedAnswer && (
             <button
               onClick={() => {
-                if (selectedAnswer === quizQuestions[currentQuizIndex].correctAnswer) {
-                  setQuizScore(prev => prev + 1);
+                let finalScore = quizScore;
+                const isCorrect = selectedAnswer === quizQuestions[currentQuizIndex].correctAnswer;
+                
+                if (isCorrect) {
+                  finalScore = quizScore + 1;
+                  setQuizScore(finalScore);
+                } else {
+                  // Track wrong answer
+                  setWrongCardIndices(prev => [...prev, quizQuestions[currentQuizIndex].cardIndex]);
                 }
                 
                 const nextIndex = currentQuizIndex + 1;
                 if (nextIndex >= quizQuestions.length) {
+                  // Quiz complete - award XP and loot
+                  const baseXP = finalScore * 10;
+                  const xpGain = isRetakeQuiz ? Math.floor(baseXP * 0.5) : baseXP;
+                  setXp(x => x + xpGain);
+                  addLog(`📝 Quiz complete! +${xpGain} XP${isRetakeQuiz ? ' (retake)' : ''}`);
+                  
+                  // Loot for good performance (70%+) - only on first attempt
+                  if (!isRetakeQuiz && finalScore >= quizQuestions.length * 0.7) {
+                    const roll = Math.random();
+                    if (roll < 0.4) {
+                      setHealthPots(h => h + 1);
+                      addLog('💊 Found Health Potion!');
+                    } else if (roll < 0.7) {
+                      setStaminaPots(s => s + 1);
+                      addLog('⚡ Found Stamina Potion!');
+                    }
+                  }
+                  
                   setShowQuizResults(true);
                 } else {
                   setCurrentQuizIndex(nextIndex);
@@ -3888,48 +3994,72 @@ setBattleMode(false);
               {quizScore >= quizQuestions.length * 0.7 && quizScore < quizQuestions.length && 'Great Job! 💪'}
               {quizScore < quizQuestions.length * 0.7 && 'Keep Studying! 📚'}
             </p>
+            {wrongCardIndices.length > 0 && (
+              <p className="text-red-400 mt-2">Missed {wrongCardIndices.length} question{wrongCardIndices.length !== 1 ? 's' : ''}</p>
+            )}
           </div>
           
           <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <p className="text-yellow-400 text-xl mb-2">+{quizScore * 10} XP</p>
-            {(() => {
-              const xpGain = quizScore * 10;
-              setXp(x => x + xpGain);
-              
-              // Loot for good performance
-              if (quizScore >= quizQuestions.length * 0.7) {
-                const roll = Math.random();
-                if (roll < 0.4) {
-                  setTimeout(() => {
-                    setHealthPots(h => h + 1);
-                    addLog('💊 Found Health Potion!');
-                  }, 100);
-                } else if (roll < 0.7) {
-                  setTimeout(() => {
-                    setStaminaPots(s => s + 1);
-                    addLog('⚡ Found Stamina Potion!');
-                  }, 100);
-                }
-                return <p className="text-gray-400">Bonus loot awarded! Check your inventory.</p>;
-              }
-              return null;
-            })()}
+            <p className="text-yellow-400 text-xl mb-2">+{isRetakeQuiz ? Math.floor(quizScore * 10 * 0.5) : quizScore * 10} XP Earned{isRetakeQuiz ? ' (Retake - 50%)' : ''}</p>
+            {!isRetakeQuiz && quizScore >= quizQuestions.length * 0.7 && (
+              <p className="text-gray-400">Bonus loot awarded! Check your inventory.</p>
+            )}
           </div>
           
-          <button
-            onClick={() => {
-              setShowQuizModal(false);
-              setSelectedDeck(null);
-              setQuizQuestions([]);
-              setCurrentQuizIndex(0);
-              setQuizScore(0);
-              setSelectedAnswer(null);
-              setShowQuizResults(false);
-            }}
-            className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-lg font-bold text-lg transition-all"
-          >
-            Close
-          </button>
+          <div className="space-y-3">
+            {wrongCardIndices.length > 0 && (
+              <button
+                onClick={() => {
+                  // Open study modal with only wrong cards
+                  setStudyQueue([...wrongCardIndices]);
+                  setReviewingMistakes(true);
+                  setShowQuizModal(false);
+                  setShowQuizResults(false);
+                  setIsFlipped(false);
+                  setShowStudyModal(true);
+                }}
+                className="w-full bg-purple-600 hover:bg-purple-700 py-4 rounded-lg font-bold text-lg transition-all"
+              >
+                📖 Review Mistakes ({wrongCardIndices.length} card{wrongCardIndices.length !== 1 ? 's' : ''})
+              </button>
+            )}
+            
+            <button
+              onClick={() => {
+                // Retake quiz with reduced XP
+                setShowQuizModal(false);
+                setShowQuizResults(false);
+                generateQuiz(selectedDeck, true);
+              }}
+              disabled={wrongCardIndices.length > 0 && !mistakesReviewed}
+              className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
+                wrongCardIndices.length > 0 && !mistakesReviewed
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {wrongCardIndices.length > 0 && !mistakesReviewed ? '🔒 Review Mistakes First' : '🔄 Retake Quiz (50% XP)'}
+            </button>
+            
+            <button
+              onClick={() => {
+                setShowQuizModal(false);
+                setSelectedDeck(null);
+                setQuizQuestions([]);
+                setCurrentQuizIndex(0);
+                setQuizScore(0);
+                setSelectedAnswer(null);
+                setShowQuizResults(false);
+                setWrongCardIndices([]);
+                setIsRetakeQuiz(false);
+                setMistakesReviewed(false);
+                setReviewingMistakes(false);
+              }}
+              className="w-full bg-gray-600 hover:bg-gray-700 py-4 rounded-lg font-bold text-lg transition-all"
+            >
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -4326,7 +4456,7 @@ setBattleMode(false);
                     <div className="flex justify-between mb-2">
                       <span className="text-red-400 font-bold">
                         {bossName || 'Boss'}
-                        {enragedTurns > 0 && (<span className="ml-3 text-orange-400 font-bold animate-pulse">ENRAGED (ATK↑ DEF↓) ({enragedTurns})</span>)}
+                        {enragedTurns > 0 && (<span className="ml-3 text-orange-400 font-bold animate-pulse">ENRAGED (ATK↑ DEF↓ ACC↓) ({enragedTurns})</span>)}
                       </span>
                       <span className="text-red-400">{bossHp}/{bossMax}</span>
                     </div>
