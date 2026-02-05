@@ -1,6 +1,6 @@
 // FANTASY STUDY QUEST - v3.3 SEVEN DAYS EDITION (CALENDAR FIX)
 // PART 1 OF 3 - Copy this first
-// Last updated: 2026-02-04
+// Last updated: 2026-01-14
 // FIXES: Calendar sync, date display on planner, missing dependencies, poison bug
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -146,7 +146,32 @@ const GAME_CONSTANTS = {
       "If you put this much effort into REAL work, you'd be CEO by now!",
       "I surrender! Just... please touch grass after this.",
       "Beating ME up? What about your REAL problems?"
-    ]
+    ],
+    TAUNTS: {
+      REGULAR: [
+        { player: "At least I opened the app!", enemy: "ENRAGED! THAT'S your bar? OPENING an app? Congratulations on basic motor function." },
+        { player: "This counts as progress!", enemy: "ENRAGED! Playing a game about work is NOT work. Nice try though." },
+        { player: "I'm being productive... technically!", enemy: "ENRAGED! If mental gymnastics were a sport, you'd be OLYMPIC." },
+        { player: "The developer said this would help!", enemy: "ENRAGED! The developer is LAUGHING at you right now. We ALL are." },
+        { player: "My therapist would be proud!", enemy: "ENRAGED! Your therapist doesn't KNOW about this. And you'll never tell them." },
+        { player: "This beats scrolling social media!", enemy: "ENRAGED! You're STILL scrolling. This game has a CHARACTER SCREEN." },
+        { player: "I'm learning time management!", enemy: "ENRAGED! You're learning to ROLEPLAY time management. There's a difference." },
+        { player: "Better than nothing!", enemy: "ENRAGED! IS IT? You could be doing... literally anything else." },
+        { player: "This is exposure therapy!", enemy: "ENRAGED! For WHAT? Task anxiety? You're CREATING more by gamifying it!" },
+        { player: "I'm the protagonist!", enemy: "ENRAGED! You're the protagonist of a PRODUCTIVITY app. That's not the flex you think." },
+        { player: "This is player agency!", enemy: "ENRAGED! Your 'agency' is choosing which TASK to fight first. Revolutionary." },
+        { player: "The UI is really clean though!", enemy: "ENRAGED! You're admiring the UI?! JUST DO THE TASK!" },
+        { player: "At least I'm self-aware!", enemy: "ENRAGED! SELF-AWARENESS WITHOUT ACTION IS JUST ENTERTAINMENT. You're watching yourself fail. For FUN." },
+        { player: "Five stars on the app store!", enemy: "ENRAGED! You rated it five stars?! You ENDORSED this? To OTHER people?!" },
+        { player: "The dialogue is so good!", enemy: "ENRAGED! You're enjoying the WRITING while your ACTUAL work waits. PRIORITIES." }
+      ],
+      WAVE: [
+        { player: "Mob farming simulator!", enemy: "ENRAGED! These 'mobs' are EMAILS. You're farming EMAILS." },
+        { player: "XP grinding session!", enemy: "ENRAGED! You're 'grinding' basic responsibilities. How EPIC." },
+        { player: "This is my endgame content!", enemy: "ENRAGED! Your endgame is... TASKS? That's everyone's START game." },
+        { player: "AOE clear activated!", enemy: "ENRAGED! You can't AOE real tasks. You have to do them ONE. AT. A. TIME." }
+      ]
+    }
   },
   
   BOSS_DIALOGUE: {
@@ -155,49 +180,83 @@ const GAME_CONSTANTS = {
       MID: "This is literally just Monday. You made a BOSS FIGHT for MONDAY.",
       LOW: "Wait—you're ACTUALLY winning? Against MONDAY? ...That's not how this works!",
       VICTORY_BOSS: "Cool, you beat Monday in a game. Real Monday is still there.",
-      VICTORY_PLAYER: "I'm not even the final boss. That's your INBOX."
+      VICTORY_PLAYER: "I'm not even the final boss. That's your INBOX.",
+      TAUNTS: [
+        { player: "I beat tutorial Monday!", enemy: "ENRAGED! This isn't a TUTORIAL. This is your LIFE. And you made it into Dark Souls." },
+        { player: "Week 1 of my new system!", enemy: "ENRAGED! You have 47 'Week 1's in your journal. I checked." },
+        { player: "The patch notes buffed me!", enemy: "ENRAGED! There are NO patch notes for YOUR life. Update yourself." }
+      ]
     },
     DAY_2: {
       START: "Still here? Impressive. Most give up by Tuesday.",
       MID: "Those 'urgent' emails aren't going to ignore themselves.",
       LOW: "Okay, you're serious about this. But you know you're just gonna scroll Reddit after, right?",
       VICTORY_BOSS: "Tomorrow you'll remember why you procrastinate.",
-      VICTORY_PLAYER: "Impossible... someone who actually... follows through?"
+      VICTORY_PLAYER: "Impossible... someone who actually... follows through?",
+      TAUNTS: [
+        { player: "Day 2 and still going!", enemy: "ENRAGED! TWO DAYS? Wow. Someone get this hero a MEDAL." },
+        { player: "The grind continues!", enemy: "ENRAGED! You're 'grinding' Tuesday. TUESDAY. Listen to yourself." }
+      ]
     },
     DAY_3: {
       START: "We're halfway through the week AND this conversation. Meta, right?",
       MID: "You realize you're taking THIS seriously but not your ACTUAL work?",
       LOW: "I'm a METAPHOR and you're BEATING me? Do you not see the irony here?!",
       VICTORY_BOSS: "The real curse was the tasks we completed along the way.",
-      VICTORY_PLAYER: "You beat me but you can't beat the feeling that it's only WEDNESDAY."
+      VICTORY_PLAYER: "You beat me but you can't beat the feeling that it's only WEDNESDAY.",
+      TAUNTS: [
+        { player: "Halfway through the campaign!", enemy: "ENRAGED! This isn't a CAMPAIGN. It's WEDNESDAY. In real life. Which still exists." },
+        { player: "Mid-game boss defeated!", enemy: "ENRAGED! I'm not 'mid-game.' I'm WEDNESDAY. I repeat WEEKLY. There's no END." },
+        { player: "Save file looking good!", enemy: "ENRAGED! You can't SAVE your life. You can't RELOAD Monday. This is PERMANENT." }
+      ]
     },
     DAY_4: {
       START: "So close to Friday. So far from freedom.",
       MID: "Imagine if you'd started this on Monday.",
       LOW: "FINE! FINE! Thursday is basically Friday anyway! Just... stop hitting me!",
       VICTORY_BOSS: "Doesn't matter. Tomorrow's still Thursday.",
-      VICTORY_PLAYER: "You'll wake up tomorrow and it'll still be Thursday in your SOUL."
+      VICTORY_PLAYER: "You'll wake up tomorrow and it'll still be Thursday in your SOUL.",
+      TAUNTS: [
+        { player: "Almost Friday!", enemy: "ENRAGED! 'Almost' doesn't count. It's THURSDAY. You have ANOTHER day." },
+        { player: "Pre-weekend vibes!", enemy: "ENRAGED! 'Vibes' don't complete tasks. ACTION does. Try it sometime." }
+      ]
     },
     DAY_5: {
       START: "Friday! The lie that keeps you going.",
       MID: "Weekend plans? Cute. You'll be doing laundry and feeling guilty.",
       LOW: "You can't defeat me! I AM the weekend you'll—okay you're actually doing it. Shit.",
       VICTORY_BOSS: "The weekend is a myth. A beautiful, cruel myth.",
-      VICTORY_PLAYER: "Enjoy your 48 hours before the cycle begins again..."
+      VICTORY_PLAYER: "Enjoy your 48 hours before the cycle begins again...",
+      TAUNTS: [
+        { player: "Almost at the credits!", enemy: "ENRAGED! The 'credits' are two days of guilt before ANOTHER week. Congratulations." },
+        { player: "Final stretch of content!", enemy: "ENRAGED! Your life isn't CONTENT. Log off. Touch grass. Please." },
+        { player: "Grinding for weekend loot!", enemy: "ENRAGED! Your 'loot' is laundry and existential dread. EXCITING." }
+      ]
     },
     DAY_6: {
       START: "Working on a SATURDAY? Who hurt you?",
       MID: "Your friends are having fun without you.",
       LOW: "I'm a DEMON and even I think this is unhealthy! Please. Touch. Grass.",
       VICTORY_BOSS: "You won, but at what cost? YOUR SATURDAY.",
-      VICTORY_PLAYER: "I yield! Not because you beat me, but out of pity."
+      VICTORY_PLAYER: "I yield! Not because you beat me, but out of pity.",
+      TAUNTS: [
+        { player: "Weekend warrior mode!", enemy: "ENRAGED! It's SATURDAY. You should be RESTING. Not... THIS." },
+        { player: "Grinding on my day off!", enemy: "ENRAGED! Your 'grind' is a TO-DO list. On SATURDAY. Seek help." }
+      ]
     },
     DAY_7: {
       START: "You made it to Day 7. In a GAME. Your real week was probably a disaster.",
       MID: "When you beat me, what changes? Really?",
       LOW: "WAIT. You think THIS is the end? Monday respawns in 24 hours! The cycle NEVER ends! Why won't you UNDERSTAND?!",
       VICTORY_BOSS: "See you Monday. Forever. Always. Monday.",
-      VICTORY_PLAYER: "Congratulations. Your reward is... next week. Same curse. New you. (Probably not.)"
+      VICTORY_PLAYER: "Congratulations. Your reward is... next week. Same curse. New you. (Probably not.)",
+      TAUNTS: [
+        { player: "Final boss? Easy mode.", enemy: "ENRAGED! I'm not the final boss. MONDAY is. And Monday NEVER dies." },
+        { player: "This is my character arc!", enemy: "ENRAGED! Your arc is CIRCULAR. Week 1. Week 2. Week INFINITY. No growth. Only LOOP." },
+        { player: "Time to roll credits!", enemy: "ENRAGED! The credits say 'Thanks for playing! Now do it AGAIN. FOREVER.'" },
+        { player: "New Game Plus unlocked!", enemy: "ENRAGED! It's not New Game Plus. It's the SAME GAME. SAME TASKS. You just forgot." },
+        { player: "Speedrun world record!", enemy: "ENRAGED! You're speedrunning a TO-DO LIST. Let that sink in." }
+      ]
     }
   }
 };
@@ -317,6 +376,11 @@ const [customClass, setCustomClass] = useState(null);
   const [armorPolishActive, setArmorPolishActive] = useState(false);
   const [luckyCharmActive, setLuckyCharmActive] = useState(false);
   const [enemyDialogue, setEnemyDialogue] = useState('');
+  const [playerTaunt, setPlayerTaunt] = useState('');
+  const [isTauntAvailable, setIsTauntAvailable] = useState(false);
+  const [hasTriggeredLowHpTaunt, setHasTriggeredLowHpTaunt] = useState(false);
+  const [enragedTurns, setEnragedTurns] = useState(0);
+  const [lastDamageDealt, setLastDamageDealt] = useState(0);
   const [log, setLog] = useState([]);
   const [graveyard, setGraveyard] = useState([]);
   const [heroes, setHeroes] = useState([]);
@@ -993,6 +1057,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const randomDialogue = dialoguePool[Math.floor(Math.random() * dialoguePool.length)];
   setEnemyDialogue(randomDialogue);
   
+  // Reset taunt state
+  setIsTauntAvailable(false);
+  setHasTriggeredLowHpTaunt(false);
+  setEnragedTurns(0);
+  setPlayerTaunt('');
+  
   if (isWave) {
     setBattleType('wave');
     setCurrentWaveEnemy(waveIndex);
@@ -1032,6 +1102,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
     setVictoryLoot([]); // Clear previous loot
+    
+    // Reset taunt state
+    setIsTauntAvailable(false);
+    setHasTriggeredLowHpTaunt(false);
+    setEnragedTurns(0);
+    setPlayerTaunt('');
     
     // Set day-specific boss dialogue
     const bossDialogueKey = `DAY_${currentDay}`;
@@ -1146,11 +1222,53 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCanFlee(false);
     setVictoryLoot([]); // Clear previous loot
     
+    // Reset taunt state
+    setIsTauntAvailable(false);
+    setHasTriggeredLowHpTaunt(false);
+    setEnragedTurns(0);
+    setPlayerTaunt('');
+    
     // Set final boss dialogue (Day 7)
     const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.DAY_7;
     setEnemyDialogue(bossDialogue.START);
     
     addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
+  };
+  
+  const taunt = () => {
+    if (!battling || !isTauntAvailable) return;
+    
+    // Get appropriate taunt pool
+    let tauntPool;
+    if (battleType === 'elite' || battleType === 'final') {
+      const dayKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+      tauntPool = GAME_CONSTANTS.BOSS_DIALOGUE[dayKey].TAUNTS;
+    } else if (battleType === 'wave') {
+      tauntPool = GAME_CONSTANTS.ENEMY_DIALOGUE.TAUNTS.WAVE;
+    } else {
+      tauntPool = GAME_CONSTANTS.ENEMY_DIALOGUE.TAUNTS.REGULAR;
+    }
+    
+    // Pick random taunt
+    const randomTaunt = tauntPool[Math.floor(Math.random() * tauntPool.length)];
+    
+    // Store player taunt for dual box display
+    setPlayerTaunt(randomTaunt.player);
+    
+    // Display taunt exchange
+    addLog(`💬 YOU: "${randomTaunt.player}"`);
+    setTimeout(() => {
+      addLog(`😡 ${bossName}: "${randomTaunt.enemy}"`);
+      setEnemyDialogue(randomTaunt.enemy);
+    }, 500);
+    
+    // Apply ENRAGED status
+    setEnragedTurns(3); // Lasts 3 turns
+    
+    // Consume taunt
+    setIsTauntAvailable(false);
+    
+    addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt for 3 turns)`);
   };
   
   const attack = () => {
@@ -1176,6 +1294,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       const poisonBonus = Math.floor(finalDamage * bossDebuffs.poisonedVulnerability);
       finalDamage += poisonBonus;
       bonusMessages.push(`☠️ +${poisonBonus} from poison vulnerability`);
+    }
+    
+    // Apply enraged bonus (enemy takes +20% damage when enraged)
+    if (enragedTurns > 0) {
+      const enragedBonus = Math.floor(finalDamage * 0.2);
+      finalDamage += enragedBonus;
+      bonusMessages.push(`🔥 +${enragedBonus} from ENRAGED!`);
     }
     
     const newBossHp = Math.max(0, bossHp - finalDamage);
@@ -1205,7 +1330,25 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       }
     }
     
-    if (bossDebuffs.marked || bossDebuffs.poisonTurns > 0) {
+    // Context-based taunt triggers
+    if (!isTauntAvailable && newBossHp > 0) {
+      // Trigger 1: Enemy drops below 50% HP (one time only)
+      if (hpPercent <= 0.5 && !hasTriggeredLowHpTaunt) {
+        setIsTauntAvailable(true);
+        setHasTriggeredLowHpTaunt(true);
+        addLog(`💬 [TAUNT AVAILABLE]`);
+      }
+      // Trigger 2: Deal 30+ damage in one hit (15% chance)
+      else if (finalDamage >= 30 && Math.random() < 0.15) {
+        setIsTauntAvailable(true);
+        addLog(`💬 [TAUNT AVAILABLE]`);
+      }
+    }
+    
+    // Store damage for tracking
+    setLastDamageDealt(finalDamage);
+    
+    if (bossDebuffs.marked || bossDebuffs.poisonTurns > 0 || enragedTurns > 0) {
       addLog(`⚔️ Attack: ${damage} base damage`);
       bonusMessages.forEach(msg => addLog(msg));
       addLog(`💥 TOTAL DAMAGE: ${finalDamage}!`);
@@ -1385,6 +1528,12 @@ if (curseLevel === 2) {
 } else if (curseLevel === 3) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
 }
+
+// Enraged enemies hit +15% harder
+if (enragedTurns > 0) {
+  const enragedBonus = Math.floor(bossDamage * 0.15);
+  bossDamage += enragedBonus;
+}
       
       setPlayerFlash(true);
       setTimeout(() => setPlayerFlash(false), 200);
@@ -1399,7 +1548,24 @@ if (curseLevel === 2) {
         }
         return newHp;
       });
-      addLog(`💥 Boss strikes! -${bossDamage} HP`);
+      addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
+      
+      // Taunt trigger: 25% chance after taking damage
+      if (!isTauntAvailable && bossDamage > 0 && Math.random() < 0.25) {
+        setIsTauntAvailable(true);
+        addLog(`💬 [TAUNT AVAILABLE] - Enemy left an opening!`);
+      }
+      
+      // Decrement enraged turns
+      if (enragedTurns > 0) {
+        setEnragedTurns(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) {
+            addLog(`😤 Enemy is no longer ENRAGED`);
+          }
+          return newTurns;
+        });
+      }
       
       setTimeout(() => {
         if (!battling) return;
@@ -1567,6 +1733,21 @@ if (curseLevel === 2) {
       }
     }
     
+    // Context-based taunt triggers
+    if (!isTauntAvailable && newBossHp > 0) {
+      // Trigger 1: Enemy drops below 50% HP (one time only)
+      if (hpPercent <= 0.5 && !hasTriggeredLowHpTaunt) {
+        setIsTauntAvailable(true);
+        setHasTriggeredLowHpTaunt(true);
+        addLog(`💬 [TAUNT AVAILABLE]`);
+      }
+      // Trigger 2: Deal 30+ damage in one hit (15% chance)
+      else if (damage >= 30 && Math.random() < 0.15) {
+        setIsTauntAvailable(true);
+        addLog(`💬 [TAUNT AVAILABLE]`);
+      }
+    }
+    
     let damageLog = `⚡ ${special.name}! Dealt ${damage} damage!`;
     let bonusMessages = [];
     
@@ -1715,6 +1896,12 @@ if (curseLevel === 2) {
 } else if (curseLevel === 3) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
 }
+
+// Enraged enemies hit +15% harder
+if (enragedTurns > 0) {
+  const enragedBonus = Math.floor(bossDamage * 0.15);
+  bossDamage += enragedBonus;
+}
         
         setPlayerFlash(true);
         setTimeout(() => setPlayerFlash(false), 200);
@@ -1729,7 +1916,24 @@ if (curseLevel === 2) {
           }
           return newHp;
         });
-        addLog(`💥 Boss strikes! -${bossDamage} HP`);
+        addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
+        
+        // Taunt trigger: 25% chance after taking damage
+        if (!isTauntAvailable && bossDamage > 0 && Math.random() < 0.25) {
+          setIsTauntAvailable(true);
+          addLog(`💬 [TAUNT AVAILABLE] - Enemy left an opening!`);
+        }
+        
+        // Decrement enraged turns
+        if (enragedTurns > 0) {
+          setEnragedTurns(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) {
+              addLog(`😤 Enemy is no longer ENRAGED`);
+            }
+            return newTurns;
+          });
+        }
         
         setTimeout(() => {
           if (!battling) return;
@@ -3976,19 +4180,57 @@ setBattleMode(false);
    battleType === 'wave' ? `⚠️ WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
    '⚔️ ENEMY ENCOUNTER'}
 </h2>
-                {bossName && (<p className="text-2xl text-center text-yellow-400 mb-4 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</p>)}
+                {bossName && (<p className="text-2xl text-center text-yellow-400 mb-4 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}{enragedTurns > 0 && (<span className="ml-3 text-lg text-orange-400 animate-pulse">🔥 ENRAGED (ATK↑ DEF↓) ({enragedTurns})</span>)}</p>)}
                 
-                {/* Enemy Dialogue Box */}
-                {enemyDialogue && (
-                  <div className="bg-black bg-opacity-80 rounded-lg p-4 mb-4 border-2 border-gray-600">
-                    <p className="text-gray-300 text-center italic text-sm leading-relaxed">
-                      "{enemyDialogue}"
-                    </p>
+                <div className="space-y-6">
+                  {/* Boss HP Bar */}
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-red-400 font-bold">{bossName || 'Boss'}</span>
+                      <span className="text-red-400">{bossHp}/{bossMax}</span>
+                    </div>
+                    <div className="bg-gray-800 rounded-full h-6 overflow-hidden">
+                      <div className={`bg-red-600 h-6 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div>
+                    </div>
                   </div>
-                )}
-                
-                <div className="space-y-6"><div><div className="flex justify-between mb-2"><span className="text-red-400 font-bold">{bossName || 'Boss'}</span><span className="text-red-400">{bossHp}/{bossMax}</span></div><div className="bg-gray-800 rounded-full h-6 overflow-hidden"><div className={`bg-red-600 h-6 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div></div></div><div><div className="flex justify-between mb-2"><span className="text-green-400 font-bold">{hero.name}</span><span className="text-green-400">HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span></div><div className="bg-gray-800 rounded-full h-6 overflow-hidden mb-2"><div className={`bg-green-600 h-6 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div></div><div className="bg-gray-800 rounded-full h-4 overflow-hidden"><div className="bg-cyan-500 h-4 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div></div></div>
-                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button>)}</>)}
+                  
+                  {/* Enemy Dialogue Box - Positioned below enemy HP */}
+                  {playerTaunt && enragedTurns > 0 && (
+                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-red-600">
+                      <p className="text-orange-500 text-sm font-bold mb-1">ENRAGED!</p>
+                      <p className="text-gray-300 text-sm italic leading-relaxed">"{enemyDialogue}"</p>
+                    </div>
+                  )}
+                  
+                  {/* Regular Enemy Dialogue (when not taunted) */}
+                  {enemyDialogue && (!playerTaunt || enragedTurns === 0) && (
+                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-gray-600">
+                      <p className="text-gray-300 text-center italic text-sm leading-relaxed">"{enemyDialogue}"</p>
+                    </div>
+                  )}
+                  
+                  {/* Player HP and SP Bars */}
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-green-400 font-bold">{hero.name}</span>
+                      <span className="text-green-400">HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span>
+                    </div>
+                    <div className="bg-gray-800 rounded-full h-6 overflow-hidden mb-2">
+                      <div className={`bg-green-600 h-6 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
+                    </div>
+                    <div className="bg-gray-800 rounded-full h-4 overflow-hidden">
+                      <div className="bg-cyan-500 h-4 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                    </div>
+                  </div>
+                  
+                  {/* Player Dialogue Box - Positioned below player HP/SP */}
+                  {playerTaunt && enragedTurns > 0 && (
+                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-blue-600">
+                      <p className="text-white text-sm leading-relaxed">"{playerTaunt}"</p>
+                    </div>
+                  )}
+                </div>
+                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>💬 TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{enragedTurns > 0 && (<p className="text-orange-400 text-center font-bold animate-pulse">🔥 ENEMY ENRAGED! +15% ATK | -20% DEF ({enragedTurns} turns)</p>)}{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
                   {bossHp <= 0 && (
                     <div className="text-center">
                       <p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p>
@@ -4094,7 +4336,7 @@ setBattleMode(false);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.7.0 - Meta Dialogue & Dark Comedy</p>
+          <p className="text-xs text-gray-600">v3.8.0 - Fourth-Wall Taunt System</p>
         </div>
       </div>
       )}
