@@ -149,27 +149,27 @@ const GAME_CONSTANTS = {
     ],
     TAUNTS: {
       REGULAR: [
-        { player: "At least I opened the app!", enemy: "ENRAGED! THAT'S your bar? OPENING an app? Congratulations on basic motor function." },
-        { player: "This counts as progress!", enemy: "ENRAGED! Playing a game about work is NOT work. Nice try though." },
-        { player: "I'm being productive... technically!", enemy: "ENRAGED! If mental gymnastics were a sport, you'd be OLYMPIC." },
-        { player: "The developer said this would help!", enemy: "ENRAGED! The developer is LAUGHING at you right now. We ALL are." },
-        { player: "My therapist would be proud!", enemy: "ENRAGED! Your therapist doesn't KNOW about this. And you'll never tell them." },
-        { player: "This beats scrolling social media!", enemy: "ENRAGED! You're STILL scrolling. This game has a CHARACTER SCREEN." },
-        { player: "I'm learning time management!", enemy: "ENRAGED! You're learning to ROLEPLAY time management. There's a difference." },
-        { player: "Better than nothing!", enemy: "ENRAGED! IS IT? You could be doing... literally anything else." },
-        { player: "This is exposure therapy!", enemy: "ENRAGED! For WHAT? Task anxiety? You're CREATING more by gamifying it!" },
-        { player: "I'm the protagonist!", enemy: "ENRAGED! You're the protagonist of a PRODUCTIVITY app. That's not the flex you think." },
-        { player: "This is player agency!", enemy: "ENRAGED! Your 'agency' is choosing which TASK to fight first. Revolutionary." },
-        { player: "The UI is really clean though!", enemy: "ENRAGED! You're admiring the UI?! JUST DO THE TASK!" },
-        { player: "At least I'm self-aware!", enemy: "ENRAGED! SELF-AWARENESS WITHOUT ACTION IS JUST ENTERTAINMENT. You're watching yourself fail. For FUN." },
-        { player: "Five stars on the app store!", enemy: "ENRAGED! You rated it five stars?! You ENDORSED this? To OTHER people?!" },
-        { player: "The dialogue is so good!", enemy: "ENRAGED! You're enjoying the WRITING while your ACTUAL work waits. PRIORITIES." }
+        { player: "At least I opened the app!", enemy: "THAT'S your bar? OPENING an app? Congratulations on basic motor function." },
+        { player: "This counts as progress!", enemy: "Playing a game about work is NOT work. Nice try though." },
+        { player: "I'm being productive... technically!", enemy: "If mental gymnastics were a sport, you'd be OLYMPIC." },
+        { player: "The developer said this would help!", enemy: "The developer is LAUGHING at you right now. We ALL are." },
+        { player: "My therapist would be proud!", enemy: "Your therapist doesn't KNOW about this. And you'll never tell them." },
+        { player: "This beats scrolling social media!", enemy: "You're STILL scrolling. This game has a CHARACTER SCREEN." },
+        { player: "I'm learning time management!", enemy: "You're learning to ROLEPLAY time management. There's a difference." },
+        { player: "Better than nothing!", enemy: "IS IT? You could be doing... literally anything else." },
+        { player: "This is exposure therapy!", enemy: "For WHAT? Task anxiety? You're CREATING more by gamifying it!" },
+        { player: "I'm the protagonist!", enemy: "You're the protagonist of a PRODUCTIVITY app. That's not the flex you think." },
+        { player: "This is player agency!", enemy: "Your 'agency' is choosing which TASK to fight first. Revolutionary." },
+        { player: "The UI is really clean though!", enemy: "You're admiring the UI?! JUST DO THE TASK!" },
+        { player: "At least I'm self-aware!", enemy: "SELF-AWARENESS WITHOUT ACTION IS JUST ENTERTAINMENT. You're watching yourself fail. For FUN." },
+        { player: "Five stars on the app store!", enemy: "You rated it five stars?! You ENDORSED this? To OTHER people?!" },
+        { player: "The dialogue is so good!", enemy: "You're enjoying the WRITING while your ACTUAL work waits. PRIORITIES." }
       ],
       WAVE: [
-        { player: "Mob farming simulator!", enemy: "ENRAGED! These 'mobs' are EMAILS. You're farming EMAILS." },
-        { player: "XP grinding session!", enemy: "ENRAGED! You're 'grinding' basic responsibilities. How EPIC." },
-        { player: "This is my endgame content!", enemy: "ENRAGED! Your endgame is... TASKS? That's everyone's START game." },
-        { player: "AOE clear activated!", enemy: "ENRAGED! You can't AOE real tasks. You have to do them ONE. AT. A. TIME." }
+        { player: "Mob farming simulator!", enemy: "These 'mobs' are EMAILS. You're farming EMAILS." },
+        { player: "XP grinding session!", enemy: "You're 'grinding' basic responsibilities. How EPIC." },
+        { player: "This is my endgame content!", enemy: "Your endgame is... TASKS? That's everyone's START game." },
+        { player: "AOE clear activated!", enemy: "You can't AOE real tasks. You have to do them ONE. AT. A. TIME." }
       ]
     }
   },
@@ -182,9 +182,9 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "Cool, you beat Monday in a game. Real Monday is still there.",
       VICTORY_PLAYER: "I'm not even the final boss. That's your INBOX.",
       TAUNTS: [
-        { player: "I beat tutorial Monday!", enemy: "ENRAGED! This isn't a TUTORIAL. This is your LIFE. And you made it into Dark Souls." },
-        { player: "Week 1 of my new system!", enemy: "ENRAGED! You have 47 'Week 1's in your journal. I checked." },
-        { player: "The patch notes buffed me!", enemy: "ENRAGED! There are NO patch notes for YOUR life. Update yourself." }
+        { player: "I beat tutorial Monday!", enemy: "This isn't a TUTORIAL. This is your LIFE. And you made it into Dark Souls." },
+        { player: "Week 1 of my new system!", enemy: "You have 47 'Week 1's in your journal. I checked." },
+        { player: "The patch notes buffed me!", enemy: "There are NO patch notes for YOUR life. Update yourself." }
       ]
     },
     DAY_2: {
@@ -194,8 +194,8 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "Tomorrow you'll remember why you procrastinate.",
       VICTORY_PLAYER: "Impossible... someone who actually... follows through?",
       TAUNTS: [
-        { player: "Day 2 and still going!", enemy: "ENRAGED! TWO DAYS? Wow. Someone get this hero a MEDAL." },
-        { player: "The grind continues!", enemy: "ENRAGED! You're 'grinding' Tuesday. TUESDAY. Listen to yourself." }
+        { player: "Day 2 and still going!", enemy: "TWO DAYS? Wow. Someone get this hero a MEDAL." },
+        { player: "The grind continues!", enemy: "You're 'grinding' Tuesday. TUESDAY. Listen to yourself." }
       ]
     },
     DAY_3: {
@@ -205,9 +205,9 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "The real curse was the tasks we completed along the way.",
       VICTORY_PLAYER: "You beat me but you can't beat the feeling that it's only WEDNESDAY.",
       TAUNTS: [
-        { player: "Halfway through the campaign!", enemy: "ENRAGED! This isn't a CAMPAIGN. It's WEDNESDAY. In real life. Which still exists." },
-        { player: "Mid-game boss defeated!", enemy: "ENRAGED! I'm not 'mid-game.' I'm WEDNESDAY. I repeat WEEKLY. There's no END." },
-        { player: "Save file looking good!", enemy: "ENRAGED! You can't SAVE your life. You can't RELOAD Monday. This is PERMANENT." }
+        { player: "Halfway through the campaign!", enemy: "This isn't a CAMPAIGN. It's WEDNESDAY. In real life. Which still exists." },
+        { player: "Mid-game boss defeated!", enemy: "I'm not 'mid-game.' I'm WEDNESDAY. I repeat WEEKLY. There's no END." },
+        { player: "Save file looking good!", enemy: "You can't SAVE your life. You can't RELOAD Monday. This is PERMANENT." }
       ]
     },
     DAY_4: {
@@ -217,8 +217,8 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "Doesn't matter. Tomorrow's still Thursday.",
       VICTORY_PLAYER: "You'll wake up tomorrow and it'll still be Thursday in your SOUL.",
       TAUNTS: [
-        { player: "Almost Friday!", enemy: "ENRAGED! 'Almost' doesn't count. It's THURSDAY. You have ANOTHER day." },
-        { player: "Pre-weekend vibes!", enemy: "ENRAGED! 'Vibes' don't complete tasks. ACTION does. Try it sometime." }
+        { player: "Almost Friday!", enemy: "'Almost' doesn't count. It's THURSDAY. You have ANOTHER day." },
+        { player: "Pre-weekend vibes!", enemy: "'Vibes' don't complete tasks. ACTION does. Try it sometime." }
       ]
     },
     DAY_5: {
@@ -228,9 +228,9 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "The weekend is a myth. A beautiful, cruel myth.",
       VICTORY_PLAYER: "Enjoy your 48 hours before the cycle begins again...",
       TAUNTS: [
-        { player: "Almost at the credits!", enemy: "ENRAGED! The 'credits' are two days of guilt before ANOTHER week. Congratulations." },
-        { player: "Final stretch of content!", enemy: "ENRAGED! Your life isn't CONTENT. Log off. Touch grass. Please." },
-        { player: "Grinding for weekend loot!", enemy: "ENRAGED! Your 'loot' is laundry and existential dread. EXCITING." }
+        { player: "Almost at the credits!", enemy: "The 'credits' are two days of guilt before ANOTHER week. Congratulations." },
+        { player: "Final stretch of content!", enemy: "Your life isn't CONTENT. Log off. Touch grass. Please." },
+        { player: "Grinding for weekend loot!", enemy: "Your 'loot' is laundry and existential dread. EXCITING." }
       ]
     },
     DAY_6: {
@@ -240,8 +240,8 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "You won, but at what cost? YOUR SATURDAY.",
       VICTORY_PLAYER: "I yield! Not because you beat me, but out of pity.",
       TAUNTS: [
-        { player: "Weekend warrior mode!", enemy: "ENRAGED! It's SATURDAY. You should be RESTING. Not... THIS." },
-        { player: "Grinding on my day off!", enemy: "ENRAGED! Your 'grind' is a TO-DO list. On SATURDAY. Seek help." }
+        { player: "Weekend warrior mode!", enemy: "It's SATURDAY. You should be RESTING. Not... THIS." },
+        { player: "Grinding on my day off!", enemy: "Your 'grind' is a TO-DO list. On SATURDAY. Seek help." }
       ]
     },
     DAY_7: {
@@ -251,11 +251,11 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "See you Monday. Forever. Always. Monday.",
       VICTORY_PLAYER: "Congratulations. Your reward is... next week. Same curse. New you. (Probably not.)",
       TAUNTS: [
-        { player: "Final boss? Easy mode.", enemy: "ENRAGED! I'm not the final boss. MONDAY is. And Monday NEVER dies." },
-        { player: "This is my character arc!", enemy: "ENRAGED! Your arc is CIRCULAR. Week 1. Week 2. Week INFINITY. No growth. Only LOOP." },
-        { player: "Time to roll credits!", enemy: "ENRAGED! The credits say 'Thanks for playing! Now do it AGAIN. FOREVER.'" },
-        { player: "New Game Plus unlocked!", enemy: "ENRAGED! It's not New Game Plus. It's the SAME GAME. SAME TASKS. You just forgot." },
-        { player: "Speedrun world record!", enemy: "ENRAGED! You're speedrunning a TO-DO LIST. Let that sink in." }
+        { player: "Final boss? Easy mode.", enemy: "I'm not the final boss. MONDAY is. And Monday NEVER dies." },
+        { player: "This is my character arc!", enemy: "Your arc is CIRCULAR. Week 1. Week 2. Week INFINITY. No growth. Only LOOP." },
+        { player: "Time to roll credits!", enemy: "The credits say 'Thanks for playing! Now do it AGAIN. FOREVER.'" },
+        { player: "New Game Plus unlocked!", enemy: "It's not New Game Plus. It's the SAME GAME. SAME TASKS. You just forgot." },
+        { player: "Speedrun world record!", enemy: "You're speedrunning a TO-DO LIST. Let that sink in." }
       ]
     }
   }
@@ -380,7 +380,6 @@ const [customClass, setCustomClass] = useState(null);
   const [isTauntAvailable, setIsTauntAvailable] = useState(false);
   const [hasTriggeredLowHpTaunt, setHasTriggeredLowHpTaunt] = useState(false);
   const [enragedTurns, setEnragedTurns] = useState(0);
-  const [lastDamageDealt, setLastDamageDealt] = useState(0);
   const [log, setLog] = useState([]);
   const [graveyard, setGraveyard] = useState([]);
   const [heroes, setHeroes] = useState([]);
@@ -1345,9 +1344,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       }
     }
     
-    // Store damage for tracking
-    setLastDamageDealt(finalDamage);
-    
     if (bossDebuffs.marked || bossDebuffs.poisonTurns > 0 || enragedTurns > 0) {
       addLog(`⚔️ Attack: ${damage} base damage`);
       bonusMessages.forEach(msg => addLog(msg));
@@ -1488,13 +1484,7 @@ if (battleType === 'elite') {
       setVictoryFlash(true);
       setTimeout(() => setVictoryFlash(false), 400);
       
-      // CRITICAL FIX: Auto-close for regular/wave enemies, keep open for elite/final
-      if (battleType === 'regular' || battleType === 'wave') {
-        setTimeout(() => {
-          setShowBoss(false);
-          addLog('⚔️ Ready for your next trial...');
-        }, 2000);
-      }
+      // No auto-close - let player click continue button
       
       return;
     }
@@ -1854,13 +1844,7 @@ if (enragedTurns > 0) {
       setVictoryFlash(true);
       setTimeout(() => setVictoryFlash(false), 400);
       
-      // CRITICAL FIX: Auto-close for regular/wave enemies, keep open for elite/final
-      if (battleType === 'regular' || battleType === 'wave') {
-        setTimeout(() => {
-          setShowBoss(false);
-          addLog('⚔️ Ready for your next trial...');
-        }, 2000);
-      }
+      // No auto-close - let player click continue button
       
       return;
     }
@@ -4176,19 +4160,22 @@ setBattleMode(false);
           {showBoss && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
               <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter ${bossFlash ? 'damage-flash-boss' : ''}`}>
-               <h2 className="text-4xl font-bold text-center text-red-400 mb-2">
+               {bossName && (<h2 className="text-5xl text-center text-yellow-400 mb-2 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</h2>)}
+               <p className="text-xl font-bold text-center text-red-400 mb-4">
   {isFinalBoss ? 'THE UNDYING LEGEND' : 
    battleType === 'elite' ? 'TORMENTED CHAMPION' : 
-   battleType === 'wave' ? `⚠️ WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
-   '⚔️ ENEMY ENCOUNTER'}
-</h2>
-                {bossName && (<p className="text-2xl text-center text-yellow-400 mb-4 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}{enragedTurns > 0 && (<span className="ml-3 text-lg text-orange-400 animate-pulse">🔥 ENRAGED (ATK↑ DEF↓) ({enragedTurns})</span>)}</p>)}
+   battleType === 'wave' ? `WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
+   'ENEMY ENCOUNTER'}
+</p>
                 
                 <div className="space-y-6">
                   {/* Boss HP Bar */}
                   <div>
                     <div className="flex justify-between mb-2">
-                      <span className="text-red-400 font-bold">{bossName || 'Boss'}</span>
+                      <span className="text-red-400 font-bold">
+                        {bossName || 'Boss'}
+                        {enragedTurns > 0 && (<span className="ml-3 text-orange-400 font-bold animate-pulse">ENRAGED (ATK↑ DEF↓) ({enragedTurns})</span>)}
+                      </span>
                       <span className="text-red-400">{bossHp}/{bossMax}</span>
                     </div>
                     <div className="bg-gray-800 rounded-full h-6 overflow-hidden">
@@ -4199,7 +4186,6 @@ setBattleMode(false);
                   {/* Enemy Dialogue Box - Positioned below enemy HP */}
                   {playerTaunt && enragedTurns > 0 ? (
                     <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-red-600">
-                      <p className="text-orange-500 text-sm font-bold mb-1">ENRAGED!</p>
                       <p className="text-gray-300 text-sm italic leading-relaxed">"{enemyDialogue}"</p>
                     </div>
                   ) : enemyDialogue ? (
@@ -4230,7 +4216,7 @@ setBattleMode(false);
                   )}
                   
                   {/* Battle Actions */}
-                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>💬 TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{enragedTurns > 0 && (<p className="text-orange-400 text-center font-bold animate-pulse">🔥 ENEMY ENRAGED! +15% ATK | -20% DEF ({enragedTurns} turns)</p>)}{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
+                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>💬 TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
                   {bossHp <= 0 && (
                     <div className="text-center">
                       <p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p>
@@ -4251,7 +4237,7 @@ setBattleMode(false);
                         <button onClick={advance} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">{isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}</button>
                       )}
                       {(battleType === 'regular' || battleType === 'wave') && (
-                        <p className="text-green-300 text-sm animate-pulse">Returning to quest...</p>
+                        <button onClick={() => { setShowBoss(false); addLog('⚔️ Ready for your next trial...'); }} className="bg-green-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-green-400 transition-all shadow-lg shadow-green-500/50">CONTINUE</button>
                       )}
                     </div>
                   )}
