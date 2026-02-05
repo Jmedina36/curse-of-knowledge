@@ -2485,52 +2485,12 @@ setBattleMode(false);
                   </div>
                 </div>
                 
-                <div className={`grid grid-cols-2 gap-3 pt-3 border-t-2 border-white border-opacity-20`}>
-                  <button 
-                    onClick={useHealth}
-                    disabled={healthPots === 0 || hp >= getMaxHp()}
-                    className="bg-black bg-opacity-40 rounded-lg p-3 border border-red-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Heart className="text-red-400" size={20}/>
-                        <div className="text-left">
-                          <p className="text-sm text-white font-bold">Health Potion</p>
-                          <p className="text-xs text-white text-opacity-60">+{GAME_CONSTANTS.HEALTH_POTION_HEAL} HP</p>
-                        </div>
-                      </div>
-                      <span className="text-xl font-bold text-white">{healthPots}</span>
-                    </div>
-                  </button>
-                  
-                  <button 
-                    onClick={() => {
-                      if (staminaPots > 0 && stamina < getMaxStamina()) {
-                        setStaminaPots(s => s - 1);
-                        setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE));
-                        addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`);
-                      }
-                    }}
-                    disabled={staminaPots === 0 || stamina >= getMaxStamina()}
-                    className="bg-black bg-opacity-40 rounded-lg p-3 border border-cyan-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Zap className="text-cyan-400" size={20}/>
-                        <div className="text-left">
-                          <p className="text-sm text-white font-bold">Stamina Potion</p>
-                          <p className="text-xs text-white text-opacity-60">+{GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP</p>
-                        </div>
-                      </div>
-                      <span className="text-xl font-bold text-white">{staminaPots}</span>
-                    </div>
-                  </button>
-                  
                  {curseLevel > 0 && (
+  <div className="pt-3 border-t-2 border-white border-opacity-20">
   <button 
     onClick={useCleanse}
     disabled={cleansePots === 0}
-                      className="bg-black bg-opacity-40 rounded-lg p-3 border border-purple-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed col-span-2 animate-pulse"
+                      className="w-full bg-black bg-opacity-40 rounded-lg p-3 border border-purple-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed animate-pulse"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -2543,6 +2503,7 @@ setBattleMode(false);
                         <span className="text-xl font-bold text-purple-400">{cleansePots}</span>
                       </div>
                     </button>
+                  </div>
                   )}
                 </div>
                 {canCustomize && (
@@ -4066,7 +4027,9 @@ setBattleMode(false);
         <button 
           onClick={() => { 
             if (newCalendarTask.title.trim()) { 
-              const date = new Date(selectedDate);
+              // Parse date in local timezone (not UTC)
+              const [year, month, day] = selectedDate.split('-').map(Number);
+              const date = new Date(year, month - 1, day);
               const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
               
               // Add to calendar
@@ -4091,7 +4054,7 @@ setBattleMode(false);
               
               setNewCalendarTask({ title: '', priority: 'routine' }); 
             } 
-          }} 
+          }}} 
           disabled={!newCalendarTask.title.trim()} 
           className="w-full bg-green-600 py-2 rounded-lg hover:bg-green-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
         >
