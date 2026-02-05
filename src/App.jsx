@@ -1562,6 +1562,7 @@ if (enragedTurns > 0) {
           const newTurns = prev - 1;
           if (newTurns === 0) {
             addLog(`😤 Enemy is no longer ENRAGED`);
+            setPlayerTaunt(''); // Clear taunt dialogue when enraged expires
           }
           return newTurns;
         });
@@ -1930,6 +1931,7 @@ if (enragedTurns > 0) {
             const newTurns = prev - 1;
             if (newTurns === 0) {
               addLog(`😤 Enemy is no longer ENRAGED`);
+              setPlayerTaunt(''); // Clear taunt dialogue when enraged expires
             }
             return newTurns;
           });
@@ -4195,19 +4197,16 @@ setBattleMode(false);
                   </div>
                   
                   {/* Enemy Dialogue Box - Positioned below enemy HP */}
-                  {playerTaunt && enragedTurns > 0 && (
+                  {playerTaunt && enragedTurns > 0 ? (
                     <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-red-600">
                       <p className="text-orange-500 text-sm font-bold mb-1">ENRAGED!</p>
                       <p className="text-gray-300 text-sm italic leading-relaxed">"{enemyDialogue}"</p>
                     </div>
-                  )}
-                  
-                  {/* Regular Enemy Dialogue (when not taunted) */}
-                  {enemyDialogue && (!playerTaunt || enragedTurns === 0) && (
+                  ) : enemyDialogue ? (
                     <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-gray-600">
                       <p className="text-gray-300 text-center italic text-sm leading-relaxed">"{enemyDialogue}"</p>
                     </div>
-                  )}
+                  ) : null}
                   
                   {/* Player HP and SP Bars */}
                   <div>
@@ -4229,7 +4228,8 @@ setBattleMode(false);
                       <p className="text-white text-sm leading-relaxed">"{playerTaunt}"</p>
                     </div>
                   )}
-                </div>
+                  
+                  {/* Battle Actions */}
                   {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>💬 TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{enragedTurns > 0 && (<p className="text-orange-400 text-center font-bold animate-pulse">🔥 ENEMY ENRAGED! +15% ATK | -20% DEF ({enragedTurns} turns)</p>)}{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
                   {bossHp <= 0 && (
                     <div className="text-center">
