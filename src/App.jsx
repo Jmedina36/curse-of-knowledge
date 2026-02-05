@@ -329,9 +329,16 @@ const [showCardModal, setShowCardModal] = useState(false);
 const [showStudyModal, setShowStudyModal] = useState(false);
 const [selectedDeck, setSelectedDeck] = useState(null);
 const [currentCardIndex, setCurrentCardIndex] = useState(0);
+const [studyQueue, setStudyQueue] = useState([]); // Queue of card indices to study
 const [isFlipped, setIsFlipped] = useState(false);
 const [newDeck, setNewDeck] = useState({ name: '' });
 const [newCard, setNewCard] = useState({ front: '', back: '' });
+const [showQuizModal, setShowQuizModal] = useState(false);
+const [quizQuestions, setQuizQuestions] = useState([]);
+const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
+const [quizScore, setQuizScore] = useState(0);
+const [selectedAnswer, setSelectedAnswer] = useState(null);
+const [showQuizResults, setShowQuizResults] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -494,6 +501,42 @@ const getDateKey = useCallback((date) => {
   const addLog = useCallback((msg) => {
     setLog(prev => [...prev, msg].slice(-GAME_CONSTANTS.LOG_MAX_ENTRIES));
   }, []);
+  
+  const generateQuiz = useCallback((deckIndex) => {
+    const deck = flashcardDecks[deckIndex];
+    if (!deck || deck.cards.length < 4) {
+      alert('Need at least 4 cards to generate a quiz!');
+      return;
+    }
+    
+    // Shuffle cards for quiz order
+    const shuffledCards = [...deck.cards].sort(() => Math.random() - 0.5);
+    
+    const questions = shuffledCards.map((card, idx) => {
+      // Get 3 random wrong answers from other cards
+      const otherCards = deck.cards.filter((_, i) => i !== deck.cards.indexOf(card));
+      const wrongAnswers = otherCards
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+        .map(c => c.back);
+      
+      // Combine correct and wrong answers, then shuffle
+      const allChoices = [card.back, ...wrongAnswers].sort(() => Math.random() - 0.5);
+      
+      return {
+        question: card.front,
+        correctAnswer: card.back,
+        choices: allChoices
+      };
+    });
+    
+    setQuizQuestions(questions);
+    setCurrentQuizIndex(0);
+    setQuizScore(0);
+    setSelectedAnswer(null);
+    setShowQuizResults(false);
+    setShowQuizModal(true);
+  }, [flashcardDecks]);
   
   useEffect(() => {
     const saved = localStorage.getItem('fantasyStudyQuest');
@@ -3067,6 +3110,9 @@ setBattleMode(false);
                   }
                   setSelectedDeck(idx);
                   setCurrentCardIndex(0);
+                  // Initialize queue with all card indices
+                  const allCardIndices = Array.from({length: deck.cards.length}, (_, i) => i);
+                  setStudyQueue(allCardIndices);
                   setIsFlipped(false);
                   setShowStudyModal(true);
                 }}
@@ -3077,10 +3123,24 @@ setBattleMode(false);
               </button>
               <button
                 onClick={() => {
+                  if (deck.cards.length < 4) {
+                    alert('Need at least 4 cards for a quiz!');
+                    return;
+                  }
+                  setSelectedDeck(idx);
+                  generateQuiz(idx);
+                }}
+                disabled={deck.cards.length < 4}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
+              >
+                📝 Practice Quiz
+              </button>
+              <button
+                onClick={() => {
                   setSelectedDeck(idx);
                   setShowCardModal(true);
                 }}
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition-all"
+                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-all"
               >
                 ➕ Add Card
               </button>
@@ -3625,13 +3685,14 @@ setBattleMode(false);
       <div className="mb-6 flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-purple-400">{flashcardDecks[selectedDeck].name}</h2>
-          <p className="text-gray-400">Card {currentCardIndex + 1} of {flashcardDecks[selectedDeck].cards.length}</p>
+          <p className="text-gray-400">Cards remaining: {studyQueue.length} | Total studied: {flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</p>
         </div>
         <button 
           onClick={() => {
             setShowStudyModal(false);
             setSelectedDeck(null);
             setCurrentCardIndex(0);
+            setStudyQueue([]);
             setIsFlipped(false);
           }}
           className="text-gray-400 hover:text-white"
@@ -3648,8 +3709,8 @@ setBattleMode(false);
           <p className="text-sm text-gray-500 mb-4">{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
           <p className="text-2xl text-white whitespace-pre-wrap">
             {isFlipped 
-              ? flashcardDecks[selectedDeck].cards[currentCardIndex].back 
-              : flashcardDecks[selectedDeck].cards[currentCardIndex].front}
+              ? flashcardDecks[selectedDeck].cards[studyQueue[0]].back 
+              : flashcardDecks[selectedDeck].cards[studyQueue[0]].front}
           </p>
           <p className="text-sm text-gray-500 mt-6 italic">Click to flip</p>
         </div>
@@ -3658,7 +3719,7 @@ setBattleMode(false);
       <div className="bg-gray-800 rounded-full h-2 mb-6">
         <div 
           className="bg-purple-500 h-2 rounded-full transition-all" 
-          style={{width: `${((currentCardIndex + 1) / flashcardDecks[selectedDeck].cards.length) * 100}%`}}
+          style={{width: `${((flashcardDecks[selectedDeck].cards.length - studyQueue.length) / flashcardDecks[selectedDeck].cards.length) * 100}%`}}
         />
       </div>
       
@@ -3666,33 +3727,11 @@ setBattleMode(false);
         <div className="flex gap-4">
           <button
             onClick={() => {
-              // Mark as needs review, move to next
-              const nextIndex = currentCardIndex + 1;
-              if (nextIndex >= flashcardDecks[selectedDeck].cards.length) {
-                // Deck complete
-                const cardsStudied = flashcardDecks[selectedDeck].cards.length;
-                const xpGain = cardsStudied * 5 + 25;
-                setXp(x => x + xpGain);
-                addLog(`🎓 Completed deck! +${xpGain} XP`);
-                
-                // Loot chance
-                const roll = Math.random();
-                if (roll < 0.3) {
-                  setHealthPots(h => h + 1);
-                  addLog('💊 Found Health Potion!');
-                } else if (roll < 0.5) {
-                  setStaminaPots(s => s + 1);
-                  addLog('⚡ Found Stamina Potion!');
-                }
-                
-                setShowStudyModal(false);
-                setSelectedDeck(null);
-                setCurrentCardIndex(0);
-                setIsFlipped(false);
-              } else {
-                setCurrentCardIndex(nextIndex);
-                setIsFlipped(false);
-              }
+              // Add current card to end of queue, remove from front
+              const currentCard = studyQueue[0];
+              const newQueue = [...studyQueue.slice(1), currentCard];
+              setStudyQueue(newQueue);
+              setIsFlipped(false);
             }}
             className="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-lg font-bold text-lg transition-all"
           >
@@ -3701,19 +3740,22 @@ setBattleMode(false);
           
           <button
             onClick={() => {
-              // Mark as mastered, give XP, move to next
+              // Mark as mastered, give XP
+              const currentCard = studyQueue[0];
               setFlashcardDecks(prev => prev.map((deck, idx) => 
                 idx === selectedDeck 
                   ? {...deck, cards: deck.cards.map((card, cardIdx) => 
-                      cardIdx === currentCardIndex ? {...card, mastered: true} : card
+                      cardIdx === currentCard ? {...card, mastered: true} : card
                     )}
                   : deck
               ));
               
               setXp(x => x + 5);
               
-              const nextIndex = currentCardIndex + 1;
-              if (nextIndex >= flashcardDecks[selectedDeck].cards.length) {
+              // Remove from queue
+              const newQueue = studyQueue.slice(1);
+              
+              if (newQueue.length === 0) {
                 // Deck complete
                 const cardsStudied = flashcardDecks[selectedDeck].cards.length;
                 const xpGain = 25;
@@ -3733,9 +3775,10 @@ setBattleMode(false);
                 setShowStudyModal(false);
                 setSelectedDeck(null);
                 setCurrentCardIndex(0);
+                setStudyQueue([]);
                 setIsFlipped(false);
               } else {
-                setCurrentCardIndex(nextIndex);
+                setStudyQueue(newQueue);
                 setIsFlipped(false);
               }
             }}
@@ -3748,6 +3791,151 @@ setBattleMode(false);
     </div>
   </div>
 )}
+
+{showQuizModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
+  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+    <div className="bg-gradient-to-b from-blue-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-blue-600 shadow-2xl">
+      {!showQuizResults ? (
+        <>
+          <div className="mb-6 flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl font-bold text-blue-400">📝 {flashcardDecks[selectedDeck].name} - Quiz</h2>
+              <p className="text-gray-400">Question {currentQuizIndex + 1} of {quizQuestions.length} | Score: {quizScore}/{quizQuestions.length}</p>
+            </div>
+            <button 
+              onClick={() => {
+                setShowQuizModal(false);
+                setSelectedDeck(null);
+                setQuizQuestions([]);
+                setCurrentQuizIndex(0);
+                setQuizScore(0);
+                setSelectedAnswer(null);
+                setShowQuizResults(false);
+              }}
+              className="text-gray-400 hover:text-white"
+            >
+              <X size={32}/>
+            </button>
+          </div>
+          
+          <div className="bg-gray-800 rounded-xl p-8 mb-6 min-h-[200px] border-2 border-blue-500">
+            <p className="text-sm text-gray-500 mb-4">QUESTION</p>
+            <p className="text-2xl text-white mb-8">{quizQuestions[currentQuizIndex]?.question}</p>
+            
+            <div className="space-y-3">
+              {quizQuestions[currentQuizIndex]?.choices.map((choice, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedAnswer(choice)}
+                  disabled={selectedAnswer !== null}
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                    selectedAnswer === null
+                      ? 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-blue-400'
+                      : selectedAnswer === choice
+                        ? choice === quizQuestions[currentQuizIndex].correctAnswer
+                          ? 'bg-green-600 border-green-400'
+                          : 'bg-red-600 border-red-400'
+                        : choice === quizQuestions[currentQuizIndex].correctAnswer
+                          ? 'bg-green-600 border-green-400'
+                          : 'bg-gray-700 border-gray-600'
+                  } disabled:cursor-not-allowed`}
+                >
+                  <span className="font-bold mr-3">{String.fromCharCode(65 + idx)}.</span>
+                  {choice}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          <div className="bg-gray-800 rounded-full h-2 mb-6">
+            <div 
+              className="bg-blue-500 h-2 rounded-full transition-all" 
+              style={{width: `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`}}
+            />
+          </div>
+          
+          {selectedAnswer && (
+            <button
+              onClick={() => {
+                if (selectedAnswer === quizQuestions[currentQuizIndex].correctAnswer) {
+                  setQuizScore(prev => prev + 1);
+                }
+                
+                const nextIndex = currentQuizIndex + 1;
+                if (nextIndex >= quizQuestions.length) {
+                  setShowQuizResults(true);
+                } else {
+                  setCurrentQuizIndex(nextIndex);
+                  setSelectedAnswer(null);
+                }
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-lg font-bold text-lg transition-all"
+            >
+              {currentQuizIndex + 1 === quizQuestions.length ? 'See Results' : 'Next Question →'}
+            </button>
+          )}
+        </>
+      ) : (
+        <div className="text-center">
+          <div className="mb-8">
+            <div className="text-8xl mb-4">
+              {quizScore === quizQuestions.length ? '🏆' : quizScore >= quizQuestions.length * 0.7 ? '⭐' : '📖'}
+            </div>
+            <h2 className="text-3xl font-bold text-blue-400 mb-2">Quiz Complete!</h2>
+            <p className="text-5xl font-bold text-white mb-4">{quizScore} / {quizQuestions.length}</p>
+            <p className="text-xl text-gray-300">
+              {quizScore === quizQuestions.length && 'Perfect Score! 🎉'}
+              {quizScore >= quizQuestions.length * 0.7 && quizScore < quizQuestions.length && 'Great Job! 💪'}
+              {quizScore < quizQuestions.length * 0.7 && 'Keep Studying! 📚'}
+            </p>
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg p-6 mb-6">
+            <p className="text-yellow-400 text-xl mb-2">+{quizScore * 10} XP</p>
+            {(() => {
+              const xpGain = quizScore * 10;
+              setXp(x => x + xpGain);
+              
+              // Loot for good performance
+              if (quizScore >= quizQuestions.length * 0.7) {
+                const roll = Math.random();
+                if (roll < 0.4) {
+                  setTimeout(() => {
+                    setHealthPots(h => h + 1);
+                    addLog('💊 Found Health Potion!');
+                  }, 100);
+                } else if (roll < 0.7) {
+                  setTimeout(() => {
+                    setStaminaPots(s => s + 1);
+                    addLog('⚡ Found Stamina Potion!');
+                  }, 100);
+                }
+                return <p className="text-gray-400">Bonus loot awarded! Check your inventory.</p>;
+              }
+              return null;
+            })()}
+          </div>
+          
+          <button
+            onClick={() => {
+              setShowQuizModal(false);
+              setSelectedDeck(null);
+              setQuizQuestions([]);
+              setCurrentQuizIndex(0);
+              setQuizScore(0);
+              setSelectedAnswer(null);
+              setShowQuizResults(false);
+            }}
+            className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-lg font-bold text-lg transition-all"
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500" onClick={e => e.stopPropagation()}>
