@@ -2350,6 +2350,7 @@ if (enragedTurns > 0) {
     setHasFled(true); // Mark that we fled
     setBossHp(0); // Trigger victory screen
     setBattling(false);
+    setBattleMode(false); // Clear battle border
     setRecklessStacks(0);
     
     addLog(`🏃 Fled from ${bossName}! Lost 25 Stamina.`);
@@ -2638,12 +2639,37 @@ setMiniBossCount(0);
                 <div className="mb-4 bg-black bg-opacity-40 rounded-lg p-3 border border-white border-opacity-20">
                   <div className="flex justify-between text-sm text-white mb-2">
                     <span className="font-bold">EXPERIENCE</span>
-                    <span className="font-bold">{xp} / {Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1))}</span>
+                    <span className="font-bold">{(() => {
+                      // Calculate XP consumed by previous levels
+                      let xpSpent = 0;
+                      for (let i = 1; i < level; i++) {
+                        xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                      }
+                      const currentLevelXp = xp - xpSpent;
+                      const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                      return `${currentLevelXp} / ${xpNeeded}`;
+                    })()}</span>
                   </div>
                   <div className="bg-black bg-opacity-50 rounded-full h-4 overflow-hidden">
-                    <div className="bg-gradient-to-r from-yellow-500 to-orange-400 h-4 rounded-full transition-all duration-300 shadow-lg" style={{width: `${(xp % GAME_CONSTANTS.XP_PER_LEVEL) / GAME_CONSTANTS.XP_PER_LEVEL * 100}%`}}></div>
+                    <div className="bg-gradient-to-r from-yellow-500 to-orange-400 h-4 rounded-full transition-all duration-300 shadow-lg" style={{width: `${(() => {
+                      let xpSpent = 0;
+                      for (let i = 1; i < level; i++) {
+                        xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                      }
+                      const currentLevelXp = xp - xpSpent;
+                      const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                      return (currentLevelXp / xpNeeded) * 100;
+                    })()}%`}}></div>
                   </div>
-                  <p className="text-xs text-white text-opacity-60 mt-1 text-right">{GAME_CONSTANTS.XP_PER_LEVEL - (xp % GAME_CONSTANTS.XP_PER_LEVEL)} XP to next level</p>
+                  <p className="text-xs text-white text-opacity-60 mt-1 text-right">{(() => {
+                    let xpSpent = 0;
+                    for (let i = 1; i < level; i++) {
+                      xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                    }
+                    const currentLevelXp = xp - xpSpent;
+                    const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                    return xpNeeded - currentLevelXp;
+                  })()} XP to next level</p>
                 </div>
                 
                 {skipCount > 0 && (
