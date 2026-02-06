@@ -328,9 +328,7 @@ const FantasyStudyQuest = () => {
   const [gauntletMilestone, setGauntletMilestone] = useState(1000); // Next XP threshold for Gauntlet
   const [gauntletUnlocked, setGauntletUnlocked] = useState(false); // Is Gauntlet currently available
   const [timeUntilMidnight, setTimeUntilMidnight] = useState(''); // Countdown to day reset
-  const [restDaysUsed, setRestDaysUsed] = useState(0); // Rest days used this week (max 2)
-  const [isRestDayActive, setIsRestDayActive] = useState(false); // Is today a rest day
-  const [weekStartDate, setWeekStartDate] = useState(null); // Track week start for reset
+  const [isDayActive, setIsDayActive] = useState(false); // Is current game day active (vs dormant)
   
   const getMaxHp = useCallback(() => {
     return GAME_CONSTANTS.MAX_HP + (currentDay - 1) * GAME_CONSTANTS.PLAYER_HP_PER_DAY;
@@ -625,9 +623,7 @@ const getDateKey = useCallback((date) => {
         if (data.essence !== undefined) setEssence(data.essence);
         if (data.gauntletMilestone !== undefined) setGauntletMilestone(data.gauntletMilestone);
         if (data.gauntletUnlocked !== undefined) setGauntletUnlocked(data.gauntletUnlocked);
-        if (data.restDaysUsed !== undefined) setRestDaysUsed(data.restDaysUsed);
-        if (data.isRestDayActive !== undefined) setIsRestDayActive(data.isRestDayActive);
-        if (data.weekStartDate) setWeekStartDate(data.weekStartDate);
+        if (data.isDayActive !== undefined) setIsDayActive(data.isDayActive);
         if (data.level !== undefined) setLevel(data.level);
         if (data.healthPots !== undefined) setHealthPots(data.healthPots);
         if (data.staminaPots !== undefined) setStaminaPots(data.staminaPots);
@@ -670,11 +666,11 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks,
   gauntletMilestone, gauntletUnlocked,
-  restDaysUsed, isRestDayActive, weekStartDate
+  isDayActive
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks, gauntletMilestone, gauntletUnlocked, restDaysUsed, isRestDayActive, weekStartDate]);
+ }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -710,31 +706,6 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     return () => clearInterval(interval);
   }, []);
   
-  // Reset rest days counter on Monday
-  useEffect(() => {
-    const checkWeekReset = () => {
-      const now = new Date();
-      const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon, ...
-      const currentWeekStart = new Date(now);
-      currentWeekStart.setDate(now.getDate() - ((dayOfWeek + 6) % 7)); // Get Monday of current week
-      const weekStartKey = currentWeekStart.toDateString();
-      
-      if (!weekStartDate || weekStartDate !== weekStartKey) {
-        // New week started!
-        setWeekStartDate(weekStartKey);
-        if (weekStartDate) { // Only reset if there was a previous week (not first load)
-          setRestDaysUsed(0);
-          addLog('🔄 New week - Rest days reset (0/2 used)');
-        }
-      }
-    };
-    
-    checkWeekReset(); // Check on mount
-    const interval = setInterval(checkWeekReset, 60000); // Check every minute
-    
-    return () => clearInterval(interval);
-  }, [weekStartDate, addLog]);
-  
   // Detect when real calendar day changes and auto-advance
   useEffect(() => {
     const checkDayChange = () => {
@@ -743,31 +714,12 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       if (lastRealDay && lastRealDay !== today) {
         // New day detected!
         
-        // Check if rest day is active
-        if (isRestDayActive) {
-          // Rest day - no advancement, no curse
-          addLog('🛌 REST DAY COMPLETE - Day paused, no curse applied');
-          setIsRestDayActive(false);
-          setEliteBossDefeatedToday(false);
-          
-          // Clear completed tasks, mark incomplete as overdue
-          const completedCount = tasks.filter(t => t.done).length;
-          const incompleteCount = tasks.filter(t => !t.done).length;
-          
-          setTasks(prevTasks => 
-            prevTasks
-              .filter(t => !t.done)
-              .map(t => ({ ...t, overdue: true }))
-          );
-          
-          if (completedCount > 0) {
-            addLog(`✅ Cleared ${completedCount} completed task${completedCount > 1 ? 's' : ''}`);
-          }
-          if (incompleteCount > 0) {
-            addLog(`⚠️ ${incompleteCount} incomplete task${incompleteCount > 1 ? 's' : ''} marked OVERDUE`);
-          }
+        // Check if day is dormant
+        if (!isDayActive) {
+          // Dormant day - no midnight logic, no curse, no advancement
+          // (Silent - no log message)
         } else {
-          // Normal day - advance and check curse
+          // Active day - check midnight consequences
           const nextDay = currentDay + 1;
           
           // Check curse before advancing
@@ -834,7 +786,10 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         }
         
         addLog('🌅 MIDNIGHT PASSED - Day auto-advanced');
-        addLog(`📅 Now on Day ${nextDay}`);
+        addLog(`📅 Now on Day ${nextDay} (Dormant)`);
+        
+        // Set day to dormant until next engagement
+        setIsDayActive(false);
         }
       }
       
@@ -846,7 +801,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     const interval = setInterval(checkDayChange, 60000); // Check every minute
     
     return () => clearInterval(interval);
-  }, [lastRealDay, currentDay, eliteBossDefeatedToday, curseLevel, isRestDayActive, tasks, addLog]);
+  }, [lastRealDay, currentDay, eliteBossDefeatedToday, curseLevel, isDayActive, tasks, addLog]);
   
   useEffect(() => {
     let int;
@@ -1077,6 +1032,13 @@ if (tasks.length === 0) {
     
     setNewTask({ title: '', priority: 'routine' });
     setShowModal(false);
+    
+    // Activate day on first task
+    if (!isDayActive) {
+      setIsDayActive(true);
+      addLog(`⚡ DAY ${currentDay} ACTIVATED - Complete tasks before midnight!`);
+    }
+    
     addLog(`📜 New trial: ${newTask.title}`);
   }
 };
@@ -1102,8 +1064,45 @@ if (tasks.length === 0) {
     
     setTasks(newTasks);
     setHasStarted(true);
+    
+    // Activate day on import
+    if (!isDayActive) {
+      setIsDayActive(true);
+      addLog(`⚡ DAY ${currentDay} ACTIVATED - Complete tasks before midnight!`);
+    }
+    
     addLog(`📋 Imported ${newTasks.length} tasks from ${dayName}'s plan`);
     setShowImportModal(false);
+  };
+
+  const getMerchantDialogue = () => {
+    // Curse-based dialogue (highest priority)
+    if (curseLevel === 3) {
+      return "The curse nearly consumes you. One more failure... act quickly.";
+    }
+    if (curseLevel === 2) {
+      return "The darkness tightens its grip. You'll need more than supplies soon.";
+    }
+    if (curseLevel === 1) {
+      return "I see the mark upon you. The curse is hungry.";
+    }
+    
+    // Essence-based dialogue
+    if (essence >= 200) {
+      return "Ah, a successful hunter. The darkness has been generous.";
+    }
+    if (essence >= 100) {
+      return "You've gathered enough. Choose wisely.";
+    }
+    if (essence >= 50) {
+      return "Modest spoils, but sufficient for survival.";
+    }
+    if (essence < 20) {
+      return "Empty-handed? The forge requires essence to work.";
+    }
+    
+    // Default
+    return "What do you seek, traveler?";
   };
 
   const craftItem = (itemType) => {
@@ -2623,9 +2622,9 @@ setMiniBossCount(0);
                     <div className="text-right">
                       <p className="text-xs text-white text-opacity-70 uppercase tracking-wide">{GAME_CONSTANTS.DAY_NAMES[(new Date().getDay() + 6) % 7].name}</p>
                       <p className="text-sm text-white text-opacity-80">
-                        {timeUntilMidnight && <span className="text-red-400">({timeUntilMidnight}) </span>}
-                        {isRestDayActive && <span className="text-blue-400">🛌 REST • </span>}
-                        Day {currentDay}
+                        {timeUntilMidnight && isDayActive && <span className="text-red-400">({timeUntilMidnight}) </span>}
+                        {!isDayActive && <span className="text-gray-400">💤 </span>}
+                        Day {currentDay} {!isDayActive && <span className="text-gray-400 text-xs">• Dormant</span>}
                       </p>
                       <p className="text-2xl font-bold text-white">Lvl {level}</p>
                     </div>
@@ -2638,7 +2637,7 @@ setMiniBossCount(0);
                 
                 <div className="mb-4 bg-black bg-opacity-40 rounded-lg p-3 border border-white border-opacity-20">
                   <div className="flex justify-between text-sm text-white mb-2">
-                    <span className="flex items-center gap-2 font-bold"><Trophy size={16}/>EXPERIENCE</span>
+                    <span className="font-bold">EXPERIENCE</span>
                     <span className="font-bold">{xp} / {Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1))}</span>
                   </div>
                   <div className="bg-black bg-opacity-50 rounded-full h-4 overflow-hidden">
@@ -2703,43 +2702,39 @@ setMiniBossCount(0);
                 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-red-500 border-opacity-30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Heart size={16} className="text-red-400"/>
-                      <span className="text-xs text-white text-opacity-70">HP</span>
+                    <div className="flex items-center justify-center mb-1">
+                      <Heart size={20} className="text-red-400"/>
                     </div>
-                    <p className="text-xl font-bold text-white">{hp}/{getMaxHp()}</p>
+                    <p className="text-xl font-bold text-white text-center">{hp}/{getMaxHp()}</p>
                     <div className="bg-black bg-opacity-30 rounded-full h-2 overflow-hidden mt-1">
                       <div className="bg-red-500 h-2 rounded-full transition-all duration-300" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
                     </div>
                   </div>
                   
                   <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-cyan-500 border-opacity-30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Zap size={16} className="text-cyan-400"/>
-                      <span className="text-xs text-white text-opacity-70">SP</span>
+                    <div className="flex items-center justify-center mb-1">
+                      <Zap size={20} className="text-cyan-400"/>
                     </div>
-                    <p className="text-xl font-bold text-white">{stamina}/{getMaxStamina()}</p>
+                    <p className="text-xl font-bold text-white text-center">{stamina}/{getMaxStamina()}</p>
                     <div className="bg-black bg-opacity-30 rounded-full h-2 overflow-hidden mt-1">
                       <div className="bg-cyan-500 h-2 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
                     </div>
                   </div>
                   
                   <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-orange-500 border-opacity-30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Sword size={16} className="text-orange-400"/>
-                      <span className="text-xs text-white text-opacity-70">POWER</span>
+                    <div className="flex items-center justify-center mb-1">
+                      <Sword size={20} className="text-orange-400"/>
                     </div>
-                    <p className="text-xl font-bold text-white">{getBaseAttack() + weapon + (level - 1) * 2}</p>
-                    <p className="text-xs text-white text-opacity-50">damage per hit</p>
+                    <p className="text-xl font-bold text-white text-center">{getBaseAttack() + weapon + (level - 1) * 2}</p>
+                    <p className="text-xs text-white text-opacity-50 text-center">damage per hit</p>
                   </div>
                   
                   <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-blue-500 border-opacity-30">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Shield size={16} className="text-blue-400"/>
-                      <span className="text-xs text-white text-opacity-70">RESILIENCE</span>
+                    <div className="flex items-center justify-center mb-1">
+                      <Shield size={20} className="text-blue-400"/>
                     </div>
-                    <p className="text-xl font-bold text-white">{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
-                    <p className="text-xs text-white text-opacity-50">damage resist</p>
+                    <p className="text-xl font-bold text-white text-center">{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
+                    <p className="text-xs text-white text-opacity-50 text-center">damage resist</p>
                   </div>
                 </div>
                 
@@ -2776,29 +2771,19 @@ setMiniBossCount(0);
 )}
                 
                 <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
-                  {/* Essence Display - Crafting Currency */}
-                  <div className="mb-3 bg-purple-900 bg-opacity-30 rounded-lg p-2 border border-purple-500 border-opacity-40">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm font-bold text-purple-300">⚡ Essence</span>
-                      <span className="text-xl font-bold text-purple-200">{essence}</span>
-                    </div>
-                  </div>
-                  
                   {/* Action Buttons */}
                   <div className="grid grid-cols-2 gap-2">
                   <button 
                     onClick={() => setShowInventoryModal(true)}
-                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center gap-2"
+                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center"
                   >
-                    <Heart size={18}/>
                     Inventory
                   </button>
                   <button 
                     onClick={() => setShowCraftingModal(true)}
-                    className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center gap-2"
+                    className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center"
                   >
-                    <Hammer size={18}/>
-                    Craft
+                    Merchant
                   </button>
                 </div>
                 </div>
@@ -3024,15 +3009,12 @@ setMiniBossCount(0);
       {t.overdue && !t.done && (
         <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">OVERDUE</span>
       )}
-      {t.priority === 'important' && !t.done && !t.overdue && (
-        <span className="text-2xl">⭐</span>
-      )}
       <div className="flex-1">
         <p className={t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300 font-medium text-lg' : 'text-white font-medium text-lg'}>
           {t.title}
         </p>
         <p className="text-sm text-gray-400 mt-1">
-          {t.priority === 'important' ? '⭐ IMPORTANT • 1.25x XP' : '📋 ROUTINE • 1.0x XP'}
+          {t.priority === 'important' ? 'IMPORTANT • 1.25x XP' : 'ROUTINE • 1.0x XP'}
           {t.overdue && !t.done && <span className="text-red-400 ml-2">• 50% XP Penalty</span>}
         </p>
       </div>
@@ -3047,21 +3029,21 @@ setMiniBossCount(0);
               setPomodorosCompleted(0);
               setIsBreak(false);
               setPomodoroRunning(true);
-              addLog(`🍅 Starting focus session: ${t.title}`);
+              addLog(`Starting focus session: ${t.title}`);
             }} 
             className="bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 transition-all flex items-center gap-1"
           >
-            🍅 Focus
+            Focus
           </button>
           <button 
             onClick={() => complete(t.id)} 
             className="bg-green-600 px-4 py-1 rounded font-bold hover:bg-green-700 transition-all flex items-center gap-1"
           >
-            ✓ Complete
+            Complete
           </button>
         </div>
       )}
-      {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">✓ Done</span>)}
+      {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">Done</span>)}
     </div>
   </div>
 ))}   
@@ -3072,20 +3054,18 @@ setMiniBossCount(0);
                   <div className="grid md:grid-cols-2 gap-4">
                     <button 
   onClick={miniBoss} 
-  disabled={isRestDayActive || eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
+  disabled={!isDayActive || eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
   className="bg-red-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-800 transition-all shadow-lg shadow-red-900/50 border-2 border-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
-  Face the Darkness
-  {isRestDayActive ? (
-    <div className="text-sm font-normal mt-1 text-gray-400">🛌 Rest day - no elite boss</div>
+  FACE THE DARKNESS
+  {!isDayActive ? (
+    <div className="text-sm font-normal mt-1 text-gray-400">Day dormant - add tasks to begin</div>
   ) : eliteBossDefeatedToday ? (
     <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
   ) : timeUntilMidnight && !eliteBossDefeatedToday ? (
     <div className="text-sm font-normal mt-1 text-red-400">⏰ {timeUntilMidnight} until midnight lock!</div>
   ) : tasks.length > 0 ? (
-    <div className="text-sm font-normal mt-1">
-      ({Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}% complete - need 75%)
-    </div>
+    <div className="text-sm font-normal mt-1">Finish more tasks to unlock</div>
   ) : null}
 </button>
                     <button 
@@ -3094,40 +3074,11 @@ setMiniBossCount(0);
   className="bg-purple-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-purple-800 transition-all shadow-lg shadow-purple-900/50 border-2 border-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
   THE GAUNTLET
-  {!gauntletUnlocked ? (
-    <div className="text-sm font-normal mt-1">🔒 Locked - {gauntletMilestone - xp} XP needed</div>
-  ) : tasks.length > 0 ? (
-    <div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{tasks.length} required)</div>
-  ) : (
-    <div className="text-sm font-normal mt-1">No tasks created</div>
+  {!gauntletUnlocked && (
+    <div className="text-sm font-normal mt-1">{gauntletMilestone - xp} XP needed</div>
   )}
 </button>
                   </div>
-                  
-                  {/* Rest Day Button */}
-                  <button 
-                    onClick={() => {
-                      if (restDaysUsed >= 2) {
-                        addLog('⚠️ Already used 2 rest days this week!');
-                        return;
-                      }
-                      setIsRestDayActive(true);
-                      setRestDaysUsed(r => r + 1);
-                      addLog(`🛌 REST DAY ACTIVATED - Day paused until midnight (${restDaysUsed + 1}/2 used this week)`);
-                      addLog('💤 No elite boss today, no curse penalty');
-                    }}
-                    disabled={isRestDayActive || restDaysUsed >= 2}
-                    className="w-full bg-blue-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/50 border-2 border-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
-                  >
-                    🛌 Take Rest Day
-                    {isRestDayActive ? (
-                      <div className="text-sm font-normal mt-1 text-blue-300">🌙 Rest day active - midnight to end</div>
-                    ) : restDaysUsed >= 2 ? (
-                      <div className="text-sm font-normal mt-1 text-gray-400">❌ No rest days remaining (resets Monday)</div>
-                    ) : (
-                      <div className="text-sm font-normal mt-1 text-blue-300">💤 {2 - restDaysUsed} rest day{2 - restDaysUsed === 1 ? '' : 's'} available (resets Monday)</div>
-                    )}
-                  </button>
                   
                   <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
                     <h3 className="text-lg font-bold text-red-400 mb-2">Chronicle of Events</h3>
@@ -3498,113 +3449,92 @@ setMiniBossCount(0);
 
           {showInventoryModal && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowInventoryModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-lg w-full border-2 border-red-500" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-red-400">📦 INVENTORY</h2>
-                  <button onClick={() => setShowInventoryModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+              <div className="bg-gray-900 rounded-xl p-6 max-w-lg w-full border-2 border-red-500 relative" onClick={e => e.stopPropagation()}>
+                <button onClick={() => setShowInventoryModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
+                
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-red-400">SUPPLIES</h2>
+                  <p className="text-gray-400 text-sm mt-1 italic">"What keeps you alive in the darkness..."</p>
                 </div>
                 
                 <div className="space-y-4">
-                  {/* Potions with Use buttons */}
+                  {/* Health Potions */}
                   <div className="bg-red-900 bg-opacity-50 rounded-lg p-4 border-2 border-red-700">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl">💊</span>
-                        <div>
-                          <p className="font-bold text-white">Health Potions</p>
-                          <p className="text-2xl text-red-400">{healthPots}</p>
-                          <p className="text-xs text-gray-400">Restores +30 HP</p>
-                        </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <div>
+                        <p className="font-bold text-white text-lg">Health Potion</p>
+                        <p className="text-sm text-red-300 mb-1">Restores 30 HP</p>
+                        <p className="text-xs text-gray-400 italic">"Crimson elixir. Mends wounds."</p>
                       </div>
-                      <button 
-                        onClick={useHealth} 
-                        disabled={healthPots === 0 || hp >= getMaxHp()}
-                        className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all"
-                      >
-                        Use
-                      </button>
+                      <div className="text-right">
+                        <p className="text-3xl text-red-400 font-bold mb-2">{healthPots}</p>
+                        <button 
+                          onClick={useHealth} 
+                          disabled={healthPots === 0 || hp >= getMaxHp()}
+                          className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all text-sm"
+                        >
+                          Use
+                        </button>
+                      </div>
                     </div>
                   </div>
                   
+                  {/* Stamina Potions */}
                   <div className="bg-blue-900 bg-opacity-50 rounded-lg p-4 border-2 border-blue-700">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl">⚡</span>
-                        <div>
-                          <p className="font-bold text-white">Stamina Potions</p>
-                          <p className="text-2xl text-blue-400">{staminaPots}</p>
-                          <p className="text-xs text-gray-400">Restores +50 SP</p>
-                        </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <div>
+                        <p className="font-bold text-white text-lg">Stamina Potion</p>
+                        <p className="text-sm text-cyan-300 mb-1">Restores 50 SP</p>
+                        <p className="text-xs text-gray-400 italic">"Azure draught. Vigor renewed."</p>
                       </div>
-                      <button 
-                        onClick={() => { 
-                          if (staminaPots > 0 && stamina < getMaxStamina()) { 
-                            setStaminaPots(s => s - 1); 
-                            setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); 
-                            addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); 
-                          } 
-                        }} 
-                        disabled={staminaPots === 0 || stamina >= getMaxStamina()}
-                        className="bg-blue-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700 transition-all"
-                      >
-                        Use
-                      </button>
+                      <div className="text-right">
+                        <p className="text-3xl text-blue-400 font-bold mb-2">{staminaPots}</p>
+                        <button 
+                          onClick={() => { 
+                            if (staminaPots > 0 && stamina < getMaxStamina()) { 
+                              setStaminaPots(s => s - 1); 
+                              setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); 
+                              addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); 
+                            } 
+                          }} 
+                          disabled={staminaPots === 0 || stamina >= getMaxStamina()}
+                          className="bg-blue-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700 transition-all text-sm"
+                        >
+                          Use
+                        </button>
+                      </div>
                     </div>
                   </div>
                   
+                  {/* Cleanse Potions */}
                   <div className={`bg-purple-900 bg-opacity-50 rounded-lg p-4 border-2 ${curseLevel > 0 ? 'border-purple-400 ring-2 ring-purple-500 animate-pulse' : 'border-purple-700'}`}>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl">🧪</span>
-                        <div>
-                          <p className="font-bold text-white">Cleanse Potions</p>
-                          <p className="text-2xl text-purple-400">{cleansePots}</p>
-                          <p className="text-xs text-gray-400">Removes curse</p>
-                        </div>
+                    <div className="flex justify-between items-center mb-2">
+                      <div>
+                        <p className="font-bold text-white text-lg">Cleanse Potion</p>
+                        <p className="text-sm text-purple-300 mb-1">Removes curse</p>
+                        <p className="text-xs text-gray-400 italic">"Purifying brew. Breaks the hold."</p>
                       </div>
-                      <button 
-                        onClick={useCleanse} 
-                        disabled={cleansePots === 0 || curseLevel === 0}
-                        className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all"
-                      >
-                        Use
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {/* Equipment (view only) */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl">⚔️</span>
-                        <div>
-                          <p className="font-bold text-white">Weapon</p>
-                          <p className="text-2xl text-yellow-400">+{weapon}</p>
-                          {weaponOilActive && <p className="text-xs text-green-400">+5 Oil Active</p>}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl">🛡️</span>
-                        <div>
-                          <p className="font-bold text-white">Armor</p>
-                          <p className="text-2xl text-blue-300">+{armor}</p>
-                          {armorPolishActive && <p className="text-xs text-green-400">+5 Polish Active</p>}
-                        </div>
+                      <div className="text-right">
+                        <p className="text-3xl text-purple-400 font-bold mb-2">{cleansePots}</p>
+                        <button 
+                          onClick={useCleanse} 
+                          disabled={cleansePots === 0 || curseLevel === 0}
+                          className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all text-sm"
+                        >
+                          Use
+                        </button>
                       </div>
                     </div>
                   </div>
                   
+                  {/* Lucky Charm (if active) */}
                   {luckyCharmActive && (
                     <div className="bg-green-900 bg-opacity-50 rounded-lg p-4 border-2 border-green-500">
-                      <div className="flex items-center gap-3">
-                        <span className="text-4xl">🍀</span>
-                        <div>
-                          <p className="font-bold text-white">Lucky Charm</p>
-                          <p className="text-sm text-green-300">Active - 2x loot from next elite boss</p>
-                        </div>
+                      <div>
+                        <p className="font-bold text-white text-lg mb-1">Lucky Charm</p>
+                        <p className="text-sm text-green-300 mb-1">2x loot from next elite boss</p>
+                        <p className="text-xs text-gray-400 italic">"Fortune favors the bold."</p>
+                        <p className="text-xs text-green-400 mt-2">✓ Active</p>
                       </div>
                     </div>
                   )}
@@ -3622,16 +3552,14 @@ setMiniBossCount(0);
 
           {showCraftingModal && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full border-2 border-orange-500 my-8" onClick={e => e.stopPropagation()}>
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-orange-400 flex items-center gap-2">
-                      <Hammer size={24}/>
-                      THE DARK FORGE
-                    </h2>
-                    <p className="text-gray-400 text-sm mt-1">Harvest Essence from combat to craft powerful items</p>
-                  </div>
-                  <button onClick={() => setShowCraftingModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+              <div className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full border-2 border-orange-500 my-8 relative" onClick={e => e.stopPropagation()}>
+                <button onClick={() => setShowCraftingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
+                
+                <div className="text-center mb-6">
+                  <h2 className="text-2xl font-bold text-orange-400">
+                    THE MERCHANT
+                  </h2>
+                  <p className="text-gray-400 text-sm mt-1 italic">"{getMerchantDialogue()}"</p>
                 </div>
                 
                 <div className="bg-black bg-opacity-50 rounded-lg p-4 mb-6 border border-purple-600">
@@ -3645,94 +3573,82 @@ setMiniBossCount(0);
                   <button 
                     onClick={() => craftItem('healthPotion')} 
                     disabled={essence < 25}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${essence >= 25 ? 'bg-red-900 bg-opacity-50 border-red-700 hover:bg-red-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 25 ? 'bg-red-900 bg-opacity-50 border-red-700 hover:bg-red-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">💊</span>
-                      <div>
-                        <p className="font-bold text-white">Health Potion</p>
-                        <p className="text-sm text-purple-400">25 Essence</p>
-                      </div>
+                    <div className="mb-2">
+                      <p className="font-bold text-white text-lg mb-2">Health Potion</p>
+                      <p className="text-sm text-red-300 mb-2">Restores 30 HP</p>
+                      <p className="text-sm text-purple-400 font-bold mb-2">25 Essence</p>
+                      <p className="text-xs text-gray-400 italic">"Crimson elixir. Mends wounds, not souls."</p>
                     </div>
-                    <p className="text-xs text-gray-400">Restores +30 HP</p>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('staminaPotion')} 
                     disabled={essence < 20}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${essence >= 20 ? 'bg-blue-900 bg-opacity-50 border-blue-700 hover:bg-blue-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 20 ? 'bg-blue-900 bg-opacity-50 border-blue-700 hover:bg-blue-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">⚡</span>
-                      <div>
-                        <p className="font-bold text-white">Stamina Potion</p>
-                        <p className="text-sm text-purple-400">20 Essence</p>
-                      </div>
+                    <div className="mb-2">
+                      <p className="font-bold text-white text-lg mb-2">Stamina Potion</p>
+                      <p className="text-sm text-cyan-300 mb-2">Restores 50 SP</p>
+                      <p className="text-sm text-purple-400 font-bold mb-2">20 Essence</p>
+                      <p className="text-xs text-gray-400 italic">"Azure draught. Vigor renewed."</p>
                     </div>
-                    <p className="text-xs text-gray-400">Restores +50 SP</p>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('cleansePotion')} 
                     disabled={essence < 50}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${essence >= 50 ? 'bg-purple-900 bg-opacity-50 border-purple-700 hover:bg-purple-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 50 ? 'bg-purple-900 bg-opacity-50 border-purple-700 hover:bg-purple-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">🧪</span>
-                      <div>
-                        <p className="font-bold text-white">Cleanse Potion</p>
-                        <p className="text-sm text-purple-400">50 Essence</p>
-                      </div>
+                    <div className="mb-2">
+                      <p className="font-bold text-white text-lg mb-2">Cleanse Potion</p>
+                      <p className="text-sm text-purple-400 font-bold mb-2">50 Essence</p>
+                      <p className="text-sm text-purple-300 mb-2">Removes curse</p>
+                      <p className="text-xs text-gray-400 italic">"Purifying brew. Breaks the curse's hold."</p>
                     </div>
-                    <p className="text-xs text-gray-400">Removes curse</p>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('weaponOil')} 
                     disabled={essence < 40 || weaponOilActive}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${essence >= 40 && !weaponOilActive ? 'bg-orange-900 bg-opacity-50 border-orange-700 hover:bg-orange-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 40 && !weaponOilActive ? 'bg-orange-900 bg-opacity-50 border-orange-700 hover:bg-orange-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">⚔️</span>
-                      <div>
-                        <p className="font-bold text-white">Weapon Oil</p>
-                        <p className="text-sm text-purple-400">40 Essence</p>
-                      </div>
+                    <div className="mb-2">
+                      <p className="font-bold text-white text-lg mb-2">Weapon Oil</p>
+                      <p className="text-sm text-purple-400 font-bold mb-2">40 Essence</p>
+                      <p className="text-sm text-orange-300 mb-1">+5 weapon until dawn</p>
+                      {weaponOilActive && <p className="text-xs text-green-400 mb-2">✓ Active</p>}
+                      <p className="text-xs text-gray-400 italic">"Darkened oil. Edges sharpen, strikes deepen."</p>
                     </div>
-                    <p className="text-xs text-gray-400">+5 weapon until next day</p>
-                    {weaponOilActive && <p className="text-xs text-green-400 mt-1">✓ Active</p>}
                   </button>
                   
                   <button 
                     onClick={() => craftItem('armorPolish')} 
                     disabled={essence < 40 || armorPolishActive}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${essence >= 40 && !armorPolishActive ? 'bg-cyan-900 bg-opacity-50 border-cyan-700 hover:bg-cyan-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 40 && !armorPolishActive ? 'bg-cyan-900 bg-opacity-50 border-cyan-700 hover:bg-cyan-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">🛡️</span>
-                      <div>
-                        <p className="font-bold text-white">Armor Polish</p>
-                        <p className="text-sm text-purple-400">40 Essence</p>
-                      </div>
+                    <div className="mb-2">
+                      <p className="font-bold text-white text-lg mb-2">Armor Polish</p>
+                      <p className="text-sm text-purple-400 font-bold mb-2">40 Essence</p>
+                      <p className="text-sm text-cyan-300 mb-1">+5 armor until dawn</p>
+                      {armorPolishActive && <p className="text-xs text-green-400 mb-2">✓ Active</p>}
+                      <p className="text-xs text-gray-400 italic">"Protective salve. Steel hardens, flesh endures."</p>
                     </div>
-                    <p className="text-xs text-gray-400">+5 armor until next day</p>
-                    {armorPolishActive && <p className="text-xs text-green-400 mt-1">✓ Active</p>}
                   </button>
                   
                   <button 
                     onClick={() => craftItem('luckyCharm')} 
                     disabled={essence < 80 || luckyCharmActive}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${essence >= 80 && !luckyCharmActive ? 'bg-green-900 bg-opacity-50 border-green-700 hover:bg-green-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 80 && !luckyCharmActive ? 'bg-green-900 bg-opacity-50 border-green-700 hover:bg-green-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
                   >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="text-3xl">🍀</span>
-                      <div>
-                        <p className="font-bold text-white">Lucky Charm</p>
-                        <p className="text-sm text-purple-400">80 Essence</p>
-                      </div>
+                    <div className="mb-2">
+                      <p className="font-bold text-white text-lg mb-2">Lucky Charm</p>
+                      <p className="text-sm text-purple-400 font-bold mb-2">80 Essence</p>
+                      <p className="text-sm text-green-300 mb-1">2x loot from next elite boss</p>
+                      {luckyCharmActive && <p className="text-xs text-green-400 mb-2">✓ Active</p>}
+                      <p className="text-xs text-gray-400 italic">"Blessed talisman. Fortune favors the bold."</p>
                     </div>
-                    <p className="text-xs text-gray-400">2x loot from next elite boss</p>
-                    {luckyCharmActive && <p className="text-xs text-green-400 mt-1">✓ Active</p>}
                   </button>
                 </div>
                 
@@ -4264,15 +4180,17 @@ setMiniBossCount(0);
 
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500" onClick={e => e.stopPropagation()}>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-red-400">Accept New Trial</h3>
-        <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500 relative" onClick={e => e.stopPropagation()}>
+      <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
+      
+      <div className="text-center mb-6">
+        <h3 className="text-2xl font-bold text-red-400">ACCEPT NEW TRIAL</h3>
+        <p className="text-gray-400 text-sm mt-1 italic">"The darkness demands sacrifice..."</p>
       </div>
       
       <input 
         type="text" 
-        placeholder="Task name (e.g., Study for Biology test)" 
+        placeholder="Name your trial" 
         value={newTask.title} 
         onChange={e => setNewTask({...newTask, title: e.target.value})} 
         className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-red-500 focus:outline-none" 
@@ -4280,7 +4198,7 @@ setMiniBossCount(0);
       />
       
       <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-2">Priority Level</label>
+        <label className="block text-sm text-gray-400 mb-2">Trial Difficulty</label>
         <div className="grid grid-cols-2 gap-3">
           <button 
             type="button" 
@@ -4291,9 +4209,9 @@ setMiniBossCount(0);
                 : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-yellow-700'
             }`}
           >
-            <div className="text-2xl mb-1">⭐</div>
-            <div className="font-bold">IMPORTANT</div>
-            <div className="text-xs mt-1">1.25x XP</div>
+            <div className="font-bold mb-1">IMPORTANT</div>
+            <div className="text-xs">1.25x XP</div>
+            <div className="text-xs text-gray-500 mt-1 italic">Greater reward</div>
           </button>
           
           <button 
@@ -4305,9 +4223,9 @@ setMiniBossCount(0);
                 : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-blue-700'
             }`}
           >
-            <div className="text-2xl mb-1">📋</div>
-            <div className="font-bold">ROUTINE</div>
-            <div className="text-xs mt-1">1.0x XP</div>
+            <div className="font-bold mb-1">ROUTINE</div>
+            <div className="text-xs">1.0x XP</div>
+            <div className="text-xs text-gray-500 mt-1 italic">Standard trial</div>
           </button>
         </div>
       </div>
@@ -4333,13 +4251,13 @@ setMiniBossCount(0);
 
 {showImportModal && (
   <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-blue-400">Import from Planner</h3>
-        <button onClick={() => setShowImportModal(false)} className="text-gray-400 hover:text-white"><X size={24}/></button>
-      </div>
+    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500 relative" onClick={e => e.stopPropagation()}>
+      <button onClick={() => setShowImportModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
       
-      <p className="text-gray-400 text-sm mb-4">Select which day's tasks to import:</p>
+      <div className="text-center mb-6">
+        <h3 className="text-2xl font-bold text-blue-400">IMPORT FROM PLANNER</h3>
+        <p className="text-gray-400 text-sm mt-1 italic">"Draw upon your prepared plans..."</p>
+      </div>
       
       <div className="space-y-2">
         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day, idx) => {
@@ -4738,7 +4656,7 @@ setMiniBossCount(0);
     <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-12 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-purple-400 mb-2">
-          {isBreak ? '☕ BREAK TIME' : '🍅 FOCUS SESSION'}
+          {isBreak ? 'BREAK TIME' : 'FOCUS SESSION'}
         </h2>
         <p className="text-xl text-gray-300 mb-8">{pomodoroTask.title}</p>
         
@@ -4753,7 +4671,6 @@ setMiniBossCount(0);
         
         <div className="mb-6">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="text-yellow-400 text-2xl">🍅</span>
             <span className="text-white text-xl">Pomodoros Completed: {pomodorosCompleted}</span>
           </div>
           <div className="bg-gray-800 rounded-full h-3 overflow-hidden">
@@ -4769,7 +4686,7 @@ setMiniBossCount(0);
             onClick={() => setPomodoroRunning(!pomodoroRunning)}
             className="bg-blue-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-blue-700 transition-all"
           >
-            {pomodoroRunning ? '⏸️ Pause' : '▶️ Resume'}
+            {pomodoroRunning ? 'Pause' : 'Resume'}
           </button>
           
           {isBreak && (
@@ -4778,11 +4695,11 @@ setMiniBossCount(0);
                 setIsBreak(false);
                 setPomodoroTimer(25 * 60);
                 setPomodoroRunning(true);
-                addLog('⏭️ Skipped break - back to work!');
+                addLog('Skipped break - back to work!');
               }}
               className="bg-yellow-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-700 transition-all"
             >
-              ⏭️ Skip Break
+              Skip Break
             </button>
           )}
         </div>
@@ -4792,11 +4709,11 @@ setMiniBossCount(0);
             setShowPomodoro(false);
             setPomodoroTask(null);
             setPomodoroRunning(false);
-            addLog(`📊 Focus session ended. Completed ${pomodorosCompleted} pomodoro${pomodorosCompleted !== 1 ? 's' : ''}.`);
+            addLog(`Focus session ended. Completed ${pomodorosCompleted} pomodoro${pomodorosCompleted !== 1 ? 's' : ''}.`);
           }}
           className="bg-gray-700 px-8 py-3 rounded-lg font-bold hover:bg-gray-600 transition-all"
         >
-          🏁 Finish Task & Return
+          Finish Task & Return
         </button>
       </div>
     </div>
