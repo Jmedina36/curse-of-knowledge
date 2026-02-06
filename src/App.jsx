@@ -3474,7 +3474,7 @@ setMiniBossCount(0);
           )}
 
           {showInventoryModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowInventoryModal(false)}>
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowInventoryModal(false)}>
               <div className="bg-gray-900 rounded-xl p-6 max-w-lg w-full border-2 border-red-500 relative" onClick={e => e.stopPropagation()}>
                 <button onClick={() => setShowInventoryModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
                 
@@ -3577,7 +3577,7 @@ setMiniBossCount(0);
           )}
 
           {showCraftingModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
+            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
               <div className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full border-2 border-orange-500 my-8 relative" onClick={e => e.stopPropagation()}>
                 <button onClick={() => setShowCraftingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
                 
@@ -3689,7 +3689,7 @@ setMiniBossCount(0);
           )}
 
           {showCustomizeModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-blue-400">CUSTOMIZE YOUR HERO</h3>
@@ -3766,7 +3766,7 @@ setMiniBossCount(0);
 )}
 
 {showDeckModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowDeckModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowDeckModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-purple-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-purple-400">Create New Deck</h3>
@@ -3811,7 +3811,7 @@ setMiniBossCount(0);
 )}
 
 {showCardModal && selectedDeck !== null && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCardModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowCardModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-blue-400">Add Card to {flashcardDecks[selectedDeck]?.name}</h3>
@@ -3874,7 +3874,7 @@ setMiniBossCount(0);
 )}
 
 {showStudyModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
-  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-start justify-center p-4 z-50">
     <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
       <div className="mb-6 flex justify-between items-center">
         <div>
@@ -4008,7 +4008,7 @@ setMiniBossCount(0);
 )}
 
 {showQuizModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
-  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-start justify-center p-4 z-50">
     <div className="bg-gradient-to-b from-blue-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-blue-600 shadow-2xl">
       {!showQuizResults ? (
         <>
@@ -4205,7 +4205,7 @@ setMiniBossCount(0);
 )}
 
          {showModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500 relative" onClick={e => e.stopPropagation()}>
       <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
       
@@ -4276,7 +4276,7 @@ setMiniBossCount(0);
 )}
 
 {showImportModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500 relative" onClick={e => e.stopPropagation()}>
       <button onClick={() => setShowImportModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
       
@@ -4332,7 +4332,7 @@ setMiniBossCount(0);
 )}
 
          {showPlanModal && selectedDay && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowPlanModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-blue-400">Plan for {selectedDay}</h3>
@@ -4427,7 +4427,7 @@ setMiniBossCount(0);
   </div>
 )}
           {showCalendarModal && selectedDate && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
+  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowCalendarModal(false)}>
     <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-green-500" onClick={e => e.stopPropagation()}>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xl font-bold text-green-400">
@@ -4580,8 +4580,8 @@ setMiniBossCount(0);
 )}
 
           {showBoss && (
-            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center p-4 z-50">
-              <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter ${bossFlash ? 'damage-flash-boss' : ''}`}>
+            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
+              <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter my-8 ${bossFlash ? 'damage-flash-boss' : ''}`}>
                {bossName && (<h2 className="text-5xl text-center text-yellow-400 mb-2 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</h2>)}
                <p className="text-xl font-bold text-center text-red-400 mb-4">
   {isFinalBoss ? 'THE UNDYING LEGEND' : 
@@ -4678,7 +4678,7 @@ setMiniBossCount(0);
             </div>
           )}
           {showPomodoro && pomodoroTask && (
-  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center p-4 z-50">
+  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-start justify-center p-4 z-50">
     <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-12 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-purple-400 mb-2">
