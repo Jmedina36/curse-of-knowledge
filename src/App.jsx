@@ -147,29 +147,45 @@ const GAME_CONSTANTS = {
       "I surrender! Just... please touch grass after this.",
       "Beating ME up? What about your REAL problems?"
     ],
+    FLEE: [
+      "Running away? That's your life strategy, isn't it?",
+      "Of course you're fleeing. Commitment was never your strong suit.",
+      "Run! Just like you run from everything else in your life!",
+      "Pathetic. You can't even finish fighting a METAPHOR.",
+      "This is why you never finish ANYTHING. You RUN.",
+      "Fleeing from tasks. Fleeing from battles. Fleeing from growth. It's ALL you do.",
+      "Come back when you've developed a spine, coward.",
+      "See you tomorrow when you try again. And flee again. Cycle repeats.",
+      "Your entire existence is one long FLEE button press.",
+      "Thanks for proving my point. You're all talk. No follow-through."
+    ],
     TAUNTS: {
       REGULAR: [
-        { player: "At least I opened the app!", enemy: "THAT'S your bar? OPENING an app? Congratulations on basic motor function." },
-        { player: "This counts as progress!", enemy: "Playing a game about work is NOT work. Nice try though." },
-        { player: "I'm being productive... technically!", enemy: "If mental gymnastics were a sport, you'd be OLYMPIC." },
-        { player: "The developer said this would help!", enemy: "The developer is LAUGHING at you right now. We ALL are." },
-        { player: "My therapist would be proud!", enemy: "Your therapist doesn't KNOW about this. And you'll never tell them." },
-        { player: "This beats scrolling social media!", enemy: "You're STILL scrolling. This game has a CHARACTER SCREEN." },
-        { player: "I'm learning time management!", enemy: "You're learning to ROLEPLAY time management. There's a difference." },
-        { player: "Better than nothing!", enemy: "IS IT? You could be doing... literally anything else." },
-        { player: "This is exposure therapy!", enemy: "For WHAT? Task anxiety? You're CREATING more by gamifying it!" },
-        { player: "I'm the protagonist!", enemy: "You're the protagonist of a PRODUCTIVITY app. That's not the flex you think." },
-        { player: "This is player agency!", enemy: "Your 'agency' is choosing which TASK to fight first. Revolutionary." },
-        { player: "The UI is really clean though!", enemy: "You're admiring the UI?! JUST DO THE TASK!" },
-        { player: "At least I'm self-aware!", enemy: "SELF-AWARENESS WITHOUT ACTION IS JUST ENTERTAINMENT. You're watching yourself fail. For FUN." },
-        { player: "Five stars on the app store!", enemy: "You rated it five stars?! You ENDORSED this? To OTHER people?!" },
-        { player: "The dialogue is so good!", enemy: "You're enjoying the WRITING while your ACTUAL work waits. PRIORITIES." }
+        { player: "At least I opened the app!", enemy: "Your life is so pathetic that OPENING AN APP counts as an achievement. Sit with that." },
+        { player: "This counts as progress!", enemy: "Progress? You needed an RPG to trick yourself into basic responsibility. You're broken." },
+        { player: "I'm being productive... technically!", enemy: "'Technically' is the cope of the incompetent. You're still a failure, just with better graphics." },
+        { player: "The developer said this would help!", enemy: "The developer made this for people too weak to function normally. You proved them right." },
+        { player: "My therapist would be proud!", enemy: "Your therapist is PAID to pretend you're making progress. I'm not. You're wasting your life." },
+        { player: "This beats scrolling social media!", enemy: "You're so addicted to dopamine you turned WORK into a GAME. That's not winning. That's rock bottom." },
+        { player: "I'm learning time management!", enemy: "You're in your 20s/30s learning what children master. How does that feel, knowing you're developmentally stunted?" },
+        { player: "Better than nothing!", enemy: "Nothing would be MORE honest than this pathetic performance you call effort." },
+        { player: "This is exposure therapy!", enemy: "You're so terrified of your own responsibilities you needed to cosplay as a warrior. Coward." },
+        { player: "I'm the protagonist!", enemy: "You're the protagonist of a cautionary tale about arrested development. Congratulations." },
+        { player: "This is player agency!", enemy: "Your 'agency' is surrendering control to a GAME because you can't manage your own life. That's not power. That's defeat." },
+        { player: "The UI is really clean though!", enemy: "You're admiring the interface while your actual life crumbles. Priorities of a child in an adult's body." },
+        { player: "At least I'm self-aware!", enemy: "Self-awareness without change is just sophisticated failure. You're not enlightened. You're just a failure with vocabulary." },
+        { player: "Five stars on the app store!", enemy: "You RECOMMENDED this? You want OTHER people to join you at rock bottom? Misery loves company, you selfish waste." },
+        { player: "The dialogue is so good!", enemy: "You're complimenting the writing in your PRODUCTIVITY APP. This is who you are. A joke that writes itself." }
       ],
       WAVE: [
-        { player: "Mob farming simulator!", enemy: "These 'mobs' are EMAILS. You're farming EMAILS." },
-        { player: "XP grinding session!", enemy: "You're 'grinding' basic responsibilities. How EPIC." },
-        { player: "This is my endgame content!", enemy: "Your endgame is... TASKS? That's everyone's START game." },
-        { player: "AOE clear activated!", enemy: "You can't AOE real tasks. You have to do them ONE. AT. A. TIME." }
+        { player: "Mob farming simulator!", enemy: "You need to pretend EMAILS are MONSTERS to face them. How weak are you? Genuinely." },
+        { player: "XP grinding session!", enemy: "You're 'grinding' the bare minimum of human function. Your parents must be so disappointed." },
+        { player: "This is my endgame content!", enemy: "Your 'endgame' is what functional adults call 'Tuesday morning'. You're not even playing on the same level." },
+        { player: "AOE clear activated!", enemy: "There is no AOE for incompetence. You'll fail each task individually. One. Pathetic. Task. At. A. Time." },
+        { player: "Loot drops looking good!", enemy: "Your 'loot' is basic competence. You're celebrating what others do unconsciously. That's YOUR bar." },
+        { player: "Chain pulling these mobs!", enemy: "Chain pulling RESPONSIBILITIES. You sound insane. Normal people just DO things." },
+        { player: "Respawn rates are crazy!", enemy: "Tasks don't respawn. They ACCUMULATE. You're not fighting spawns. You're drowning in backlog." },
+        { player: "This is like a raid!", enemy: "A raid requires coordination and skill. You're panicking through a TO-DO list. Alone. Badly." }
       ]
     }
   },
@@ -182,9 +198,11 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "Cool, you beat Monday in a game. Real Monday is still there.",
       VICTORY_PLAYER: "I'm not even the final boss. That's your INBOX.",
       TAUNTS: [
-        { player: "I beat tutorial Monday!", enemy: "This isn't a TUTORIAL. This is your LIFE. And you made it into Dark Souls." },
-        { player: "Week 1 of my new system!", enemy: "You have 47 'Week 1's in your journal. I checked." },
-        { player: "The patch notes buffed me!", enemy: "There are NO patch notes for YOUR life. Update yourself." }
+        { player: "I beat tutorial Monday!", enemy: "This isn't a TUTORIAL. This is your LIFE. And you're so incompetent you had to turn it into a game just to function." },
+        { player: "Week 1 of my new system!", enemy: "You have 47 'Week 1's in your journal. I counted. You're not starting fresh. You're compulsively resetting because you can't finish ANYTHING." },
+        { player: "The patch notes buffed me!", enemy: "There are NO patch notes for failure. You're still the same broken person. Just with new excuses." },
+        { player: "Fresh start activated!", enemy: "Every Monday is a 'fresh start' for you. You've had HUNDREDS. When does the starting END and the DOING begin?" },
+        { player: "New week, new me!", enemy: "New week, SAME you. You've said this EVERY Monday for YEARS. You're not new. You're STAGNANT." }
       ]
     },
     DAY_2: {
@@ -194,8 +212,12 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "Tomorrow you'll remember why you procrastinate.",
       VICTORY_PLAYER: "Impossible... someone who actually... follows through?",
       TAUNTS: [
-        { player: "Day 2 and still going!", enemy: "TWO DAYS? Wow. Someone get this hero a MEDAL." },
-        { player: "The grind continues!", enemy: "You're 'grinding' Tuesday. TUESDAY. Listen to yourself." }
+        { player: "Day 2 and still going!", enemy: "TWO DAYS? You want applause for TWO DAYS? Children have longer attention spans. You're worse than a child." },
+        { player: "The grind continues!", enemy: "You're 'grinding' TUESDAY. You made TUESDAY into a boss fight. Listen to how broken you are." },
+        { player: "Building momentum now!", enemy: "Momentum? You did ONE day. That's not momentum. That's a single data point. You're celebrating NOTHING." },
+        { player: "The streak is real!", enemy: "A two-day streak. WOW. Your willpower is measured in HOURS. Most people call that 'Monday and Tuesday'." },
+        { player: "Getting into the flow!", enemy: "Flow state? You're in SURVIVAL state. You're white-knuckling through basic life. That's not flow. That's desperation." },
+        { player: "Tuesday never stood a chance!", enemy: "Tuesday happens to EVERYONE. You didn't conquer anything. You EXISTED. Barely." }
       ]
     },
     DAY_3: {
@@ -205,9 +227,11 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "The real curse was the tasks we completed along the way.",
       VICTORY_PLAYER: "You beat me but you can't beat the feeling that it's only WEDNESDAY.",
       TAUNTS: [
-        { player: "Halfway through the campaign!", enemy: "This isn't a CAMPAIGN. It's WEDNESDAY. In real life. Which still exists." },
-        { player: "Mid-game boss defeated!", enemy: "I'm not 'mid-game.' I'm WEDNESDAY. I repeat WEEKLY. There's no END." },
-        { player: "Save file looking good!", enemy: "You can't SAVE your life. You can't RELOAD Monday. This is PERMANENT." }
+        { player: "Halfway through the campaign!", enemy: "This isn't a CAMPAIGN. It's WEDNESDAY. Your real life doesn't have checkpoints. When you fail, it's PERMANENT." },
+        { player: "Mid-game boss defeated!", enemy: "I'm not 'mid-game.' I'm WEDNESDAY. I happen EVERY WEEK. There is no victory. There is no escape. Only eternal repetition." },
+        { player: "Save file looking good!", enemy: "You can't SAVE your life. You can't RELOAD your failures. Every mistake is PERMANENT. You're playing on PERMADEATH and losing." },
+        { player: "Hump day conquered!", enemy: "You didn't conquer ANYTHING. It's WEDNESDAY. It happened TO you. Like it happens to EVERYONE. You're not special." },
+        { player: "Reached the midpoint!", enemy: "The midpoint of what? A week? EVERYONE experiences weeks. You're not achieving. You're EXISTING. Barely." }
       ]
     },
     DAY_4: {
@@ -217,8 +241,12 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "Doesn't matter. Tomorrow's still Thursday.",
       VICTORY_PLAYER: "You'll wake up tomorrow and it'll still be Thursday in your SOUL.",
       TAUNTS: [
-        { player: "Almost Friday!", enemy: "'Almost' doesn't count. It's THURSDAY. You have ANOTHER day." },
-        { player: "Pre-weekend vibes!", enemy: "'Vibes' don't complete tasks. ACTION does. Try it sometime." }
+        { player: "Almost Friday!", enemy: "'Almost' is the mantra of the perpetually incomplete. It's THURSDAY. You have ANOTHER full day of failing ahead." },
+        { player: "Pre-weekend vibes!", enemy: "'Vibes' are what people without discipline call feelings. You don't have a work ethic. You have vibes. Pathetic." },
+        { player: "The home stretch!", enemy: "Home stretch? You're on DAY FOUR of SEVEN. You can't even count. Mathematics is another thing you've failed at." },
+        { player: "Thursday's going down!", enemy: "Thursday isn't going down. YOU are. Every week. Same time. Same failure. Thursday is FINE. You're the problem." },
+        { player: "One more day to victory!", enemy: "Victory? Friday isn't victory. It's a TWO-DAY PAUSE before you do this AGAIN. Forever. That's not winning. That's a LOOP." },
+        { player: "Almost there, just persist!", enemy: "You shouldn't NEED to 'persist' through Thursday. Functional humans just LIVE through it. You're celebrating survival." }
       ]
     },
     DAY_5: {
@@ -228,9 +256,11 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "The weekend is a myth. A beautiful, cruel myth.",
       VICTORY_PLAYER: "Enjoy your 48 hours before the cycle begins again...",
       TAUNTS: [
-        { player: "Almost at the credits!", enemy: "The 'credits' are two days of guilt before ANOTHER week. Congratulations." },
-        { player: "Final stretch of content!", enemy: "Your life isn't CONTENT. Log off. Touch grass. Please." },
-        { player: "Grinding for weekend loot!", enemy: "Your 'loot' is laundry and existential dread. EXCITING." }
+        { player: "Almost at the credits!", enemy: "The 'credits' are 48 hours of existential dread before you reset. Your life is a bad game with no ending." },
+        { player: "Final stretch of content!", enemy: "Your LIFE isn't CONTENT. You're not the main character. You're not even an NPC. You're a bug in the simulation." },
+        { player: "Grinding for weekend loot!", enemy: "Your 'loot' is two days of avoiding your real problems before the cycle repeats. You're not winning. You're coping." },
+        { player: "TGIF energy activated!", enemy: "Thank God It's Friday? Why are you thanking God for SURVIVING? The bar is SO low it's underground." },
+        { player: "Made it to the weekend!", enemy: "You 'made it'? Like it was DIFFICULT? Like Friday was OPTIONAL? Everyone gets to Friday. You just suffered more getting there." }
       ]
     },
     DAY_6: {
@@ -240,8 +270,12 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "You won, but at what cost? YOUR SATURDAY.",
       VICTORY_PLAYER: "I yield! Not because you beat me, but out of pity.",
       TAUNTS: [
-        { player: "Weekend warrior mode!", enemy: "It's SATURDAY. You should be RESTING. Not... THIS." },
-        { player: "Grinding on my day off!", enemy: "Your 'grind' is a TO-DO list. On SATURDAY. Seek help." }
+        { player: "Weekend warrior mode!", enemy: "It's SATURDAY. You're so dysfunctional you're working on SATURDAY. This isn't dedication. It's disorder." },
+        { player: "Grinding on my day off!", enemy: "Your 'grind' is a TO-DO list. On a weekend. You're not ambitious. You're avoidant. And it's SAD." },
+        { player: "Maximizing weekend efficiency!", enemy: "Efficiency? You're WORKING ON SATURDAY. Efficient people finished on FRIDAY. You're not efficient. You're BEHIND." },
+        { player: "No days off for winners!", enemy: "Winners REST. You're not working because you're winning. You're working because you FAILED during the week." },
+        { player: "Sigma grindset activated!", enemy: "You're referencing MEMES while working SATURDAY. You're not sigma. You're BROKEN. And alone. So very alone." },
+        { player: "Optimizing my free time!", enemy: "IT'S NOT FREE TIME IF YOU'RE WORKING. You can't even understand what weekends ARE. This is who you've become." }
       ]
     },
     DAY_7: {
@@ -251,15 +285,35 @@ const GAME_CONSTANTS = {
       VICTORY_BOSS: "See you Monday. Forever. Always. Monday.",
       VICTORY_PLAYER: "Congratulations. Your reward is... next week. Same curse. New you. (Probably not.)",
       TAUNTS: [
-        { player: "Final boss? Easy mode.", enemy: "I'm not the final boss. MONDAY is. And Monday NEVER dies." },
-        { player: "This is my character arc!", enemy: "Your arc is CIRCULAR. Week 1. Week 2. Week INFINITY. No growth. Only LOOP." },
-        { player: "Time to roll credits!", enemy: "The credits say 'Thanks for playing! Now do it AGAIN. FOREVER.'" },
-        { player: "New Game Plus unlocked!", enemy: "It's not New Game Plus. It's the SAME GAME. SAME TASKS. You just forgot." },
-        { player: "Speedrun world record!", enemy: "You're speedrunning a TO-DO LIST. Let that sink in." }
+        { player: "Final boss? Easy mode.", enemy: "I'm not the final boss. MONDAY is. And Monday ALWAYS wins. You've never beaten Monday. Not once. Not ever." },
+        { player: "This is my character arc!", enemy: "Your arc is a CIRCLE. Week 1. Again. Week 1. AGAIN. You're not growing. You're trapped in a loop of your own making." },
+        { player: "Time to roll credits!", enemy: "The credits say 'See you next week! Same failures! Same excuses! Forever!' This is your eternity." },
+        { player: "New Game Plus unlocked!", enemy: "It's not New Game Plus. It's the SAME GAME. You're not getting stronger. You're getting OLDER. And you're still HERE." },
+        { player: "Speedrun world record!", enemy: "You're speedrunning basic human responsibility. Your tombstone will read 'Completed To-Do Lists Efficiently'. What a legacy." },
+        { player: "The true ending unlocked!", enemy: "There IS no ending. This is FOREVER. You'll be 80 years old still making to-do lists. Still 'optimizing'. Still failing." },
+        { player: "I've mastered the game!", enemy: "You've mastered NOTHING. You gamified your inability to function. That's not mastery. That's ADAPTATION to dysfunction." }
+      ]
+    },
+    GAUNTLET: {
+      START: "I am the threshold. The wall you cannot climb. Every time you reach me, I grow stronger.",
+      MID: "You've killed a thousand lesser demons. I've killed a thousand versions of YOU.",
+      LOW: "You think you're winning? I'm not even trying yet. I'm just... curious how long you'll last.",
+      VICTORY_BOSS: "Adequate. You've earned a moment's rest. But I'll be waiting. I'm ALWAYS waiting.",
+      VICTORY_PLAYER: "Impossible... You actually... No. NO. This changes NOTHING. I'll see you again. And I'll be STRONGER.",
+      TAUNTS: [
+        { player: "I've beaten you before!", enemy: "And I've KILLED you before. More times than you remember. Every loss you forget. Every victory you barely survive." },
+        { player: "I'm stronger now!", enemy: "Stronger? You're OLDER. Slower. More desperate. I'm eternal. I don't age. I don't tire. I just wait for you to slip." },
+        { player: "This is my moment!", enemy: "Your 'moment' is my ETERNITY. I was here before you. I'll be here after. You're just passing through. Again." },
+        { player: "I've prepared for this!", enemy: "You've prepared NOTHING. You can't prepare for oblivion. You can't plan for the inevitable. I AM inevitable." },
+        { player: "Today I break through!", enemy: "Break through to WHAT? More struggle? Harder trials? There IS no breakthrough. Only the next wall. And I AM that wall." },
+        { player: "I'm not afraid anymore!", enemy: "Then you're a FOOL. Fear keeps you sharp. Without it, you're just meat walking to the slaughter. And I'm HUNGRY." },
+        { player: "This ends TODAY!", enemy: "Nothing ENDS. It only repeats. Different faces. Same outcome. You. Dead. Me. Waiting. Forever." }
       ]
     }
   }
 };
+
+const HERO_TITLES = ['Novice', 'Seeker', 'Wanderer', 'Survivor', 'Warrior', 'Champion', 'Legend'];
 
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
@@ -271,6 +325,12 @@ const FantasyStudyQuest = () => {
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
   const [essence, setEssence] = useState(0); // Crafting currency from combat
+  const [gauntletMilestone, setGauntletMilestone] = useState(1000); // Next XP threshold for Gauntlet
+  const [gauntletUnlocked, setGauntletUnlocked] = useState(false); // Is Gauntlet currently available
+  const [timeUntilMidnight, setTimeUntilMidnight] = useState(''); // Countdown to day reset
+  const [restDaysUsed, setRestDaysUsed] = useState(0); // Rest days used this week (max 2)
+  const [isRestDayActive, setIsRestDayActive] = useState(false); // Is today a rest day
+  const [weekStartDate, setWeekStartDate] = useState(null); // Track week start for reset
   
   const getMaxHp = useCallback(() => {
     return GAME_CONSTANTS.MAX_HP + (currentDay - 1) * GAME_CONSTANTS.PLAYER_HP_PER_DAY;
@@ -356,11 +416,13 @@ const [reviewingMistakes, setReviewingMistakes] = useState(false);
 const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
 const [totalWaveEnemies, setTotalWaveEnemies] = useState(0);
+const [waveEssenceTotal, setWaveEssenceTotal] = useState(0);
   const [battling, setBattling] = useState(false);
   const [isFinalBoss, setIsFinalBoss] = useState(false);
   const [miniBossCount, setMiniBossCount] = useState(0);
   const [bossName, setBossName] = useState('');
   const [canFlee, setCanFlee] = useState(false);
+  const [hasFled, setHasFled] = useState(false);
   const [bossDebuffs, setBossDebuffs] = useState({ 
     poisonTurns: 0, 
     poisonDamage: 0, 
@@ -388,6 +450,8 @@ const [customClass, setCustomClass] = useState(null);
   const [luckyCharmActive, setLuckyCharmActive] = useState(false);
   const [enemyDialogue, setEnemyDialogue] = useState('');
   const [playerTaunt, setPlayerTaunt] = useState('');
+  const [enemyTauntResponse, setEnemyTauntResponse] = useState('');
+  const [showTauntBoxes, setShowTauntBoxes] = useState(false);
   const [isTauntAvailable, setIsTauntAvailable] = useState(false);
   const [hasTriggeredLowHpTaunt, setHasTriggeredLowHpTaunt] = useState(false);
   const [enragedTurns, setEnragedTurns] = useState(0);
@@ -417,8 +481,6 @@ const [lastRealDay, setLastRealDay] = useState(null);
   const [sessionStartTime, setSessionStartTime] = useState(null);
   const [taskPauseCount, setTaskPauseCount] = useState(0);
   
-  const titles = ['Novice', 'Seeker', 'Wanderer', 'Survivor', 'Warrior', 'Champion', 'Legend'];
-  
   const classes = [
     { name: 'Warrior', color: 'red', emblem: '⚔︎', gradient: ['from-red-900', 'from-red-800', 'from-red-700', 'from-red-600'], glow: ['shadow-red-900/50', 'shadow-red-700/60', 'shadow-red-600/70', 'shadow-red-500/80'] },
     { name: 'Mage', color: 'purple', emblem: '✦', gradient: ['from-purple-900', 'from-purple-800', 'from-purple-700', 'from-purple-600'], glow: ['shadow-purple-900/50', 'shadow-purple-700/60', 'shadow-purple-600/70', 'shadow-purple-500/80'] },
@@ -438,7 +500,7 @@ const [lastRealDay, setLastRealDay] = useState(null);
     return { 
       name: `${first[gender][Math.floor(Math.random() * first[gender].length)]} ${last[Math.floor(Math.random() * last.length)]}`, 
       gender,
-      title: titles[0],
+      title: HERO_TITLES[0],
       day: 1,
       survived: 0,
       class: heroClass
@@ -561,6 +623,11 @@ const getDateKey = useCallback((date) => {
         if (data.stamina !== undefined) setStamina(data.stamina);
         if (data.xp !== undefined) setXp(data.xp);
         if (data.essence !== undefined) setEssence(data.essence);
+        if (data.gauntletMilestone !== undefined) setGauntletMilestone(data.gauntletMilestone);
+        if (data.gauntletUnlocked !== undefined) setGauntletUnlocked(data.gauntletUnlocked);
+        if (data.restDaysUsed !== undefined) setRestDaysUsed(data.restDaysUsed);
+        if (data.isRestDayActive !== undefined) setIsRestDayActive(data.isRestDayActive);
+        if (data.weekStartDate) setWeekStartDate(data.weekStartDate);
         if (data.level !== undefined) setLevel(data.level);
         if (data.healthPots !== undefined) setHealthPots(data.healthPots);
         if (data.staminaPots !== undefined) setStaminaPots(data.staminaPots);
@@ -601,11 +668,185 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
      const saveData = {
   hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots,
   weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
-  lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks
+  lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks,
+  gauntletMilestone, gauntletUnlocked,
+  restDaysUsed, isRestDayActive, weekStartDate
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks]);
+ }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks, gauntletMilestone, gauntletUnlocked, restDaysUsed, isRestDayActive, weekStartDate]);
+  
+  // Check if XP crosses Gauntlet milestone
+  useEffect(() => {
+    if (xp >= gauntletMilestone && !gauntletUnlocked) {
+      setGauntletUnlocked(true);
+      addLog(`⚔️ THE GAUNTLET UNLOCKED! Face the trial when ready...`);
+    }
+  }, [xp, gauntletMilestone, gauntletUnlocked, addLog]);
+  
+  // Update countdown to midnight every second (only shows last hour)
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const midnight = new Date(now);
+      midnight.setHours(24, 0, 0, 0);
+      
+      const diff = midnight - now;
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      // Only show countdown if less than 1 hour remains
+      if (hours < 1) {
+        setTimeUntilMidnight(`${minutes}m ${seconds}s`);
+      } else {
+        setTimeUntilMidnight('');
+      }
+    };
+    
+    updateCountdown(); // Initial update
+    const interval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Reset rest days counter on Monday
+  useEffect(() => {
+    const checkWeekReset = () => {
+      const now = new Date();
+      const dayOfWeek = now.getDay(); // 0=Sun, 1=Mon, ...
+      const currentWeekStart = new Date(now);
+      currentWeekStart.setDate(now.getDate() - ((dayOfWeek + 6) % 7)); // Get Monday of current week
+      const weekStartKey = currentWeekStart.toDateString();
+      
+      if (!weekStartDate || weekStartDate !== weekStartKey) {
+        // New week started!
+        setWeekStartDate(weekStartKey);
+        if (weekStartDate) { // Only reset if there was a previous week (not first load)
+          setRestDaysUsed(0);
+          addLog('🔄 New week - Rest days reset (0/2 used)');
+        }
+      }
+    };
+    
+    checkWeekReset(); // Check on mount
+    const interval = setInterval(checkWeekReset, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [weekStartDate, addLog]);
+  
+  // Detect when real calendar day changes and auto-advance
+  useEffect(() => {
+    const checkDayChange = () => {
+      const today = new Date().toDateString();
+      
+      if (lastRealDay && lastRealDay !== today) {
+        // New day detected!
+        
+        // Check if rest day is active
+        if (isRestDayActive) {
+          // Rest day - no advancement, no curse
+          addLog('🛌 REST DAY COMPLETE - Day paused, no curse applied');
+          setIsRestDayActive(false);
+          setEliteBossDefeatedToday(false);
+          
+          // Clear completed tasks, mark incomplete as overdue
+          const completedCount = tasks.filter(t => t.done).length;
+          const incompleteCount = tasks.filter(t => !t.done).length;
+          
+          setTasks(prevTasks => 
+            prevTasks
+              .filter(t => !t.done)
+              .map(t => ({ ...t, overdue: true }))
+          );
+          
+          if (completedCount > 0) {
+            addLog(`✅ Cleared ${completedCount} completed task${completedCount > 1 ? 's' : ''}`);
+          }
+          if (incompleteCount > 0) {
+            addLog(`⚠️ ${incompleteCount} incomplete task${incompleteCount > 1 ? 's' : ''} marked OVERDUE`);
+          }
+        } else {
+          // Normal day - advance and check curse
+          const nextDay = currentDay + 1;
+          
+          // Check curse before advancing
+          if (!eliteBossDefeatedToday) {
+            // Didn't beat elite boss - apply curse penalty
+            addLog('🔒 ELITE BOSS LOCKED - Midnight passed, opportunity missed');
+            
+            const newCurseLevel = curseLevel + 1;
+            setCurseLevel(newCurseLevel);
+            
+            if (newCurseLevel >= 4) {
+              // 4th missed boss = death
+              addLog('☠️ THE CURSE CONSUMES YOU. Four failures... the abyss claims your soul.');
+              setTimeout(() => die(), 2000);
+              return;
+            }
+            
+            // Apply curse penalties
+            const cursePenalties = [
+              { hp: 20, msg: '🌑 CURSED. The curse takes root... -20 HP' },
+              { hp: 40, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -40 HP' },
+              { hp: 60, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -60 HP' }
+            ];
+            
+            const penalty = cursePenalties[newCurseLevel - 1];
+            setHp(h => Math.max(1, h - penalty.hp));
+            addLog(penalty.msg);
+          } else {
+            // Beat yesterday's boss - clear curse if present
+            if (curseLevel > 0) {
+              setCurseLevel(0);
+              addLog('🌅 THE CURSE BREAKS! Yesterday\'s trial complete.');
+            }
+          }
+          
+          // Reset daily elite boss flag for new day
+          setEliteBossDefeatedToday(false);
+          
+          // Advance day
+          setCurrentDay(nextDay);
+          setHero(prev => ({
+            ...prev,
+            day: nextDay,
+          title: HERO_TITLES[(nextDay - 1) % HERO_TITLES.length], // Wrap titles
+          survived: prev.survived + 1
+        }));
+        
+        // Handle tasks on day change
+        const completedCount = tasks.filter(t => t.done).length;
+        const incompleteCount = tasks.filter(t => !t.done).length;
+        
+        // Mark incomplete tasks as overdue
+        setTasks(prevTasks => 
+          prevTasks
+            .filter(t => !t.done) // Remove completed tasks
+            .map(t => ({ ...t, overdue: true })) // Mark remaining as overdue
+        );
+        
+        if (completedCount > 0) {
+          addLog(`✅ Cleared ${completedCount} completed task${completedCount > 1 ? 's' : ''}`);
+        }
+        if (incompleteCount > 0) {
+          addLog(`⚠️ ${incompleteCount} incomplete task${incompleteCount > 1 ? 's' : ''} marked OVERDUE`);
+        }
+        
+        addLog('🌅 MIDNIGHT PASSED - Day auto-advanced');
+        addLog(`📅 Now on Day ${nextDay}`);
+        }
+      }
+      
+      // Always update to current day
+      setLastRealDay(today);
+    };
+    
+    checkDayChange(); // Check on mount
+    const interval = setInterval(checkDayChange, 60000); // Check every minute
+    
+    return () => clearInterval(interval);
+  }, [lastRealDay, currentDay, eliteBossDefeatedToday, curseLevel, isRestDayActive, tasks, addLog]);
   
   useEffect(() => {
     let int;
@@ -734,60 +975,12 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   }, [skipCount, addLog]);
   
   const start = () => {
-  // === DAILY CHECK SYSTEM ===
   const today = new Date().toDateString();
-  const todayDayOfWeek = new Date().getDay(); // 0=Sun, 1=Mon, etc.
-  const gameDayNumber = todayDayOfWeek === 0 ? 7 : todayDayOfWeek; // Sunday=7, Mon=1, Tue=2...
+  const currentHour = new Date().getHours();
   
-  // Check if real day has changed
-  if (lastRealDay && lastRealDay !== today) {
-    // New real day started!
-    
-    // Check if we defeated yesterday's elite boss
-    if (!eliteBossDefeatedToday) {
-      // Didn't beat boss - apply curse penalty
-      const newCurseLevel = curseLevel + 1;
-      setCurseLevel(newCurseLevel);
-      
-      if (newCurseLevel >= 4) {
-        // 4th missed boss = death
-        addLog('☠️ THE CURSE CONSUMES YOU. Four failures... the abyss claims your soul.');
-        setTimeout(() => die(), 2000);
-        return;
-      }
-      
-      // Apply curse penalties
-      const cursePenalties = [
-        { hp: 20, msg: '🌑 CURSED. The curse takes root... -20 HP', xpDebuff: 0.5 },
-        { hp: 40, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -40 HP', xpDebuff: 0.25 },
-        { hp: 60, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -60 HP', xpDebuff: 0.1 }
-      ];
-      
-      const penalty = cursePenalties[newCurseLevel - 1];
-      setHp(h => Math.max(1, h - penalty.hp));
-      addLog(penalty.msg);
-    } else {
-      // Beat yesterday's boss - clear curse flag for today
-      addLog('✨ New day begins. Yesterday\'s trials complete.');
-    }
-    
-    // Reset daily flags
-    setEliteBossDefeatedToday(false);
-    setCurrentDay(gameDayNumber);
-  }
-  
-  // Set today as last played day
-  setLastRealDay(today);
-  
-  // === END DAILY CHECK ===
-  
-  // ... rest of start function continues below
-    
-const currentHour = new Date().getHours();
-  
-  // Map game day (1-7) to planner day name
+  // Map game day (1-7, 8-14, etc.) to planner day name
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const plannerDayName = dayNames[currentDay - 1]; // currentDay is 1-7, array is 0-6
+  const plannerDayName = dayNames[(currentDay - 1) % 7]; // Wrap around every 7 days
 
     setLastPlayedDate(today);
     
@@ -813,7 +1006,8 @@ if (tasks.length === 0) {
       title: item.title,
       priority: item.priority || 'routine',
       id: Date.now() + idx,
-      done: false
+      done: false,
+      overdue: false
     });
   });
       
@@ -855,7 +1049,8 @@ if (tasks.length === 0) {
       title: newTask.title,
       priority: newTask.priority,
       id: Date.now(),
-      done: false
+      done: false,
+      overdue: false
     };
     
     setTasks(prev => [...prev, newTaskObj]);
@@ -900,7 +1095,8 @@ if (tasks.length === 0) {
         title: item.title,
         priority: item.priority || 'routine',
         id: Date.now() + idx + Math.random(),
-        done: false
+        done: false,
+        overdue: false
       });
     });
     
@@ -979,7 +1175,7 @@ if (tasks.length === 0) {
     
    // Apply priority multiplier
 const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
-let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * priorityMultiplier;
+let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * priorityMultiplier;
 
 // Apply curse debuff based on level
 if (curseLevel === 1) {
@@ -988,6 +1184,11 @@ if (curseLevel === 1) {
   xpMultiplier *= 0.25; // 25% XP
 } else if (curseLevel === 3) {
   xpMultiplier *= 0.1; // 10% XP
+}
+
+// Apply overdue penalty
+if (task.overdue) {
+  xpMultiplier *= 0.5; // 50% XP penalty for overdue tasks
 }
     
     let xpGain = Math.floor(baseXp * xpMultiplier);
@@ -1060,6 +1261,7 @@ if (curseLevel === 1) {
     
     let completionMsg = `✅ Completed: ${task.title} (+${xpGain} XP`;
     if (task.priority === 'important') completionMsg += ' • IMPORTANT';
+    if (task.overdue) completionMsg += ' • OVERDUE';
     completionMsg += `)`;
     
     addLog(completionMsg);
@@ -1102,7 +1304,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setBattling(true);
   setBattleMode(true);
   setIsFinalBoss(false);
-  setCanFlee(false);
+  setCanFlee(true); // Allow fleeing from regular and wave enemies
   setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
   setVictoryLoot([]); // Clear previous loot
   
@@ -1116,11 +1318,17 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setHasTriggeredLowHpTaunt(false);
   setEnragedTurns(0);
   setPlayerTaunt('');
+  setEnemyTauntResponse('');
+  setShowTauntBoxes(false);
+  setHasFled(false); // Reset fled status
   
   if (isWave) {
     setBattleType('wave');
     setCurrentWaveEnemy(waveIndex);
     setTotalWaveEnemies(totalWaves);
+    if (waveIndex === 1) {
+      setWaveEssenceTotal(0); // Reset total at start of wave
+    }
     addLog(`⚠️ WAVE ASSAULT - Enemy ${waveIndex}/${totalWaves}: ${enemyName}`);
   } else {
     setBattleType('regular');
@@ -1162,9 +1370,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setHasTriggeredLowHpTaunt(false);
     setEnragedTurns(0);
     setPlayerTaunt('');
+    setEnemyTauntResponse('');
+    setShowTauntBoxes(false);
+    setHasFled(false); // Reset fled status
     
-    // Set day-specific boss dialogue
-    const bossDialogueKey = `DAY_${currentDay}`;
+    // Set cycling boss dialogue (day 1-7 repeating)
+    const bossDialogueKey = `DAY_${((currentDay - 1) % 7) + 1}`;
     const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
     if (bossDialogue) {
       setEnemyDialogue(bossDialogue.START);
@@ -1244,6 +1455,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
   
   const finalBoss = () => {
+    if (!gauntletUnlocked) {
+      addLog(`⚠️ THE GAUNTLET is locked! Reach ${gauntletMilestone} XP to unlock.`);
+      return;
+    }
+    
     const completedTasks = tasks.filter(t => t.done).length;
     const totalTasks = tasks.length;
     
@@ -1281,12 +1497,15 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setHasTriggeredLowHpTaunt(false);
     setEnragedTurns(0);
     setPlayerTaunt('');
+    setEnemyTauntResponse('');
+    setShowTauntBoxes(false);
+    setHasFled(false); // Reset fled status
     
-    // Set final boss dialogue (Day 7)
-    const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.DAY_7;
+    // Set Gauntlet dialogue
+    const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
     setEnemyDialogue(bossDialogue.START);
     
-    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE FINAL RECKONING!`);
+    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
   };
   
   const taunt = () => {
@@ -1295,7 +1514,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Get appropriate taunt pool
     let tauntPool;
     if (battleType === 'elite' || battleType === 'final') {
-      const dayKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+      const dayKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       tauntPool = GAME_CONSTANTS.BOSS_DIALOGUE[dayKey].TAUNTS;
     } else if (battleType === 'wave') {
       tauntPool = GAME_CONSTANTS.ENEMY_DIALOGUE.TAUNTS.WAVE;
@@ -1306,23 +1525,27 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Pick random taunt
     const randomTaunt = tauntPool[Math.floor(Math.random() * tauntPool.length)];
     
-    // Store player taunt for dual box display
-    setPlayerTaunt(randomTaunt.player);
+    // Show both dialogue boxes immediately
+    setShowTauntBoxes(true);
     
-    // Display taunt exchange
+    // Player text appears immediately
+    setPlayerTaunt(randomTaunt.player);
+    setEnemyTauntResponse(''); // Clear enemy text initially
     addLog(`💬 YOU: "${randomTaunt.player}"`);
+    
+    // Delay enemy response (text appears after 1 second)
     setTimeout(() => {
+      setEnemyTauntResponse(randomTaunt.enemy);
       addLog(`😡 ${bossName}: "${randomTaunt.enemy}"`);
       setEnemyDialogue(randomTaunt.enemy);
-    }, 500);
-    
-    // Apply ENRAGED status
-    setEnragedTurns(3); // Lasts 3 turns
+      
+      // Apply ENRAGED status
+      setEnragedTurns(3); // Lasts 3 turns
+      addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt, -25% accuracy for 3 turns)`);
+    }, 1000);
     
     // Consume taunt
     setIsTauntAvailable(false);
-    
-    addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt, -25% accuracy for 3 turns)`);
   };
   
   const attack = () => {
@@ -1364,8 +1587,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const hpPercent = newBossHp / bossMax;
     
     if (battleType === 'elite' || battleType === 'final') {
-      // Boss dialogue (day-specific)
-      const bossDialogueKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+      // Boss dialogue (GAUNTLET for final, cycling for elite)
+      const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
       
       if (bossDialogue) {
@@ -1437,11 +1660,17 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   setXp(x => x + xpGain);
   setEssence(e => e + essenceGain);
+  
+  // Accumulate wave essence for final display
+  if (battleType === 'wave') {
+    setWaveEssenceTotal(t => t + essenceGain);
+  }
+  
   addLog(`🎊 VICTORY! +${xpGain} XP, +${essenceGain} Essence`);
   
   // Set victory dialogue
   if (battleType === 'elite' || battleType === 'final') {
-    const bossDialogueKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+    const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
     const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
     if (bossDialogue) {
       setEnemyDialogue(bossDialogue.VICTORY_PLAYER);
@@ -1453,14 +1682,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setEnemyDialogue(randomQuote);
   }
 
-  // Elite boss defeated - remove curses and set daily flag
+  // Elite boss defeated - set daily flag (curse cleared at midnight)
 if (battleType === 'elite') {
-  if (curseLevel > 0) {
-    setCurseLevel(0);
-    addLog('🌅 THE CURSE BREAKS! You are free... for now.');
-  }
   setEliteBossDefeatedToday(true);
-  addLog('✨ Today\'s trial complete. You may advance when ready.');
+  addLog('✨ Today\'s elite trial complete. Curse will be cleared at midnight.');
 }
   
   // Check if wave continues
@@ -1535,6 +1760,10 @@ if (battleType === 'elite') {
         addLog('✨ Fully healed!');
       }
       
+      // Add essence gain to loot display
+      const displayEssence = battleType === 'wave' ? waveEssenceTotal : essenceGain;
+      lootMessages.unshift(`🔮 +${displayEssence} Essence`);
+      
       setVictoryLoot(lootMessages);
       setVictoryFlash(true);
       setTimeout(() => setVictoryFlash(false), 400);
@@ -1589,6 +1818,8 @@ if (enragedTurns > 0) {
       if (newTurns === 0) {
         addLog(`😤 Enemy is no longer ENRAGED`);
         setPlayerTaunt('');
+        setEnemyTauntResponse('');
+        setShowTauntBoxes(false);
       }
       return newTurns;
     });
@@ -1630,6 +1861,8 @@ if (enragedTurns > 0) {
           if (newTurns === 0) {
             addLog(`😤 Enemy is no longer ENRAGED`);
             setPlayerTaunt(''); // Clear taunt dialogue when enraged expires
+            setEnemyTauntResponse('');
+            setShowTauntBoxes(false);
           }
           return newTurns;
         });
@@ -1657,7 +1890,7 @@ if (enragedTurns > 0) {
                 
                 // Set victory dialogue
                 if (battleType === 'elite' || battleType === 'final') {
-                  const bossDialogueKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+                  const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
                   const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
                   if (bossDialogue) {
                     setEnemyDialogue(bossDialogue.VICTORY_PLAYER);
@@ -1781,8 +2014,8 @@ if (enragedTurns > 0) {
     const hpPercent = newBossHp / bossMax;
     
     if (battleType === 'elite' || battleType === 'final') {
-      // Boss dialogue (day-specific)
-      const bossDialogueKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+      // Boss dialogue (GAUNTLET for final, cycling for elite)
+      const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
       
       if (bossDialogue) {
@@ -1845,14 +2078,20 @@ if (enragedTurns > 0) {
       setRecklessStacks(0);
       
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-      const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
+      const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : (battleType === 'wave' ? 8 : 10));
       setXp(x => x + xpGain);
       setEssence(e => e + essenceGain);
+      
+      // Accumulate wave essence for final display
+      if (battleType === 'wave') {
+        setWaveEssenceTotal(t => t + essenceGain);
+      }
+      
       addLog(`🎊 VICTORY! +${xpGain} XP, +${essenceGain} Essence`);
       
       // Set victory dialogue
       if (battleType === 'elite' || battleType === 'final') {
-        const bossDialogueKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+        const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
         const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
         if (bossDialogue) {
           setEnemyDialogue(bossDialogue.VICTORY_PLAYER);
@@ -1917,6 +2156,10 @@ if (enragedTurns > 0) {
         addLog('✨ Fully healed!');
       }
       
+      // Add essence gain to loot display
+      const displayEssence = battleType === 'wave' ? waveEssenceTotal : essenceGain;
+      lootMessages.unshift(`🔮 +${displayEssence} Essence`);
+      
       setVictoryLoot(lootMessages);
       setVictoryFlash(true);
       setTimeout(() => setVictoryFlash(false), 400);
@@ -1974,6 +2217,8 @@ if (enragedTurns > 0) {
       if (newTurns === 0) {
         addLog(`😤 Enemy is no longer ENRAGED`);
         setPlayerTaunt('');
+        setEnemyTauntResponse('');
+        setShowTauntBoxes(false);
       }
       return newTurns;
     });
@@ -1988,6 +2233,7 @@ if (enragedTurns > 0) {
 }
         
         setPlayerFlash(true);
+        setTimeout(() => setPlayerFlash(false), 200);
         setTimeout(() => setPlayerFlash(false), 200);
         
         setHp(currentHp => {
@@ -2015,6 +2261,8 @@ if (enragedTurns > 0) {
             if (newTurns === 0) {
               addLog(`😤 Enemy is no longer ENRAGED`);
               setPlayerTaunt(''); // Clear taunt dialogue when enraged expires
+              setEnemyTauntResponse('');
+              setShowTauntBoxes(false);
             }
             return newTurns;
           });
@@ -2042,7 +2290,7 @@ if (enragedTurns > 0) {
                   
                   // Set victory dialogue
                   if (battleType === 'elite' || battleType === 'final') {
-                    const bossDialogueKey = battleType === 'final' ? 'DAY_7' : `DAY_${currentDay}`;
+                    const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
                     const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
                     if (bossDialogue) {
                       setEnemyDialogue(bossDialogue.VICTORY_PLAYER);
@@ -2084,15 +2332,29 @@ if (enragedTurns > 0) {
   const flee = () => {
     if (!canFlee) return;
     
+    // Check stamina requirement
+    if (stamina < 25) {
+      addLog('⚠️ Not enough stamina to flee! (Need 25 SP)');
+      return;
+    }
+    
+    // Cost 25 stamina to flee
+    setStamina(s => Math.max(0, s - 25));
+    
+    // Enemy mocks you for fleeing - show in enemy dialogue box
+    const fleeDialogue = GAME_CONSTANTS.ENEMY_DIALOGUE.FLEE[
+      Math.floor(Math.random() * GAME_CONSTANTS.ENEMY_DIALOGUE.FLEE.length)
+    ];
+    
+    setEnemyDialogue(fleeDialogue); // Show insult in enemy dialogue box
+    setVictoryLoot([]); // No loot when fleeing
+    setHasFled(true); // Mark that we fled
+    setBossHp(0); // Trigger victory screen
     setBattling(false);
-    setShowBoss(false);
-    setBattleMode(false);
     setRecklessStacks(0);
     
-    const fleePenalty = Math.floor(getMaxHp() * 0.1);
-    setHp(h => Math.max(1, h - fleePenalty));
-    
-    addLog(`🏃 Fled from ${bossName}! Lost ${fleePenalty} HP.`);
+    addLog(`🏃 Fled from ${bossName}! Lost 25 Stamina.`);
+    addLog(`💬 ${bossName}: "${fleeDialogue}"`);
   };
   
   const die = () => {
@@ -2163,59 +2425,21 @@ setMiniBossCount(0);
 
   const advance = () => {
     if (isFinalBoss && bossHp <= 0) {
-      setHeroes(prev => [...prev, { 
-        ...hero, 
-        lvl: level, 
-        xp: xp, 
-        title: titles[6],
-        day: currentDay,
-        skipCount: skipCount
-      }]);
-      addLog('🏆 THE CURSE IS BROKEN! YOU ARE FREE!');
+      // Gauntlet defeated - lock until next milestone
+      setGauntletUnlocked(false);
+      setGauntletMilestone(m => m + 1000);
+      addLog(`🏆 THE GAUNTLET CONQUERED! Next trial at ${gauntletMilestone + 1000} XP.`);
       
-      const newHero = makeName();
-      setHero(newHero);
-      setCanCustomize(true);
-      setCurrentDay(1);
-      setHp(GAME_CONSTANTS.MAX_HP);
-      setStamina(GAME_CONSTANTS.MAX_STAMINA);
-      setXp(0);
-      setLevel(1);
-      setHealthPots(0);
-      setStaminaPots(0);
-      setCleansePots(0);
-      setWeapon(0);
-      setArmor(0);
+      // Close battle but keep all progress
+      setShowBoss(false);
+      setHasFled(false);
+      setBattling(false);
+      setBattleMode(false);
+      setIsFinalBoss(false);
       
-      setStudyStats(prev => ({
-        totalMinutesToday: 0,
-        totalMinutesWeek: 0,
-        sessionsToday: 0,
-        longestStreak: prev.longestStreak,
-        currentStreak: 0,
-        tasksCompletedToday: 0,
-        deepWorkSessions: 0,
-        earlyBirdDays: prev.earlyBirdDays,
-        perfectDays: prev.perfectDays,
-        weeklyHistory: []
-      }));
-      
-      setTasks([]);
-setActiveTask(null);
-setTimer(0);
-setRunning(false);
-setHasStarted(false);
-setShowBoss(false);
-setSkipCount(0);
-setConsecutiveDays(0);
-setLastPlayedDate(null);
-setMiniBossCount(0);
-setBattleMode(false);
-      
-      setTimeout(() => setActiveTab('hall'), 1000);
+      setTimeout(() => setActiveTab('home'), 1000);
     } else if (!isFinalBoss && bossHp <= 0) {
-      const nextDay = currentDay + 1;
-      
+      // Elite boss defeated - just close screen (day advances at midnight)
       const totalTasks = tasks.length;
       const completedTasks = tasks.filter(t => t.done).length;
       if (totalTasks > 0 && completedTasks === totalTasks) {
@@ -2224,82 +2448,13 @@ setBattleMode(false);
         addLog(`⭐ PERFECT DAY! +${GAME_CONSTANTS.PERFECT_DAY_BONUS} XP`);
       }
       
-      if (nextDay <= GAME_CONSTANTS.TOTAL_DAYS) {
-        setCurrentDay(nextDay);
-        setHero(prev => ({
-          ...prev,
-          day: nextDay,
-          title: titles[nextDay - 1],
-          survived: prev.survived + 1
-        }));
-        
-        // Auto-load next day's planner tasks
-        const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const plannerDayName = dayNames[nextDay - 1];
-        const plannedTasks = weeklyPlan[plannerDayName] || [];
-        
-        const newTasks = [];
-        plannedTasks.forEach((item, idx) => {
-          newTasks.push({
-            title: item.title,
-            priority: item.priority || 'routine',
-            id: Date.now() + idx + Math.random(), // Ensure unique IDs
-            done: false
-          });
-        });
-        
-        // Set tasks BEFORE logging to ensure state updates
-        if (newTasks.length > 0) {
-          setTasks(newTasks);
-          setHasStarted(true); // Explicitly ensure we're in "started" mode
-          setTimeout(() => {
-            addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
-            addLog(`📋 Loaded ${newTasks.length} tasks from ${plannerDayName}'s plan`);
-          }, 100);
-        } else {
-          setTasks([]);
-          setHasStarted(true);
-          setTimeout(() => {
-            addLog(`${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].name} begins... ${GAME_CONSTANTS.DAY_NAMES[nextDay - 1].theme}`);
-            addLog(`📋 No tasks planned for ${plannerDayName} - use "Import from Planner" or "Accept Trial"`);
-          }, 100);
-        }
-      }
-      
-      setHp(getMaxHp());
-      setStamina(getMaxStamina());
-      setHealthPots(0);
-      setStaminaPots(0);
-      setCleansePots(0);
-      
-      setStudyStats(prev => ({
-        ...prev,
-        weeklyHistory: [...prev.weeklyHistory, prev.totalMinutesToday].slice(-7),
-        totalMinutesToday: 0,
-        sessionsToday: 0,
-        tasksCompletedToday: 0,
-        deepWorkSessions: 0
-      }));
-      
-      // CRITICAL: Reset daily flags
-      setActiveTask(null);
-      setTimer(0);
-      setRunning(false);
-      // Keep hasStarted = true so tasks show immediately
-      setEliteBossDefeatedToday(false); // Reset elite boss flag for new day
+      // Close battle
       setShowBoss(false);
-      setMiniBossCount(0);
+      setHasFled(false);
       setBattling(false);
       setBattleMode(false);
-      setRecklessStacks(0);
-      setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
       
-      // Clear crafted buffs
-      setWeaponOilActive(false);
-      setArmorPolishActive(false);
-      setLuckyCharmActive(false);
-      
-      addLog(`🌅 New day! Fully rested. HP: ${getMaxHp()} | SP: ${getMaxStamina()}`);
+      addLog(`✨ Elite boss defeated! Day continues until midnight...`);
     }
   };
   
@@ -2466,8 +2621,12 @@ setBattleMode(false);
                   <div className="flex items-center justify-between mb-3">
                     <div className="text-5xl">{getCardStyle(hero.class, currentDay).emblem}</div>
                     <div className="text-right">
-                      <p className="text-xs text-white text-opacity-70 uppercase tracking-wide">{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].name}</p>
-                      <p className="text-sm text-white text-opacity-80">Day {currentDay}/7</p>
+                      <p className="text-xs text-white text-opacity-70 uppercase tracking-wide">{GAME_CONSTANTS.DAY_NAMES[(new Date().getDay() + 6) % 7].name}</p>
+                      <p className="text-sm text-white text-opacity-80">
+                        {timeUntilMidnight && <span className="text-red-400">({timeUntilMidnight}) </span>}
+                        {isRestDayActive && <span className="text-blue-400">🛌 REST • </span>}
+                        Day {currentDay}
+                      </p>
                       <p className="text-2xl font-bold text-white">Lvl {level}</p>
                     </div>
                   </div>
@@ -2828,7 +2987,7 @@ setBattleMode(false);
                     <div className="flex justify-between items-center mb-4">
                       <div>
                         <h2 className="text-2xl font-bold text-red-400">Trials of the Cursed</h2>
-                        <p className="text-sm text-gray-400">{GAME_CONSTANTS.DAY_NAMES[currentDay - 1].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[currentDay - 1] * 100)}%</p>
+                        <p className="text-sm text-gray-400">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
                       </div>
                       <div className="flex gap-2">
                         <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">
@@ -2855,20 +3014,26 @@ setBattleMode(false);
   <div key={t.id} className={`rounded-lg p-4 border-2 ${
     t.done 
       ? 'bg-gray-800 border-green-700 opacity-60' 
+      : t.overdue
+        ? 'bg-red-900/20 border-red-600 opacity-80'
       : t.priority === 'important'
         ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500 shadow-lg shadow-yellow-500/20'
         : 'bg-gray-800 border-gray-700'
   }`}>
     <div className="flex items-center gap-3">
-      {t.priority === 'important' && !t.done && (
+      {t.overdue && !t.done && (
+        <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">OVERDUE</span>
+      )}
+      {t.priority === 'important' && !t.done && !t.overdue && (
         <span className="text-2xl">⭐</span>
       )}
       <div className="flex-1">
-        <p className={t.done ? 'line-through text-gray-500' : 'text-white font-medium text-lg'}>
+        <p className={t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300 font-medium text-lg' : 'text-white font-medium text-lg'}>
           {t.title}
         </p>
         <p className="text-sm text-gray-400 mt-1">
           {t.priority === 'important' ? '⭐ IMPORTANT • 1.25x XP' : '📋 ROUTINE • 1.0x XP'}
+          {t.overdue && !t.done && <span className="text-red-400 ml-2">• 50% XP Penalty</span>}
         </p>
       </div>
       
@@ -2907,12 +3072,16 @@ setBattleMode(false);
                   <div className="grid md:grid-cols-2 gap-4">
                     <button 
   onClick={miniBoss} 
-  disabled={eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
+  disabled={isRestDayActive || eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
   className="bg-red-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-800 transition-all shadow-lg shadow-red-900/50 border-2 border-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
   Face the Darkness
-  {eliteBossDefeatedToday ? (
+  {isRestDayActive ? (
+    <div className="text-sm font-normal mt-1 text-gray-400">🛌 Rest day - no elite boss</div>
+  ) : eliteBossDefeatedToday ? (
     <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
+  ) : timeUntilMidnight && !eliteBossDefeatedToday ? (
+    <div className="text-sm font-normal mt-1 text-red-400">⏰ {timeUntilMidnight} until midnight lock!</div>
   ) : tasks.length > 0 ? (
     <div className="text-sm font-normal mt-1">
       ({Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}% complete - need 75%)
@@ -2921,17 +3090,44 @@ setBattleMode(false);
 </button>
                     <button 
   onClick={finalBoss} 
-  disabled={currentDay !== 7 || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
+  disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
   className="bg-purple-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-purple-800 transition-all shadow-lg shadow-purple-900/50 border-2 border-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
-  THE FINAL RECKONING
-  {currentDay !== 7 ? (
-    <div className="text-sm font-normal mt-1">🔒 Locked until Day 7</div>
+  THE GAUNTLET
+  {!gauntletUnlocked ? (
+    <div className="text-sm font-normal mt-1">🔒 Locked - {gauntletMilestone - xp} XP needed</div>
   ) : tasks.length > 0 ? (
     <div className="text-sm font-normal mt-1">({tasks.filter(t => t.done).length}/{tasks.length} required)</div>
-  ) : null}
+  ) : (
+    <div className="text-sm font-normal mt-1">No tasks created</div>
+  )}
 </button>
                   </div>
+                  
+                  {/* Rest Day Button */}
+                  <button 
+                    onClick={() => {
+                      if (restDaysUsed >= 2) {
+                        addLog('⚠️ Already used 2 rest days this week!');
+                        return;
+                      }
+                      setIsRestDayActive(true);
+                      setRestDaysUsed(r => r + 1);
+                      addLog(`🛌 REST DAY ACTIVATED - Day paused until midnight (${restDaysUsed + 1}/2 used this week)`);
+                      addLog('💤 No elite boss today, no curse penalty');
+                    }}
+                    disabled={isRestDayActive || restDaysUsed >= 2}
+                    className="w-full bg-blue-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-blue-800 transition-all shadow-lg shadow-blue-900/50 border-2 border-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
+                  >
+                    🛌 Take Rest Day
+                    {isRestDayActive ? (
+                      <div className="text-sm font-normal mt-1 text-blue-300">🌙 Rest day active - midnight to end</div>
+                    ) : restDaysUsed >= 2 ? (
+                      <div className="text-sm font-normal mt-1 text-gray-400">❌ No rest days remaining (resets Monday)</div>
+                    ) : (
+                      <div className="text-sm font-normal mt-1 text-blue-300">💤 {2 - restDaysUsed} rest day{2 - restDaysUsed === 1 ? '' : 's'} available (resets Monday)</div>
+                    )}
+                  </button>
                   
                   <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
                     <h3 className="text-lg font-bold text-red-400 mb-2">Chronicle of Events</h3>
@@ -4466,9 +4662,9 @@ setBattleMode(false);
                   </div>
                   
                   {/* Enemy Dialogue Box - Positioned below enemy HP */}
-                  {playerTaunt && enragedTurns > 0 ? (
-                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-red-600">
-                      <p className="text-gray-300 text-sm italic leading-relaxed">"{enemyDialogue}"</p>
+                  {showTauntBoxes ? (
+                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-red-600 min-h-[60px] flex items-center">
+                      <p className="text-gray-300 text-sm italic leading-relaxed">{enemyTauntResponse ? `"${enemyTauntResponse}"` : '...'}</p>
                     </div>
                   ) : enemyDialogue ? (
                     <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-gray-600">
@@ -4491,20 +4687,29 @@ setBattleMode(false);
                   </div>
                   
                   {/* Player Dialogue Box - Positioned below player HP/SP */}
-                  {playerTaunt && enragedTurns > 0 && (
-                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-blue-600">
+                  {showTauntBoxes && (
+                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-blue-600 min-h-[60px] flex items-center">
                       <p className="text-white text-sm leading-relaxed">"{playerTaunt}"</p>
                     </div>
                   )}
                   
                   {/* Battle Actions */}
-                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>💬 TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95" title="Lose 10 HP to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 10 HP but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
+                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} disabled={stamina < 25} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50" title="Lose 25 Stamina to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 25 Stamina but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
                   {bossHp <= 0 && (
                     <div className="text-center">
-                      <p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p>
-                      <p className="text-gray-400 text-sm mb-4 italic">{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p>
+                      {hasFled ? (
+                        <>
+                          <p className="text-4xl font-bold text-yellow-400 mb-4 animate-pulse drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">FLED</p>
+                          <p className="text-gray-300 text-lg mb-6 italic">"Cowardice is also a strategy..."</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p>
+                          <p className="text-gray-400 text-sm mb-4 italic">{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p>
+                        </>
+                      )}
                       
-                      {victoryLoot.length > 0 && (
+                      {!hasFled && victoryLoot.length > 0 && (
                         <div className="bg-black bg-opacity-60 rounded-lg p-4 mb-4 border-2 border-yellow-500">
                           <p className="text-yellow-400 font-bold mb-2 text-lg">⚔️ SPOILS OF BATTLE ⚔️</p>
                           <div className="space-y-1">
@@ -4519,7 +4724,7 @@ setBattleMode(false);
                         <button onClick={advance} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">{isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}</button>
                       )}
                       {(battleType === 'regular' || battleType === 'wave') && (
-                        <button onClick={() => { setShowBoss(false); addLog('⚔️ Ready for your next trial...'); }} className="bg-green-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-green-400 transition-all shadow-lg shadow-green-500/50">CONTINUE</button>
+                        <button onClick={() => { setShowBoss(false); setHasFled(false); addLog('⚔️ Ready for your next trial...'); }} className="bg-green-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-green-400 transition-all shadow-lg shadow-green-500/50">CONTINUE</button>
                       )}
                     </div>
                   )}
