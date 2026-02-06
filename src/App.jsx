@@ -3117,8 +3117,8 @@ setMiniBossCount(0);
 
           {activeTab === 'planner' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-blue-900">
-              <h2 className="text-2xl font-bold text-blue-400 mb-2 text-center">📅 WEEKLY PLANNER</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Plan your studies, conquer your week..."</p>
+              <h2 className="text-2xl font-bold text-blue-400 mb-2 text-center">WEEKLY PLANNER</h2>
+              <p className="text-gray-400 text-sm mb-6 italic text-center">"Chart your path through the coming trials..."</p>
               
               <div className="grid gap-4">
                 {Object.keys(weeklyPlan).map(day => (
@@ -3230,8 +3230,8 @@ setMiniBossCount(0);
 
           {activeTab === 'calendar' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-green-900">
-              <h2 className="text-2xl font-bold text-green-400 mb-2 text-center">📆 MONTHLY CALENDAR</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Track your progress across time..."</p>
+              <h2 className="text-2xl font-bold text-green-400 mb-2 text-center">MONTHLY CALENDAR</h2>
+              <p className="text-gray-400 text-sm mb-6 italic text-center">"Mark your victories and defeats across the passage of time..."</p>
               
               <div className="flex justify-between items-center mb-6">
                 <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all">← Previous</button>
@@ -3283,8 +3283,8 @@ setMiniBossCount(0);
 
           {activeTab === 'study' && (
   <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-purple-900">
-    <h2 className="text-2xl font-bold text-purple-400 mb-2 text-center">📚 FLASHCARD STUDY</h2>
-    <p className="text-gray-400 text-sm mb-6 italic text-center">"Master your knowledge, earn rewards..."</p>
+    <h2 className="text-2xl font-bold text-purple-400 mb-2 text-center">KNOWLEDGE FORGE</h2>
+    <p className="text-gray-400 text-sm mb-6 italic text-center">"Sharpen your mind, temper your wisdom..."</p>
     
     <div className="flex justify-between items-center mb-6">
       <div>
@@ -3301,9 +3301,8 @@ setMiniBossCount(0);
     
     {flashcardDecks.length === 0 ? (
       <div className="text-center py-12 bg-gray-800 rounded-lg border-2 border-gray-700">
-        <div className="text-6xl mb-4">📚</div>
-        <p className="text-gray-400 mb-2">No flashcard decks yet</p>
-        <p className="text-sm text-gray-500">Create your first deck to start studying!</p>
+        <p className="text-gray-400 mb-2 text-lg">The forge stands empty...</p>
+        <p className="text-sm text-gray-500">Create your first deck to begin forging knowledge</p>
       </div>
     ) : (
       <div className="space-y-4">
@@ -3348,7 +3347,7 @@ setMiniBossCount(0);
                 disabled={deck.cards.length === 0}
                 className="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
               >
-                📖 Study Deck
+                Study Deck
               </button>
               <button
                 onClick={() => {
@@ -3362,7 +3361,7 @@ setMiniBossCount(0);
                 disabled={deck.cards.length < 4}
                 className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
               >
-                📝 Practice Quiz
+                Practice Quiz
               </button>
               <button
                 onClick={() => {
@@ -3371,7 +3370,7 @@ setMiniBossCount(0);
                 }}
                 className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-all"
               >
-                ➕ Add Card
+                Add Card
               </button>
             </div>
             
@@ -3408,48 +3407,172 @@ setMiniBossCount(0);
 
           {activeTab === 'progress' && (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
-              <h2 className="text-2xl font-bold text-yellow-400 mb-2 text-center">STUDY PROGRESS</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Track your journey to mastery..."</p>
+              <h2 className="text-2xl font-bold text-yellow-400 mb-2 text-center">CHRONICLES OF THE CURSED</h2>
+              <p className="text-gray-400 text-sm mb-6 italic text-center">"Your struggle against the eternal darkness..."</p>
               
-              <div className="mb-6 bg-gradient-to-r from-blue-900 to-purple-900 rounded-xl p-6 border-2 border-blue-600">
-                <h3 className="text-xl font-bold text-blue-300 mb-4 text-center">Today's Performance</h3>
+              {/* Current Cycle Status */}
+              <div className="mb-6 bg-gradient-to-r from-red-900 to-gray-900 rounded-xl p-6 border-2 border-red-600">
+                <h3 className="text-xl font-bold text-red-300 mb-4 text-center">Current Cycle</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Study Time</p><p className="text-3xl font-bold text-blue-400">{studyStats.totalMinutesToday}</p><p className="text-xs text-gray-500">minutes</p></div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Sessions</p><p className="text-3xl font-bold text-green-400">{studyStats.sessionsToday}</p><p className="text-xs text-gray-500">completed</p></div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Tasks Done</p><p className="text-3xl font-bold text-yellow-400">{studyStats.tasksCompletedToday}</p><p className="text-xs text-gray-500">today</p></div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Deep Work</p><p className="text-3xl font-bold text-purple-400">{studyStats.deepWorkSessions}</p><p className="text-xs text-gray-500">60+ min</p></div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Day</p>
+                    <p className="text-3xl font-bold text-red-400">{currentDay}/7</p>
+                    <p className="text-xs text-gray-500">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name}</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Curse Level</p>
+                    <p className="text-3xl font-bold text-purple-400">{curseLevel}</p>
+                    <p className="text-xs text-gray-500">{curseLevel === 0 ? 'Pure' : curseLevel === 1 ? 'Cursed' : curseLevel === 2 ? 'Deep Curse' : 'Condemned'}</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Skip Count</p>
+                    <p className="text-3xl font-bold text-yellow-400">{skipCount}</p>
+                    <p className="text-xs text-gray-500">{skipCount >= 3 ? 'DANGER' : 'of 4 max'}</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Trials Today</p>
+                    <p className="text-3xl font-bold text-cyan-400">{tasks.filter(t => t.done).length}/{tasks.length}</p>
+                    <p className="text-xs text-gray-500">{tasks.length > 0 ? `${Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}%` : 'None'}</p>
+                  </div>
                 </div>
               </div>
               
-              <div className="mb-6 bg-gradient-to-r from-green-900 to-teal-900 rounded-xl p-6 border-2 border-green-600">
-                <h3 className="text-xl font-bold text-green-300 mb-4 text-center">This Week</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Total Time</p><p className="text-3xl font-bold text-green-400">{studyStats.totalMinutesWeek}</p><p className="text-xs text-gray-500">minutes ({(studyStats.totalMinutesWeek / 60).toFixed(1)} hours)</p></div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Current Streak</p><p className="text-3xl font-bold text-orange-400">{consecutiveDays}</p><p className="text-xs text-gray-500">days</p></div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4"><p className="text-sm text-gray-400">Perfect Days</p><p className="text-3xl font-bold text-yellow-400">{studyStats.perfectDays}</p><p className="text-xs text-gray-500">100% completion</p></div>
-                </div>
-                
-                {studyStats.weeklyHistory.length > 0 && (
-                  <div>
-                    <p className="text-sm text-gray-400 mb-2">Daily Study Time (Last 7 Days)</p>
-                    <div className="flex items-end justify-between gap-2 h-32">
-                      {studyStats.weeklyHistory.map((minutes, i) => {
-                        const maxMinutes = Math.max(...studyStats.weeklyHistory, 60);
-                        const height = (minutes / maxMinutes) * 100;
-                        return (<div key={i} className="flex-1 flex flex-col items-center"><div className="w-full bg-gradient-to-t from-green-600 to-green-400 rounded-t transition-all duration-300" style={{ height: `${height}%`, minHeight: minutes > 0 ? '4px' : '0' }}></div><p className="text-xs text-gray-500 mt-1">{minutes}m</p></div>);
-                      })}
+              {/* Combat Power */}
+              <div className="mb-6 bg-gradient-to-r from-blue-900 to-purple-900 rounded-xl p-6 border-2 border-blue-600">
+                <h3 className="text-xl font-bold text-blue-300 mb-4 text-center">Combat Power</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Health</p>
+                    <p className="text-3xl font-bold text-red-400">{hp}/{getMaxHp()}</p>
+                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                      <div className="bg-red-500 h-2 rounded-full" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
                     </div>
                   </div>
-                )}
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Stamina</p>
+                    <p className="text-3xl font-bold text-cyan-400">{stamina}/{getMaxStamina()}</p>
+                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                      <div className="bg-cyan-500 h-2 rounded-full" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                    </div>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Attack</p>
+                    <p className="text-3xl font-bold text-orange-400">{GAME_CONSTANTS.BASE_ATTACK + (level * GAME_CONSTANTS.PLAYER_ATK_PER_DAY) + weapon}</p>
+                    <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_ATTACK} • Weapon: +{weapon}</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Defense</p>
+                    <p className="text-3xl font-bold text-green-400">{GAME_CONSTANTS.BASE_DEFENSE + (level * GAME_CONSTANTS.PLAYER_DEF_PER_DAY) + armor}</p>
+                    <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_DEFENSE} • Armor: +{armor}</p>
+                  </div>
+                </div>
               </div>
               
+              {/* Progression */}
+              <div className="mb-6 bg-gradient-to-r from-yellow-900 to-orange-900 rounded-xl p-6 border-2 border-yellow-600">
+                <h3 className="text-xl font-bold text-yellow-300 mb-4 text-center">Progression</h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Level</p>
+                    <p className="text-3xl font-bold text-yellow-400">{level}</p>
+                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
+                      <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(xp % GAME_CONSTANTS.XP_PER_LEVEL) / GAME_CONSTANTS.XP_PER_LEVEL * 100}%`}}></div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{xp % GAME_CONSTANTS.XP_PER_LEVEL}/{GAME_CONSTANTS.XP_PER_LEVEL} XP</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Total XP</p>
+                    <p className="text-3xl font-bold text-purple-400">{xp}</p>
+                    <p className="text-xs text-gray-500">earned</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Essence</p>
+                    <p className="text-3xl font-bold text-purple-400">{essence}</p>
+                    <p className="text-xs text-gray-500">souls collected</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Legacy Stats */}
+              <div className="mb-6 bg-gradient-to-r from-green-900 to-teal-900 rounded-xl p-6 border-2 border-green-600">
+                <h3 className="text-xl font-bold text-green-300 mb-4 text-center">Legacy</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Liberated</p>
+                    <p className="text-3xl font-bold text-green-400">{heroes.length}</p>
+                    <p className="text-xs text-gray-500">broke the curse</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Consumed</p>
+                    <p className="text-3xl font-bold text-red-400">{graveyard.length}</p>
+                    <p className="text-xs text-gray-500">claimed by darkness</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Survival Rate</p>
+                    <p className="text-3xl font-bold text-yellow-400">
+                      {heroes.length + graveyard.length > 0 ? Math.floor((heroes.length / (heroes.length + graveyard.length)) * 100) : 0}%
+                    </p>
+                    <p className="text-xs text-gray-500">{heroes.length + graveyard.length} total cycles</p>
+                  </div>
+                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
+                    <p className="text-sm text-gray-400">Current Streak</p>
+                    <p className="text-3xl font-bold text-orange-400">{consecutiveDays}</p>
+                    <p className="text-xs text-gray-500">days without skip</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Achievements */}
               <div className="bg-gradient-to-r from-purple-900 to-pink-900 rounded-xl p-6 border-2 border-purple-600">
-                <h3 className="text-xl font-bold text-purple-300 mb-4 text-center">Achievements</h3>
+                <h3 className="text-xl font-bold text-purple-300 mb-4 text-center">Trials Conquered</h3>
                 <div className="space-y-3">
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${studyStats.earlyBirdDays > 0 ? 'bg-yellow-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}><span className="text-2xl">🌅</span><div className="flex-1"><p className="font-bold text-white">Early Bird</p><p className="text-xs text-gray-400">Start before 8 AM</p></div><span className="text-lg font-bold text-yellow-400">{studyStats.earlyBirdDays}</span></div>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${studyStats.deepWorkSessions > 0 ? 'bg-purple-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}><span className="text-2xl">🧠</span><div className="flex-1"><p className="font-bold text-white">Deep Work Master</p><p className="text-xs text-gray-400">60+ min without pause</p></div><span className="text-lg font-bold text-purple-400">{studyStats.deepWorkSessions}</span></div>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${consecutiveDays >= 7 ? 'bg-green-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}><span className="text-2xl">🔥</span><div className="flex-1"><p className="font-bold text-white">Week Warrior</p><p className="text-xs text-gray-400">7-day streak</p></div><span className="text-lg font-bold text-green-400">{consecutiveDays >= 7 ? '✓' : `${consecutiveDays}/7`}</span></div>
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${studyStats.totalMinutesWeek >= 600 ? 'bg-blue-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}><span className="text-2xl">⏰</span><div className="flex-1"><p className="font-bold text-white">10 Hour Club</p><p className="text-xs text-gray-400">10+ hours this week</p></div><span className="text-lg font-bold text-blue-400">{studyStats.totalMinutesWeek >= 600 ? '✓' : `${(studyStats.totalMinutesWeek / 60).toFixed(1)}/10`}</span></div>
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.length > 0 ? 'bg-yellow-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-white">Curse Breaker</p>
+                      <p className="text-xs text-gray-400">Complete a full 7-day cycle</p>
+                    </div>
+                    <span className="text-lg font-bold text-yellow-400">{heroes.length > 0 ? '✓' : '—'}</span>
+                  </div>
+                  
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.some(h => h.skipCount === 0) ? 'bg-green-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-white">Flawless Victory</p>
+                      <p className="text-xs text-gray-400">Complete a cycle with zero skips</p>
+                    </div>
+                    <span className="text-lg font-bold text-green-400">{heroes.some(h => h.skipCount === 0) ? '✓' : '—'}</span>
+                  </div>
+                  
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${level >= 10 ? 'bg-purple-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-white">Veteran Warrior</p>
+                      <p className="text-xs text-gray-400">Reach level 10</p>
+                    </div>
+                    <span className="text-lg font-bold text-purple-400">{level >= 10 ? '✓' : `${level}/10`}</span>
+                  </div>
+                  
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${essence >= 500 ? 'bg-cyan-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-white">Soul Collector</p>
+                      <p className="text-xs text-gray-400">Accumulate 500 essence</p>
+                    </div>
+                    <span className="text-lg font-bold text-cyan-400">{essence >= 500 ? '✓' : `${essence}/500`}</span>
+                  </div>
+                  
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.length >= 3 ? 'bg-orange-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-white">Legend Born</p>
+                      <p className="text-xs text-gray-400">Liberate 3 heroes from the curse</p>
+                    </div>
+                    <span className="text-lg font-bold text-orange-400">{heroes.length >= 3 ? '✓' : `${heroes.length}/3`}</span>
+                  </div>
+                  
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${consecutiveDays >= 7 ? 'bg-red-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
+                    <div className="flex-1">
+                      <p className="font-bold text-white">Unbroken Spirit</p>
+                      <p className="text-xs text-gray-400">7-day streak without skipping</p>
+                    </div>
+                    <span className="text-lg font-bold text-red-400">{consecutiveDays >= 7 ? '✓' : `${consecutiveDays}/7`}</span>
+                  </div>
                 </div>
               </div>
             </div>
