@@ -79,11 +79,11 @@ const GAME_CONSTANTS = {
   DEEP_WORK_BONUS: 30,
   PERFECT_DAY_BONUS: 50,
   SPECIAL_ATTACKS: {
-    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 3.3, effect: 'Massive damage but costs 15 HP' },
-    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 2.3, effect: 'Boss stunned - no counter-attack this turn' },
-    Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 5 damage per turn. Poisoned enemies take +15% damage from all attacks' },
-    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 1.8, effect: 'Heals you for 20 HP' },
-    Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: 'Boss takes +35% damage from your next attack. Creates devastating combos' }
+    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 3.5, effect: 'Massive damage but costs 15 HP' },
+    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 2.5, effect: 'Boss stunned - no counter-attack this turn' },
+    Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 10 damage per turn. Poisoned enemies take +25% damage from all attacks' },
+    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 1.8, effect: 'Heals you for 30 HP' },
+    Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: 'Boss takes +50% damage from your next attack. Creates devastating combos' }
   },
   
   ENEMY_DIALOGUE: {
@@ -117,13 +117,13 @@ const GAME_CONSTANTS = {
       "Normal people use planners. You built a BOSS RUSH MODE."
     ],
     WAVE: [
-      "We're a WAVE. Like your unread emails. Endless. Recursive. Judging you.",
+      "We're a WAVE. Like your unread assignments. Endless. Recursive. Judging you.",
       "Task 1 of 47. Good luck.",
       "Why do you have so many tasks? Is it the ADHD or the ambition?",
       "Each of us represents a thing you said you'd 'do tomorrow.'"
     ],
     VICTORY_PLAYER: [
-      "Defeated by... discipline? My only weakness!",
+      "Defeated by... You? I'm going to get roasted by the guys...",
       "I'll be back. I'm ALWAYS back.",
       "Tell Past You they're a jerk.",
       "Fine, you won. But the REAL task is still waiting.",
@@ -161,21 +161,21 @@ const GAME_CONSTANTS = {
     ],
     TAUNTS: {
       REGULAR: [
-        { player: "At least I opened the app!", enemy: "Your life is so pathetic that OPENING AN APP counts as an achievement. Sit with that." },
-        { player: "This counts as progress!", enemy: "Progress? You needed an RPG to trick yourself into basic responsibility. You're broken." },
+        { player: "You're an unfinished app!", enemy: "Your life is so pathetic that you need AN APP tofinish simple tasks. Sit with that." },
+        { player: "You're a cheap RPG!", enemy: "Coming from you? You needed an RPG to trick yourself into basic responsibility. You're broken." },
         { player: "I'm being productive... technically!", enemy: "'Technically' is the cope of the incompetent. You're still a failure, just with better graphics." },
-        { player: "The developer said this would help!", enemy: "The developer made this for people too weak to function normally. You proved them right." },
-        { player: "My therapist would be proud!", enemy: "Your therapist is PAID to pretend you're making progress. I'm not. You're wasting your life." },
-        { player: "This beats scrolling social media!", enemy: "You're so addicted to dopamine you turned WORK into a GAME. That's not winning. That's rock bottom." },
-        { player: "I'm learning time management!", enemy: "You're in your 20s/30s learning what children master. How does that feel, knowing you're developmentally stunted?" },
-        { player: "Better than nothing!", enemy: "Nothing would be MORE honest than this pathetic performance you call effort." },
-        { player: "This is exposure therapy!", enemy: "You're so terrified of your own responsibilities you needed to cosplay as a warrior. Coward." },
-        { player: "I'm the protagonist!", enemy: "You're the protagonist of a cautionary tale about arrested development. Congratulations." },
-        { player: "This is player agency!", enemy: "Your 'agency' is surrendering control to a GAME because you can't manage your own life. That's not power. That's defeat." },
-        { player: "The UI is really clean though!", enemy: "You're admiring the interface while your actual life crumbles. Priorities of a child in an adult's body." },
+        { player: "The developer made you because he was bored!", enemy: "The developer made this for people too weak to function normally. You proved them right." },
+        { player: "My therapist would be dissapointed!", enemy: "Your therapist is PAID to pretend you're making progress. I'm not. You're wasting your life." },
+        { player: "This beats scrolling social media! Sike..", enemy: "You're so addicted to dopamine you turned WORK into a GAME. That's not winning. That's rock bottom." },
+        { player: "I'm bored!", enemy: "You're in your 20s/30s learning what children master. How does that feel, knowing you're developmentally stunted?" },
+        { player: "You're a bootleg version of a time management app, just being honest!", enemy: "Nothing would be MORE honest than this pathetic performance you call effort." },
+        { player: "You're nothing but cheap code!", enemy: "You're so terrified of your own responsibilities you needed to cosplay as a warrior. Who's life is worse?" },
+        { player: "I'm the protagonist! Boomer", enemy: "You're the protagonist of a cautionary tale about arrested development. Congratulations." },
+        { player: "Who created this mess?", enemy: "Your life is surrendering control to a GAME because you can't manage your own life. Pathetic." },
+        { player: "Your UI looks like it came from the 90's!", enemy: "You're hating the interface while your actual life crumbles. Priorities of a child in an adult's body." },
         { player: "At least I'm self-aware!", enemy: "Self-awareness without change is just sophisticated failure. You're not enlightened. You're just a failure with vocabulary." },
-        { player: "Five stars on the app store!", enemy: "You RECOMMENDED this? You want OTHER people to join you at rock bottom? Misery loves company, you selfish waste." },
-        { player: "The dialogue is so good!", enemy: "You're complimenting the writing in your PRODUCTIVITY APP. This is who you are. A joke that writes itself." }
+        { player: "One star on the app store!", enemy: "You wouldn't RECOMMENDED this? You don't want OTHER people to join you at rock bottom? Misery loves company, you selfish waste." },
+        { player: "The dialogue sucks!", enemy: "You're complaining about the writing in your PRODUCTIVITY APP. This is who you are. A joke that writes itself." }
       ],
       WAVE: [
         { player: "Mob farming simulator!", enemy: "You need to pretend EMAILS are MONSTERS to face them. How weak are you? Genuinely." },
@@ -1329,7 +1329,7 @@ setTimeout(() => {
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
   
-  const baseHp = 25;
+  const baseHp = 50;
   const dayScaling = 25;
   const levelScaling = 15; // Scales with player level
   const enemyHp = baseHp + (currentDay * dayScaling) + (level * levelScaling);
@@ -1704,8 +1704,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Phase 1 - Enrage at 80% HP (Gauntlet only)
     if (battleType === 'final' && hpPercent <= 0.80 && hpPercent > 0.79 && enragedTurns === 0) {
       setEnragedTurns(2);
-      addLog(`🔥 Boss ENRAGED at 80% HP! (2 turns)`);
-      addLog(`⚠️ Enemy deals +15% damage but has 25% miss chance!`);
+      addLog(`Boss ENRAGED at 80% HP! (2 turns)`);
+      addLog(`Enemy deals +15% damage but has 25% miss chance!`);
     }
     
     // Phase 2 detection for Gauntlet boss (66% HP)
@@ -1715,8 +1715,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setPhase1TurnCounter(0); // Reset Phase 1 counter
       setPhase2TurnCounter(0);
       setPhase2DamageStacks(0);
-      addLog(`⚔️ PHASE 2: THE PRESSURE!`);
-      addLog(`🔺 Boss damage increases each turn!`);
+      addLog(`PHASE 2: THE PRESSURE!`);
+      addLog(`Boss damage increases each turn!`);
       
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
       setEnemyDialogue(bossDialogue.PHASE2);
@@ -1728,7 +1728,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       const addHp = 18;
       setShadowAdds([{ id: addId, hp: addHp, maxHp: addHp }]);
       setHasSpawnedPreviewAdd(true);
-      addLog(`👤 A Shadow Add materializes! (Preview of what's to come...)`);
+      addLog(`👤 A Shadow has materialized! (Preview of what's to come...)`);
     }
     
     // Phase 3 detection for Gauntlet boss
@@ -2169,7 +2169,7 @@ if (enragedTurns > 0) {
             const addId = `add_${Date.now()}`;
             const addHp = 18;
             setShadowAdds(prev => [...prev, { id: addId, hp: addHp, maxHp: addHp }]);
-            addLog(`👤 A Shadow Add emerges from the abyss! (${addHp} HP)`);
+            addLog(`👤 A Shadow emerges from the abyss! (${addHp} HP)`);
           }
           
           // Life drain every 5 turns
