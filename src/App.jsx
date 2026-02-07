@@ -51,12 +51,12 @@ const GAME_CONSTANTS = {
     { name: 'Doomday', subtitle: 'Day of Reckoning', theme: 'Almost there... or almost consumed?' },
     { name: 'Endday', subtitle: 'Day of Liberation', theme: 'Today you break free or die trying.' }
   ],
-  MINI_BOSS_BASE: 66,
-  MINI_BOSS_DAY_SCALING: 33,
+  MINI_BOSS_BASE: 150,
+  MINI_BOSS_DAY_SCALING: 50,
   MINI_BOSS_ATK_BASE: 15,
   MINI_BOSS_ATK_SCALING: 3.06,
-  FINAL_BOSS_BASE: 220,
-  FINAL_BOSS_DAY_SCALING: 44,
+  FINAL_BOSS_BASE: 500,
+  FINAL_BOSS_DAY_SCALING: 100,
   BOSS_ATTACK_BASE: 18.36,
   BOSS_ATTACK_DAY_SCALING: 4.59,
   BOSS_ATTACK_DELAY: 1000,
@@ -296,8 +296,31 @@ const GAME_CONSTANTS = {
     },
     GAUNTLET: {
       START: "I am the threshold. The wall you cannot climb. Every time you reach me, I grow stronger.",
+      PHASE1_CYCLE: [
+        "Every hero thinks THEY'RE different. You're not.",
+        "I've been studying you. Your patterns. Your weaknesses. All of them.",
+        "This is almost boring. When do you start TRYING?",
+        "You fight well. For someone who's about to lose.",
+        "I wonder how many attempts it took you to get THIS far. Five? Ten? More?"
+      ],
       MID: "You've killed a thousand lesser demons. I've killed a thousand versions of YOU.",
+      PHASE2: "Enough games. Time to show you what REAL pressure feels like.",
+      PHASE2_CYCLE: [
+        "Feel that? Each blow getting HEAVIER. That's inevitability.",
+        "Your armor won't save you. Your potions won't save you. Math doesn't lie.",
+        "Tick. Tock. How many more hits can you take before you BREAK?",
+        "The weight of failure. Can you feel it? It only gets heavier.",
+        "Every second you survive, I grow stronger. Simple. Brutal. True."
+      ],
       LOW: "You think you're winning? I'm not even trying yet. I'm just... curious how long you'll last.",
+      PHASE3: "THE ABYSS CONSUMES ALL! Shadows rise! Darkness eternal! You cannot escape what you ARE!",
+      PHASE3_CYCLE: [
+        "The abyss feeds on your hope. Every victory... temporary. Every loss... permanent.",
+        "They rise from YOUR failures. Every skipped day. Every abandoned goal. MY army.",
+        "You think you're fighting ME? You're fighting yourself. I'm just the mirror.",
+        "Drain. Consume. Repeat. This is what eternity FEELS like.",
+        "The shadows are YOUR doubt given form. Kill them. They'll return. They ALWAYS return."
+      ],
       VICTORY_BOSS: "Adequate. You've earned a moment's rest. But I'll be waiting. I'm ALWAYS waiting.",
       VICTORY_PLAYER: "Impossible... You actually... No. NO. This changes NOTHING. I'll see you again. And I'll be STRONGER.",
       TAUNTS: [
@@ -331,8 +354,10 @@ const FantasyStudyQuest = () => {
   const [isDayActive, setIsDayActive] = useState(false); // Is current game day active (vs dormant)
   
   const getMaxHp = useCallback(() => {
-    return GAME_CONSTANTS.MAX_HP + (currentDay - 1) * GAME_CONSTANTS.PLAYER_HP_PER_DAY;
-  }, [currentDay]);
+    const baseHp = GAME_CONSTANTS.MAX_HP + (currentDay - 1) * GAME_CONSTANTS.PLAYER_HP_PER_DAY;
+    const levelBonus = level * 10; // +10 HP per level for character progression
+    return baseHp + levelBonus;
+  }, [currentDay, level]);
   
   const getMaxStamina = useCallback(() => {
     return GAME_CONSTANTS.MAX_STAMINA + (currentDay - 1) * GAME_CONSTANTS.PLAYER_SP_PER_DAY;
@@ -343,7 +368,9 @@ const FantasyStudyQuest = () => {
   }, [currentDay]);
   
   const getBaseDefense = useCallback(() => {
-    return GAME_CONSTANTS.BASE_DEFENSE + (currentDay - 1) * GAME_CONSTANTS.PLAYER_DEF_PER_DAY;
+    // Square root scaling to match boss attack curve
+    const baseDefense = GAME_CONSTANTS.BASE_DEFENSE + Math.floor(Math.sqrt(currentDay - 1) * 2);
+    return baseDefense;
   }, [currentDay]);
   
   const [healthPots, setHealthPots] = useState(0);
@@ -429,6 +456,21 @@ const [waveEssenceTotal, setWaveEssenceTotal] = useState(0);
     stunned: false 
   });
   const [recklessStacks, setRecklessStacks] = useState(0);
+  
+  // Phase 3 Gauntlet mechanics
+  const [inPhase3, setInPhase3] = useState(false);
+  const [inPhase2, setInPhase2] = useState(false);
+  const [inPhase1, setInPhase1] = useState(false);
+  const [phase1TurnCounter, setPhase1TurnCounter] = useState(0);
+  const [phase2TurnCounter, setPhase2TurnCounter] = useState(0);
+  const [phase2DamageStacks, setPhase2DamageStacks] = useState(0);
+  const [hasSpawnedPreviewAdd, setHasSpawnedPreviewAdd] = useState(false);
+  const [shadowAdds, setShadowAdds] = useState([]); // Array of {id, hp, maxHp}
+  const [aoeWarning, setAoeWarning] = useState(false);
+  const [showDodgeButton, setShowDodgeButton] = useState(false);
+  const [dodgeReady, setDodgeReady] = useState(false);
+  const [phase3TurnCounter, setPhase3TurnCounter] = useState(0);
+  const [lifeDrainCounter, setLifeDrainCounter] = useState(0);
   
   const [currentAnimation, setCurrentAnimation] = useState(null);
   const [battleMode, setBattleMode] = useState(false);
@@ -1344,8 +1386,14 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     const bossNumber = miniBossCount + 1;
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
-    const baseHp = GAME_CONSTANTS.MINI_BOSS_BASE + (currentDay * GAME_CONSTANTS.MINI_BOSS_DAY_SCALING) + (level * 30); // +30 HP per player level
-    const scaledHp = Math.floor(baseHp * (1 + bossNumber * 0.2));
+    const dayScaling = Math.floor(Math.sqrt(currentDay) * 50);
+    const levelScaling = level * 30; // Reduced from 40 to 30
+    const baseHp = GAME_CONSTANTS.MINI_BOSS_BASE + dayScaling + levelScaling;
+    
+    // Cap elite boss HP
+    const cappedBaseHp = Math.min(baseHp, 800);
+    
+    const scaledHp = Math.floor(cappedBaseHp * (1 + bossNumber * 0.2));
     const bossHealth = Math.floor(scaledHp * (2 - completionRate));
     
     setCurrentAnimation('screen-shake');
@@ -1435,16 +1483,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
   
   const miniBoss = () => {
-    const completedTasks = tasks.filter(t => t.done).length;
-    const totalTasks = tasks.length;
+    const eliteXpRequired = 200;
     
-    if (totalTasks === 0) {
-      addLog('⚠️ No trials accepted! Create some first.');
-      return;
-    }
-    
-    if (completedTasks < totalTasks * 0.75) {
-      addLog(`⚠️ Need 75% completion! (${completedTasks}/${totalTasks} done)`);
+    if (xp < eliteXpRequired) {
+      addLog(`⚠️ Need ${eliteXpRequired} XP to face the darkness! (${xp}/${eliteXpRequired})`);
       return;
     }
     
@@ -1472,9 +1514,15 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       return;
     }
     
-    const baseHp = GAME_CONSTANTS.FINAL_BOSS_BASE + (currentDay * GAME_CONSTANTS.FINAL_BOSS_DAY_SCALING) + (level * 50); // +50 HP per player level
+    const dayScaling = Math.floor(Math.sqrt(currentDay) * 100);
+    const levelScaling = level * 50; // Reduced from 75 to 50
+    const baseHp = GAME_CONSTANTS.FINAL_BOSS_BASE + dayScaling + levelScaling;
+    
+    // Cap boss HP to prevent infinite scaling becoming grindy
+    const cappedBaseHp = Math.min(baseHp, 2000);
+    
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
-    const bossHealth = Math.floor(baseHp * (1.5 - completionRate * 0.5));
+    const bossHealth = Math.floor(cappedBaseHp * (1.5 - completionRate * 0.5));
     
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
@@ -1499,6 +1547,21 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setEnemyTauntResponse('');
     setShowTauntBoxes(false);
     setHasFled(false); // Reset fled status
+    
+    // Reset Phase 3 states
+    setInPhase3(false);
+    setInPhase2(false);
+    setInPhase1(true); // Start in Phase 1
+    setPhase1TurnCounter(0);
+    setPhase2TurnCounter(0);
+    setPhase2DamageStacks(0);
+    setHasSpawnedPreviewAdd(false);
+    setShadowAdds([]);
+    setAoeWarning(false);
+    setShowDodgeButton(false);
+    setDodgeReady(false);
+    setPhase3TurnCounter(0);
+    setLifeDrainCounter(0);
     
     // Set Gauntlet dialogue
     const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
@@ -1550,6 +1613,50 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const attack = () => {
     if (!battling || bossHp <= 0) return;
     
+    // Auto-target shadow adds first in Phase 2 and Phase 3
+    if ((inPhase2 || inPhase3) && shadowAdds.length > 0) {
+      const targetAdd = shadowAdds[0];
+      const damage = Math.floor((getBaseAttack() + weapon + (weaponOilActive ? 5 : 0)) * 0.7); // Reduced damage to adds
+      const newAddHp = Math.max(0, targetAdd.hp - damage);
+      
+      if (newAddHp <= 0) {
+        setShadowAdds(prev => prev.slice(1));
+        addLog(`⚔️ Shadow Add destroyed! (${damage} damage)`);
+      } else {
+        setShadowAdds(prev => {
+          const updated = [...prev];
+          updated[0] = { ...updated[0], hp: newAddHp };
+          return updated;
+        });
+        addLog(`⚔️ Hit Shadow Add for ${damage} damage! (${newAddHp}/${targetAdd.maxHp} HP remaining)`);
+      }
+      
+      // Still trigger boss counter-attack after killing add
+      setTimeout(() => {
+        if (!battling || hp <= 0) return;
+        
+        setCurrentAnimation('battle-shake');
+        setTimeout(() => setCurrentAnimation(null), 250);
+        
+        // Use same boss attack formula as normal counter-attacks
+        const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+        let baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+        baseAttack = Math.min(baseAttack, 50); // Cap at 50
+        
+        const baseDamage = Math.max(1, Math.floor(
+          baseAttack - 
+          (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
+        ));
+        
+        setHp(h => Math.max(0, h - baseDamage));
+        addLog(`💥 Boss counter-attacks for ${baseDamage} damage!`);
+        setPlayerFlash(true);
+        setTimeout(() => setPlayerFlash(false), 200);
+      }, 1000);
+      
+      return;
+    }
+    
     if (recklessStacks > 0) setRecklessStacks(0);
     
     setCurrentAnimation('battle-shake');
@@ -1572,6 +1679,15 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       bonusMessages.push(`☠️ +${poisonBonus} from poison vulnerability`);
     }
     
+    // AOE Warning - Boss vulnerable but will counter-attack
+    if (aoeWarning && inPhase3) {
+      const vulnerableBonus = Math.floor(finalDamage * 0.5);
+      finalDamage += vulnerableBonus;
+      bonusMessages.push(`⚠️ +${vulnerableBonus} - Boss is VULNERABLE!`);
+      addLog(`🎯 Risky attack! Boss takes extra damage but WILL counter!`);
+      setShowDodgeButton(false); // Can't dodge after attacking
+    }
+    
     // Apply enraged bonus (enemy takes +20% damage when enraged)
     if (enragedTurns > 0) {
       const enragedBonus = Math.floor(finalDamage * 0.2);
@@ -1585,12 +1701,60 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Update dialogue based on HP phase
     const hpPercent = newBossHp / bossMax;
     
+    // Phase 1 - Enrage at 80% HP (Gauntlet only)
+    if (battleType === 'final' && hpPercent <= 0.80 && hpPercent > 0.79 && enragedTurns === 0) {
+      setEnragedTurns(2);
+      addLog(`🔥 Boss ENRAGED at 80% HP! (2 turns)`);
+      addLog(`⚠️ Enemy deals +15% damage but has 25% miss chance!`);
+    }
+    
+    // Phase 2 detection for Gauntlet boss (66% HP)
+    if (battleType === 'final' && !inPhase2 && hpPercent <= 0.66 && hpPercent > 0.33) {
+      setInPhase1(false); // Exit Phase 1
+      setInPhase2(true);
+      setPhase1TurnCounter(0); // Reset Phase 1 counter
+      setPhase2TurnCounter(0);
+      setPhase2DamageStacks(0);
+      addLog(`⚔️ PHASE 2: THE PRESSURE!`);
+      addLog(`🔺 Boss damage increases each turn!`);
+      
+      const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+      setEnemyDialogue(bossDialogue.PHASE2);
+    }
+    
+    // Phase 2 - Spawn preview add at 50% HP
+    if (battleType === 'final' && inPhase2 && !hasSpawnedPreviewAdd && hpPercent <= 0.50 && hpPercent > 0.49) {
+      const addId = `preview_add_${Date.now()}`;
+      const addHp = 18;
+      setShadowAdds([{ id: addId, hp: addHp, maxHp: addHp }]);
+      setHasSpawnedPreviewAdd(true);
+      addLog(`👤 A Shadow Add materializes! (Preview of what's to come...)`);
+    }
+    
+    // Phase 3 detection for Gauntlet boss
+    if (battleType === 'final' && !inPhase3 && hpPercent <= 0.33 && hpPercent > 0) {
+      setInPhase3(true);
+      setInPhase2(false); // Exit Phase 2
+      setPhase2DamageStacks(0); // Reset ramping stacks
+      setPhase3TurnCounter(0);
+      setLifeDrainCounter(0);
+      addLog(`💀 PHASE 3: ABYSS AWAKENING!`);
+      addLog(`🌑 The darkness intensifies... Shadows stir!`);
+      
+      const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+      setEnemyDialogue(bossDialogue.PHASE3);
+    }
+    
     if (battleType === 'elite' || battleType === 'final') {
       // Boss dialogue (GAUNTLET for final, cycling for elite)
       const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
       
-      if (bossDialogue) {
+      // For Gauntlet, only use HP-based dialogue if not in any active phase (phases have cycling dialogue)
+      // For elite bosses, use normal HP-based dialogue
+      const isGauntletInActivePhase = battleType === 'final' && (inPhase1 || inPhase2 || inPhase3);
+      
+      if (bossDialogue && !isGauntletInActivePhase) {
         if (hpPercent <= 0.25 && hpPercent > 0) {
           setEnemyDialogue(bossDialogue.LOW);
         } else if (hpPercent <= 0.5) {
@@ -1784,14 +1948,16 @@ if (battleType === 'regular' || battleType === 'wave') {
   baseAttack = 25;
   attackScaling = 2;
 } else {
-  // Elite and Final bosses use normal stats
-  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE;
-  attackScaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+  // Elite and Final bosses use square root scaling with cap
+  const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+  // Cap boss base attack at 50 to prevent one-shotting
+  baseAttack = Math.min(baseAttack, 50);
+  attackScaling = 0; // No linear scaling, already handled above
 }
 
 let bossDamage = Math.max(1, Math.floor(
-  baseAttack + 
-  (currentDay * attackScaling) - 
+  baseAttack - 
   (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
 ));
 
@@ -1800,6 +1966,15 @@ if (curseLevel === 2) {
   bossDamage = Math.floor(bossDamage * 1.2); // 20% harder
 } else if (curseLevel === 3) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
+}
+
+// Phase 2 ramping damage (Gauntlet only)
+if (inPhase2 && battleType === 'final' && !inPhase3) {
+  const rampBonus = Math.floor(bossDamage * (phase2DamageStacks * 0.05));
+  if (rampBonus > 0) {
+    bossDamage += rampBonus;
+  }
+  setPhase2DamageStacks(prev => prev + 1);
 }
 
 // Enraged enemies hit +15% harder
@@ -1834,6 +2009,33 @@ if (enragedTurns > 0) {
       
       setPlayerFlash(true);
       setTimeout(() => setPlayerFlash(false), 200);
+      
+      // Check for AOE execution (Phase 3 gauntlet)
+      if (aoeWarning && inPhase3 && battleType === 'final') {
+        if (dodgeReady) {
+          // Player dodged successfully
+          addLog(`🌀 You rolled out of the way! AOE DODGED!`);
+          setDodgeReady(false);
+        } else {
+          // AOE hits for 35 damage
+          const aoeDamage = 35;
+          addLog(`💥 DEVASTATING AOE SLAM! -${aoeDamage} HP`);
+          setHp(currentHp => {
+            const newHp = Math.max(0, currentHp - aoeDamage);
+            if (newHp <= 0) {
+              setTimeout(() => {
+                addLog('💀 You have been defeated by the AOE!');
+                die();
+              }, 500);
+            }
+            return newHp;
+          });
+        }
+        setAoeWarning(false);
+        setShowDodgeButton(false);
+        // Skip normal attack this turn
+        return;
+      }
       
       setHp(currentHp => {
         const newHp = Math.max(0, currentHp - bossDamage);
@@ -1922,6 +2124,79 @@ if (enragedTurns > 0) {
             poisonedVulnerability: prev.poisonTurns > 1 ? 0.15 : 0
           }));
         }
+        
+        // Phase 1 mechanics for Gauntlet boss
+        if (inPhase1 && battleType === 'final' && bossHp > 0 && !inPhase2 && !inPhase3) {
+          setPhase1TurnCounter(prev => prev + 1);
+          
+          // Cycle Phase 1 dialogue every 3 turns
+          if (phase1TurnCounter > 0 && phase1TurnCounter % 3 === 0) {
+            const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+            const cycleDialogue = bossDialogue.PHASE1_CYCLE;
+            const randomLine = cycleDialogue[Math.floor(Math.random() * cycleDialogue.length)];
+            setEnemyDialogue(randomLine);
+          }
+        }
+        
+        // Phase 2 mechanics for Gauntlet boss
+        if (inPhase2 && battleType === 'final' && bossHp > 0 && !inPhase3) {
+          setPhase2TurnCounter(prev => prev + 1);
+          
+          // Cycle Phase 2 dialogue every 3 turns
+          if (phase2TurnCounter > 0 && phase2TurnCounter % 3 === 0) {
+            const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+            const cycleDialogue = bossDialogue.PHASE2_CYCLE;
+            const randomLine = cycleDialogue[Math.floor(Math.random() * cycleDialogue.length)];
+            setEnemyDialogue(randomLine);
+          }
+        }
+        
+        // Phase 3 mechanics for Gauntlet boss
+        if (inPhase3 && battleType === 'final' && bossHp > 0) {
+          setPhase3TurnCounter(prev => prev + 1);
+          setLifeDrainCounter(prev => prev + 1);
+          
+          // Cycle Phase 3 dialogue every 3 turns
+          if (phase3TurnCounter > 0 && phase3TurnCounter % 3 === 0) {
+            const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+            const cycleDialogue = bossDialogue.PHASE3_CYCLE;
+            const randomLine = cycleDialogue[Math.floor(Math.random() * cycleDialogue.length)];
+            setEnemyDialogue(randomLine);
+          }
+          
+          // Spawn shadow add every 4 turns
+          if (phase3TurnCounter > 0 && phase3TurnCounter % 4 === 0) {
+            const addId = `add_${Date.now()}`;
+            const addHp = 18;
+            setShadowAdds(prev => [...prev, { id: addId, hp: addHp, maxHp: addHp }]);
+            addLog(`👤 A Shadow Add emerges from the abyss! (${addHp} HP)`);
+          }
+          
+          // Life drain every 5 turns
+          if (lifeDrainCounter >= 5) {
+            const drainAmount = 15;
+            setHp(h => Math.max(0, h - drainAmount));
+            setBossHp(b => Math.min(bossMax, b + drainAmount));
+            addLog(`🩸 LIFE DRAIN! Boss drains ${drainAmount} HP from you!`);
+            setLifeDrainCounter(0);
+          }
+          
+          // AOE warning every 5 turns (offset from life drain)
+          if (phase3TurnCounter > 0 && phase3TurnCounter % 5 === 2) {
+            setAoeWarning(true);
+            setShowDodgeButton(true);
+            addLog(`⚠️ THE BOSS RAISES ITS WEAPON TO THE SKY!`);
+            addLog(`🛡️ [DODGE] button available - or attack for bonus damage!`);
+          }
+          
+          // Shadow adds heal boss if alive
+          if (shadowAdds.length > 0) {
+            const healPerAdd = 8;
+            const healAmount = shadowAdds.length * healPerAdd;
+            setBossHp(b => Math.min(bossMax, b + healAmount));
+            addLog(`👤 ${shadowAdds.length} Shadow Add${shadowAdds.length > 1 ? 's' : ''} heal boss for ${healAmount} HP!`);
+          }
+        }
       }, 200);
     }, GAME_CONSTANTS.BOSS_ATTACK_DELAY);
   };
@@ -1980,6 +2255,14 @@ if (enragedTurns > 0) {
       damage += bonusDamage;
     }
     
+    // AOE Warning - Boss vulnerable but will counter-attack (special attacks too)
+    if (aoeWarning && inPhase3) {
+      const vulnerableBonus = Math.floor(damage * 0.5);
+      damage += vulnerableBonus;
+      addLog(`⚠️ Boss is VULNERABLE! +${vulnerableBonus} bonus damage!`);
+      setShowDodgeButton(false); // Can't dodge after attacking
+    }
+    
     let effectMessage = '';
     let skipCounterAttack = false;
     
@@ -1990,8 +2273,12 @@ if (enragedTurns > 0) {
       }
     } else if (hero.class.name === 'Mage') {
       setBossDebuffs(prev => ({ ...prev, stunned: true, marked: false }));
-      skipCounterAttack = true;
+      // During AOE warning, boss WILL counter-attack even if stunned (too focused on AOE)
+      skipCounterAttack = !aoeWarning;
       effectMessage = '✨ Boss stunned!';
+      if (aoeWarning) {
+        addLog('⚠️ But boss is too focused on AOE to be stopped!');
+      }
     } else if (hero.class.name === 'Rogue') {
       setBossDebuffs(prev => ({ ...prev, poisonTurns: 5, poisonDamage: 5, poisonedVulnerability: 0.15, marked: false }));
       effectMessage = "☠️ Boss poisoned! Takes +15% damage from all attacks!";
@@ -2017,7 +2304,11 @@ if (enragedTurns > 0) {
       const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
       
-      if (bossDialogue) {
+      // For Gauntlet, only use HP-based dialogue if not in any active phase (phases have cycling dialogue)
+      // For elite bosses, use normal HP-based dialogue
+      const isGauntletInActivePhase = battleType === 'final' && (inPhase1 || inPhase2 || inPhase3);
+      
+      if (bossDialogue && !isGauntletInActivePhase) {
         if (hpPercent <= 0.25 && hpPercent > 0) {
           setEnemyDialogue(bossDialogue.LOW);
         } else if (hpPercent <= 0.5) {
@@ -2183,14 +2474,16 @@ if (battleType === 'regular' || battleType === 'wave') {
   baseAttack = 25;
   attackScaling = 2;
 } else {
-  // Elite and Final bosses use normal stats
-  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE;
-  attackScaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+  // Elite and Final bosses use square root scaling with cap
+  const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+  // Cap boss base attack at 50 to prevent one-shotting
+  baseAttack = Math.min(baseAttack, 50);
+  attackScaling = 0; // No linear scaling, already handled above
 }
 
 let bossDamage = Math.max(1, Math.floor(
-  baseAttack + 
-  (currentDay * attackScaling) - 
+  baseAttack - 
   (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
 ));
 
@@ -2199,6 +2492,15 @@ if (curseLevel === 2) {
   bossDamage = Math.floor(bossDamage * 1.2); // 20% harder
 } else if (curseLevel === 3) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
+}
+
+// Phase 2 ramping damage (Gauntlet only)
+if (inPhase2 && battleType === 'final' && !inPhase3) {
+  const rampBonus = Math.floor(bossDamage * (phase2DamageStacks * 0.05));
+  if (rampBonus > 0) {
+    bossDamage += rampBonus;
+  }
+  setPhase2DamageStacks(prev => prev + 1);
 }
 
 // Enraged enemies hit +15% harder
@@ -2355,6 +2657,15 @@ if (enragedTurns > 0) {
     
     addLog(`🏃 Fled from ${bossName}! Lost 25 Stamina.`);
     addLog(`💬 ${bossName}: "${fleeDialogue}"`);
+  };
+  
+  const dodge = () => {
+    if (!showDodgeButton || !aoeWarning) return;
+    
+    setDodgeReady(true);
+    setShowDodgeButton(false);
+    addLog(`🛡️ You prepare to dodge the incoming AOE!`);
+    addLog(`🌀 Ready to roll...`);
   };
   
   const die = () => {
@@ -2995,19 +3306,18 @@ setMiniBossCount(0);
               ) : (
                 <>
                   <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-red-900">
-                    <div className="flex justify-between items-center mb-4">
-                      <div>
-                        <h2 className="text-2xl font-bold text-red-400">Trials of the Cursed</h2>
-                        <p className="text-sm text-gray-400">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">
-                          <Calendar size={20}/>Import from Planner
-                        </button>
-                        <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-all">
-                          <Plus size={20}/>Accept Trial
-                        </button>
-                      </div>
+                    <div className="text-center mb-4">
+                      <h2 className="text-2xl font-bold text-red-400 mb-1">Trials of the Cursed</h2>
+                      <p className="text-sm text-gray-400">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
+                    </div>
+                    
+                    <div className="flex gap-2 justify-center mb-4">
+                      <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">
+                        <Calendar size={20}/>Import from Planner
+                      </button>
+                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-all">
+                        <Plus size={20}/>Accept Trial
+                      </button>
                     </div>
                     
                     {tasks.length === 0 ? (
@@ -3080,7 +3390,7 @@ setMiniBossCount(0);
                   <div className="grid md:grid-cols-2 gap-4">
                     <button 
   onClick={miniBoss} 
-  disabled={!isDayActive || eliteBossDefeatedToday || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length * 0.75} 
+  disabled={!isDayActive || eliteBossDefeatedToday || xp < 200} 
   className="bg-red-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-800 transition-all shadow-lg shadow-red-900/50 border-2 border-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
 >
   FACE THE DARKNESS
@@ -3088,11 +3398,14 @@ setMiniBossCount(0);
     <div className="text-sm font-normal mt-1 text-gray-400">Day dormant - add tasks to begin</div>
   ) : eliteBossDefeatedToday ? (
     <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
-  ) : timeUntilMidnight && !eliteBossDefeatedToday ? (
-    <div className="text-sm font-normal mt-1 text-red-400">⏰ {timeUntilMidnight} until midnight lock!</div>
-  ) : tasks.length > 0 ? (
-    <div className="text-sm font-normal mt-1">Finish more tasks to unlock</div>
-  ) : null}
+  ) : (
+    <div className={`text-sm font-normal mt-1 ${xp >= 200 ? 'text-green-400' : 'text-yellow-400'}`}>
+      {xp >= 200 ? `Ready • 200 XP` : `${200 - xp} XP needed`}
+      {timeUntilMidnight && !eliteBossDefeatedToday && xp >= 200 && (
+        <span className="text-red-400 ml-2">• ⏰ {timeUntilMidnight} until midnight!</span>
+      )}
+    </div>
+  )}
 </button>
                     <button 
   onClick={finalBoss} 
@@ -3462,7 +3775,7 @@ setMiniBossCount(0);
                   </div>
                   <div className="bg-black bg-opacity-40 rounded-lg p-4">
                     <p className="text-sm text-gray-400">Defense</p>
-                    <p className="text-3xl font-bold text-green-400">{GAME_CONSTANTS.BASE_DEFENSE + (level * GAME_CONSTANTS.PLAYER_DEF_PER_DAY) + armor}</p>
+                    <p className="text-3xl font-bold text-green-400">{getBaseDefense() + armor}</p>
                     <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_DEFENSE} • Armor: +{armor}</p>
                   </div>
                 </div>
@@ -4707,7 +5020,7 @@ setMiniBossCount(0);
               <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter my-8 ${bossFlash ? 'damage-flash-boss' : ''}`}>
                {bossName && (<h2 className="text-5xl text-center text-yellow-400 mb-2 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</h2>)}
                <p className="text-xl font-bold text-center text-red-400 mb-4">
-  {isFinalBoss ? 'THE UNDYING LEGEND' : 
+  {isFinalBoss ? (inPhase3 ? 'PHASE 3: ABYSS AWAKENING' : inPhase2 ? 'PHASE 2: THE PRESSURE' : 'THE UNDYING LEGEND') : 
    battleType === 'elite' ? 'TORMENTED CHAMPION' : 
    battleType === 'wave' ? `WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
    'ENEMY ENCOUNTER'}
@@ -4727,6 +5040,50 @@ setMiniBossCount(0);
                       <div className={`bg-red-600 h-6 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div>
                     </div>
                   </div>
+                  
+                  {/* Phase 2 Ramping Damage Indicator */}
+                  {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
+                    <div className="bg-orange-900 bg-opacity-60 rounded-lg p-3 border-2 border-orange-500">
+                      <p className="text-orange-400 font-bold text-center">🔺 RAMPING PRESSURE</p>
+                      <p className="text-white text-center text-sm">Boss damage: +{phase2DamageStacks * 5}% ({phase2DamageStacks} stacks)</p>
+                      <p className="text-xs text-orange-300 text-center italic mt-1">Stacks increase each turn!</p>
+                    </div>
+                  )}
+                  
+                  {/* Shadow Adds (Phase 2 & 3) */}
+                  {(inPhase2 || inPhase3) && shadowAdds.length > 0 && (
+                    <div className="bg-black bg-opacity-60 rounded-lg p-4 border-2 border-purple-600">
+                      <p className="text-purple-400 font-bold mb-2 text-center">👤 SHADOW ADD{shadowAdds.length > 1 ? 'S' : ''} ({shadowAdds.length})</p>
+                      <div className="space-y-2">
+                        {shadowAdds.map((add, idx) => (
+                          <div key={add.id} className="flex items-center justify-between bg-gray-900 rounded p-2">
+                            <span className="text-gray-300">Shadow #{idx + 1}</span>
+                            <div className="flex-1 mx-4">
+                              <div className="bg-gray-700 rounded-full h-3 overflow-hidden">
+                                <div className="bg-purple-500 h-3 rounded-full" style={{width: `${(add.hp / add.maxHp) * 100}%`}}></div>
+                              </div>
+                            </div>
+                            <span className="text-purple-400 text-sm">{add.hp}/{add.maxHp}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-purple-300 mt-2 text-center italic">
+                        Your attacks target adds first! {inPhase3 ? 'Each add heals boss for 8 HP per turn.' : 'Kill it before Phase 3!'}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* AOE Warning */}
+                  {aoeWarning && inPhase3 && (
+                    <div className="bg-red-900 bg-opacity-80 rounded-lg p-4 border-4 border-yellow-400 animate-pulse">
+                      <p className="text-yellow-400 font-bold text-center text-xl">⚠️ BOSS PREPARING DEVASTATING AOE!</p>
+                      <p className="text-white text-center text-sm mt-2">Next turn: 35 damage slam!</p>
+                      <div className="mt-3 pt-3 border-t border-yellow-600">
+                        <p className="text-cyan-300 text-center text-sm font-bold">🛡️ DODGE: Avoid damage completely (safe)</p>
+                        <p className="text-red-300 text-center text-sm font-bold">⚔️ ATTACK: Deal +50% damage but take counter-attack AND AOE (risky!)</p>
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Enemy Dialogue Box - Positioned below enemy HP */}
                   {showTauntBoxes ? (
@@ -4761,7 +5118,7 @@ setMiniBossCount(0);
                   )}
                   
                   {/* Battle Actions */}
-                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} disabled={stamina < 25} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50" title="Lose 25 Stamina to escape">FLEE</button>)}</div>{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 25 Stamina but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
+                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} disabled={stamina < 25} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50" title="Lose 25 Stamina to escape">FLEE</button>)}{showDodgeButton && (<button onClick={dodge} className="flex-1 bg-blue-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/50 hover:scale-105 active:scale-95 animate-pulse border-4 border-cyan-400"><div>🛡️ DODGE</div><div className="text-sm">(Avoid AOE)</div></button>)}</div>{showDodgeButton && (<p className="text-xs text-cyan-400 text-center italic mt-2">🛡️ Dodge the AOE or attack for +50% damage (risky!)</p>)}{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 25 Stamina but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
                   {bossHp <= 0 && (
                     <div className="text-center">
                       {hasFled ? (
