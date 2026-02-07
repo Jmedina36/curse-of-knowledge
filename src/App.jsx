@@ -12,7 +12,7 @@ const GAME_CONSTANTS = {
   MAX_HP: 100,
   MAX_STAMINA: 100,
   BASE_ATTACK: 25,
-  BASE_DEFENSE: 8,
+  BASE_DEFENSE: 5,
   PLAYER_HP_PER_DAY: 8,
   PLAYER_SP_PER_DAY: 8,
   PLAYER_ATK_PER_DAY: 2,
@@ -79,10 +79,10 @@ const GAME_CONSTANTS = {
   DEEP_WORK_BONUS: 30,
   PERFECT_DAY_BONUS: 50,
   SPECIAL_ATTACKS: {
-    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 3.5, effect: 'Massive damage but costs 15 HP' },
-    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 2.5, effect: 'Boss stunned - no counter-attack this turn' },
+    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 4.0, effect: 'Massive damage but costs 15 HP' },
+    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 3.0, effect: 'Boss stunned - no counter-attack this turn' },
     Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 10 damage per turn. Poisoned enemies take +25% damage from all attacks' },
-    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 1.8, effect: 'Heals you for 30 HP' },
+    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 3.0, effect: 'Heals you for 30 HP' },
     Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: 'Boss takes +50% damage from your next attack. Creates devastating combos' }
   },
   
