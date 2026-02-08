@@ -3148,9 +3148,9 @@ setMiniBossCount(0);
                 
                 {/* Decorative divider with text */}
                 <div className="flex items-center justify-center gap-3 mb-4 mt-4">
-                  <div style={{flex: '1', height: '1px', background: 'rgba(220, 20, 60, 0.4)'}}></div>
-                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: '#DC143C', letterSpacing: '0.2em'}}>Equipment</p>
-                  <div style={{flex: '1', height: '1px', background: 'rgba(220, 20, 60, 0.4)'}}></div>
+                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Equipment</p>
+                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                 </div>
                 
                 {/* Inventory and Merchant buttons */}
