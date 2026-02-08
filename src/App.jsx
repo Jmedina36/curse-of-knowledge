@@ -1,10 +1,13 @@
-// FANTASY STUDY QUEST - v3.3 SEVEN DAYS EDITION (CALENDAR FIX)
-// PART 1 OF 3 - Copy this first
-// Last updated: 2026-01-14
+// FANTASY STUDY QUEST - v4.2 MULTI-PHASE GAUNTLET
+// Ported to Lovable
+// Last updated: 2026-02-07
 // FIXES: Calendar sync, date display on planner, missing dependencies, poison bug
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer } from 'lucide-react';
+import useGameSFX from '../hooks/useGameSFX';
+import DebugPanel from './DebugPanel';
+import AchievementsPanel from './AchievementsPanel';
 
 const GAME_CONSTANTS = {
   LATE_START_PENALTY: 15,
@@ -12,11 +15,11 @@ const GAME_CONSTANTS = {
   MAX_HP: 100,
   MAX_STAMINA: 100,
   BASE_ATTACK: 25,
-  BASE_DEFENSE: 5,
-  PLAYER_HP_PER_DAY: 8,
+  BASE_DEFENSE: 8,
+  PLAYER_HP_PER_DAY: 10,
   PLAYER_SP_PER_DAY: 8,
   PLAYER_ATK_PER_DAY: 2,
-  PLAYER_DEF_PER_DAY: 1,
+  PLAYER_DEF_PER_DAY: 2,
   HEALTH_POTION_HEAL: 30,
   STAMINA_POTION_RESTORE: 50,
   STAMINA_PER_TASK: 20,
@@ -53,12 +56,12 @@ const GAME_CONSTANTS = {
   ],
   MINI_BOSS_BASE: 150,
   MINI_BOSS_DAY_SCALING: 50,
-  MINI_BOSS_ATK_BASE: 15,
-  MINI_BOSS_ATK_SCALING: 3.06,
+  MINI_BOSS_ATK_BASE: 12,
+  MINI_BOSS_ATK_SCALING: 2.0,
   FINAL_BOSS_BASE: 500,
   FINAL_BOSS_DAY_SCALING: 100,
-  BOSS_ATTACK_BASE: 18.36,
-  BOSS_ATTACK_DAY_SCALING: 4.59,
+  BOSS_ATTACK_BASE: 15,
+  BOSS_ATTACK_DAY_SCALING: 2.8,
   BOSS_ATTACK_DELAY: 1000,
   LOG_MAX_ENTRIES: 8,
   SKIP_PENALTIES: [
@@ -79,11 +82,11 @@ const GAME_CONSTANTS = {
   DEEP_WORK_BONUS: 30,
   PERFECT_DAY_BONUS: 50,
   SPECIAL_ATTACKS: {
-    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 4.0, effect: 'Massive damage but costs 15 HP' },
-    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 3.0, effect: 'Boss stunned - no counter-attack this turn' },
-    Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 10 damage per turn. Poisoned enemies take +25% damage from all attacks' },
-    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 3.0, effect: 'Heals you for 30 HP' },
-    Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: 'Boss takes +50% damage from your next attack. Creates devastating combos' }
+    Warrior: { name: 'Reckless Strike', cost: 30, hpCost: 15, damageMultiplier: 4.0, effect: 'Massive damage but costs HP. Scales with level' },
+    Mage: { name: 'Arcane Blast', cost: 40, damageMultiplier: 3.0, effect: 'Boss stunned - no counter-attack. Scales with level' },
+    Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Scaling poison + 15% vulnerability on all attacks' },
+    Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 3.0, effect: 'Heals 20 + 10% max HP. Scales with level' },
+    Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: '+35% damage on next attack. Scales with level' }
   },
   
   ENEMY_DIALOGUE: {
@@ -339,7 +342,9 @@ const GAME_CONSTANTS = {
 const HERO_TITLES = ['Novice', 'Seeker', 'Wanderer', 'Survivor', 'Warrior', 'Champion', 'Legend'];
 
 const FantasyStudyQuest = () => {
+  const sfx = useGameSFX();
   const [activeTab, setActiveTab] = useState('quest');
+  const [plannerView, setPlannerView] = useState('weekly');
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -368,8 +373,8 @@ const FantasyStudyQuest = () => {
   }, [currentDay]);
   
   const getBaseDefense = useCallback(() => {
-    // Square root scaling to match boss attack curve
-    const baseDefense = GAME_CONSTANTS.BASE_DEFENSE + Math.floor(Math.sqrt(currentDay - 1) * 2);
+    // Linear scaling to keep pace with boss attack growth
+    const baseDefense = GAME_CONSTANTS.BASE_DEFENSE + (currentDay - 1) * GAME_CONSTANTS.PLAYER_DEF_PER_DAY;
     return baseDefense;
   }, [currentDay]);
   
@@ -461,6 +466,11 @@ const [waveEssenceTotal, setWaveEssenceTotal] = useState(0);
   const [inPhase3, setInPhase3] = useState(false);
   const [inPhase2, setInPhase2] = useState(false);
   const [inPhase1, setInPhase1] = useState(false);
+  const [hasTriggeredPhase1Enrage, setHasTriggeredPhase1Enrage] = useState(false);
+  const [targetingAdds, setTargetingAdds] = useState(false);
+  const [gauntletPhase, setGauntletPhase] = useState(1); // 1, 2, or 3 - separate battles
+  const [gauntletBaseHp, setGauntletBaseHp] = useState(0); // Total base HP for calculating phase HPs
+  const [phaseTransitioning, setPhaseTransitioning] = useState(false); // Show transition screen
   const [phase1TurnCounter, setPhase1TurnCounter] = useState(0);
   const [phase2TurnCounter, setPhase2TurnCounter] = useState(0);
   const [phase2DamageStacks, setPhase2DamageStacks] = useState(0);
@@ -561,7 +571,7 @@ const getNextDayOfWeek = useCallback((dayName) => {
   const todayIndex = today.getDay();
   
   let daysUntil = targetDayIndex - todayIndex;
-  if (daysUntil <= 0) daysUntil += 7;
+  if (daysUntil < 0) daysUntil += 7;
   
   const targetDate = new Date(today);
   targetDate.setDate(today.getDate() + daysUntil);
@@ -714,6 +724,19 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     }
  }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
   
+  // Battle music - auto-manage based on battleMode and phase
+  useEffect(() => {
+    if (battleMode) {
+      // Determine intensity: 1=regular/wave, 2=elite, 3+=gauntlet phases
+      let intensity = 1;
+      if (battleType === 'elite') intensity = 2;
+      if (battleType === 'final') intensity = 1 + gauntletPhase; // 2, 3, 4
+      sfx.startBattleMusic(intensity);
+    } else {
+      sfx.stopBattleMusic();
+    }
+  }, [battleMode, battleType, gauntletPhase]);
+
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
     if (xp >= gauntletMilestone && !gauntletUnlocked) {
@@ -1331,7 +1354,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   const baseHp = 50;
   const dayScaling = 25;
-  const levelScaling = 15; // Scales with player level
+  const levelScaling = 10; // Reduced from 15 for smoother scaling
   const enemyHp = baseHp + (currentDay * dayScaling) + (level * levelScaling);
   
   setCurrentAnimation('screen-shake');
@@ -1344,6 +1367,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setShowBoss(true);
   setBattling(true);
   setBattleMode(true);
+  sfx.playBattleStart('regular');
   setIsFinalBoss(false);
   setCanFlee(true); // Allow fleeing from regular and wave enemies
   setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
@@ -1387,11 +1411,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const bossNumber = miniBossCount + 1;
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
     const dayScaling = Math.floor(Math.sqrt(currentDay) * 50);
-    const levelScaling = level * 30; // Reduced from 40 to 30
+    const levelScaling = level * 25;
     const baseHp = GAME_CONSTANTS.MINI_BOSS_BASE + dayScaling + levelScaling;
     
-    // Cap elite boss HP
-    const cappedBaseHp = Math.min(baseHp, 800);
+    // Diminishing returns cap instead of hard cap - grows but decelerates
+    const cappedBaseHp = baseHp <= 600 ? baseHp : 600 + Math.floor(Math.sqrt(baseHp - 600) * 20);
     
     const scaledHp = Math.floor(cappedBaseHp * (1 + bossNumber * 0.2));
     const bossHealth = Math.floor(scaledHp * (2 - completionRate));
@@ -1406,6 +1430,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setShowBoss(true);
     setBattling(true);
     setBattleMode(true);
+    sfx.playBattleStart('elite');
     setIsFinalBoss(false);
     setCanFlee(true);
     setMiniBossCount(bossNumber);
@@ -1439,6 +1464,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   if (healthPots > 0 && hp < getMaxHp()) {
     setHealthPots(h => h - 1);
     setHp(h => Math.min(getMaxHp(), h + 50));
+    sfx.playPotion();
     addLog('💊 Used Health Potion! +50 HP');
   }
 };
@@ -1515,29 +1541,31 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     const dayScaling = Math.floor(Math.sqrt(currentDay) * 100);
-    const levelScaling = level * 50; // Reduced from 75 to 50
+    const levelScaling = level * 50;
     const baseHp = GAME_CONSTANTS.FINAL_BOSS_BASE + dayScaling + levelScaling;
-    
-    // Cap boss HP to prevent infinite scaling becoming grindy
     const cappedBaseHp = Math.min(baseHp, 2000);
-    
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
-    const bossHealth = Math.floor(cappedBaseHp * (1.5 - completionRate * 0.5));
+    const totalBossHp = Math.floor(cappedBaseHp * (1.5 - completionRate * 0.5));
+    
+    // Phase 1 gets 40% of total HP (escalating: 40/60/80)
+    const phase1Hp = Math.floor(totalBossHp * 0.40);
+    setGauntletBaseHp(totalBossHp);
     
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
     
     const bossNameGenerated = makeBossName();
     setBossName(bossNameGenerated);
-    setBossHp(bossHealth);
-    setBossMax(bossHealth);
+    setBossHp(phase1Hp);
+    setBossMax(phase1Hp);
     setBattleType('final');
     setShowBoss(true);
     setBattling(true);
     setBattleMode(true);
+    sfx.playBattleStart('gauntlet');
     setIsFinalBoss(true);
     setCanFlee(false);
-    setVictoryLoot([]); // Clear previous loot
+    setVictoryLoot([]);
     
     // Reset taunt state
     setIsTauntAvailable(false);
@@ -1546,16 +1574,20 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setPlayerTaunt('');
     setEnemyTauntResponse('');
     setShowTauntBoxes(false);
-    setHasFled(false); // Reset fled status
+    setHasFled(false);
     
-    // Reset Phase 3 states
-    setInPhase3(false);
+    // Reset all phase states - start at Phase 1
+    setGauntletPhase(1);
+    setInPhase1(true);
     setInPhase2(false);
-    setInPhase1(true); // Start in Phase 1
+    setInPhase3(false);
     setPhase1TurnCounter(0);
     setPhase2TurnCounter(0);
     setPhase2DamageStacks(0);
     setHasSpawnedPreviewAdd(false);
+    setHasTriggeredPhase1Enrage(false);
+    setTargetingAdds(false);
+    setPhaseTransitioning(false);
     setShadowAdds([]);
     setAoeWarning(false);
     setShowDodgeButton(false);
@@ -1563,11 +1595,125 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setPhase3TurnCounter(0);
     setLifeDrainCounter(0);
     
+    // Reset debuffs for clean phase start
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
+    
     // Set Gauntlet dialogue
     const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
     setEnemyDialogue(bossDialogue.START);
     
-    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
+    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET! (Phase 1 of 3)`);
+    addLog(`💀 Defeat this foe 3 times. Each form grows stronger.`);
+  };
+  
+  // Unified Gauntlet phase transition handler (wave-style)
+  // Called from all victory paths (normal attack, poison, special attack)
+  const handleGauntletPhaseDefeat = () => {
+    const nextPhase = gauntletPhase + 1;
+    const phaseNames = { 2: 'THE PRESSURE', 3: 'ABYSS AWAKENING' };
+    const phaseHpPercents = { 2: 0.60, 3: 0.80 };
+    const nextPhaseHp = Math.floor(gauntletBaseHp * phaseHpPercents[nextPhase]);
+    
+    // Per-phase XP reward (smaller than full victory)
+    const phaseXp = Math.floor(GAME_CONSTANTS.XP_REWARDS.finalBoss * 0.3);
+    const phaseEssence = 30;
+    setXp(x => x + phaseXp);
+    setEssence(e => e + phaseEssence);
+    const bossFirstName = bossName.split(' ')[0];
+    const phaseTitles = { 1: bossName, 2: `${bossFirstName}, The Accursed`, 3: `${bossFirstName}, Devourer of Souls` };
+    addLog(`⚔️ ${phaseTitles[gauntletPhase]} CONQUERED! +${phaseXp} XP, +${phaseEssence} Essence`);
+    
+    // Show transition screen — do NOT set bossHp yet (button handler does that)
+    setPhaseTransitioning(true);
+    setBattling(false);
+    
+    // Set phase transition dialogue
+    const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+    setEnemyDialogue(nextPhase === 2 ? bossDialogue.PHASE2 : bossDialogue.PHASE3);
+    
+    // Store transition info for display
+    setVictoryLoot([
+      `💀 PHASE ${nextPhase}: ${phaseNames[nextPhase]}`,
+      `🔮 +${phaseEssence} Essence`,
+      `✨ +${phaseXp} XP`,
+      `❤️ Full HP Restored`,
+      `⚡ Stamina Restored`,
+      `⚠️ Boss HP: ${nextPhaseHp}`,
+    ]);
+    
+    sfx.playPhaseTransition(gauntletPhase + 1);
+    setVictoryFlash(true);
+    setTimeout(() => setVictoryFlash(false), 400);
+  };
+  
+  // Start a new gauntlet phase cleanly (called by NEXT PHASE button)
+  const beginNextGauntletPhase = () => {
+    const nextPhase = gauntletPhase + 1;
+    const phaseHpPercents = { 2: 0.60, 3: 0.80 };
+    const nextPhaseHp = Math.floor(gauntletBaseHp * phaseHpPercents[nextPhase]);
+    
+    // Set phase number
+    setGauntletPhase(nextPhase);
+    
+    // Set boss HP fresh
+    setBossHp(nextPhaseHp);
+    setBossMax(nextPhaseHp);
+    
+    // Set phase flags
+    setInPhase1(false);
+    setInPhase2(nextPhase === 2);
+    setInPhase3(nextPhase === 3);
+    
+    // Reset all phase-specific mechanics
+    setPhase1TurnCounter(0);
+    setPhase2TurnCounter(0);
+    setPhase2DamageStacks(0);
+    setPhase3TurnCounter(0);
+    setLifeDrainCounter(0);
+    setHasSpawnedPreviewAdd(false);
+    setHasTriggeredPhase1Enrage(false);
+    setTargetingAdds(false);
+    setShadowAdds([]);
+    setAoeWarning(false);
+    setShowDodgeButton(false);
+    setDodgeReady(false);
+    setEnragedTurns(0);
+    setRecklessStacks(0);
+    
+    // Reset debuffs
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, marked: false, stunned: false });
+    
+    // Reset taunt state
+    setIsTauntAvailable(false);
+    setHasTriggeredLowHpTaunt(false);
+    setPlayerTaunt('');
+    setEnemyTauntResponse('');
+    setShowTauntBoxes(false);
+    
+    // Full heal + stamina reset (potions stay)
+    setHp(getMaxHp());
+    setStamina(getMaxStamina());
+    
+    // Resume battle
+    setPhaseTransitioning(false);
+    setBattling(true);
+    
+    // Set phase dialogue
+    const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
+    const firstNameOnly = bossName.split(' ')[0];
+    if (nextPhase === 2) {
+      setEnemyDialogue(bossDialogue.PHASE2);
+      addLog(`⚔️ ${firstNameOnly}, THE ACCURSED awakens!`);
+      addLog(`💀 The curse tightens. Boss damage ramps each turn!`);
+    } else {
+      setEnemyDialogue(bossDialogue.PHASE3);
+      addLog(`💀 ${firstNameOnly}, DEVOURER OF SOULS emerges!`);
+      addLog(`🌑 Shadows swarm! Life drain active!`);
+    }
+    addLog(`❤️ HP restored! ⚡ Stamina restored!`);
+    
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
   };
   
   const taunt = () => {
@@ -1589,6 +1735,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     // Show both dialogue boxes immediately
     setShowTauntBoxes(true);
+    sfx.playTaunt();
     
     // Player text appears immediately
     setPlayerTaunt(randomTaunt.player);
@@ -1602,8 +1749,9 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setEnemyDialogue(randomTaunt.enemy);
       
       // Apply ENRAGED status
-      setEnragedTurns(3); // Lasts 3 turns
-      addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt, -25% accuracy for 3 turns)`);
+       setEnragedTurns(3); // Lasts 3 turns
+       sfx.playEnrage();
+       addLog(`🔥 Enemy is ENRAGED! (+20% damage taken, +15% damage dealt, -25% accuracy for 3 turns)`);
     }, 1000);
     
     // Consume taunt
@@ -1613,8 +1761,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const attack = () => {
     if (!battling || bossHp <= 0) return;
     
-    // Auto-target shadow adds first in Phase 2 and Phase 3
-    if ((inPhase2 || inPhase3) && shadowAdds.length > 0) {
+    // Target shadow adds if player chose to (no longer forced)
+    if ((gauntletPhase === 2 || gauntletPhase === 3) && shadowAdds.length > 0 && targetingAdds) {
       const targetAdd = shadowAdds[0];
       const damage = Math.floor((getBaseAttack() + weapon + (weaponOilActive ? 5 : 0)) * 0.7); // Reduced damage to adds
       const newAddHp = Math.max(0, targetAdd.hp - damage);
@@ -1650,8 +1798,9 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         
         setHp(h => Math.max(0, h - baseDamage));
         addLog(`💥 Boss counter-attacks for ${baseDamage} damage!`);
-        setPlayerFlash(true);
-        setTimeout(() => setPlayerFlash(false), 200);
+         setPlayerFlash(true);
+         sfx.playDamage();
+         setTimeout(() => setPlayerFlash(false), 200);
       }, 1000);
       
       return;
@@ -1680,7 +1829,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     // AOE Warning - Boss vulnerable but will counter-attack
-    if (aoeWarning && inPhase3) {
+    if (aoeWarning && gauntletPhase === 3) {
       const vulnerableBonus = Math.floor(finalDamage * 0.5);
       finalDamage += vulnerableBonus;
       bonusMessages.push(`⚠️ +${vulnerableBonus} - Boss is VULNERABLE!`);
@@ -1701,48 +1850,22 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Update dialogue based on HP phase
     const hpPercent = newBossHp / bossMax;
     
-    // Phase 1 - Enrage at 80% HP (Gauntlet only)
-    if (battleType === 'final' && hpPercent <= 0.80 && hpPercent > 0.79 && enragedTurns === 0) {
-      setEnragedTurns(2);
-      addLog(`Boss ENRAGED at 80% HP! (2 turns)`);
+    // Phase 1 - Enrage at 50% HP (Gauntlet only) - uses flag to avoid narrow window
+    if (battleType === 'final' && gauntletPhase === 1 && hpPercent <= 0.50 && !hasTriggeredPhase1Enrage && enragedTurns === 0) {
+      setHasTriggeredPhase1Enrage(true);
+       setEnragedTurns(2);
+       sfx.playEnrage();
+       addLog(`Boss ENRAGED! (2 turns)`);
       addLog(`Enemy deals +15% damage but has 25% miss chance!`);
     }
     
-    // Phase 2 detection for Gauntlet boss (66% HP)
-    if (battleType === 'final' && !inPhase2 && hpPercent <= 0.66 && hpPercent > 0.33) {
-      setInPhase1(false); // Exit Phase 1
-      setInPhase2(true);
-      setPhase1TurnCounter(0); // Reset Phase 1 counter
-      setPhase2TurnCounter(0);
-      setPhase2DamageStacks(0);
-      addLog(`PHASE 2: THE PRESSURE!`);
-      addLog(`Boss damage increases each turn!`);
-      
-      const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
-      setEnemyDialogue(bossDialogue.PHASE2);
-    }
-    
     // Phase 2 - Spawn preview add at 50% HP
-    if (battleType === 'final' && inPhase2 && !hasSpawnedPreviewAdd && hpPercent <= 0.50 && hpPercent > 0.49) {
+    if (battleType === 'final' && gauntletPhase === 2 && !hasSpawnedPreviewAdd && hpPercent <= 0.50) {
       const addId = `preview_add_${Date.now()}`;
-      const addHp = 18;
+      const addHp = 18 + level * 2;
       setShadowAdds([{ id: addId, hp: addHp, maxHp: addHp }]);
       setHasSpawnedPreviewAdd(true);
-      addLog(`👤 A Shadow has materialized! (Preview of what's to come...)`);
-    }
-    
-    // Phase 3 detection for Gauntlet boss
-    if (battleType === 'final' && !inPhase3 && hpPercent <= 0.33 && hpPercent > 0) {
-      setInPhase3(true);
-      setInPhase2(false); // Exit Phase 2
-      setPhase2DamageStacks(0); // Reset ramping stacks
-      setPhase3TurnCounter(0);
-      setLifeDrainCounter(0);
-      addLog(`💀 PHASE 3: ABYSS AWAKENING!`);
-      addLog(`🌑 The darkness intensifies... Shadows stir!`);
-      
-      const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
-      setEnemyDialogue(bossDialogue.PHASE3);
+      addLog(`👤 A Shadow has materialized! (Preview of what's to come in Phase 3...)`);
     }
     
     if (battleType === 'elite' || battleType === 'final') {
@@ -1752,7 +1875,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       
       // For Gauntlet, only use HP-based dialogue if not in any active phase (phases have cycling dialogue)
       // For elite bosses, use normal HP-based dialogue
-      const isGauntletInActivePhase = battleType === 'final' && (inPhase1 || inPhase2 || inPhase3);
+      const isGauntletInActivePhase = battleType === 'final' && gauntletPhase >= 1;
       
       if (bossDialogue && !isGauntletInActivePhase) {
         if (hpPercent <= 0.25 && hpPercent > 0) {
@@ -1794,6 +1917,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     setBossFlash(true);
+    sfx.playHit();
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
@@ -1804,12 +1928,18 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   setRecklessStacks(0);
   
+  // GAUNTLET PHASE TRANSITION - wave-style: delegate to unified handler
+  if (isFinalBoss && gauntletPhase < 3) {
+    handleGauntletPhaseDefeat();
+    return;
+  }
+  
   // Different XP based on battle type
   let xpGain;
   let essenceGain;
   if (isFinalBoss) {
     xpGain = GAME_CONSTANTS.XP_REWARDS.finalBoss;
-    essenceGain = 100; // Final boss
+    essenceGain = 100; // Final boss - phase 3 complete
   } else if (battleType === 'elite') {
     xpGain = GAME_CONSTANTS.XP_REWARDS.miniBoss;
     essenceGain = 50; // Elite boss
@@ -1927,9 +2057,10 @@ if (battleType === 'elite') {
       const displayEssence = battleType === 'wave' ? waveEssenceTotal : essenceGain;
       lootMessages.unshift(`🔮 +${displayEssence} Essence`);
       
-      setVictoryLoot(lootMessages);
-      setVictoryFlash(true);
-      setTimeout(() => setVictoryFlash(false), 400);
+       setVictoryLoot(lootMessages);
+       sfx.playVictory();
+       setVictoryFlash(true);
+       setTimeout(() => setVictoryFlash(false), 400);
       
       // No auto-close - let player click continue button
       
@@ -1968,13 +2099,14 @@ if (curseLevel === 2) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
 }
 
-// Phase 2 ramping damage (Gauntlet only)
-if (inPhase2 && battleType === 'final' && !inPhase3) {
-  const rampBonus = Math.floor(bossDamage * (phase2DamageStacks * 0.05));
+// Phase 2 ramping damage (Gauntlet only) - capped at 10 stacks
+if (gauntletPhase === 2 && battleType === 'final') {
+  const cappedStacks = Math.min(phase2DamageStacks, 10);
+  const rampBonus = Math.floor(bossDamage * (cappedStacks * 0.05));
   if (rampBonus > 0) {
     bossDamage += rampBonus;
   }
-  setPhase2DamageStacks(prev => prev + 1);
+  setPhase2DamageStacks(prev => Math.min(prev + 1, 10));
 }
 
 // Enraged enemies hit +15% harder
@@ -2007,15 +2139,17 @@ if (enragedTurns > 0) {
   }
 }
       
-      setPlayerFlash(true);
-      setTimeout(() => setPlayerFlash(false), 200);
+       setPlayerFlash(true);
+       sfx.playDamage();
+       setTimeout(() => setPlayerFlash(false), 200);
       
       // Check for AOE execution (Phase 3 gauntlet)
-      if (aoeWarning && inPhase3 && battleType === 'final') {
+      if (aoeWarning && gauntletPhase === 3 && battleType === 'final') {
         if (dodgeReady) {
           // Player dodged successfully
-          addLog(`🌀 You rolled out of the way! AOE DODGED!`);
-          setDodgeReady(false);
+           addLog(`🌀 You rolled out of the way! AOE DODGED!`);
+           sfx.playDodge();
+           setDodgeReady(false);
         } else {
           // AOE hits for 35 damage
           const aoeDamage = 35;
@@ -2083,18 +2217,23 @@ if (enragedTurns > 0) {
               addLog(`💀 Boss succumbed to poison!`);
               
               setTimeout(() => {
+                // GAUNTLET PHASE TRANSITION - poison kill: delegate to unified handler
+                if (isFinalBoss && gauntletPhase < 3) {
+                  handleGauntletPhaseDefeat();
+                  return;
+                }
+                
                 const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
                 const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
                 setXp(x => x + xpGain);
                 setEssence(e => e + essenceGain);
                 addLog(`🎊 VICTORY! +${xpGain} XP, +${essenceGain} Essence`);
                 
-                // Set victory dialogue
                 if (battleType === 'elite' || battleType === 'final') {
                   const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
-                  const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
-                  if (bossDialogue) {
-                    setEnemyDialogue(bossDialogue.VICTORY_PLAYER);
+                  const bossDialogueData = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
+                  if (bossDialogueData) {
+                    setEnemyDialogue(bossDialogueData.VICTORY_PLAYER);
                   }
                 } else {
                   const victoryQuotes = GAME_CONSTANTS.ENEMY_DIALOGUE.VICTORY_PLAYER;
@@ -2111,8 +2250,9 @@ if (enragedTurns > 0) {
                   addLog('✨ Fully healed!');
                 }
                 
-                setVictoryFlash(true);
-                setTimeout(() => setVictoryFlash(false), 400);
+                 sfx.playVictory();
+                 setVictoryFlash(true);
+                 setTimeout(() => setVictoryFlash(false), 400);
               }, 500);
             }
             return newHp;
@@ -2126,7 +2266,7 @@ if (enragedTurns > 0) {
         }
         
         // Phase 1 mechanics for Gauntlet boss
-        if (inPhase1 && battleType === 'final' && bossHp > 0 && !inPhase2 && !inPhase3) {
+        if (gauntletPhase === 1 && battleType === 'final' && bossHp > 0) {
           setPhase1TurnCounter(prev => prev + 1);
           
           // Cycle Phase 1 dialogue every 3 turns
@@ -2139,7 +2279,7 @@ if (enragedTurns > 0) {
         }
         
         // Phase 2 mechanics for Gauntlet boss
-        if (inPhase2 && battleType === 'final' && bossHp > 0 && !inPhase3) {
+        if (gauntletPhase === 2 && battleType === 'final' && bossHp > 0) {
           setPhase2TurnCounter(prev => prev + 1);
           
           // Cycle Phase 2 dialogue every 3 turns
@@ -2152,7 +2292,7 @@ if (enragedTurns > 0) {
         }
         
         // Phase 3 mechanics for Gauntlet boss
-        if (inPhase3 && battleType === 'final' && bossHp > 0) {
+        if (gauntletPhase === 3 && battleType === 'final' && bossHp > 0) {
           setPhase3TurnCounter(prev => prev + 1);
           setLifeDrainCounter(prev => prev + 1);
           
@@ -2164,10 +2304,10 @@ if (enragedTurns > 0) {
             setEnemyDialogue(randomLine);
           }
           
-          // Spawn shadow add every 4 turns
-          if (phase3TurnCounter > 0 && phase3TurnCounter % 4 === 0) {
+          // Spawn shadow add every 4 turns (max 3 active)
+          if (phase3TurnCounter > 0 && phase3TurnCounter % 4 === 0 && shadowAdds.length < 3) {
             const addId = `add_${Date.now()}`;
-            const addHp = 18;
+            const addHp = 18 + level * 2; // Scale with player level
             setShadowAdds(prev => [...prev, { id: addId, hp: addHp, maxHp: addHp }]);
             addLog(`👤 A Shadow emerges from the abyss! (${addHp} HP)`);
           }
@@ -2177,15 +2317,17 @@ if (enragedTurns > 0) {
             const drainAmount = 15;
             setHp(h => Math.max(0, h - drainAmount));
             setBossHp(b => Math.min(bossMax, b + drainAmount));
-            addLog(`🩸 LIFE DRAIN! Boss drains ${drainAmount} HP from you!`);
-            setLifeDrainCounter(0);
+             addLog(`🩸 LIFE DRAIN! Boss drains ${drainAmount} HP from you!`);
+             sfx.playLifeDrain();
+             setLifeDrainCounter(0);
           }
           
           // AOE warning every 5 turns (offset from life drain)
           if (phase3TurnCounter > 0 && phase3TurnCounter % 5 === 2) {
-            setAoeWarning(true);
-            setShowDodgeButton(true);
-            addLog(`⚠️ THE BOSS RAISES ITS WEAPON TO THE SKY!`);
+             setAoeWarning(true);
+             sfx.playAoeWarning();
+             setShowDodgeButton(true);
+             addLog(`⚠️ THE BOSS RAISES ITS WEAPON TO THE SKY!`);
             addLog(`🛡️ [DODGE] button available - or attack for bonus damage!`);
           }
           
@@ -2241,7 +2383,9 @@ if (enragedTurns > 0) {
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
     
-    let damage = Math.floor((getBaseAttack() + weapon + Math.floor(Math.random() * 10) + (level - 1) * 2) * special.damageMultiplier);
+    // Special attacks scale with level: +10% damage per level beyond 1
+    const levelScaling = 1 + (level - 1) * 0.1;
+    let damage = Math.floor((getBaseAttack() + weapon + Math.floor(Math.random() * 10) + (level - 1) * 2) * special.damageMultiplier * levelScaling);
     
     const wasMarked = bossDebuffs.marked;
     if (wasMarked && hero.class.name !== 'Ranger') {
@@ -2256,7 +2400,7 @@ if (enragedTurns > 0) {
     }
     
     // AOE Warning - Boss vulnerable but will counter-attack (special attacks too)
-    if (aoeWarning && inPhase3) {
+    if (aoeWarning && gauntletPhase === 3) {
       const vulnerableBonus = Math.floor(damage * 0.5);
       damage += vulnerableBonus;
       addLog(`⚠️ Boss is VULNERABLE! +${vulnerableBonus} bonus damage!`);
@@ -2280,11 +2424,13 @@ if (enragedTurns > 0) {
         addLog('⚠️ But boss is too focused on AOE to be stopped!');
       }
     } else if (hero.class.name === 'Rogue') {
-      setBossDebuffs(prev => ({ ...prev, poisonTurns: 5, poisonDamage: 5, poisonedVulnerability: 0.15, marked: false }));
-      effectMessage = "☠️ Boss poisoned! Takes +15% damage from all attacks!";
+      const poisonDmg = 5 + Math.floor(level * 2); // Scales: 7 at lvl 1, 15 at lvl 5, 25 at lvl 10
+      setBossDebuffs(prev => ({ ...prev, poisonTurns: 5, poisonDamage: poisonDmg, poisonedVulnerability: 0.15, marked: false }));
+      effectMessage = `☠️ Boss poisoned for ${poisonDmg}/turn! Takes +15% damage from all attacks!`;
     } else if (hero.class.name === 'Paladin') {
-      setHp(h => Math.min(getMaxHp(), h + 20));
-      effectMessage = '✨ Healed for 20 HP!';
+      const healAmount = 20 + Math.floor(getMaxHp() * 0.1); // 20 base + 10% of max HP
+      setHp(h => Math.min(getMaxHp(), h + healAmount));
+      effectMessage = `✨ Healed for ${healAmount} HP!`;
       if (wasMarked) {
         setBossDebuffs(prev => ({ ...prev, marked: false }));
       }
@@ -2306,7 +2452,7 @@ if (enragedTurns > 0) {
       
       // For Gauntlet, only use HP-based dialogue if not in any active phase (phases have cycling dialogue)
       // For elite bosses, use normal HP-based dialogue
-      const isGauntletInActivePhase = battleType === 'final' && (inPhase1 || inPhase2 || inPhase3);
+      const isGauntletInActivePhase = battleType === 'final' && gauntletPhase >= 1;
       
       if (bossDialogue && !isGauntletInActivePhase) {
         if (hpPercent <= 0.25 && hpPercent > 0) {
@@ -2356,8 +2502,9 @@ if (enragedTurns > 0) {
     bonusMessages.forEach(msg => addLog(msg));
     if (effectMessage) addLog(effectMessage);
     
-    setBossFlash(true);
-    setTimeout(() => setBossFlash(false), 200);
+     setBossFlash(true);
+     sfx.playCritical();
+     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
       setTimeout(() => {
@@ -2367,19 +2514,23 @@ if (enragedTurns > 0) {
       
       setRecklessStacks(0);
       
+      // GAUNTLET PHASE TRANSITION - special attack kill: delegate to unified handler
+      if (isFinalBoss && gauntletPhase < 3) {
+        handleGauntletPhaseDefeat();
+        return;
+      }
+      
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
       const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : (battleType === 'wave' ? 8 : 10));
       setXp(x => x + xpGain);
       setEssence(e => e + essenceGain);
       
-      // Accumulate wave essence for final display
       if (battleType === 'wave') {
         setWaveEssenceTotal(t => t + essenceGain);
       }
       
       addLog(`🎊 VICTORY! +${xpGain} XP, +${essenceGain} Essence`);
       
-      // Set victory dialogue
       if (battleType === 'elite' || battleType === 'final') {
         const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
         const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
@@ -2398,7 +2549,6 @@ if (enragedTurns > 0) {
       const lootMessages = [];
       
       if (!isFinalBoss) {
-  // Regular/wave enemies: potions only
   if (battleType === 'regular' || battleType === 'wave') {
     const lootRoll = Math.random();
     if (lootRoll < 0.2) {
@@ -2411,7 +2561,6 @@ if (enragedTurns > 0) {
       addLog('⚡ Looted: Stamina Potion!');
     }
   } else {
-    // Elite bosses: weapon/armor upgrades
     const lootRoll = Math.random();
     const luckMultiplier = luckyCharmActive ? 2 : 1;
     
@@ -2446,15 +2595,13 @@ if (enragedTurns > 0) {
         addLog('✨ Fully healed!');
       }
       
-      // Add essence gain to loot display
       const displayEssence = battleType === 'wave' ? waveEssenceTotal : essenceGain;
       lootMessages.unshift(`🔮 +${displayEssence} Essence`);
       
       setVictoryLoot(lootMessages);
-      setVictoryFlash(true);
-      setTimeout(() => setVictoryFlash(false), 400);
-      
-      // No auto-close - let player click continue button
+       sfx.playVictory();
+       setVictoryFlash(true);
+       setTimeout(() => setVictoryFlash(false), 400);
       
       return;
     }
@@ -2533,9 +2680,9 @@ if (enragedTurns > 0) {
   }
 }
         
-        setPlayerFlash(true);
-        setTimeout(() => setPlayerFlash(false), 200);
-        setTimeout(() => setPlayerFlash(false), 200);
+         setPlayerFlash(true);
+         sfx.playDamage();
+         setTimeout(() => setPlayerFlash(false), 200);
         
         setHp(currentHp => {
           const newHp = Math.max(0, currentHp - bossDamage);
@@ -2611,8 +2758,9 @@ if (enragedTurns > 0) {
                     addLog('✨ Fully healed!');
                   }
                   
-                  setVictoryFlash(true);
-                  setTimeout(() => setVictoryFlash(false), 400);
+                   sfx.playVictory();
+                   setVictoryFlash(true);
+                   setTimeout(() => setVictoryFlash(false), 400);
                 }, 500);
               }
               return newHp;
@@ -2641,6 +2789,7 @@ if (enragedTurns > 0) {
     
     // Cost 25 stamina to flee
     setStamina(s => Math.max(0, s - 25));
+    sfx.playFlee();
     
     // Enemy mocks you for fleeing - show in enemy dialogue box
     const fleeDialogue = GAME_CONSTANTS.ENEMY_DIALOGUE.FLEE[
@@ -2662,8 +2811,9 @@ if (enragedTurns > 0) {
   const dodge = () => {
     if (!showDodgeButton || !aoeWarning) return;
     
-    setDodgeReady(true);
-    setShowDodgeButton(false);
+     setDodgeReady(true);
+     sfx.playDodge();
+     setShowDodgeButton(false);
     addLog(`🛡️ You prepare to dodge the incoming AOE!`);
     addLog(`🌀 Ready to roll...`);
   };
@@ -2690,6 +2840,7 @@ if (enragedTurns > 0) {
 }]);
     
     addLog('💀 You have fallen...');
+    sfx.playDefeat();
     
     const newHero = makeName();
     setHero(newHero);
@@ -2738,8 +2889,25 @@ setMiniBossCount(0);
     if (isFinalBoss && bossHp <= 0) {
       // Gauntlet defeated - lock until next milestone
       setGauntletUnlocked(false);
+      const gauntletTier = Math.floor(gauntletMilestone / 1000); // How many times defeated
       setGauntletMilestone(m => m + 1000);
       addLog(`🏆 THE GAUNTLET CONQUERED! Next trial at ${gauntletMilestone + 1000} XP.`);
+      
+      // Unique Gauntlet rewards that scale with tier
+      const bonusEssence = 50 + gauntletTier * 25;
+      setEssence(e => e + bonusEssence);
+      addLog(`🔮 Gauntlet Bounty: +${bonusEssence} Essence!`);
+      
+      // Permanent stat boost per Gauntlet clear
+      const statBoost = 1 + Math.floor(gauntletTier / 2);
+      setWeapon(w => w + statBoost);
+      setArmor(a => a + statBoost);
+      addLog(`⚔️ Gauntlet Forging: +${statBoost} Weapon, +${statBoost} Armor (permanent)`);
+      
+      // Bonus health potions for surviving
+      const potBonus = Math.min(1 + gauntletTier, 3);
+      setHealthPots(h => h + potBonus);
+      addLog(`💊 Victory Spoils: +${potBonus} Health Potion${potBonus > 1 ? 's' : ''}!`);
       
       // Close battle but keep all progress
       setShowBoss(false);
@@ -2747,6 +2915,7 @@ setMiniBossCount(0);
       setBattling(false);
       setBattleMode(false);
       setIsFinalBoss(false);
+      setTargetingAdds(false);
       
       setTimeout(() => setActiveTab('home'), 1000);
     } else if (!isFinalBoss && bossHp <= 0) {
@@ -2917,376 +3086,410 @@ setMiniBossCount(0);
       <div className="relative z-10 p-6">
         <div className={`max-w-6xl mx-auto rounded-xl transition-all`}>
           <header className="text-center mb-8">
-            <h1 className="text-6xl font-black text-red-400 mb-2 tracking-wider" style={{fontFamily: 'Cinzel, serif', textShadow: '0 0 30px rgba(220, 38, 38, 0.8), 0 0 60px rgba(139, 0, 0, 0.5)', letterSpacing: '0.15em'}}>
+            <h1 className="text-6xl font-black text-red-400 mb-2 tracking-wider font-fantasy-decorative title-reveal" style={{textShadow: '0 0 30px rgba(220, 38, 38, 0.8), 0 0 60px rgba(139, 0, 0, 0.5)', letterSpacing: '0.15em'}}>
               CURSE OF KNOWLEDGE
             </h1>
-            <p className="text-gray-400 text-sm mb-4 italic">"Study or be consumed by the abyss..."</p>
+            <p className="text-gray-400 text-sm mb-4 italic font-fantasy">"Study or be consumed by the abyss..."</p>
             
-            <div className={`bg-gradient-to-br ${getCardStyle(hero.class, currentDay).bg} rounded-xl p-6 max-w-2xl mx-auto relative overflow-hidden ${getCardStyle(hero.class, currentDay).glow}`} style={{border: getCardStyle(hero.class, currentDay).border}}>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-15 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1}}>
+            <div className={`bg-gradient-to-br ${getCardStyle(hero.class, currentDay).bg} rounded-xl max-w-2xl mx-auto relative overflow-hidden ${getCardStyle(hero.class, currentDay).glow}`} style={{border: getCardStyle(hero.class, currentDay).border}}>
+              {/* Watermark emblem */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-10 pointer-events-none" style={{fontSize: '18rem', lineHeight: 1}}>
                 {getCardStyle(hero.class, currentDay).emblem}
               </div>
               
+              {/* Decorative top edge */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
+              
               <div className="relative z-10">
-                <div className="mb-4">
+                {/* Hero Identity Section */}
+                <div className="px-6 pt-6 pb-4">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="text-5xl">{getCardStyle(hero.class, currentDay).emblem}</div>
+                    <div className="text-5xl drop-shadow-[0_0_12px_rgba(234,179,8,0.3)]">{getCardStyle(hero.class, currentDay).emblem}</div>
                     <div className="text-right">
-                      <p className="text-xs text-white text-opacity-70 uppercase tracking-wide">{GAME_CONSTANTS.DAY_NAMES[(new Date().getDay() + 6) % 7].name}</p>
-                      <p className="text-sm text-white text-opacity-80">
+                      <p className="text-xs text-white/70 uppercase tracking-[0.2em] font-fantasy">{GAME_CONSTANTS.DAY_NAMES[(new Date().getDay() + 6) % 7].name}</p>
+                      <p className="text-sm text-white/85">
                         {timeUntilMidnight && isDayActive && <span className="text-red-400">({timeUntilMidnight}) </span>}
                         {!isDayActive && <span className="text-gray-400">💤 </span>}
                         Day {currentDay} {!isDayActive && <span className="text-gray-400 text-xs">• Dormant</span>}
                       </p>
-                      <p className="text-2xl font-bold text-white">Lvl {level}</p>
+                      <p className="text-2xl font-bold text-white font-fantasy tracking-wide">Lvl {level}</p>
                     </div>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-bold text-white leading-tight">{hero.name}</p>
-                    <p className="text-lg text-white text-opacity-90">{hero.title} {hero.class.name}</p>
+                    <p className="text-3xl font-bold text-white leading-tight font-fantasy-decorative tracking-wider drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]">{hero.name}</p>
+                    <p className="text-base text-white/85 font-fantasy tracking-wide">{hero.title} {hero.class.name}</p>
                   </div>
                 </div>
                 
-                <div className="mb-4 bg-black bg-opacity-40 rounded-lg p-3 border border-white border-opacity-20">
-                  <div className="flex justify-between text-sm text-white mb-2">
-                    <span className="font-bold">EXPERIENCE</span>
-                    <span className="font-bold">{(() => {
-                      // Calculate XP consumed by previous levels
-                      let xpSpent = 0;
-                      for (let i = 1; i < level; i++) {
-                        xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
-                      }
-                      const currentLevelXp = xp - xpSpent;
-                      const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
-                      return `${currentLevelXp} / ${xpNeeded}`;
-                    })()}</span>
-                  </div>
-                  <div className="bg-black bg-opacity-50 rounded-full h-4 overflow-hidden">
-                    <div className="bg-gradient-to-r from-yellow-500 to-orange-400 h-4 rounded-full transition-all duration-300 shadow-lg" style={{width: `${(() => {
-                      let xpSpent = 0;
-                      for (let i = 1; i < level; i++) {
-                        xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
-                      }
-                      const currentLevelXp = xp - xpSpent;
-                      const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
-                      return (currentLevelXp / xpNeeded) * 100;
-                    })()}%`}}></div>
-                  </div>
-                  <p className="text-xs text-white text-opacity-60 mt-1 text-right">{(() => {
-                    let xpSpent = 0;
-                    for (let i = 1; i < level; i++) {
-                      xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
-                    }
-                    const currentLevelXp = xp - xpSpent;
-                    const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
-                    return xpNeeded - currentLevelXp;
-                  })()} XP to next level</p>
+                {/* Divider */}
+                <div className="flex items-center gap-3 px-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
+                  <div className="w-1.5 h-1.5 rotate-45 bg-yellow-500/30"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"></div>
                 </div>
                 
-                {skipCount > 0 && (
-                  <div className={`mb-4 rounded-lg p-3 border-2 ${
-                    skipCount >= 3 ? 'bg-black border-red-600 animate-pulse' : 
-                    skipCount >= 2 ? 'bg-red-950 bg-opacity-50 border-red-700' : 
-                    'bg-gray-900 bg-opacity-50 border-red-800'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Skull className="text-red-500" size={20}/>
-                        <span className="font-bold text-red-400 uppercase tracking-wide">
-                          {skipCount === 3 ? '☠️ FINAL WARNING ☠️' : 'Curse Progress'}
-                        </span>
-                      </div>
-                      <span className="text-2xl font-bold text-red-400">{skipCount}/4</span>
+                {/* XP Bar Section */}
+                <div className="px-6 py-4">
+                  <div className="bg-black/30 rounded-lg p-3 border border-white/10">
+                    <div className="flex justify-between text-sm text-white/80 mb-2">
+                      <span className="font-fantasy text-xs tracking-[0.15em] uppercase text-yellow-400">Experience</span>
+                      <span className="font-mono text-xs text-white/80">{(() => {
+                        let xpSpent = 0;
+                        for (let i = 1; i < level; i++) {
+                          xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                        }
+                        const currentLevelXp = xp - xpSpent;
+                        const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                        return `${currentLevelXp} / ${xpNeeded}`;
+                      })()}</span>
                     </div>
-                    {skipCount === 3 && (
-                      <p className="text-xs text-red-300 mt-2 italic">One more skip and you die. No mercy.</p>
+                    <div className="bg-black/50 rounded-full h-3 overflow-hidden border border-yellow-900/20">
+                      <div className="bg-gradient-to-r from-yellow-600 to-amber-400 h-3 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]" style={{width: `${(() => {
+                        let xpSpent = 0;
+                        for (let i = 1; i < level; i++) {
+                          xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                        }
+                        const currentLevelXp = xp - xpSpent;
+                        const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                        return (currentLevelXp / xpNeeded) * 100;
+                      })()}%`}}></div>
+                    </div>
+                    <p className="text-[10px] text-white/50 mt-1.5 text-right font-fantasy">{(() => {
+                      let xpSpent = 0;
+                      for (let i = 1; i < level; i++) {
+                        xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                      }
+                      const currentLevelXp = xp - xpSpent;
+                      const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                      return xpNeeded - currentLevelXp;
+                    })()} XP to next level</p>
+                  </div>
+                </div>
+                
+                {/* Warnings Section (skip count, curse) */}
+                {(skipCount > 0 || curseLevel > 0) && (
+                  <div className="px-6 pb-2 space-y-3">
+                    {skipCount > 0 && (
+                      <div className={`rounded-lg p-3 border ${
+                        skipCount >= 3 ? 'bg-red-950/60 border-red-500/50 animate-pulse' : 
+                        skipCount >= 2 ? 'bg-red-950/40 border-red-700/40' : 
+                        'bg-red-950/20 border-red-800/30'
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Skull className="text-red-500/80" size={18}/>
+                            <span className="font-fantasy text-xs tracking-wider text-red-400 uppercase">
+                              {skipCount === 3 ? '☠️ Final Warning' : 'Curse Progress'}
+                            </span>
+                          </div>
+                          <span className="text-xl font-bold text-red-400/80 font-mono">{skipCount}/4</span>
+                        </div>
+                        {skipCount === 3 && (
+                          <p className="text-xs text-red-300 mt-2 italic font-fantasy">One more skip and you die. No mercy.</p>
+                        )}
+                        {consecutiveDays > 0 && skipCount > 0 && (
+                          <p className="text-xs text-green-400 mt-2 font-fantasy">
+                            🙏 Redemption: {consecutiveDays}/{GAME_CONSTANTS.SKIP_REDEMPTION_DAYS} days
+                          </p>
+                        )}
+                      </div>
                     )}
-                    {consecutiveDays > 0 && skipCount > 0 && (
-                      <p className="text-xs text-green-400 mt-2">
-                        🙏 Redemption: {consecutiveDays}/{GAME_CONSTANTS.SKIP_REDEMPTION_DAYS} days
-                      </p>
+                    
+                    {curseLevel > 0 && (
+                      <div className={`rounded-lg p-3 border animate-pulse ${
+                        curseLevel === 3 ? 'bg-red-950/60 border-red-500/40' :
+                        curseLevel === 2 ? 'bg-purple-950/50 border-purple-500/40' :
+                        'bg-purple-950/30 border-purple-600/30'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xl">
+                            {curseLevel === 3 ? '☠️' : curseLevel === 2 ? '🌑🌑' : '🌑'}
+                          </span>
+                          <div>
+                            <p className={`font-fantasy text-xs tracking-wider uppercase ${
+                              curseLevel === 3 ? 'text-red-300' : 'text-purple-300'
+                            }`}>
+                              {curseLevel === 3 ? 'Condemned' : curseLevel === 2 ? 'Deeply Cursed' : 'Cursed'}
+                            </p>
+                            <p className={`text-[10px] ${
+                              curseLevel === 3 ? 'text-red-400' : 'text-purple-400'
+                            }`}>
+                              {curseLevel === 3 ? '90% XP penalty • One failure from death' :
+                               curseLevel === 2 ? '75% XP penalty • Enemies hit harder' :
+                               '50% XP penalty'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}
                 
-                {curseLevel > 0 && (
-  <div className={`mb-4 rounded-lg p-3 border-2 animate-pulse ${
-    curseLevel === 3 ? 'bg-red-950 bg-opacity-90 border-red-500' :
-    curseLevel === 2 ? 'bg-purple-950 bg-opacity-80 border-purple-500' :
-    'bg-purple-950 bg-opacity-70 border-purple-600'
-  }`}>
-    <div className="flex items-center gap-2">
-      <span className="text-2xl">
-        {curseLevel === 3 ? '☠️' : curseLevel === 2 ? '🌑🌑' : '🌑'}
-      </span>
-      <div>
-        <p className={`font-bold uppercase ${
-          curseLevel === 3 ? 'text-red-300' : 'text-purple-300'
-        }`}>
-          {curseLevel === 3 ? 'CONDEMNED' : curseLevel === 2 ? 'DEEPLY CURSED' : 'CURSED'}
-        </p>
-        <p className={`text-xs ${
-          curseLevel === 3 ? 'text-red-400' : 'text-purple-400'
-        }`}>
-          {curseLevel === 3 ? '90% XP penalty • One failure from death' :
-           curseLevel === 2 ? '75% XP penalty • Enemies hit harder' :
-           '50% XP penalty'}
-        </p>
-      </div>
-    </div>
-  </div>
-)}
+                {/* Divider */}
+                <div className="flex items-center gap-3 px-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                  <span className="text-white/40 text-[10px] font-fantasy tracking-[0.3em] uppercase">Combat Stats</span>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                </div>
                 
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-red-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Heart size={20} className="text-red-400"/>
+                {/* Stats Grid */}
+                <div className="px-6 py-4">
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <div className="bg-black/30 rounded-lg p-3 border border-red-800/20 hover:border-red-700/30 transition-all">
+                      <div className="flex items-center justify-center mb-1.5">
+                        <Heart size={18} className="text-red-400/80"/>
+                      </div>
+                      <p className="text-lg font-bold text-white text-center font-mono">{hp}/{getMaxHp()}</p>
+                      <div className="bg-black/50 rounded-full h-1.5 overflow-hidden mt-1.5 border border-red-900/10">
+                        <div className={`h-1.5 rounded-full transition-all duration-500 ${
+                          (hp / getMaxHp()) > 0.5 ? 'bg-gradient-to-r from-red-600 to-red-400 shadow-[0_0_6px_rgba(220,38,38,0.3)]' :
+                          (hp / getMaxHp()) > 0.25 ? 'bg-gradient-to-r from-yellow-600 to-yellow-400' :
+                          'bg-gradient-to-r from-red-700 to-red-500 animate-pulse'
+                        }`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
+                      </div>
                     </div>
-                    <p className="text-xl font-bold text-white text-center">{hp}/{getMaxHp()}</p>
-                    <div className="bg-black bg-opacity-30 rounded-full h-2 overflow-hidden mt-1">
-                      <div className="bg-red-500 h-2 rounded-full transition-all duration-300" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
+                    
+                    <div className="bg-black/30 rounded-lg p-3 border border-cyan-800/20 hover:border-cyan-700/30 transition-all">
+                      <div className="flex items-center justify-center mb-1.5">
+                        <Zap size={18} className="text-cyan-400/80"/>
+                      </div>
+                      <p className="text-lg font-bold text-white text-center font-mono">{stamina}/{getMaxStamina()}</p>
+                      <div className="bg-black/50 rounded-full h-1.5 overflow-hidden mt-1.5 border border-cyan-900/10">
+                        <div className="bg-gradient-to-r from-cyan-600 to-cyan-400 h-1.5 rounded-full transition-all duration-500 shadow-[0_0_6px_rgba(34,211,238,0.2)]" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-cyan-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Zap size={20} className="text-cyan-400"/>
+                    
+                    <div className="bg-black/30 rounded-lg p-3 border border-orange-800/20 hover:border-orange-700/30 transition-all">
+                      <div className="flex items-center justify-center mb-1.5">
+                        <Sword size={18} className="text-orange-400/80"/>
+                      </div>
+                      <p className="text-lg font-bold text-white text-center font-mono">{getBaseAttack() + weapon + (level - 1) * 2}</p>
+                      <p className="text-[10px] text-white/50 text-center font-fantasy tracking-wide">damage per hit</p>
                     </div>
-                    <p className="text-xl font-bold text-white text-center">{stamina}/{getMaxStamina()}</p>
-                    <div className="bg-black bg-opacity-30 rounded-full h-2 overflow-hidden mt-1">
-                      <div className="bg-cyan-500 h-2 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                    
+                    <div className="bg-black/30 rounded-lg p-3 border border-blue-800/20 hover:border-blue-700/30 transition-all">
+                      <div className="flex items-center justify-center mb-1.5">
+                        <Shield size={18} className="text-blue-400/80"/>
+                      </div>
+                      <p className="text-lg font-bold text-white text-center font-mono">{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
+                      <p className="text-[10px] text-white/50 text-center font-fantasy tracking-wide">damage resist</p>
                     </div>
-                  </div>
-                  
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-orange-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Sword size={20} className="text-orange-400"/>
-                    </div>
-                    <p className="text-xl font-bold text-white text-center">{getBaseAttack() + weapon + (level - 1) * 2}</p>
-                    <p className="text-xs text-white text-opacity-50 text-center">damage per hit</p>
-                  </div>
-                  
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-blue-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Shield size={20} className="text-blue-400"/>
-                    </div>
-                    <p className="text-xl font-bold text-white text-center">{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
-                    <p className="text-xs text-white text-opacity-50 text-center">damage resist</p>
                   </div>
                 </div>
                 
-                 {curseLevel > 0 && (
-  <div className="pt-3 border-t-2 border-white border-opacity-20">
-  <button 
-    onClick={useCleanse}
-    disabled={cleansePots === 0}
-                      className="w-full bg-black bg-opacity-40 rounded-lg p-3 border border-purple-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed animate-pulse"
+                {/* Cleanse Potion */}
+                {curseLevel > 0 && (
+                  <div className="px-6 pb-3">
+                    <button 
+                      onClick={useCleanse}
+                      disabled={cleansePots === 0}
+                      className="w-full bg-black/30 rounded-lg p-3 border border-purple-700/30 hover:border-purple-600/40 hover:bg-black/40 transition-all disabled:opacity-30 disabled:cursor-not-allowed animate-pulse"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl">✨</span>
+                          <span className="text-xl">✨</span>
                           <div className="text-left">
-                            <p className="text-sm text-white font-bold">Cleanse Potion</p>
-                            <p className="text-xs text-purple-300">Remove Curse</p>
+                            <p className="text-sm text-white/90 font-fantasy tracking-wide">Cleanse Potion</p>
+                            <p className="text-[10px] text-purple-400">Remove Curse</p>
                           </div>
                         </div>
-                        <span className="text-xl font-bold text-purple-400">{cleansePots}</span>
+                        <span className="text-lg font-bold text-purple-400 font-mono">{cleansePots}</span>
                       </div>
                     </button>
                   </div>
-                  )}
+                )}
                 
+                {/* Customize Button */}
                 {canCustomize && (
-  <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
-    <button 
-      onClick={() => setShowCustomizeModal(true)}
-      className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg transition-all font-bold text-white"
-    >
-      Customize Your Hero!
-    </button>
-  </div>
-)}
+                  <div className="px-6 pb-3">
+                    <button 
+                      onClick={() => setShowCustomizeModal(true)}
+                      className="w-full bg-gradient-to-b from-blue-800/40 to-blue-950/40 hover:from-blue-700/50 hover:to-blue-900/50 px-4 py-3 rounded-lg transition-all font-fantasy tracking-wide text-blue-200 border border-blue-700/30 hover:border-blue-600/40 shadow-[0_0_10px_rgba(59,130,246,0.1)]"
+                    >
+                      ✨ Customize Your Hero
+                    </button>
+                  </div>
+                )}
                 
-                <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
-                  <button 
-                    onClick={() => setShowInventoryModal(true)}
-                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center"
-                  >
-                    Inventory
-                  </button>
-                  <button 
-                    onClick={() => setShowCraftingModal(true)}
-                    className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center"
-                  >
-                    Merchant
-                  </button>
+                {/* Bottom divider */}
+                <div className="flex items-center gap-3 px-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                  <div className="w-1 h-1 rotate-45 bg-white/15"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
                 </div>
+                
+                {/* Action Buttons */}
+                <div className="px-6 py-4">
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button 
+                      onClick={() => setShowInventoryModal(true)}
+                      className="bg-gradient-to-b from-red-800/50 to-red-950/50 hover:from-red-700/60 hover:to-red-900/60 px-4 py-3 rounded-lg transition-all font-fantasy tracking-wide text-red-200 border border-red-700/30 hover:border-red-600/30 shadow-[0_0_10px_rgba(220,38,38,0.08)] flex items-center justify-center gap-2"
+                    >
+                      🎒 Inventory
+                    </button>
+                    <button 
+                      onClick={() => setShowCraftingModal(true)}
+                      className="bg-gradient-to-b from-orange-800/50 to-orange-950/50 hover:from-orange-700/60 hover:to-orange-900/60 px-4 py-3 rounded-lg transition-all font-fantasy tracking-wide text-orange-200 border border-orange-700/30 hover:border-orange-600/30 shadow-[0_0_10px_rgba(234,88,12,0.08)] flex items-center justify-center gap-2"
+                    >
+                      🏪 Merchant
+                    </button>
+                  </div>
                 </div>
+                
+                {/* Decorative bottom edge */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
               </div>
             </div>
           </header>
 
-          <nav className="flex gap-2 mb-6 justify-center flex-wrap">
-            {[
-              {id:'quest', icon:Sword, label:'Quests'},
-              {id:'planner', icon:Calendar, label:'Weekly Planner'},
-              {id:'calendar', icon:Calendar, label:'Calendar'},
-              {id:'study', icon:Calendar, label:'Study'},
-              {id:'legacy', icon:Skull, label:'Legacy'},
-              {id:'progress', icon:Trophy, label:'Progress'},
-            ].map(t => (
-              <button 
-                key={t.id} 
-                onClick={() => setActiveTab(t.id)} 
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                  activeTab === t.id 
-                    ? 'bg-yellow-500 text-black shadow-lg shadow-yellow-500/50' 
-                    : 'bg-black bg-opacity-50 text-yellow-300 hover:bg-opacity-70'
-                }`}
-              >
-                <t.icon size={18}/>{t.label}
-              </button>
-            ))}
+          <nav className="mb-6">
+            {/* Decorative top border */}
+            <div className="flex items-center gap-3 mb-3 px-4">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/40 to-transparent"></div>
+              <span className="text-yellow-500 text-xs font-fantasy tracking-[0.3em] uppercase">Navigation</span>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/40 to-transparent"></div>
+            </div>
+            
+            <div className="flex gap-1.5 justify-center flex-wrap px-2">
+              {[
+                {id:'quest', icon:Sword, label:'Quests'},
+                {id:'planner', icon:Calendar, label:'Planner'},
+                {id:'study', icon:Calendar, label:'Forge'},
+                {id:'legacy', icon:Skull, label:'Legacy'},
+                {id:'progress', icon:Trophy, label:'Progress'},
+              ].map(t => (
+                <button 
+                  key={t.id} 
+                  onClick={() => { sfx.playClick(); setActiveTab(t.id); }} 
+                  className={`group relative flex flex-col items-center gap-1 px-5 py-2.5 rounded-lg transition-all duration-300 font-fantasy text-sm tracking-wide ${
+                    activeTab === t.id 
+                      ? 'bg-gradient-to-b from-yellow-500/20 to-yellow-700/10 text-yellow-300 shadow-[0_0_20px_rgba(234,179,8,0.15)] border border-yellow-500/40' 
+                      : 'bg-black/40 text-yellow-200/70 hover:text-yellow-200 hover:bg-black/60 border border-transparent hover:border-yellow-900/30'
+                  }`}
+                >
+                  {/* Active glow indicator */}
+                  {activeTab === t.id && (
+                    <div className="absolute -top-px left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+                  )}
+                  <t.icon size={18} className={`transition-all duration-300 ${activeTab === t.id ? 'drop-shadow-[0_0_6px_rgba(234,179,8,0.5)]' : 'opacity-60 group-hover:opacity-80'}`}/>
+                  <span className={`transition-all duration-300 ${activeTab === t.id ? 'text-yellow-300' : ''}`}>{t.label}</span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Decorative bottom border */}
+            <div className="flex items-center gap-3 mt-3 px-4">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/20 to-transparent"></div>
+              <div className="w-1.5 h-1.5 rotate-45 bg-yellow-600/30"></div>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/20 to-transparent"></div>
+            </div>
           </nav>
 
           {showDebug && (
-            <div className="bg-purple-950 bg-opacity-50 border-2 border-purple-600 rounded-xl p-4 mb-6">
-              <h3 className="text-lg font-bold text-purple-300 mb-3 text-center">Debug / Testing Panel</h3>
-              
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">⚡ Stats & Resources</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setHp(30); addLog('Debug: HP set to 30'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Set HP to 30</button>
-                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Full Heal</button>
-                  <button onClick={() => { setXp(x => x + 50); addLog('Debug: +50 XP'); }} className="bg-yellow-700 hover:bg-yellow-600 px-3 py-2 rounded text-sm transition-all">+50 XP</button>
-                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP (craft cost)'); }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-sm transition-all">+100 XP</button>
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">🎒 Items & Equipment</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); addLog('Debug: +3 of each potion'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">+3 Potions</button>
-                  <button onClick={() => { setCleansePots(c => c + 1); addLog('Debug: +1 Cleanse Potion'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+1 Cleanse Potion</button>
-                  <button onClick={() => { setWeapon(w => w + 10); setArmor(a => a + 10); addLog('Debug: +10 weapon/armor'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+10 Weapon/Armor</button>
-                </div>
-              </div>
-
-              <div className="mb-3">
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">⚔️ Combat & Progression</h4>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-    <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Spawn Regular Enemy</button>
-    <button onClick={() => {
-      const numEnemies = Math.floor(Math.random() * 3) + 2;
-      setWaveCount(numEnemies);
-      addLog(`⚠️ DEBUG WAVE: ${numEnemies} enemies`);
-      spawnRegularEnemy(true, 1, numEnemies);
-    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Wave (2-4)</button>
-    <button onClick={() => { 
-      setBattleType('elite'); 
-      spawnRandomMiniBoss(true); 
-    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Elite Boss</button>
-    <button onClick={() => {
-      setBattleType('final');
-      const bossHealth = 300;
-      const bossNameGenerated = makeBossName();
-      setBossName(bossNameGenerated);
-      setBossHp(bossHealth);
-      setBossMax(bossHealth);
-      setShowBoss(true);
-      setBattling(true);
-      setBattleMode(true);
-      setIsFinalBoss(true);
-      setCanFlee(false);
-      setVictoryLoot([]); // Clear previous loot
-      addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
-    }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Spawn Final Boss</button>
-    <button onClick={() => { 
-      const currentIndex = classes.findIndex(c => c.name === hero.class.name); 
-      const nextIndex = (currentIndex + 1) % classes.length; 
-      setHero(prev => ({ ...prev, class: classes[nextIndex] })); 
-      addLog(`Debug: Changed to ${classes[nextIndex].name}`); 
-    }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Change Class</button>
-    <button onClick={() => { 
-      setSkipCount(s => Math.min(3, s + 1)); 
-      addLog('Debug: +1 skip count'); 
-    }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">+1 Skip Count</button>
-  </div>
-</div>
-
-              <div className="mb-3">
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse Level</h4>
-  <div className="grid grid-cols-4 gap-2">
-    <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear</button>
-    <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed (Lvl 1)'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-sm transition-all">Lvl 1</button>
-    <button onClick={() => { setCurseLevel(2); addLog('Debug: Deep Curse (Lvl 2)'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-sm transition-all">Lvl 2</button>
-    <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED (Lvl 3)'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">Lvl 3</button>
-  </div>
-</div>
-
-              <div>
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-    <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Chronicle</button>
-    <button onClick={() => { setGraveyard([]); setHeroes([]); addLog('Debug: Legacy tab cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Legacy</button>
-    <button onClick={() => { if (window.confirm('Clear ALL achievements & history?')) { setGraveyard([]); setHeroes([]); setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] }); addLog('Debug: Achievements cleared'); } }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Clear Achievements</button>
-    <button onClick={() => { if (window.confirm('Clear all calendar tasks?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Clear Calendar</button>
-    <button onClick={() => { if (window.confirm('Clear weekly planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Clear Planner</button>
-    <button onClick={() => { localStorage.removeItem('fantasyStudyQuest'); alert('LocalStorage cleared! Refresh the page to start fresh.'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Clear LocalStorage</button>
-  </div>
-  
-  <button 
-    onClick={() => { 
-      if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start completely fresh? This cannot be undone!')) {
-        const newHero = makeName();
-        setHero(newHero);
-        setCanCustomize(true);
-        setCurrentDay(1);
-        setHasStarted(false);
-        setHp(GAME_CONSTANTS.MAX_HP);
-        setStamina(GAME_CONSTANTS.MAX_STAMINA);
-        setXp(0);
-        setLevel(1);
-        setHealthPots(0);
-        setStaminaPots(0);
-        setCleansePots(0);
-        setWeapon(0);
-        setArmor(0);
-        setTasks([]);
-        setActiveTask(null);
-        setTimer(0);
-        setRunning(false);
-        setShowPomodoro(false);
-        setPomodoroTask(null);
-        setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
-        setCalendarTasks({});
-        setShowBoss(false);
-        setBattling(false);
-        setLog([]);
-        setGraveyard([]);
-        setHeroes([]);
-        setSkipCount(0);
-        setConsecutiveDays(0);
-        setLastPlayedDate(null);
-        setMiniBossCount(0);
-        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
-        localStorage.removeItem('fantasyStudyQuest');
-        addLog('🔄 FULL RESET - Everything cleared!');
-        setActiveTab('quest');
-      }
-    }}
-    className="w-full mt-3 bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-500 animate-pulse"
-  >
-    🔄 FULL RESET - Delete Everything
-  </button>
-</div>
-
-              <p className="text-xs text-gray-400 mt-3 italic">
-  Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Curse Lvl: {curseLevel} • Cleanse: {cleansePots}
-</p>
-            </div>
+            <DebugPanel
+              hero={hero}
+              currentDay={currentDay}
+              hp={hp}
+              stamina={stamina}
+              xp={xp}
+              essence={essence}
+              level={level}
+              skipCount={skipCount}
+              curseLevel={curseLevel}
+              cleansePots={cleansePots}
+              healthPots={healthPots}
+              staminaPots={staminaPots}
+              weapon={weapon}
+              armor={armor}
+              gauntletUnlocked={gauntletUnlocked}
+              gauntletMilestone={gauntletMilestone}
+              consecutiveDays={consecutiveDays}
+              miniBossCount={miniBossCount}
+              battleType={battleType}
+              classes={classes}
+              setHp={setHp}
+              setStamina={setStamina}
+              setXp={setXp}
+              setEssence={setEssence}
+              setLevel={setLevel}
+              setHealthPots={setHealthPots}
+              setStaminaPots={setStaminaPots}
+              setCleansePots={setCleansePots}
+              setWeapon={setWeapon}
+              setArmor={setArmor}
+              setSkipCount={setSkipCount}
+              setCurseLevel={setCurseLevel}
+              setConsecutiveDays={setConsecutiveDays}
+              setGauntletUnlocked={setGauntletUnlocked}
+              setGauntletMilestone={setGauntletMilestone}
+              setHero={setHero}
+              setLog={setLog}
+              setGraveyard={setGraveyard}
+              setHeroes={setHeroes}
+              setStudyStats={setStudyStats}
+              setCalendarTasks={setCalendarTasks}
+              setWeeklyPlan={setWeeklyPlan}
+              setCurrentDay={setCurrentDay}
+              setHasStarted={setHasStarted}
+              setCanCustomize={setCanCustomize}
+              setTasks={setTasks}
+              setActiveTask={setActiveTask}
+              setTimer={setTimer}
+              setRunning={setRunning}
+              setShowPomodoro={setShowPomodoro}
+              setPomodoroTask={setPomodoroTask}
+              setShowBoss={setShowBoss}
+              setBattling={setBattling}
+              setLastPlayedDate={setLastPlayedDate}
+              setMiniBossCount={setMiniBossCount}
+              setActiveTab={setActiveTab}
+              setWaveCount={setWaveCount}
+              setBattleType={setBattleType}
+              getMaxHp={getMaxHp}
+              getMaxStamina={getMaxStamina}
+              addLog={addLog}
+              spawnRegularEnemy={spawnRegularEnemy}
+              spawnRandomMiniBoss={spawnRandomMiniBoss}
+              makeName={makeName}
+              sfx={sfx}
+              makeBossName={makeBossName}
+              setBossName={setBossName}
+              setBossHp={setBossHp}
+              setBossMax={setBossMax}
+              setGauntletBaseHp={setGauntletBaseHp}
+              setBattleMode={setBattleMode}
+              setIsFinalBoss={setIsFinalBoss}
+              setCanFlee={setCanFlee}
+              setVictoryLoot={setVictoryLoot}
+              setGauntletPhase={setGauntletPhase}
+              setInPhase1={setInPhase1}
+              setInPhase2={setInPhase2}
+              setInPhase3={setInPhase3}
+              setPhaseTransitioning={setPhaseTransitioning}
+              setPhase1TurnCounter={setPhase1TurnCounter}
+              setPhase2TurnCounter={setPhase2TurnCounter}
+              setPhase2DamageStacks={setPhase2DamageStacks}
+              setPhase3TurnCounter={setPhase3TurnCounter}
+              setLifeDrainCounter={setLifeDrainCounter}
+              setHasSpawnedPreviewAdd={setHasSpawnedPreviewAdd}
+              setHasTriggeredPhase1Enrage={setHasTriggeredPhase1Enrage}
+              setTargetingAdds={setTargetingAdds}
+              setShadowAdds={setShadowAdds}
+              setAoeWarning={setAoeWarning}
+              setShowDodgeButton={setShowDodgeButton}
+              setDodgeReady={setDodgeReady}
+              setRecklessStacks={setRecklessStacks}
+              setEnragedTurns={setEnragedTurns}
+              setBossDebuffs={setBossDebuffs}
+              setEnemyDialogue={setEnemyDialogue}
+              setPlayerTaunt={setPlayerTaunt}
+              setEnemyTauntResponse={setEnemyTauntResponse}
+              setShowTauntBoxes={setShowTauntBoxes}
+              setIsTauntAvailable={setIsTauntAvailable}
+              setHasTriggeredLowHpTaunt={setHasTriggeredLowHpTaunt}
+              setHasFled={setHasFled}
+              GAME_CONSTANTS={GAME_CONSTANTS}
+            />
           )}
 
 
@@ -3294,63 +3497,117 @@ setMiniBossCount(0);
           {activeTab === 'quest' && (
             <div className="space-y-6">
               {!hasStarted ? (
-                <div className="bg-black bg-opacity-50 rounded-xl p-8 text-center border-2 border-red-900">
-                  <h2 className="text-3xl font-bold text-yellow-400 mb-2">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-                  </h2>
-                  <p className="text-lg text-gray-300 mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric' })}</p>
-                  <p className="text-sm text-gray-400 italic mb-4">"Begin your trials for today..."</p>
-                  <p className="mb-4 text-sm text-gray-400">⚠️ Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
-                  <button onClick={start} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">START DAY</button>
+                <div className="start-day-entrance rounded-xl overflow-hidden border-2 border-red-900/50 pulse-border-gold">
+                  {/* Atmospheric background */}
+                  <div className="relative bg-gradient-to-b from-gray-950 via-red-950/30 to-gray-950 p-10 md:p-14">
+                    <div className="absolute inset-0 opacity-5" style={{
+                      backgroundImage: 'radial-gradient(circle at 30% 40%, rgba(220, 38, 38, 0.4) 0%, transparent 60%), radial-gradient(circle at 70% 60%, rgba(168, 85, 247, 0.3) 0%, transparent 60%)'
+                    }} />
+                    
+                    <div className="relative z-10 text-center">
+                      {/* Class emblem - large, atmospheric */}
+                      <div className="text-8xl md:text-9xl mb-6 opacity-80" style={{ filter: 'drop-shadow(0 0 30px rgba(220, 38, 38, 0.5))' }}>
+                        {hero.class.emblem}
+                      </div>
+                      
+                      {/* Hero name */}
+                      <h2 className="text-2xl md:text-3xl font-bold text-white mb-1 font-fantasy tracking-wide">
+                        {hero.name}
+                      </h2>
+                      <p className="text-sm text-gray-400 mb-6 font-fantasy">
+                        {hero.title} {hero.class.name} — Level {level}
+                      </p>
+                      
+                      {/* Date */}
+                      <div className="subtitle-fade">
+                        <p className="text-xl md:text-2xl font-semibold text-yellow-400/90 mb-1 font-fantasy">
+                          {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                        </p>
+                        <p className="text-sm text-gray-400 mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric' })}</p>
+                      </div>
+                      
+                      {/* Divider */}
+                      <div className="flex items-center justify-center gap-3 my-6">
+                        <div className="h-px w-16 bg-gradient-to-r from-transparent to-red-600/50" />
+                        <span className="text-red-500 text-xs font-fantasy tracking-widest uppercase">Begin Your Trials</span>
+                        <div className="h-px w-16 bg-gradient-to-l from-transparent to-red-600/50" />
+                      </div>
+                      
+                      <p className="text-sm text-gray-400 italic mb-6 subtitle-fade font-fantasy">
+                        "The abyss awaits those who hesitate..."
+                      </p>
+                      
+                      <p className="mb-6 text-xs text-gray-400">Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
+                      
+                      <button 
+                        onClick={() => { sfx.playClick(); start(); }} 
+                        className="bg-gradient-to-r from-yellow-600 to-yellow-500 text-black px-10 py-4 rounded-lg font-bold text-xl hover:from-yellow-500 hover:to-yellow-400 transition-all shadow-lg shadow-yellow-500/30 hover:shadow-yellow-500/50 hover:scale-105 active:scale-95 font-fantasy tracking-wider"
+                      >
+                        START DAY
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <>
-                  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-red-900">
-                    <div className="text-center mb-4">
-                      <h2 className="text-2xl font-bold text-red-400 mb-1">Trials of the Cursed</h2>
-                      <p className="text-sm text-gray-400">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
+                  <div className="bg-black/50 rounded-xl overflow-hidden border border-red-900/40">
+                    {/* Header */}
+                    <div className="px-6 pt-6 pb-4 text-center">
+                      <h2 className="text-2xl font-fantasy-decorative text-red-400 mb-1 tracking-wider drop-shadow-[0_0_12px_rgba(220,38,38,0.3)]">Trials of the Cursed</h2>
+                      <p className="text-sm text-gray-400 font-fantasy tracking-wide">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
                     </div>
                     
-                    <div className="flex gap-2 justify-center mb-4">
-                      <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">
-                        <Calendar size={20}/>Import from Planner
+                    {/* Divider */}
+                    <div className="flex items-center gap-3 px-6">
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/25 to-transparent"></div>
+                      <div className="w-1.5 h-1.5 rotate-45 bg-red-600/30"></div>
+                      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/25 to-transparent"></div>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="flex gap-2 justify-center px-6 py-4">
+                      <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 bg-gradient-to-b from-blue-800/50 to-blue-950/50 px-4 py-2 rounded-lg hover:from-blue-700/60 hover:to-blue-900/60 transition-all font-fantasy tracking-wide text-blue-200 border border-blue-700/30 text-sm">
+                        <Calendar size={16}/>Import from Planner
                       </button>
-                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-red-600 px-4 py-2 rounded-lg hover:bg-red-700 transition-all">
-                        <Plus size={20}/>Accept Trial
+                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-gradient-to-b from-red-800/50 to-red-950/50 px-4 py-2 rounded-lg hover:from-red-700/60 hover:to-red-900/60 transition-all font-fantasy tracking-wide text-red-200 border border-red-700/30 text-sm">
+                        <Plus size={16}/>Accept Trial
                       </button>
                     </div>
                     
+                    {/* Task list */}
+                    <div className="px-6 pb-6">
                     {tasks.length === 0 ? (
-                      <div className="text-center py-8 text-gray-400">
-                        <p>No trials yet. Accept your first trial to begin.</p>
+                      <div className="text-center py-8">
+                        <p className="text-gray-400 font-fantasy italic">No trials yet. Accept your first trial to begin.</p>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div className="space-y-2.5">
                         {[...tasks].sort((a, b) => {
-  // Important tasks first
   if (a.priority === 'important' && b.priority !== 'important') return -1;
   if (a.priority !== 'important' && b.priority === 'important') return 1;
   return 0;
 }).map(t => (
-  <div key={t.id} className={`rounded-lg p-4 border-2 ${
+  <div key={t.id} className={`rounded-lg p-4 border transition-all ${
     t.done 
-      ? 'bg-gray-800 border-green-700 opacity-60' 
+      ? 'bg-black/30 border-green-800/20 opacity-50' 
       : t.overdue
-        ? 'bg-red-900/20 border-red-600 opacity-80'
+        ? 'bg-red-950/30 border-red-700/40'
       : t.priority === 'important'
-        ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500 shadow-lg shadow-yellow-500/20'
-        : 'bg-gray-800 border-gray-700'
+        ? 'bg-gradient-to-r from-yellow-950/30 to-black/30 border-yellow-700/30 shadow-[0_0_15px_rgba(234,179,8,0.06)]'
+        : 'bg-black/30 border-gray-800/30 hover:border-gray-700/40'
   }`}>
     <div className="flex items-center gap-3">
       {t.overdue && !t.done && (
-        <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">OVERDUE</span>
+        <span className="bg-red-700/60 text-red-200 text-[10px] font-fantasy tracking-wider px-2 py-0.5 rounded uppercase">Overdue</span>
       )}
       <div className="flex-1">
-        <p className={t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300 font-medium text-lg' : 'text-white font-medium text-lg'}>
+        <p className={`${t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300' : 'text-white/95'} font-medium text-base`}>
           {t.title}
         </p>
-        <p className="text-sm text-gray-400 mt-1">
-          {t.priority === 'important' ? 'IMPORTANT • 1.25x XP' : 'ROUTINE • 1.0x XP'}
+        <p className="text-xs mt-1">
+          <span className={`font-fantasy tracking-wide ${t.priority === 'important' ? 'text-yellow-500' : 'text-gray-400'}`}>
+            {t.priority === 'important' ? '⭐ Important • 1.25x XP' : 'Routine • 1.0x XP'}
+          </span>
           {t.overdue && !t.done && <span className="text-red-400 ml-2">• 50% XP Penalty</span>}
         </p>
       </div>
@@ -3367,99 +3624,146 @@ setMiniBossCount(0);
               setPomodoroRunning(true);
               addLog(`Starting focus session: ${t.title}`);
             }} 
-            className="bg-purple-600 px-3 py-1 rounded hover:bg-purple-700 transition-all flex items-center gap-1"
+            className="bg-gradient-to-b from-purple-800/60 to-purple-950/60 px-3 py-1.5 rounded-lg hover:from-purple-700/70 hover:to-purple-900/70 transition-all text-purple-200 text-sm font-fantasy tracking-wide border border-purple-700/30"
           >
             Focus
           </button>
           <button 
             onClick={() => complete(t.id)} 
-            className="bg-green-600 px-4 py-1 rounded font-bold hover:bg-green-700 transition-all flex items-center gap-1"
+            className="bg-gradient-to-b from-green-800/60 to-green-950/60 px-4 py-1.5 rounded-lg hover:from-green-700/70 hover:to-green-900/70 transition-all text-green-200 text-sm font-fantasy tracking-wide font-bold border border-green-700/30"
           >
             Complete
           </button>
         </div>
       )}
-      {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">Done</span>)}
+      {t.done && (<span className="text-green-400 font-fantasy text-sm tracking-wide flex items-center gap-1">✓ Done</span>)}
     </div>
   </div>
 ))}   
                       </div>
                     )}
+                    </div>
                   </div>
                   
-                  <div className="grid md:grid-cols-2 gap-4">
+                  {/* Boss challenge buttons */}
+                  <div className="grid md:grid-cols-2 gap-3">
                     <button 
-  onClick={miniBoss} 
+  onClick={() => { sfx.playClick(); miniBoss(); }} 
   disabled={!isDayActive || eliteBossDefeatedToday || xp < 200} 
-  className="bg-red-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-red-800 transition-all shadow-lg shadow-red-900/50 border-2 border-red-700 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
+  className="bg-gradient-to-b from-red-900/70 to-red-950/70 px-6 py-4 rounded-xl font-fantasy text-lg tracking-wide text-red-200 hover:from-red-800/80 hover:to-red-900/80 transition-all shadow-[0_0_20px_rgba(220,38,38,0.1)] border border-red-700/30 disabled:from-gray-800/40 disabled:to-gray-900/40 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600/20"
 >
-  FACE THE DARKNESS
+  ⚔️ Face the Darkness
   {!isDayActive ? (
-    <div className="text-sm font-normal mt-1 text-gray-400">Day dormant - add tasks to begin</div>
+    <div className="text-xs font-normal mt-1 text-gray-400">Day dormant — add tasks to begin</div>
   ) : eliteBossDefeatedToday ? (
-    <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
+    <div className="text-xs font-normal mt-1 text-green-400">✓ Today's trial complete</div>
   ) : (
-    <div className={`text-sm font-normal mt-1 ${xp >= 200 ? 'text-green-400' : 'text-yellow-400'}`}>
+    <div className={`text-xs font-normal mt-1 ${xp >= 200 ? 'text-green-400' : 'text-yellow-400'}`}>
       {xp >= 200 ? `Ready • 200 XP` : `${200 - xp} XP needed`}
       {timeUntilMidnight && !eliteBossDefeatedToday && xp >= 200 && (
-        <span className="text-red-400 ml-2">• ⏰ {timeUntilMidnight} until midnight!</span>
+        <span className="text-red-400 ml-2">• ⏰ {timeUntilMidnight}</span>
       )}
     </div>
   )}
 </button>
                     <button 
-  onClick={finalBoss} 
+  onClick={() => { sfx.playClick(); finalBoss(); }} 
   disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
-  className="bg-purple-900 px-6 py-4 rounded-xl font-bold text-xl hover:bg-purple-800 transition-all shadow-lg shadow-purple-900/50 border-2 border-red-500 disabled:bg-gray-700 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600"
+  className="bg-gradient-to-b from-purple-900/70 to-purple-950/70 px-6 py-4 rounded-xl font-fantasy text-lg tracking-wide text-purple-200 hover:from-purple-800/80 hover:to-purple-900/80 transition-all shadow-[0_0_20px_rgba(168,85,247,0.1)] border border-red-600/30 disabled:from-gray-800/40 disabled:to-gray-900/40 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none disabled:border-gray-600/20"
 >
-  THE GAUNTLET
+  💀 The Gauntlet
   {!gauntletUnlocked && (
-    <div className="text-sm font-normal mt-1">{gauntletMilestone - xp} XP needed</div>
+    <div className="text-xs font-normal mt-1 text-gray-400">{gauntletMilestone - xp} XP needed</div>
   )}
 </button>
                   </div>
                   
-                  <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
-                    <h3 className="text-lg font-bold text-red-400 mb-2">Chronicle of Events</h3>
-                    {log.length === 0 ? (<p className="text-sm text-gray-500 italic">The journey begins...</p>) : (<div className="space-y-1">{log.map((l, i) => (<p key={i} className="text-sm text-gray-300">{l}</p>))}</div>)}
+                  {/* Chronicle of Events */}
+                  <div className="bg-black/50 rounded-xl overflow-hidden border border-gray-800/30">
+                    <div className="px-5 py-3">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/15 to-transparent"></div>
+                        <h3 className="text-xs font-fantasy tracking-[0.2em] text-red-400 uppercase">Chronicle of Events</h3>
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/15 to-transparent"></div>
+                      </div>
+                      {log.length === 0 ? (<p className="text-sm text-gray-500 italic font-fantasy">The journey begins...</p>) : (<div className="space-y-1">{log.map((l, i) => (<p key={i} className="text-sm text-gray-300/80">{l}</p>))}</div>)}
+                    </div>
                   </div>
                 </>
               )}
             </div>
           )}
 
-          {activeTab === 'planner' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-blue-900">
-              <h2 className="text-2xl font-bold text-blue-400 mb-2 text-center">WEEKLY PLANNER</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Chart your path through the coming trials..."</p>
+           {activeTab === 'planner' && (
+            <div className="bg-black/50 rounded-xl overflow-hidden border border-blue-900/40">
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 text-center">
+                <h2 className="text-2xl font-fantasy-decorative text-blue-400 tracking-wider drop-shadow-[0_0_12px_rgba(59,130,246,0.3)]">Battle Planner</h2>
+                <p className="text-gray-400 text-sm italic font-fantasy mt-1">"Chart your path through the coming trials..."</p>
+              </div>
               
-              <div className="grid gap-4">
+              {/* Divider */}
+              <div className="flex items-center gap-3 px-6">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-600/25 to-transparent"></div>
+                <div className="w-1.5 h-1.5 rotate-45 bg-blue-600/30"></div>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-blue-600/25 to-transparent"></div>
+              </div>
+              
+              {/* Sub-toggle: Weekly / Calendar */}
+              <div className="flex justify-center px-6 py-4">
+                <div className="inline-flex bg-black/40 rounded-lg border border-blue-900/30 p-1 gap-1">
+                  <button 
+                    onClick={() => setPlannerView('weekly')}
+                    className={`px-4 py-1.5 rounded-md text-sm font-fantasy tracking-wide transition-all ${
+                      plannerView === 'weekly' 
+                        ? 'bg-blue-800/30 text-blue-300 border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.1)]' 
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                  >
+                    Weekly Plan
+                  </button>
+                  <button 
+                    onClick={() => setPlannerView('calendar')}
+                    className={`px-4 py-1.5 rounded-md text-sm font-fantasy tracking-wide transition-all ${
+                      plannerView === 'calendar' 
+                        ? 'bg-green-800/30 text-green-300 border border-green-500/30 shadow-[0_0_10px_rgba(34,197,94,0.1)]' 
+                        : 'text-gray-400 hover:text-gray-300'
+                    }`}
+                  >
+                    Calendar
+                  </button>
+                </div>
+              </div>
+
+              <div className="px-6 pb-6">
+              {plannerView === 'weekly' && (
+              <div className="grid gap-3">
                 {Object.keys(weeklyPlan).map(day => (
-                  <div key={day} className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
+                  <div key={day} className="bg-gray-800/40 rounded-lg p-4 border border-gray-600/25 hover:border-blue-800/30 transition-all">
                     <div className="flex justify-between items-center mb-3">
                       <div>
-                        <h3 className="text-xl font-bold text-blue-300">{day}</h3>
+                        <h3 className="text-lg font-fantasy tracking-wide text-blue-300">{day}</h3>
                         <p className="text-xs">
   {(() => {
     const today = new Date();
     const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
     if (day === todayDayName) {
-      return <span className="text-yellow-400 font-bold">Today</span>;
+      return <span className="text-yellow-400/80 font-fantasy text-[10px] tracking-wider uppercase">Today</span>;
     } else {
-      return <span className="text-gray-400">{getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
+      return <span className="text-gray-400 text-[10px]">{getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
     }
   })()}
 </p>
                       </div>
-                      <button onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-all flex items-center gap-1">
-                        <Plus size={16}/> Add Task
+                      <button onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} className="bg-gradient-to-b from-blue-800/50 to-blue-950/50 hover:from-blue-700/60 hover:to-blue-900/60 px-3 py-1.5 rounded-lg text-sm transition-all flex items-center gap-1 font-fantasy tracking-wide text-blue-200 border border-blue-700/30">
+                        <Plus size={14}/> Add Task
                       </button>
                     </div>
                     
                     {weeklyPlan[day].length === 0 ? (
-                      <p className="text-gray-500 text-sm italic">No tasks planned</p>
+                      <p className="text-gray-500 text-sm italic font-fantasy">No tasks planned</p>
                     ) : (
-                      <div className="space-y-2">
+                      <div className="space-y-1.5">
                       {[...weeklyPlan[day]].sort((a, b) => {
   if (a.priority === 'important' && b.priority !== 'important') return -1;
   if (a.priority !== 'important' && b.priority === 'important') return 1;
@@ -3469,24 +3773,24 @@ setMiniBossCount(0);
   return (
     <div 
       key={idx} 
-      className={`rounded p-3 flex justify-between items-start ${
+      className={`rounded-lg p-3 flex justify-between items-start transition-all ${
         item.completed 
-          ? 'bg-gray-900 opacity-60' 
+          ? 'bg-black/20 opacity-50' 
           : item.priority === 'important'
-            ? 'bg-gradient-to-r from-yellow-900/30 to-gray-900 border border-yellow-500'
-            : 'bg-gray-900'
+            ? 'bg-gradient-to-r from-yellow-950/30 to-black/20 border border-yellow-700/25'
+            : 'bg-black/20 border border-transparent hover:border-gray-800/30'
       }`}
     >
       <div className="flex-1 flex items-start gap-2">
         {item.priority === 'important' && !item.completed && (
-          <span className="text-xl">⭐</span>
+          <span className="text-base">⭐</span>
         )}
         <div>
-          <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+          <p className={`font-medium text-sm ${item.completed ? 'line-through text-gray-600' : 'text-white/80'}`}>
             {item.completed && '✓ '}{item.title}
           </p>
           {item.priority === 'important' && (
-            <p className="text-xs text-yellow-400 mt-1">IMPORTANT • 1.25x XP</p>
+            <p className="text-[10px] text-yellow-500/50 mt-0.5 font-fantasy tracking-wide">Important • 1.25x XP</p>
           )}
         </div>
       </div>
@@ -3524,9 +3828,9 @@ setMiniBossCount(0);
               addLog(`🗑️ Deleted "${item.title}" from ${day} plan and future calendar dates`);
             }
           }}
-          className="text-red-400 hover:text-red-300"
+          className="text-red-500/50 hover:text-red-400/70 transition-all"
         >
-          <X size={16}/>
+          <X size={14}/>
         </button>
       </div>
     </div>
@@ -3538,23 +3842,19 @@ setMiniBossCount(0);
                   </div>
                 ))}
               </div>
-            </div>
-          )}
+              )}
 
-          {activeTab === 'calendar' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-green-900">
-              <h2 className="text-2xl font-bold text-green-400 mb-2 text-center">MONTHLY CALENDAR</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Mark your victories and defeats across the passage of time..."</p>
-              
-              <div className="flex justify-between items-center mb-6">
-                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all">← Previous</button>
-                <h3 className="text-2xl font-bold text-green-300">{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} {currentYear}</h3>
-                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all">Next →</button>
+              {plannerView === 'calendar' && (
+              <>
+              <div className="flex justify-between items-center mb-5">
+                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 hover:from-gray-700/60 hover:to-gray-800/60 px-4 py-2 rounded-lg transition-all text-gray-200 border border-gray-600/30 font-fantasy text-sm">← Prev</button>
+                <h3 className="text-xl font-fantasy-decorative text-green-300 tracking-wider">{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} {currentYear}</h3>
+                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="bg-gradient-to-b from-gray-800/50 to-gray-900/50 hover:from-gray-700/60 hover:to-gray-800/60 px-4 py-2 rounded-lg transition-all text-gray-200 border border-gray-600/30 font-fantasy text-sm">Next →</button>
               </div>
               
-              <div className="bg-gray-800 rounded-lg p-4">
+              <div className="bg-black/30 rounded-lg p-4 border border-green-900/20">
                 <div className="grid grid-cols-7 gap-2 mb-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (<div key={day} className="text-center text-gray-400 font-bold text-sm py-2">{day}</div>))}
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (<div key={day} className="text-center text-gray-400 font-fantasy text-xs tracking-wide py-2">{day}</div>))}
                 </div>
                 
                 <div className="grid grid-cols-7 gap-2">
@@ -3573,10 +3873,10 @@ setMiniBossCount(0);
                       const completedTasks = dayTasks.filter(t => t.done).length;
                       const allDone = hasTasks && completedTasks === dayTasks.length;
                       days.push(
-                        <button key={day} onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} className={`aspect-square rounded-lg p-2 transition-all hover:scale-105 relative ${isToday ? 'bg-blue-600 border-2 border-blue-400 shadow-lg' : hasTasks ? allDone ? 'bg-green-700 border-2 border-green-500' : 'bg-yellow-700 border-2 border-yellow-500' : 'bg-gray-700 hover:bg-gray-600'}`}>
-                          <div className="text-lg font-bold text-white">{day}</div>
-                          {hasTasks && (<div className="text-xs text-white mt-1">{completedTasks}/{dayTasks.length}</div>)}
-                          {isToday && (<div className="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>)}
+                        <button key={day} onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} className={`aspect-square rounded-lg p-1.5 transition-all hover:scale-105 relative ${isToday ? 'bg-blue-800/50 border border-blue-500/40 shadow-[0_0_12px_rgba(59,130,246,0.15)]' : hasTasks ? allDone ? 'bg-green-900/40 border border-green-600/30' : 'bg-yellow-900/30 border border-yellow-600/30' : 'bg-gray-700/40 hover:bg-gray-600/40 border border-gray-600/20 hover:border-gray-500/30'}`}>
+                          <div className="text-sm font-bold text-white/90">{day}</div>
+                          {hasTasks && (<div className="text-[10px] text-white/70 mt-0.5">{completedTasks}/{dayTasks.length}</div>)}
+                          {isToday && (<div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-yellow-400/70 rounded-full animate-pulse"></div>)}
                         </button>
                       );
                     }
@@ -3585,326 +3885,447 @@ setMiniBossCount(0);
                 </div>
               </div>
               
-              <div className="mt-4 flex flex-wrap gap-4 justify-center text-sm">
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-blue-600 border-2 border-blue-400 rounded"></div><span className="text-gray-300">Today</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-700 border-2 border-yellow-500 rounded"></div><span className="text-gray-300">Has Tasks (In Progress)</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-700 border-2 border-green-500 rounded"></div><span className="text-gray-300">All Tasks Complete</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-700 rounded"></div><span className="text-gray-300">No Tasks</span></div>
+              <div className="mt-4 flex flex-wrap gap-4 justify-center text-xs">
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-blue-800/50 border border-blue-500/40 rounded"></div><span className="text-gray-400 font-fantasy">Today</span></div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-yellow-900/30 border border-yellow-600/30 rounded"></div><span className="text-gray-400 font-fantasy">In Progress</span></div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-green-900/40 border border-green-600/30 rounded"></div><span className="text-gray-400 font-fantasy">Complete</span></div>
+                <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-gray-700/40 border border-gray-600/20 rounded"></div><span className="text-gray-400 font-fantasy">Empty</span></div>
+              </div>
+              </>
+              )}
               </div>
             </div>
           )}
 
           {activeTab === 'study' && (
-  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-purple-900">
-    <h2 className="text-2xl font-bold text-purple-400 mb-2 text-center">KNOWLEDGE FORGE</h2>
-    <p className="text-gray-400 text-sm mb-6 italic text-center">"Sharpen your mind, temper your wisdom..."</p>
-    
-    <div className="flex justify-between items-center mb-6">
-      <div>
-        <p className="text-lg text-gray-300">Your Decks: <span className="font-bold text-purple-400">{flashcardDecks.length}</span></p>
-        <p className="text-sm text-gray-500">Study to earn XP and loot!</p>
-      </div>
-      <button 
-        onClick={() => setShowDeckModal(true)}
-        className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all flex items-center gap-2"
-      >
-        <Plus size={20}/> New Deck
-      </button>
+  <div className="bg-black/50 rounded-xl overflow-hidden border border-purple-900/40">
+    {/* Header */}
+    <div className="px-6 pt-6 pb-4 text-center">
+      <h2 className="text-2xl font-fantasy-decorative text-purple-400 tracking-wider drop-shadow-[0_0_12px_rgba(168,85,247,0.3)]">Knowledge Forge</h2>
+      <p className="text-gray-400 text-sm italic font-fantasy mt-1">"Sharpen your mind, temper your wisdom..."</p>
     </div>
     
-    {flashcardDecks.length === 0 ? (
-      <div className="text-center py-12 bg-gray-800 rounded-lg border-2 border-gray-700">
-        <p className="text-gray-400 mb-2 text-lg">The forge stands empty...</p>
-        <p className="text-sm text-gray-500">Create your first deck to begin forging knowledge</p>
+    {/* Divider */}
+    <div className="flex items-center gap-3 px-6">
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-600/25 to-transparent"></div>
+      <div className="w-1.5 h-1.5 rotate-45 bg-purple-600/30"></div>
+      <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-600/25 to-transparent"></div>
+    </div>
+    
+    <div className="px-6 py-4">
+      <div className="flex justify-between items-center mb-5">
+        <div>
+          <p className="text-sm text-gray-300 font-fantasy tracking-wide">Your Decks: <span className="font-bold text-purple-400">{flashcardDecks.length}</span></p>
+          <p className="text-xs text-gray-400">Study to earn XP and loot!</p>
+        </div>
+        <button 
+          onClick={() => setShowDeckModal(true)}
+          className="bg-gradient-to-b from-purple-800/50 to-purple-950/50 hover:from-purple-700/60 hover:to-purple-900/60 px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-fantasy tracking-wide text-purple-200 border border-purple-700/30 text-sm"
+        >
+          <Plus size={16}/> New Deck
+        </button>
       </div>
-    ) : (
-      <div className="space-y-4">
-        {flashcardDecks.map((deck, idx) => (
-          <div key={idx} className="bg-gray-800 rounded-lg p-4 border-2 border-purple-700">
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-purple-300">{deck.name}</h3>
-                <p className="text-sm text-gray-400">
-                  {deck.cards.length} card{deck.cards.length !== 1 ? 's' : ''} • 
-                  {deck.cards.filter(c => c.mastered).length} mastered
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  if (window.confirm(`Delete deck "${deck.name}"?`)) {
-                    setFlashcardDecks(prev => prev.filter((_, i) => i !== idx));
-                    addLog(`🗑️ Deleted deck: ${deck.name}`);
-                  }
-                }}
-                className="text-red-400 hover:text-red-300"
-              >
-                <X size={20}/>
-              </button>
-            </div>
-            
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  if (deck.cards.length === 0) {
-                    alert('Add some cards first!');
-                    return;
-                  }
-                  setSelectedDeck(idx);
-                  setCurrentCardIndex(0);
-                  // Initialize queue with all card indices
-                  const allCardIndices = Array.from({length: deck.cards.length}, (_, i) => i);
-                  setStudyQueue(allCardIndices);
-                  setIsFlipped(false);
-                  setShowStudyModal(true);
-                }}
-                disabled={deck.cards.length === 0}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
-              >
-                Study Deck
-              </button>
-              <button
-                onClick={() => {
-                  if (deck.cards.length < 4) {
-                    alert('Need at least 4 cards for a quiz!');
-                    return;
-                  }
-                  setSelectedDeck(idx);
-                  generateQuiz(idx);
-                }}
-                disabled={deck.cards.length < 4}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
-              >
-                Practice Quiz
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedDeck(idx);
-                  setShowCardModal(true);
-                }}
-                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-all"
-              >
-                Add Card
-              </button>
-            </div>
-            
-            {deck.cards.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-700">
-                <p className="text-xs text-gray-500 mb-2">Cards in this deck:</p>
-                <div className="space-y-1 max-h-32 overflow-y-auto">
-                  {deck.cards.map((card, cardIdx) => (
-                    <div key={cardIdx} className="flex justify-between items-center text-sm bg-gray-900 rounded p-2">
-                      <span className="text-gray-300 flex-1 truncate">
-                        {card.mastered && '✓ '}{card.front}
-                      </span>
-                      <button
-                        onClick={() => {
-                          setFlashcardDecks(prev => prev.map((d, i) => 
-                            i === idx ? {...d, cards: d.cards.filter((_, ci) => ci !== cardIdx)} : d
-                          ));
-                        }}
-                        className="text-red-400 hover:text-red-300 ml-2"
-                      >
-                        <X size={14}/>
-                      </button>
-                    </div>
-                  ))}
+    
+      {flashcardDecks.length === 0 ? (
+        <div className="text-center py-12 bg-black/30 rounded-lg border border-purple-900/20">
+          <p className="text-gray-400 mb-2 font-fantasy">The forge stands empty...</p>
+          <p className="text-xs text-gray-500 font-fantasy">Create your first deck to begin forging knowledge</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {flashcardDecks.map((deck, idx) => (
+            <div key={idx} className="bg-black/30 rounded-lg p-4 border border-purple-800/25 hover:border-purple-700/35 transition-all">
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex-1">
+                  <h3 className="text-lg font-fantasy tracking-wide text-purple-300">{deck.name}</h3>
+                  <p className="text-xs text-gray-400 font-fantasy">
+                    {deck.cards.length} card{deck.cards.length !== 1 ? 's' : ''} • 
+                    {deck.cards.filter(c => c.mastered).length} mastered
+                  </p>
                 </div>
+                <button
+                  onClick={() => {
+                    if (window.confirm(`Delete deck "${deck.name}"?`)) {
+                      setFlashcardDecks(prev => prev.filter((_, i) => i !== idx));
+                      addLog(`🗑️ Deleted deck: ${deck.name}`);
+                    }
+                  }}
+                  className="text-red-400 hover:text-red-300 transition-all"
+                >
+                  <X size={16}/>
+                </button>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
-    )}
+              
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    if (deck.cards.length === 0) {
+                      alert('Add some cards first!');
+                      return;
+                    }
+                    setSelectedDeck(idx);
+                    setCurrentCardIndex(0);
+                    const allCardIndices = Array.from({length: deck.cards.length}, (_, i) => i);
+                    setStudyQueue(allCardIndices);
+                    setIsFlipped(false);
+                    setShowStudyModal(true);
+                  }}
+                  disabled={deck.cards.length === 0}
+                  className="flex-1 bg-gradient-to-b from-purple-800/50 to-purple-950/50 hover:from-purple-700/60 hover:to-purple-900/60 py-2 rounded-lg transition-all font-fantasy tracking-wide text-purple-200 text-sm border border-purple-700/25 disabled:from-gray-800/30 disabled:to-gray-900/30 disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  Study Deck
+                </button>
+                <button
+                  onClick={() => {
+                    if (deck.cards.length < 4) {
+                      alert('Need at least 4 cards for a quiz!');
+                      return;
+                    }
+                    setSelectedDeck(idx);
+                    generateQuiz(idx);
+                  }}
+                  disabled={deck.cards.length < 4}
+                  className="flex-1 bg-gradient-to-b from-blue-800/50 to-blue-950/50 hover:from-blue-700/60 hover:to-blue-900/60 py-2 rounded-lg transition-all font-fantasy tracking-wide text-blue-200 text-sm border border-blue-700/25 disabled:from-gray-800/30 disabled:to-gray-900/30 disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  Practice Quiz
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedDeck(idx);
+                    setShowCardModal(true);
+                  }}
+                  className="bg-gradient-to-b from-green-800/50 to-green-950/50 hover:from-green-700/60 hover:to-green-900/60 px-4 py-2 rounded-lg transition-all font-fantasy tracking-wide text-green-200 text-sm border border-green-700/25"
+                >
+                  Add Card
+                </button>
+              </div>
+              
+              {deck.cards.length > 0 && (
+                <div className="mt-3 pt-3 border-t border-purple-900/15">
+                  <p className="text-[10px] text-gray-400 mb-2 font-fantasy tracking-wide uppercase">Cards in this deck:</p>
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                    {deck.cards.map((card, cardIdx) => (
+                      <div key={cardIdx} className="flex justify-between items-center text-sm bg-black/30 rounded-lg p-2 border border-purple-900/10">
+                        <span className="text-gray-300 flex-1 truncate text-xs">
+                          {card.mastered && <span className="text-green-400">✓ </span>}{card.front}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setFlashcardDecks(prev => prev.map((d, i) => 
+                              i === idx ? {...d, cards: d.cards.filter((_, ci) => ci !== cardIdx)} : d
+                            ));
+                          }}
+                          className="text-red-400 hover:text-red-300 ml-2 transition-all"
+                        >
+                          <X size={12}/>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   </div>
 )}
 
           {activeTab === 'progress' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
-              <h2 className="text-2xl font-bold text-yellow-400 mb-2 text-center">CHRONICLES OF THE CURSED</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Your struggle against the eternal darkness..."</p>
+            <div className="bg-black/50 rounded-xl overflow-hidden border border-yellow-900/40">
+              {/* Header */}
+              <div className="px-6 pt-6 pb-4 text-center">
+                <h2 className="text-2xl font-fantasy-decorative text-yellow-400 tracking-wider drop-shadow-[0_0_12px_rgba(234,179,8,0.3)]">Chronicles of the Cursed</h2>
+                <p className="text-gray-400 text-sm italic font-fantasy mt-1">"Your struggle against the eternal darkness..."</p>
+              </div>
               
+              {/* Divider */}
+              <div className="flex items-center gap-3 px-6">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/25 to-transparent"></div>
+                <div className="w-1.5 h-1.5 rotate-45 bg-yellow-600/30"></div>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/25 to-transparent"></div>
+              </div>
+              
+              <div className="px-6 py-5 space-y-5">
               {/* Current Cycle Status */}
-              <div className="mb-6 bg-gradient-to-r from-red-900 to-gray-900 rounded-xl p-6 border-2 border-red-600">
-                <h3 className="text-xl font-bold text-red-300 mb-4 text-center">Current Cycle</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Day</p>
-                    <p className="text-3xl font-bold text-red-400">{currentDay}/7</p>
-                    <p className="text-xs text-gray-500">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name}</p>
+              <div className="bg-gradient-to-br from-red-950/50 to-black/30 rounded-xl p-5 border border-red-800/25 stat-card-texture">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-red-600/20"></div>
+                  <h3 className="text-xs font-fantasy tracking-[0.2em] text-red-400 uppercase">Current Cycle</h3>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-red-600/20"></div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-black/30 rounded-lg p-3 border border-red-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Day</p>
+                    <p className="text-2xl font-bold text-red-400 font-mono">{currentDay}/7</p>
+                    <p className="text-[10px] text-gray-400">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name}</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Curse Level</p>
-                    <p className="text-3xl font-bold text-purple-400">{curseLevel}</p>
-                    <p className="text-xs text-gray-500">{curseLevel === 0 ? 'Pure' : curseLevel === 1 ? 'Cursed' : curseLevel === 2 ? 'Deep Curse' : 'Condemned'}</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-purple-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Curse Level</p>
+                    <p className="text-2xl font-bold text-purple-400 font-mono">{curseLevel}</p>
+                    <p className="text-[10px] text-gray-400">{curseLevel === 0 ? 'Pure' : curseLevel === 1 ? 'Cursed' : curseLevel === 2 ? 'Deep Curse' : 'Condemned'}</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Skip Count</p>
-                    <p className="text-3xl font-bold text-yellow-400">{skipCount}</p>
-                    <p className="text-xs text-gray-500">{skipCount >= 3 ? 'DANGER' : 'of 4 max'}</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-yellow-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Skip Count</p>
+                    <p className="text-2xl font-bold text-yellow-400 font-mono">{skipCount}</p>
+                    <p className="text-[10px] text-gray-400">{skipCount >= 3 ? 'DANGER' : 'of 4 max'}</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Trials Today</p>
-                    <p className="text-3xl font-bold text-cyan-400">{tasks.filter(t => t.done).length}/{tasks.length}</p>
-                    <p className="text-xs text-gray-500">{tasks.length > 0 ? `${Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}%` : 'None'}</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-cyan-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Trials Today</p>
+                    <p className="text-2xl font-bold text-cyan-400 font-mono">{tasks.filter(t => t.done).length}/{tasks.length}</p>
+                    <p className="text-[10px] text-gray-400">{tasks.length > 0 ? `${Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}%` : 'None'}</p>
                   </div>
                 </div>
               </div>
               
               {/* Combat Power */}
-              <div className="mb-6 bg-gradient-to-r from-blue-900 to-purple-900 rounded-xl p-6 border-2 border-blue-600">
-                <h3 className="text-xl font-bold text-blue-300 mb-4 text-center">Combat Power</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Health</p>
-                    <p className="text-3xl font-bold text-red-400">{hp}/{getMaxHp()}</p>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                      <div className="bg-red-500 h-2 rounded-full" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
+              <div className="bg-gradient-to-br from-blue-950/40 to-purple-950/30 rounded-xl p-5 border border-blue-800/25 stat-card-runes">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-blue-600/20"></div>
+                  <h3 className="text-xs font-fantasy tracking-[0.2em] text-blue-400 uppercase">Combat Power</h3>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-blue-600/20"></div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-black/30 rounded-lg p-3 border border-red-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Health</p>
+                    <p className="text-2xl font-bold text-red-400 font-mono">{hp}/{getMaxHp()}</p>
+                    <div className="w-full bg-black/40 rounded-full h-1.5 mt-2 border border-red-900/10">
+                      <div className="bg-gradient-to-r from-red-700 to-red-500 h-1.5 rounded-full transition-all duration-500" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
                     </div>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Stamina</p>
-                    <p className="text-3xl font-bold text-cyan-400">{stamina}/{getMaxStamina()}</p>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                      <div className="bg-cyan-500 h-2 rounded-full" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                  <div className="bg-black/30 rounded-lg p-3 border border-cyan-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Stamina</p>
+                    <p className="text-2xl font-bold text-cyan-400 font-mono">{stamina}/{getMaxStamina()}</p>
+                    <div className="w-full bg-black/40 rounded-full h-1.5 mt-2 border border-cyan-900/10">
+                      <div className="bg-gradient-to-r from-cyan-700 to-cyan-400 h-1.5 rounded-full transition-all duration-500" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
                     </div>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Attack</p>
-                    <p className="text-3xl font-bold text-orange-400">{GAME_CONSTANTS.BASE_ATTACK + (level * GAME_CONSTANTS.PLAYER_ATK_PER_DAY) + weapon}</p>
-                    <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_ATTACK} • Weapon: +{weapon}</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-orange-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Attack</p>
+                    <p className="text-2xl font-bold text-orange-400 font-mono">{GAME_CONSTANTS.BASE_ATTACK + (level * GAME_CONSTANTS.PLAYER_ATK_PER_DAY) + weapon}</p>
+                    <p className="text-[10px] text-gray-400">Base: {GAME_CONSTANTS.BASE_ATTACK} + Wep: {weapon}</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Defense</p>
-                    <p className="text-3xl font-bold text-green-400">{getBaseDefense() + armor}</p>
-                    <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_DEFENSE} • Armor: +{armor}</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-green-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Defense</p>
+                    <p className="text-2xl font-bold text-green-400 font-mono">{getBaseDefense() + armor}</p>
+                    <p className="text-[10px] text-gray-400">Base: {GAME_CONSTANTS.BASE_DEFENSE} + Arm: {armor}</p>
                   </div>
                 </div>
               </div>
               
               {/* Progression */}
-              <div className="mb-6 bg-gradient-to-r from-yellow-900 to-orange-900 rounded-xl p-6 border-2 border-yellow-600">
-                <h3 className="text-xl font-bold text-yellow-300 mb-4 text-center">Progression</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Level</p>
-                    <p className="text-3xl font-bold text-yellow-400">{level}</p>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                      <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(xp % GAME_CONSTANTS.XP_PER_LEVEL) / GAME_CONSTANTS.XP_PER_LEVEL * 100}%`}}></div>
+              <div className="bg-gradient-to-br from-yellow-950/40 to-orange-950/30 rounded-xl p-5 border border-yellow-800/25 stat-card-weave">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-yellow-600/20"></div>
+                  <h3 className="text-xs font-fantasy tracking-[0.2em] text-yellow-400 uppercase">Progression</h3>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-yellow-600/20"></div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="bg-black/30 rounded-lg p-3 border border-yellow-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Level</p>
+                    <p className="text-2xl font-bold text-yellow-400 font-mono">{level}</p>
+                    <div className="w-full bg-black/40 rounded-full h-1.5 mt-2 border border-yellow-900/10">
+                      <div className="bg-gradient-to-r from-yellow-700 to-yellow-400 h-1.5 rounded-full transition-all duration-500" style={{width: `${(xp % GAME_CONSTANTS.XP_PER_LEVEL) / GAME_CONSTANTS.XP_PER_LEVEL * 100}%`}}></div>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">{xp % GAME_CONSTANTS.XP_PER_LEVEL}/{GAME_CONSTANTS.XP_PER_LEVEL} XP</p>
+                    <p className="text-[10px] text-gray-400 mt-1">{xp % GAME_CONSTANTS.XP_PER_LEVEL}/{GAME_CONSTANTS.XP_PER_LEVEL} XP</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Total XP</p>
-                    <p className="text-3xl font-bold text-purple-400">{xp}</p>
-                    <p className="text-xs text-gray-500">earned</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-purple-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Total XP</p>
+                    <p className="text-2xl font-bold text-purple-400 font-mono">{xp}</p>
+                    <p className="text-[10px] text-gray-400">earned across all time</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Essence</p>
-                    <p className="text-3xl font-bold text-purple-400">{essence}</p>
-                    <p className="text-xs text-gray-500">souls collected</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-purple-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Essence</p>
+                    <p className="text-2xl font-bold text-purple-400 font-mono">{essence}</p>
+                    <p className="text-[10px] text-gray-400">souls collected</p>
                   </div>
                 </div>
               </div>
               
               {/* Legacy Stats */}
-              <div className="mb-6 bg-gradient-to-r from-green-900 to-teal-900 rounded-xl p-6 border-2 border-green-600">
-                <h3 className="text-xl font-bold text-green-300 mb-4 text-center">Legacy</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Liberated</p>
-                    <p className="text-3xl font-bold text-green-400">{heroes.length}</p>
-                    <p className="text-xs text-gray-500">broke the curse</p>
+              <div className="bg-gradient-to-br from-green-950/40 to-teal-950/30 rounded-xl p-5 border border-green-800/25 stat-card-texture">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-green-600/20"></div>
+                  <h3 className="text-xs font-fantasy tracking-[0.2em] text-green-400 uppercase">Legacy</h3>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-green-600/20"></div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-black/30 rounded-lg p-3 border border-green-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Liberated</p>
+                    <p className="text-2xl font-bold text-green-400 font-mono">{heroes.length}</p>
+                    <p className="text-[10px] text-gray-400">broke the curse</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Consumed</p>
-                    <p className="text-3xl font-bold text-red-400">{graveyard.length}</p>
-                    <p className="text-xs text-gray-500">claimed by darkness</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-red-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Consumed</p>
+                    <p className="text-2xl font-bold text-red-400 font-mono">{graveyard.length}</p>
+                    <p className="text-[10px] text-gray-400">claimed by darkness</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Survival Rate</p>
-                    <p className="text-3xl font-bold text-yellow-400">
+                  <div className="bg-black/30 rounded-lg p-3 border border-yellow-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Survival Rate</p>
+                    <p className="text-2xl font-bold text-yellow-400 font-mono">
                       {heroes.length + graveyard.length > 0 ? Math.floor((heroes.length / (heroes.length + graveyard.length)) * 100) : 0}%
                     </p>
-                    <p className="text-xs text-gray-500">{heroes.length + graveyard.length} total cycles</p>
+                    <p className="text-[10px] text-gray-400">{heroes.length + graveyard.length} total cycles</p>
                   </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Current Streak</p>
-                    <p className="text-3xl font-bold text-orange-400">{consecutiveDays}</p>
-                    <p className="text-xs text-gray-500">days without skip</p>
+                  <div className="bg-black/30 rounded-lg p-3 border border-orange-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Current Streak</p>
+                    <p className="text-2xl font-bold text-orange-400 font-mono">{consecutiveDays}</p>
+                    <p className="text-[10px] text-gray-400">days without skip</p>
                   </div>
                 </div>
               </div>
               
-              {/* Achievements */}
-              <div className="bg-gradient-to-r from-purple-900 to-pink-900 rounded-xl p-6 border-2 border-purple-600">
-                <h3 className="text-xl font-bold text-purple-300 mb-4 text-center">Trials Conquered</h3>
-                <div className="space-y-3">
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.length > 0 ? 'bg-yellow-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Curse Breaker</p>
-                      <p className="text-xs text-gray-400">Complete a full 7-day cycle</p>
-                    </div>
-                    <span className="text-lg font-bold text-yellow-400">{heroes.length > 0 ? '✓' : '—'}</span>
+              {/* Study Stats */}
+              <div className="bg-gradient-to-br from-cyan-950/40 to-blue-950/30 rounded-xl p-5 border border-cyan-800/25 stat-card-runes">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <div className="h-px flex-1 bg-gradient-to-r from-transparent to-cyan-600/20"></div>
+                  <h3 className="text-xs font-fantasy tracking-[0.2em] text-cyan-400 uppercase">Study Stats</h3>
+                  <div className="h-px flex-1 bg-gradient-to-l from-transparent to-cyan-600/20"></div>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="bg-black/30 rounded-lg p-3 border border-cyan-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Sessions Today</p>
+                    <p className="text-2xl font-bold text-cyan-400 font-mono">{studyStats.sessionsToday}</p>
+                    <p className="text-[10px] text-gray-400">tasks started</p>
                   </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.some(h => h.skipCount === 0) ? 'bg-green-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Flawless Victory</p>
-                      <p className="text-xs text-gray-400">Complete a cycle with zero skips</p>
-                    </div>
-                    <span className="text-lg font-bold text-green-400">{heroes.some(h => h.skipCount === 0) ? '✓' : '—'}</span>
+                  <div className="bg-black/30 rounded-lg p-3 border border-blue-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Deep Work</p>
+                    <p className="text-2xl font-bold text-blue-400 font-mono">{studyStats.deepWorkSessions}</p>
+                    <p className="text-[10px] text-gray-400">25+ min sessions</p>
                   </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${level >= 10 ? 'bg-purple-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Veteran Warrior</p>
-                      <p className="text-xs text-gray-400">Reach level 10</p>
-                    </div>
-                    <span className="text-lg font-bold text-purple-400">{level >= 10 ? '✓' : `${level}/10`}</span>
+                  <div className="bg-black/30 rounded-lg p-3 border border-yellow-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Early Bird Days</p>
+                    <p className="text-2xl font-bold text-yellow-400 font-mono">{studyStats.earlyBirdDays}</p>
+                    <p className="text-[10px] text-gray-400">started early</p>
                   </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${essence >= 500 ? 'bg-cyan-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Soul Collector</p>
-                      <p className="text-xs text-gray-400">Accumulate 500 essence</p>
-                    </div>
-                    <span className="text-lg font-bold text-cyan-400">{essence >= 500 ? '✓' : `${essence}/500`}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.length >= 3 ? 'bg-orange-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Legend Born</p>
-                      <p className="text-xs text-gray-400">Liberate 3 heroes from the curse</p>
-                    </div>
-                    <span className="text-lg font-bold text-orange-400">{heroes.length >= 3 ? '✓' : `${heroes.length}/3`}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${consecutiveDays >= 7 ? 'bg-red-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Unbroken Spirit</p>
-                      <p className="text-xs text-gray-400">7-day streak without skipping</p>
-                    </div>
-                    <span className="text-lg font-bold text-red-400">{consecutiveDays >= 7 ? '✓' : `${consecutiveDays}/7`}</span>
+                  <div className="bg-black/30 rounded-lg p-3 border border-green-800/15">
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-fantasy">Perfect Days</p>
+                    <p className="text-2xl font-bold text-green-400 font-mono">{studyStats.perfectDays}</p>
+                    <p className="text-[10px] text-gray-400">all tasks done</p>
                   </div>
                 </div>
+                {studyStats.longestStreak > 0 && (
+                  <div className="mt-3 text-center">
+                    <span className="text-[10px] text-gray-400 font-fantasy tracking-wide">Longest Streak: </span>
+                    <span className="text-sm font-bold text-orange-400 font-mono">{studyStats.longestStreak} days</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Achievements */}
+              <AchievementsPanel
+                heroes={heroes}
+                graveyard={graveyard}
+                level={level}
+                xp={xp}
+                essence={essence}
+                consecutiveDays={consecutiveDays}
+                studyStats={studyStats}
+                miniBossCount={miniBossCount}
+                weapon={weapon}
+                armor={armor}
+                gauntletUnlocked={gauntletUnlocked}
+              />
               </div>
             </div>
           )}
 
           {activeTab === 'legacy' && (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* The Liberated Section */}
-              <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
-                <h2 className="text-2xl font-bold text-yellow-400 mb-2 text-center">⚔️ THE LIBERATED</h2>
-                <p className="text-green-400 text-sm mb-6 italic text-center">"Those who broke free from the curse..."</p>
-                {heroes.length === 0 ? (<div className="text-center py-12"><Trophy size={64} className="mx-auto mb-4 text-gray-700"/><p className="text-gray-400">None have escaped the curse... yet.</p><p className="text-sm text-gray-500 mt-2">Survive all 7 days to break free!</p></div>) : (<div className="space-y-4">{heroes.slice().reverse().map((hero, i) => (<div key={i} className={`bg-gradient-to-r ${hero.class ? hero.class.gradient[3] : 'from-yellow-900'} ${hero.class && hero.class.color === 'yellow' ? 'to-orange-400' : hero.class && hero.class.color === 'red' ? 'to-orange-500' : hero.class && hero.class.color === 'purple' ? 'to-pink-500' : hero.class && hero.class.color === 'green' ? 'to-teal-500' : 'to-yellow-500'} rounded-lg p-6 border-4 border-yellow-400 shadow-2xl shadow-yellow-500/50`}><div className="flex items-center gap-4"><div className="text-6xl animate-pulse">{hero.class ? hero.class.emblem : '✨'}</div><div className="flex-1"><h3 className="text-2xl font-bold text-white">{hero.name}</h3><p className="text-xl text-white text-opacity-90">{hero.title} {hero.class ? hero.class.name : ''}</p><p className="text-white">Level {hero.lvl} • {hero.xp} XP</p>{hero.skipCount !== undefined && hero.skipCount === 0 && (<p className="text-green-300 font-bold mt-1">✨ FLAWLESS RUN - No skips!</p>)}{hero.skipCount > 0 && (<p className="text-yellow-200 text-sm mt-1">Overcame {hero.skipCount} skip{hero.skipCount > 1 ? 's' : ''}</p>)}<p className="text-yellow-300 font-bold mt-2">✨ CURSE BROKEN ✨</p><p className="text-green-400 text-sm italic">"Free at last from the eternal torment..."</p></div></div></div>))}</div>)}
+              <div className="bg-black/50 rounded-xl overflow-hidden border border-yellow-900/40">
+                <div className="px-6 pt-6 pb-4 text-center">
+                  <h2 className="text-2xl font-fantasy-decorative text-yellow-400 tracking-wider drop-shadow-[0_0_12px_rgba(234,179,8,0.3)]">The Liberated</h2>
+                  <p className="text-green-400 text-sm italic font-fantasy mt-1">"Those who broke free from the curse..."</p>
+                </div>
+                
+                <div className="flex items-center gap-3 px-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/25 to-transparent"></div>
+                  <div className="w-1.5 h-1.5 rotate-45 bg-yellow-600/30"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/25 to-transparent"></div>
+                </div>
+                
+                <div className="px-6 py-5">
+                {heroes.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Trophy size={56} className="mx-auto mb-4 text-gray-800"/>
+                    <p className="text-gray-400 font-fantasy">None have escaped the curse... yet.</p>
+                    <p className="text-xs text-gray-500 mt-2 font-fantasy">Survive all 7 days to break free!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {heroes.slice().reverse().map((hero, i) => (
+                      <div key={i} className="bg-gradient-to-r from-yellow-950/40 to-black/30 rounded-lg overflow-hidden border border-yellow-700/30 shadow-[0_0_20px_rgba(234,179,8,0.08)] hover:shadow-[0_0_30px_rgba(234,179,8,0.15)] transition-all">
+                        {/* Decorative top edge */}
+                        <div className="h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+                        <div className="p-5">
+                          <div className="flex items-center gap-4">
+                            <div className="text-5xl drop-shadow-[0_0_12px_rgba(234,179,8,0.3)]">{hero.class ? hero.class.emblem : '✨'}</div>
+                            <div className="flex-1">
+                              <h3 className="text-xl font-fantasy-decorative text-yellow-300/90 tracking-wider">{hero.name}</h3>
+                              <p className="text-sm text-white/80 font-fantasy">{hero.title} {hero.class ? hero.class.name : ''}</p>
+                              <p className="text-xs text-white/60 font-mono mt-1">Level {hero.lvl} • {hero.xp} XP</p>
+                              {hero.skipCount !== undefined && hero.skipCount === 0 && (
+                                <p className="text-green-400 text-xs font-fantasy mt-1.5">✨ Flawless Run — No skips!</p>
+                              )}
+                              {hero.skipCount > 0 && (
+                                <p className="text-yellow-400 text-xs mt-1.5 font-fantasy">Overcame {hero.skipCount} skip{hero.skipCount > 1 ? 's' : ''}</p>
+                              )}
+                              <div className="flex items-center gap-2 mt-2">
+                                <div className="h-px flex-1 bg-gradient-to-r from-yellow-600/20 to-transparent"></div>
+                                <p className="text-yellow-400 text-[10px] font-fantasy tracking-[0.2em] uppercase">Curse Broken</p>
+                                <div className="h-px flex-1 bg-gradient-to-l from-yellow-600/20 to-transparent"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                </div>
               </div>
               
               {/* The Consumed Section */}
-              <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-gray-800">
-                <h2 className="text-2xl font-bold text-gray-400 mb-2 text-center">💀 THE CONSUMED</h2>
-                <p className="text-red-400 text-sm mb-6 italic text-center">"Those who fell to the curse..."</p>
-                {graveyard.length === 0 ? (<div className="text-center py-12"><Skull size={64} className="mx-auto mb-4 text-gray-700"/><p className="text-gray-500">No fallen heroes... yet.</p></div>) : (<div className="space-y-4">{graveyard.slice().reverse().map((fallen, i) => (<div key={i} className="bg-gray-900 rounded-lg p-4 border-2 border-red-900 opacity-70 hover:opacity-90 transition-opacity"><div className="flex items-center gap-4"><div className="text-4xl opacity-50">{fallen.class ? fallen.class.emblem : '☠️'}</div><div className="flex-1"><h3 className="text-xl font-bold text-red-400">{fallen.name}</h3><p className="text-gray-400">{fallen.title} {fallen.class ? fallen.class.name : ''} • Level {fallen.lvl}</p><p className="text-red-300">Fell on {fallen.day ? GAME_CONSTANTS.DAY_NAMES[fallen.day - 1]?.name || `Day ${fallen.day}` : 'Day 1'} • {fallen.xp} XP earned</p><p className="text-gray-300">Trials completed: {fallen.tasks}/{fallen.total}</p>{fallen.skipCount > 0 && (<p className="text-red-400 text-sm mt-1">💀 Skipped {fallen.skipCount} day{fallen.skipCount > 1 ? 's' : ''}</p>)}{fallen.cursed && (<p className="text-purple-400 text-sm">🌑 Died while cursed</p>)}<p className="text-red-500 text-sm italic mt-2">"The curse claimed another soul..."</p></div></div></div>))}</div>)}
+              <div className="bg-black/50 rounded-xl overflow-hidden border border-red-900/30">
+                <div className="px-6 pt-6 pb-4 text-center">
+                  <h2 className="text-2xl font-fantasy-decorative text-gray-500 tracking-wider">The Consumed</h2>
+                  <p className="text-red-400 text-sm italic font-fantasy mt-1">"Those who fell to the curse..."</p>
+                </div>
+                
+                <div className="flex items-center gap-3 px-6">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/15 to-transparent"></div>
+                  <div className="w-1.5 h-1.5 rotate-45 bg-red-600/20"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/15 to-transparent"></div>
+                </div>
+                
+                <div className="px-6 py-5">
+                {graveyard.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Skull size={56} className="mx-auto mb-4 text-gray-800"/>
+                    <p className="text-gray-500 font-fantasy">No fallen heroes... yet.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {graveyard.slice().reverse().map((fallen, i) => (
+                      <div key={i} className="bg-black/30 rounded-lg p-4 border border-red-900/20 opacity-60 hover:opacity-85 transition-all">
+                        <div className="flex items-center gap-4">
+                          <div className="text-3xl opacity-40">{fallen.class ? fallen.class.emblem : '☠️'}</div>
+                          <div className="flex-1">
+                            <h3 className="text-base font-fantasy tracking-wide text-red-400">{fallen.name}</h3>
+                            <p className="text-xs text-gray-400 font-fantasy">{fallen.title} {fallen.class ? fallen.class.name : ''} • Level {fallen.lvl}</p>
+                            <p className="text-xs text-red-400 mt-0.5">Fell on {fallen.day ? GAME_CONSTANTS.DAY_NAMES[fallen.day - 1]?.name || `Day ${fallen.day}` : 'Day 1'} • {fallen.xp} XP</p>
+                            <p className="text-xs text-gray-400">Trials: {fallen.tasks}/{fallen.total}</p>
+                            {fallen.skipCount > 0 && (<p className="text-red-400 text-[10px] mt-1">💀 Skipped {fallen.skipCount} day{fallen.skipCount > 1 ? 's' : ''}</p>)}
+                            {fallen.cursed && (<p className="text-purple-400 text-[10px]">🌑 Died while cursed</p>)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                </div>
               </div>
             </div>
           )}
@@ -3933,7 +4354,7 @@ setMiniBossCount(0);
                         <button 
                           onClick={useHealth} 
                           disabled={healthPots === 0 || hp >= getMaxHp()}
-                          className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all text-sm"
+                          className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-500 transition-all text-sm text-white font-medium"
                         >
                           Use
                         </button>
@@ -3960,7 +4381,7 @@ setMiniBossCount(0);
                             } 
                           }} 
                           disabled={staminaPots === 0 || stamina >= getMaxStamina()}
-                          className="bg-blue-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700 transition-all text-sm"
+                          className="bg-blue-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-500 transition-all text-sm text-white font-medium"
                         >
                           Use
                         </button>
@@ -3981,7 +4402,7 @@ setMiniBossCount(0);
                         <button 
                           onClick={useCleanse} 
                           disabled={cleansePots === 0 || curseLevel === 0}
-                          className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all text-sm"
+                          className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-500 transition-all text-sm text-white font-medium"
                         >
                           Use
                         </button>
@@ -4004,7 +4425,7 @@ setMiniBossCount(0);
                 
                 <button 
                   onClick={() => setShowInventoryModal(false)} 
-                  className="w-full mt-6 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                  className="w-full mt-6 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
                 >
                   Close
                 </button>
@@ -4116,7 +4537,7 @@ setMiniBossCount(0);
                 
                 <button 
                   onClick={() => setShowCraftingModal(false)} 
-                  className="w-full mt-6 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                  className="w-full mt-6 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
                 >
                   Close
                 </button>
@@ -4182,7 +4603,7 @@ setMiniBossCount(0);
               addLog(`✨ Hero customized! ${customName.trim() ? `Name: ${customName.trim()}` : ''} ${customClass ? `Class: ${customClass.name}` : ''}`);
             }
           }}
-          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all"
+          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-500 transition-all text-white font-medium"
         >
           Confirm
         </button>
@@ -4192,7 +4613,7 @@ setMiniBossCount(0);
             setCustomClass(null);
             setShowCustomizeModal(false);
           }} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
         >
           Cancel
         </button>
@@ -4231,13 +4652,13 @@ setMiniBossCount(0);
             }
           }}
           disabled={!newDeck.name.trim()} 
-          className="flex-1 bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="flex-1 bg-purple-600 py-2 rounded-lg hover:bg-purple-500 transition-all text-white font-medium disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           Create Deck
         </button>
         <button 
           onClick={() => { setShowDeckModal(false); setNewDeck({name: ''}); }} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
         >
           Cancel
         </button>
@@ -4294,13 +4715,13 @@ setMiniBossCount(0);
             }
           }}
           disabled={!newCard.front.trim() || !newCard.back.trim()} 
-          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-500 transition-all text-white font-medium disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           Add Card
         </button>
         <button 
           onClick={() => { setShowCardModal(false); setNewCard({front: '', back: ''}); }} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
         >
           Cancel
         </button>
@@ -4346,13 +4767,13 @@ setMiniBossCount(0);
         className="bg-gray-800 rounded-xl p-12 mb-6 min-h-[300px] flex items-center justify-center cursor-pointer hover:bg-gray-750 transition-all border-2 border-purple-500"
       >
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-4">{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
+          <p className="text-sm text-gray-400 mb-4">{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
           <p className="text-2xl text-white whitespace-pre-wrap">
             {isFlipped 
               ? flashcardDecks[selectedDeck].cards[studyQueue[0]].back 
               : flashcardDecks[selectedDeck].cards[studyQueue[0]].front}
           </p>
-          <p className="text-sm text-gray-500 mt-6 italic">Click to flip</p>
+          <p className="text-sm text-gray-400 mt-6 italic">Click to flip</p>
         </div>
       </div>
       
@@ -4373,7 +4794,7 @@ setMiniBossCount(0);
               setStudyQueue(newQueue);
               setIsFlipped(false);
             }}
-            className="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-lg font-bold text-lg transition-all"
+            className="flex-1 bg-red-600 hover:bg-red-500 py-4 rounded-lg font-bold text-lg transition-all text-white"
           >
             ❌ Review Again
           </button>
@@ -4433,7 +4854,7 @@ setMiniBossCount(0);
                 setIsFlipped(false);
               }
             }}
-            className="flex-1 bg-green-600 hover:bg-green-700 py-4 rounded-lg font-bold text-lg transition-all"
+            className="flex-1 bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-lg transition-all text-white"
           >
             ✓ Got It! (+5 XP)
           </button>
@@ -4474,7 +4895,7 @@ setMiniBossCount(0);
           </div>
           
           <div className="bg-gray-800 rounded-xl p-8 mb-6 min-h-[200px] border-2 border-blue-500">
-            <p className="text-sm text-gray-500 mb-4">QUESTION</p>
+            <p className="text-sm text-gray-400 mb-4">QUESTION</p>
             <p className="text-2xl text-white mb-8">{quizQuestions[currentQuizIndex]?.question}</p>
             
             <div className="space-y-3">
@@ -4485,14 +4906,14 @@ setMiniBossCount(0);
                   disabled={selectedAnswer !== null}
                   className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
                     selectedAnswer === null
-                      ? 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-blue-400'
+                      ? 'bg-gray-600 border-gray-500 hover:bg-gray-500 hover:border-blue-400 text-white'
                       : selectedAnswer === choice
                         ? choice === quizQuestions[currentQuizIndex].correctAnswer
-                          ? 'bg-green-600 border-green-400'
-                          : 'bg-red-600 border-red-400'
+                          ? 'bg-green-600 border-green-400 text-white'
+                          : 'bg-red-600 border-red-400 text-white'
                         : choice === quizQuestions[currentQuizIndex].correctAnswer
-                          ? 'bg-green-600 border-green-400'
-                          : 'bg-gray-700 border-gray-600'
+                          ? 'bg-green-600 border-green-400 text-white'
+                          : 'bg-gray-600 border-gray-500 text-gray-300'
                   } disabled:cursor-not-allowed`}
                 >
                   <span className="font-bold mr-3">{String.fromCharCode(65 + idx)}.</span>
@@ -4549,7 +4970,7 @@ setMiniBossCount(0);
                   setSelectedAnswer(null);
                 }
               }}
-              className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-lg font-bold text-lg transition-all"
+              className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-lg font-bold text-lg transition-all text-white"
             >
               {currentQuizIndex + 1 === quizQuestions.length ? 'See Results' : 'Next Question →'}
             </button>
@@ -4592,7 +5013,7 @@ setMiniBossCount(0);
                   setIsFlipped(false);
                   setShowStudyModal(true);
                 }}
-                className="w-full bg-purple-600 hover:bg-purple-700 py-4 rounded-lg font-bold text-lg transition-all"
+                className="w-full bg-purple-600 hover:bg-purple-500 py-4 rounded-lg font-bold text-lg transition-all text-white"
               >
                 📖 Review Mistakes ({wrongCardIndices.length} card{wrongCardIndices.length !== 1 ? 's' : ''})
               </button>
@@ -4608,8 +5029,8 @@ setMiniBossCount(0);
               disabled={wrongCardIndices.length > 0 && !mistakesReviewed}
               className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
                 wrongCardIndices.length > 0 && !mistakesReviewed
-                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-500 text-white'
               }`}
             >
               {wrongCardIndices.length > 0 && !mistakesReviewed ? '🔒 Review Mistakes First' : '🔄 Retake Quiz (50% XP)'}
@@ -4629,7 +5050,7 @@ setMiniBossCount(0);
                 setMistakesReviewed(false);
                 setReviewingMistakes(false);
               }}
-              className="w-full bg-gray-600 hover:bg-gray-700 py-4 rounded-lg font-bold text-lg transition-all"
+              className="w-full bg-gray-600 hover:bg-gray-500 py-4 rounded-lg font-bold text-lg transition-all text-gray-200"
             >
               Close
             </button>
@@ -4694,15 +5115,15 @@ setMiniBossCount(0);
       
       <div className="flex gap-2">
         <button 
-          onClick={addTask} 
+          onClick={() => { sfx.playClick(); addTask(); }} 
           disabled={!newTask.title} 
-          className="flex-1 bg-red-600 py-2 rounded-lg hover:bg-red-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="flex-1 bg-red-600 py-2 rounded-lg hover:bg-red-500 transition-all text-white font-medium disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           Accept Trial
         </button>
         <button 
           onClick={() => setShowModal(false)} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
         >
           Cancel
         </button>
@@ -4759,7 +5180,7 @@ setMiniBossCount(0);
       
       <button 
         onClick={() => setShowImportModal(false)} 
-        className="w-full mt-4 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        className="w-full mt-4 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
       >
         Cancel
       </button>
@@ -4845,7 +5266,7 @@ setMiniBossCount(0);
             } 
           }}
           disabled={!newPlanItem.title} 
-          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-500 transition-all text-white font-medium disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           Add Task
         </button>
@@ -4854,7 +5275,7 @@ setMiniBossCount(0);
             setShowPlanModal(false); 
             setNewPlanItem({ title: '', priority: 'routine' }); 
           }} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 bg-gray-600 py-2 rounded-lg hover:bg-gray-500 transition-all text-gray-200 font-medium"
         >
           Cancel
         </button>
@@ -4951,7 +5372,7 @@ setMiniBossCount(0);
             } 
           }} 
           disabled={!newCalendarTask.title.trim()} 
-          className="w-full bg-green-600 py-2 rounded-lg hover:bg-green-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="w-full bg-green-600 py-2 rounded-lg hover:bg-green-500 transition-all text-white font-medium disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
         >
           Add Task
         </button>
@@ -5016,144 +5437,334 @@ setMiniBossCount(0);
 )}
 
           {showBoss && (
-            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
-              <div className={`bg-gradient-to-b from-red-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-red-600 shadow-2xl shadow-red-900/50 boss-enter my-8 ${bossFlash ? 'damage-flash-boss' : ''}`}>
-               {bossName && (<h2 className="text-5xl text-center text-yellow-400 mb-2 font-bold" style={{fontFamily: 'Cinzel, serif'}}>{bossName}{bossDebuffs.poisonTurns > 0 && (<span className="ml-3 text-lg text-green-400 animate-pulse">☠️ POISONED ({bossDebuffs.poisonTurns})</span>)}{bossDebuffs.marked && (<span className="ml-3 text-lg text-cyan-400 animate-pulse">🎯 MARKED</span>)}{bossDebuffs.stunned && (<span className="ml-3 text-lg text-purple-400 animate-pulse">✨ STUNNED</span>)}</h2>)}
-               <p className="text-xl font-bold text-center text-red-400 mb-4">
-  {isFinalBoss ? (inPhase3 ? 'PHASE 3: ABYSS AWAKENING' : inPhase2 ? 'PHASE 2: THE PRESSURE' : 'THE UNDYING LEGEND') : 
-   battleType === 'elite' ? 'TORMENTED CHAMPION' : 
-   battleType === 'wave' ? `WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
-   'ENEMY ENCOUNTER'}
-</p>
+             <div className={`fixed inset-0 ${isFinalBoss && gauntletPhase === 3 ? 'bg-purple-950 bg-opacity-95' : isFinalBoss && gauntletPhase === 2 ? 'bg-orange-950 bg-opacity-95' : 'bg-black bg-opacity-95'} flex items-start justify-center p-4 z-50 overflow-y-auto transition-colors duration-1000`}>
+              <div className={`rounded-xl max-w-2xl w-full border-2 boss-enter my-8 relative overflow-hidden ${bossFlash ? 'damage-flash-boss' : ''} ${isFinalBoss ? (gauntletPhase === 3 ? 'gauntlet-phase-3' : gauntletPhase === 2 ? 'gauntlet-phase-2' : 'gauntlet-phase-1') : 'bg-gradient-to-b from-red-950 via-red-950/80 to-black border-red-800/60 shadow-[0_0_40px_rgba(220,38,38,0.3)]'}`}>
                 
-                <div className="space-y-6">
-                  {/* Boss HP Bar */}
-                  <div>
-                    <div className="flex justify-between mb-2">
-                      <span className="text-red-400 font-bold">
-                        {bossName || 'Boss'}
-                        {enragedTurns > 0 && (<span className="ml-3 text-orange-400 font-bold animate-pulse">ENRAGED (ATK↑ DEF↓ ACC↓) ({enragedTurns})</span>)}
-                      </span>
-                      <span className="text-red-400">{bossHp}/{bossMax}</span>
+                {/* Decorative top edge */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+                
+                {/* Battle card header section */}
+                <div className="relative px-8 pt-8 pb-4">
+                  {/* Battle type label */}
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/30 to-transparent"></div>
+                    <p className={`text-xs font-fantasy tracking-[0.3em] uppercase ${isFinalBoss ? (gauntletPhase === 3 ? 'text-purple-400/80' : gauntletPhase === 2 ? 'text-orange-400/80' : 'text-red-400/80') : battleType === 'elite' ? 'text-orange-400/80' : battleType === 'wave' ? 'text-cyan-400/80' : 'text-red-400/80'}`}>
+                      {isFinalBoss ? 'The Gauntlet' : 
+                       battleType === 'elite' ? 'Tormented Champion' : 
+                       battleType === 'wave' ? `Wave Assault — ${currentWaveEnemy}/${totalWaveEnemies}` : 
+                       'Enemy Encounter'}
+                    </p>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/30 to-transparent"></div>
+                  </div>
+
+                  {/* Boss name */}
+                  {bossName && (
+                    <h2 className="text-4xl md:text-5xl text-center text-yellow-400 mb-1 font-fantasy-decorative tracking-wider drop-shadow-[0_0_20px_rgba(234,179,8,0.3)]">
+                      {isFinalBoss ? (gauntletPhase === 1 ? bossName : gauntletPhase === 2 ? `${bossName.split(' ')[0]}, The Accursed` : `${bossName.split(' ')[0]}, Devourer of Souls`) : bossName}
+                    </h2>
+                  )}
+                  
+                  {/* Status effects */}
+                  {(bossDebuffs.poisonTurns > 0 || bossDebuffs.marked || bossDebuffs.stunned) && (
+                    <div className="flex items-center justify-center gap-3 mt-2">
+                      {bossDebuffs.poisonTurns > 0 && (<span className="text-sm text-green-400 animate-pulse bg-green-900/30 px-2 py-0.5 rounded-full border border-green-700/40 font-fantasy">☠️ Poisoned ({bossDebuffs.poisonTurns})</span>)}
+                      {bossDebuffs.marked && (<span className="text-sm text-cyan-400 animate-pulse bg-cyan-900/30 px-2 py-0.5 rounded-full border border-cyan-700/40 font-fantasy">🎯 Marked</span>)}
+                      {bossDebuffs.stunned && (<span className="text-sm text-purple-400 animate-pulse bg-purple-900/30 px-2 py-0.5 rounded-full border border-purple-700/40 font-fantasy">✨ Stunned</span>)}
                     </div>
-                    <div className="bg-gray-800 rounded-full h-6 overflow-hidden">
-                      <div className={`bg-red-600 h-6 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div>
+                  )}
+                  
+                  {/* Gauntlet flavor text */}
+                  {isFinalBoss && (
+                    <p className="text-sm text-center text-gray-500 italic mt-2 font-fantasy">
+                      {gauntletPhase === 1 ? '"Prove your worth against the cursed guardian..."' :
+                       gauntletPhase === 2 ? '"The curse tightens its grip. Each blow hits harder..."' :
+                       '"Shadows swarm. The abyss hungers for your soul..."'}
+                    </p>
+                  )}
+                </div>
+                
+                {/* Divider */}
+                <div className="flex items-center gap-3 px-8">
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/30 to-transparent"></div>
+                  <div className="w-1.5 h-1.5 rotate-45 bg-red-600/40"></div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-transparent via-red-600/30 to-transparent"></div>
+                </div>
+
+                {/* Battle content */}
+                <div className="px-8 py-6 space-y-5">
+                  {/* Boss HP Bar */}
+                  <div className="bg-black/40 rounded-lg p-4 border border-red-900/30">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-red-400 font-fantasy text-sm tracking-wide">
+                        {bossName || 'Boss'}
+                        {enragedTurns > 0 && (<span className="ml-3 text-orange-400 font-bold animate-pulse">⚡ ENRAGED ({enragedTurns})</span>)}
+                      </span>
+                      <span className="text-red-400/70 text-sm font-mono">{bossHp}/{bossMax}</span>
+                    </div>
+                    <div className="bg-black/60 rounded-full h-5 overflow-hidden border border-red-900/20">
+                      <div className={`h-5 rounded-full transition-all duration-500 ${bossFlash ? 'hp-pulse' : ''} ${
+                        (bossHp / bossMax) > 0.5 ? 'bg-gradient-to-r from-red-700 to-red-500 shadow-[0_0_12px_rgba(220,38,38,0.4)]' :
+                        (bossHp / bossMax) > 0.25 ? 'bg-gradient-to-r from-orange-700 to-orange-500 shadow-[0_0_12px_rgba(234,88,12,0.4)]' :
+                        'bg-gradient-to-r from-yellow-700 to-yellow-500 shadow-[0_0_12px_rgba(234,179,8,0.4)] animate-pulse'
+                      }`} style={{width: `${(bossHp / bossMax) * 100}%`}}></div>
                     </div>
                   </div>
                   
                   {/* Phase 2 Ramping Damage Indicator */}
-                  {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
-                    <div className="bg-orange-900 bg-opacity-60 rounded-lg p-3 border-2 border-orange-500">
-                      <p className="text-orange-400 font-bold text-center">🔺 RAMPING PRESSURE</p>
-                      <p className="text-white text-center text-sm">Boss damage: +{phase2DamageStacks * 5}% ({phase2DamageStacks} stacks)</p>
-                      <p className="text-xs text-orange-300 text-center italic mt-1">Stacks increase each turn!</p>
+                  {gauntletPhase === 2 && phase2DamageStacks > 0 && (
+                    <div className="bg-orange-950/40 rounded-lg p-3 border border-orange-700/40">
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-orange-600/30"></div>
+                        <p className="text-orange-400 font-fantasy text-xs tracking-[0.2em] uppercase">Ramping Pressure</p>
+                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-orange-600/30"></div>
+                      </div>
+                      <p className="text-white text-center text-sm">Boss damage: +{phase2DamageStacks * 5}% <span className="text-orange-400/60">({phase2DamageStacks} stacks)</span></p>
                     </div>
                   )}
                   
                   {/* Shadow Adds (Phase 2 & 3) */}
-                  {(inPhase2 || inPhase3) && shadowAdds.length > 0 && (
-                    <div className="bg-black bg-opacity-60 rounded-lg p-4 border-2 border-purple-600">
-                      <p className="text-purple-400 font-bold mb-2 text-center">👤 SHADOW ADD{shadowAdds.length > 1 ? 'S' : ''} ({shadowAdds.length})</p>
+                  {(gauntletPhase === 2 || gauntletPhase === 3) && shadowAdds.length > 0 && (
+                    <div className="bg-purple-950/30 rounded-lg p-4 border border-purple-700/40">
+                      <div className="flex items-center justify-center gap-2 mb-3">
+                        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-purple-600/30"></div>
+                        <p className="text-purple-400 font-fantasy text-xs tracking-[0.2em] uppercase">Shadow Adds ({shadowAdds.length}/3)</p>
+                        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-purple-600/30"></div>
+                      </div>
                       <div className="space-y-2">
                         {shadowAdds.map((add, idx) => (
-                          <div key={add.id} className="flex items-center justify-between bg-gray-900 rounded p-2">
-                            <span className="text-gray-300">Shadow #{idx + 1}</span>
+                          <div key={add.id} className="flex items-center justify-between bg-black/40 rounded-lg p-2 border border-purple-900/20">
+                            <span className="text-gray-400 text-sm font-fantasy">Shadow #{idx + 1}</span>
                             <div className="flex-1 mx-4">
-                              <div className="bg-gray-700 rounded-full h-3 overflow-hidden">
-                                <div className="bg-purple-500 h-3 rounded-full" style={{width: `${(add.hp / add.maxHp) * 100}%`}}></div>
+                              <div className="bg-black/60 rounded-full h-3 overflow-hidden border border-purple-900/20">
+                                <div className="bg-gradient-to-r from-purple-700 to-purple-500 h-3 rounded-full transition-all duration-300" style={{width: `${(add.hp / add.maxHp) * 100}%`}}></div>
                               </div>
                             </div>
-                            <span className="text-purple-400 text-sm">{add.hp}/{add.maxHp}</span>
+                            <span className="text-purple-400/70 text-xs font-mono">{add.hp}/{add.maxHp}</span>
                           </div>
                         ))}
                       </div>
-                      <p className="text-xs text-purple-300 mt-2 text-center italic">
-                        Your attacks target adds first! {inPhase3 ? 'Each add heals boss for 8 HP per turn.' : 'Kill it before Phase 3!'}
+                      <button 
+                        onClick={() => setTargetingAdds(!targetingAdds)}
+                        className={`w-full mt-3 py-2 rounded-lg font-fantasy text-sm tracking-wide transition-all ${
+                          targetingAdds 
+                            ? 'bg-purple-600/30 border border-purple-400/50 text-purple-300 shadow-[0_0_15px_rgba(168,85,247,0.2)] animate-pulse' 
+                            : 'bg-black/40 border border-gray-700/50 text-gray-400 hover:text-gray-300 hover:border-gray-600/50'
+                        }`}
+                      >
+                        {targetingAdds ? '🎯 Targeting Adds — click to switch to boss' : '⚔️ Targeting Boss — click to switch to adds'}
+                      </button>
+                      <p className="text-xs text-purple-400 mt-2 text-center italic">
+                        {gauntletPhase === 3 ? 'Each add heals boss for 8 HP per turn. Max 3 adds.' : 'Kill it before Phase 3!'}
                       </p>
                     </div>
                   )}
                   
                   {/* AOE Warning */}
-                  {aoeWarning && inPhase3 && (
-                    <div className="bg-red-900 bg-opacity-80 rounded-lg p-4 border-4 border-yellow-400 animate-pulse">
-                      <p className="text-yellow-400 font-bold text-center text-xl">⚠️ BOSS PREPARING DEVASTATING AOE!</p>
-                      <p className="text-white text-center text-sm mt-2">Next turn: 35 damage slam!</p>
-                      <div className="mt-3 pt-3 border-t border-yellow-600">
-                        <p className="text-cyan-300 text-center text-sm font-bold">🛡️ DODGE: Avoid damage completely (safe)</p>
-                        <p className="text-red-300 text-center text-sm font-bold">⚔️ ATTACK: Deal +50% damage but take counter-attack AND AOE (risky!)</p>
+                  {aoeWarning && gauntletPhase === 3 && (
+                    <div className="bg-red-950/60 rounded-lg p-4 border-2 border-yellow-500/60 animate-pulse">
+                      <p className="text-yellow-400 font-fantasy-decorative text-center text-lg tracking-wider mb-2">⚠️ Devastating AOE Incoming</p>
+                      <p className="text-white/80 text-center text-sm">Next turn: 35 damage slam!</p>
+                      <div className="mt-3 pt-3 border-t border-yellow-700/30">
+                        <p className="text-cyan-300/80 text-center text-sm">🛡️ <span className="font-fantasy">Dodge</span> — Avoid damage completely</p>
+                        <p className="text-red-300/80 text-center text-sm mt-1">⚔️ <span className="font-fantasy">Attack</span> — +50% damage but take counter + AOE</p>
                       </div>
                     </div>
                   )}
                   
-                  {/* Enemy Dialogue Box - Positioned below enemy HP */}
+                  {/* Enemy Dialogue Box */}
                   {showTauntBoxes ? (
-                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-red-600 min-h-[60px] flex items-center">
+                    <div className="bg-black/50 rounded-lg p-3 border border-red-800/30 relative">
+                      <div className="absolute -top-2 left-4 px-2 bg-red-950 text-red-400 text-[10px] font-fantasy tracking-widest uppercase">Enemy</div>
                       <p className="text-gray-300 text-sm italic leading-relaxed">{enemyTauntResponse ? `"${enemyTauntResponse}"` : '...'}</p>
                     </div>
                   ) : enemyDialogue ? (
-                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-gray-600">
+                    <div className="bg-black/50 rounded-lg p-3 border border-gray-800/30 relative">
+                      <div className="absolute -top-2 left-4 px-2 bg-red-950 text-gray-400 text-[10px] font-fantasy tracking-widest uppercase">Enemy</div>
                       <p className="text-gray-300 text-center italic text-sm leading-relaxed">"{enemyDialogue}"</p>
                     </div>
                   ) : null}
+
+                  {/* Divider between enemy and player */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
+                    <span className="text-gray-400 text-xs font-fantasy tracking-widest">VS</span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700/40 to-transparent"></div>
+                  </div>
                   
                   {/* Player HP and SP Bars */}
-                  <div>
+                  <div className="bg-black/40 rounded-lg p-4 border border-green-900/30">
                     <div className="flex justify-between mb-2">
-                      <span className="text-green-400 font-bold">{hero.name}</span>
-                      <span className="text-green-400">HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span>
+                      <span className="text-green-400 font-fantasy text-sm tracking-wide">{hero.name}</span>
+                      <span className="text-green-400 text-xs font-mono">HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span>
                     </div>
-                    <div className="bg-gray-800 rounded-full h-6 overflow-hidden mb-2">
-                      <div className={`bg-green-600 h-6 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
+                    <div className="bg-black/60 rounded-full h-5 overflow-hidden mb-2 border border-green-900/20">
+                      <div className={`h-5 rounded-full transition-all duration-500 ${playerFlash ? 'hp-pulse' : ''} ${
+                        (hp / getMaxHp()) > 0.5 ? 'bg-gradient-to-r from-green-700 to-green-500 shadow-[0_0_12px_rgba(34,197,94,0.3)]' :
+                        (hp / getMaxHp()) > 0.25 ? 'bg-gradient-to-r from-yellow-700 to-yellow-500 shadow-[0_0_12px_rgba(234,179,8,0.3)]' :
+                        'bg-gradient-to-r from-red-700 to-red-500 shadow-[0_0_12px_rgba(220,38,38,0.4)] animate-pulse'
+                      }`} style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
                     </div>
-                    <div className="bg-gray-800 rounded-full h-4 overflow-hidden">
-                      <div className="bg-cyan-500 h-4 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                    <div className="bg-black/60 rounded-full h-3 overflow-hidden border border-cyan-900/20">
+                      <div className="bg-gradient-to-r from-cyan-700 to-cyan-400 h-3 rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(34,211,238,0.2)]" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
                     </div>
                   </div>
                   
-                  {/* Player Dialogue Box - Positioned below player HP/SP */}
+                  {/* Player Dialogue Box */}
                   {showTauntBoxes && (
-                    <div className="bg-black bg-opacity-80 rounded-lg p-3 border-2 border-blue-600 min-h-[60px] flex items-center">
-                      <p className="text-white text-sm leading-relaxed">"{playerTaunt}"</p>
+                    <div className="bg-black/50 rounded-lg p-3 border border-blue-800/30 relative">
+                      <div className="absolute -top-2 left-4 px-2 bg-red-950 text-blue-400 text-[10px] font-fantasy tracking-widest uppercase">You</div>
+                      <p className="text-white/80 text-sm leading-relaxed">"{playerTaunt}"</p>
                     </div>
                   )}
                   
                   {/* Battle Actions */}
-                  {battling && bossHp > 0 && hp > 0 && (<><div className="flex gap-4"><button onClick={attack} className="flex-1 bg-red-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-red-600/50 hover:scale-105 active:scale-95">ATTACK</button>{isTauntAvailable && (<button onClick={taunt} className="flex-1 bg-orange-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-600/50 hover:scale-105 active:scale-95 animate-pulse border-2 border-yellow-400"><div>TAUNT</div><div className="text-sm">(Enrage Enemy)</div></button>)}{hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (<button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-cyan-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-cyan-700 transition-all shadow-lg hover:shadow-cyan-600/50 hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:scale-100"><div>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name.toUpperCase()}</div><div className="text-sm">({GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`})</div></button>)}{healthPots > 0 && (<button onClick={useHealth} className="bg-green-600 px-6 py-4 rounded-lg font-bold hover:bg-green-700 transition-all hover:scale-105 active:scale-95">HEAL</button>)}{canFlee && (<button onClick={flee} disabled={stamina < 25} className="bg-yellow-600 px-6 py-4 rounded-lg font-bold hover:bg-yellow-700 transition-all hover:scale-105 active:scale-95 disabled:bg-gray-600 disabled:cursor-not-allowed disabled:opacity-50" title="Lose 25 Stamina to escape">FLEE</button>)}{showDodgeButton && (<button onClick={dodge} className="flex-1 bg-blue-600 px-6 py-4 rounded-lg font-bold text-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/50 hover:scale-105 active:scale-95 animate-pulse border-4 border-cyan-400"><div>🛡️ DODGE</div><div className="text-sm">(Avoid AOE)</div></button>)}</div>{showDodgeButton && (<p className="text-xs text-cyan-400 text-center italic mt-2">🛡️ Dodge the AOE or attack for +50% damage (risky!)</p>)}{canFlee && (<p className="text-xs text-gray-400 text-center italic">💨 Fleeing costs 25 Stamina but lets you escape</p>)}{showDebug && (<><button onClick={() => { setBossHp(0); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">🛠️ DEBUG: Kill Boss Instantly</button><button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">💬 DEBUG: Force Taunt Available</button></>)}</>)}
-                  {bossHp <= 0 && (
-                    <div className="text-center">
+                  {battling && bossHp > 0 && hp > 0 && (
+                    <>
+                      {/* Action divider */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/20 to-transparent"></div>
+                        <span className="text-yellow-500 text-[10px] font-fantasy tracking-[0.3em] uppercase">Actions</span>
+                        <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-600/20 to-transparent"></div>
+                      </div>
+                      
+                      <div className="flex gap-3 flex-wrap">
+                        <button onClick={attack} className="flex-1 bg-gradient-to-b from-red-800/80 to-red-950/80 px-6 py-4 rounded-lg font-fantasy text-lg tracking-wide text-red-200 hover:from-red-700/80 hover:to-red-900/80 transition-all shadow-[0_0_15px_rgba(220,38,38,0.15)] hover:shadow-[0_0_25px_rgba(220,38,38,0.3)] hover:scale-105 active:scale-95 border border-red-700/30">
+                          ⚔️ Attack
+                        </button>
+                        
+                        {isTauntAvailable && (
+                          <button onClick={taunt} className="flex-1 bg-gradient-to-b from-orange-800/80 to-orange-950/80 px-6 py-4 rounded-lg font-fantasy text-lg tracking-wide text-orange-200 hover:from-orange-700/80 hover:to-orange-900/80 transition-all shadow-[0_0_15px_rgba(234,88,12,0.15)] hover:shadow-[0_0_25px_rgba(234,88,12,0.3)] hover:scale-105 active:scale-95 border border-orange-600/40 animate-pulse">
+                            <div>🔥 Taunt</div>
+                            <div className="text-xs text-orange-300 mt-0.5">Enrage Enemy</div>
+                          </button>
+                        )}
+                        
+                        {hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (
+                          <button onClick={specialAttack} disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)} className="flex-1 bg-gradient-to-b from-cyan-800/80 to-cyan-950/80 px-6 py-4 rounded-lg font-fantasy text-lg tracking-wide text-cyan-200 hover:from-cyan-700/80 hover:to-cyan-900/80 transition-all shadow-[0_0_15px_rgba(34,211,238,0.15)] hover:shadow-[0_0_25px_rgba(34,211,238,0.3)] hover:scale-105 active:scale-95 border border-cyan-700/30 disabled:from-gray-800/60 disabled:to-gray-900/60 disabled:text-gray-400 disabled:cursor-not-allowed disabled:scale-100 disabled:shadow-none disabled:border-gray-600/20">
+                            <div>✨ {GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
+                            <div className="text-xs text-cyan-300 mt-0.5">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`}</div>
+                          </button>
+                        )}
+                        
+                        {healthPots > 0 && (
+                          <button onClick={useHealth} className="bg-gradient-to-b from-green-800/80 to-green-950/80 px-5 py-4 rounded-lg font-fantasy tracking-wide text-green-200 hover:from-green-700/80 hover:to-green-900/80 transition-all hover:scale-105 active:scale-95 border border-green-700/30 shadow-[0_0_10px_rgba(34,197,94,0.1)]">
+                            💚 Heal
+                          </button>
+                        )}
+                        
+                        {canFlee && (
+                          <button onClick={flee} disabled={stamina < 25} className="bg-gradient-to-b from-yellow-800/60 to-yellow-950/60 px-5 py-4 rounded-lg font-fantasy tracking-wide text-yellow-200/80 hover:from-yellow-700/60 hover:to-yellow-900/60 transition-all hover:scale-105 active:scale-95 border border-yellow-700/20 disabled:from-gray-800/40 disabled:to-gray-900/40 disabled:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50" title="Lose 25 Stamina to escape">
+                            🏃 Flee
+                          </button>
+                        )}
+                      </div>
+                      
+                      {showDodgeButton && (
+                        <button onClick={dodge} className="w-full bg-gradient-to-b from-blue-700/80 to-blue-950/80 px-6 py-4 rounded-lg font-fantasy text-lg tracking-wide text-blue-200 hover:from-blue-600/80 hover:to-blue-900/80 transition-all shadow-[0_0_20px_rgba(59,130,246,0.2)] hover:shadow-[0_0_30px_rgba(59,130,246,0.4)] hover:scale-105 active:scale-95 animate-pulse border border-cyan-500/40 mt-1">
+                          <div>🛡️ Dodge</div>
+                          <div className="text-xs text-cyan-300 mt-0.5">Avoid the AOE</div>
+                        </button>
+                      )}
+                      
+                      {canFlee && (
+                        <p className="text-xs text-gray-400 text-center italic font-fantasy">Fleeing costs 25 Stamina but lets you escape</p>
+                      )}
+                      
+                      {showDebug && (
+                        <>
+                          <button onClick={() => { setBossHp(1); addLog('DEBUG: Boss HP set to 1 - one more hit!'); }} className="w-full bg-purple-700 px-4 py-2 rounded-lg text-sm hover:bg-purple-600 transition-all mt-2 border-2 border-purple-400">DEBUG: Boss HP → 1</button>
+                          <button onClick={() => { setIsTauntAvailable(true); }} className="w-full bg-orange-700 px-4 py-2 rounded-lg text-sm hover:bg-orange-600 transition-all mt-2 border-2 border-yellow-400">DEBUG: Force Taunt Available</button>
+                        </>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Victory / Defeat / Phase Transition */}
+                  {bossHp <= 0 && !phaseTransitioning && (
+                    <div className="text-center py-4">
                       {hasFled ? (
                         <>
-                          <p className="text-4xl font-bold text-yellow-400 mb-4 animate-pulse drop-shadow-[0_0_15px_rgba(250,204,21,0.6)]">FLED</p>
-                          <p className="text-gray-300 text-lg mb-6 italic">"Cowardice is also a strategy..."</p>
+                          <p className="text-4xl font-fantasy-decorative text-yellow-400 mb-4 animate-pulse drop-shadow-[0_0_20px_rgba(250,204,21,0.4)] tracking-widest">FLED</p>
+                          <p className="text-gray-500 text-sm mb-6 italic font-fantasy">"Cowardice is also a strategy..."</p>
                         </>
                       ) : (
                         <>
-                          <p className="text-3xl font-bold text-green-400 mb-2">{isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}</p>
-                          <p className="text-gray-400 text-sm mb-4 italic">{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p>
+                          <p className="text-3xl font-fantasy-decorative tracking-widest mb-2 drop-shadow-[0_0_20px_rgba(34,197,94,0.4)] text-green-400">{isFinalBoss ? 'Curse Broken' : 'Victory'}</p>
+                          <p className="text-gray-500 text-sm mb-4 italic font-fantasy">{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p>
                         </>
                       )}
                       
                       {!hasFled && victoryLoot.length > 0 && (
-                        <div className="bg-black bg-opacity-60 rounded-lg p-4 mb-4 border-2 border-yellow-500">
-                          <p className="text-yellow-400 font-bold mb-2 text-lg">⚔️ SPOILS OF BATTLE ⚔️</p>
+                        <div className="bg-black/50 rounded-lg p-4 mb-5 border border-yellow-700/30">
+                          <div className="flex items-center justify-center gap-2 mb-3">
+                            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-yellow-600/30"></div>
+                            <p className="text-yellow-500/80 font-fantasy text-xs tracking-[0.3em] uppercase">Spoils of Battle</p>
+                            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-yellow-600/30"></div>
+                          </div>
                           <div className="space-y-1">
                             {victoryLoot.map((loot, idx) => (
-                              <p key={idx} className="text-white text-sm animate-pulse">{loot}</p>
+                              <p key={idx} className="text-white/80 text-sm">{loot}</p>
                             ))}
                           </div>
                         </div>
                       )}
                       
                       {(battleType === 'elite' || isFinalBoss) && (
-                        <button onClick={advance} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">{isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}</button>
+                        <button onClick={() => { sfx.playClick(); advance(); }} className="bg-gradient-to-b from-yellow-600/80 to-yellow-800/80 text-yellow-100 px-8 py-3 rounded-lg font-fantasy text-xl tracking-wider hover:from-yellow-500/80 hover:to-yellow-700/80 transition-all shadow-[0_0_25px_rgba(234,179,8,0.2)] hover:shadow-[0_0_35px_rgba(234,179,8,0.4)] border border-yellow-500/40">{isFinalBoss ? '✨ Claim Freedom' : 'Continue'}</button>
                       )}
                       {(battleType === 'regular' || battleType === 'wave') && (
-                        <button onClick={() => { setShowBoss(false); setHasFled(false); addLog('⚔️ Ready for your next trial...'); }} className="bg-green-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-green-400 transition-all shadow-lg shadow-green-500/50">CONTINUE</button>
+                        <button onClick={() => { setShowBoss(false); setHasFled(false); addLog('⚔️ Ready for your next trial...'); }} className="bg-gradient-to-b from-green-700/80 to-green-900/80 text-green-100 px-8 py-3 rounded-lg font-fantasy text-xl tracking-wider hover:from-green-600/80 hover:to-green-800/80 transition-all shadow-[0_0_20px_rgba(34,197,94,0.2)] hover:shadow-[0_0_30px_rgba(34,197,94,0.3)] border border-green-600/40">Continue</button>
                       )}
                     </div>
                   )}
-                  {hp <= 0 && (<div className="text-center"><p className="text-3xl font-bold text-red-400 mb-2">DEFEATED</p><p className="text-gray-400 text-sm mb-4 italic">"The curse claims another victim..."</p><button onClick={() => { setShowBoss(false); die(); }} className="bg-red-600 text-white px-8 py-3 rounded-lg font-bold text-xl hover:bg-red-700 transition-all shadow-lg shadow-red-600/50">CONTINUE</button></div>)}
+                  
+                  {/* Phase Transition Screen */}
+                  {phaseTransitioning && (
+                    <div className="text-center py-4">
+                      <div className="mb-6">
+                        <p className="text-2xl font-fantasy-decorative text-orange-400 mb-2 animate-pulse tracking-widest drop-shadow-[0_0_15px_rgba(234,88,12,0.4)]">
+                          💀 {gauntletPhase === 1 ? bossName : `${bossName.split(' ')[0]}, The Accursed`} Defeated 💀
+                        </p>
+                        <p className="text-sm text-gray-500 italic font-fantasy mb-1">
+                          {gauntletPhase === 1 ? '"The first seal cracks..."' : '"The curse wavers..."'}
+                        </p>
+                        <p className="text-lg text-red-300/80 italic mb-4 font-fantasy">
+                          "{enemyDialogue}"
+                        </p>
+                        <div className="bg-red-950/40 rounded-lg p-4 border border-red-700/30 mb-4">
+                          <p className="text-yellow-400 font-fantasy-decorative text-lg mb-3 tracking-wider">
+                            ⚠️ {gauntletPhase + 1 === 2 ? `${bossName.split(' ')[0]}, The Accursed` : `${bossName.split(' ')[0]}, Devourer of Souls`} Awakens
+                          </p>
+                          {victoryLoot.map((line, idx) => (
+                            <p key={idx} className="text-white/70 text-sm">{line}</p>
+                          ))}
+                          <div className="mt-3 pt-3 border-t border-red-800/30">
+                            <p className="text-green-400/80 text-sm">❤️ HP fully restored</p>
+                            <p className="text-cyan-400/80 text-sm">⚡ Stamina fully restored</p>
+                            <p className="text-yellow-400/80 text-sm">💊 Potions will NOT be restored</p>
+                          </div>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => { sfx.playClick(); beginNextGauntletPhase(); }}
+                        className="bg-gradient-to-b from-red-700/80 to-red-950/80 text-red-100 px-10 py-4 rounded-lg font-fantasy-decorative text-xl tracking-widest hover:from-red-600/80 hover:to-red-900/80 transition-all shadow-[0_0_30px_rgba(220,38,38,0.3)] hover:shadow-[0_0_40px_rgba(220,38,38,0.5)] hover:scale-105 active:scale-95 animate-pulse border border-yellow-500/40"
+                      >
+                        ⚔️ Face {gauntletPhase + 1 === 2 ? 'The Accursed' : 'The Devourer'} ⚔️
+                      </button>
+                    </div>
+                  )}
+                  
+                  {hp <= 0 && (
+                    <div className="text-center py-4">
+                      <p className="text-3xl font-fantasy-decorative text-red-400 mb-2 tracking-widest drop-shadow-[0_0_15px_rgba(220,38,38,0.4)]">Defeated</p>
+                      <p className="text-gray-500 text-sm mb-4 italic font-fantasy">"The curse claims another victim..."</p>
+                      <button onClick={() => { setShowBoss(false); die(); }} className="bg-gradient-to-b from-red-700/80 to-red-950/80 text-red-100 px-8 py-3 rounded-lg font-fantasy text-xl tracking-wider hover:from-red-600/80 hover:to-red-900/80 transition-all shadow-[0_0_20px_rgba(220,38,38,0.2)] border border-red-600/30">Continue</button>
+                    </div>
+                  )}
                 </div>
+                
+                {/* Decorative bottom edge */}
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
               </div>
             </div>
           )}
@@ -5190,7 +5801,7 @@ setMiniBossCount(0);
         <div className="flex gap-4 justify-center mb-6">
           <button 
             onClick={() => setPomodoroRunning(!pomodoroRunning)}
-            className="bg-blue-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-blue-700 transition-all"
+            className="bg-blue-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-blue-500 transition-all text-white"
           >
             {pomodoroRunning ? 'Pause' : 'Resume'}
           </button>
@@ -5203,7 +5814,7 @@ setMiniBossCount(0);
                 setPomodoroRunning(true);
                 addLog('Skipped break - back to work!');
               }}
-              className="bg-yellow-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-700 transition-all"
+              className="bg-yellow-600 px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-500 transition-all text-white"
             >
               Skip Break
             </button>
@@ -5217,7 +5828,7 @@ setMiniBossCount(0);
             setPomodoroRunning(false);
             addLog(`Focus session ended. Completed ${pomodorosCompleted} pomodoro${pomodorosCompleted !== 1 ? 's' : ''}.`);
           }}
-          className="bg-gray-700 px-8 py-3 rounded-lg font-bold hover:bg-gray-600 transition-all"
+          className="bg-gray-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-500 transition-all text-gray-200"
         >
           Finish Task & Return
         </button>
@@ -5228,11 +5839,11 @@ setMiniBossCount(0);
         </div>
         
         <div className="flex justify-center mt-8 pb-6">
-          <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
+          <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-all border border-gray-600">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.8.0 - Fourth-Wall Taunt System</p>
+          <p className="text-xs text-gray-500">v4.2 - Multi-Phase Gauntlet</p>
         </div>
       </div>
       )}
