@@ -2972,9 +2972,13 @@ setMiniBossCount(0);
             <h1 className="text-6xl mb-2" style={{
               fontFamily: "'Cinzel', serif", 
               fontWeight: 900,
-              color: '#FF6B6B',
-              textShadow: '0 0 15px rgba(255, 107, 107, 0.4), 0 0 30px rgba(255, 107, 107, 0.25), 0 0 40px rgba(220, 38, 38, 0.15)',
-              letterSpacing: '0.1em'
+              background: 'linear-gradient(to bottom, #FF6B6B 0%, #8B0000 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textShadow: 'none',
+              letterSpacing: '0.1em',
+              filter: 'drop-shadow(0 0 15px rgba(255, 107, 107, 0.4)) drop-shadow(0 0 30px rgba(255, 107, 107, 0.25))'
             }}>
               CURSE OF KNOWLEDGE
             </h1>
@@ -3391,14 +3395,29 @@ setMiniBossCount(0);
           {activeTab === 'quest' && (
             <div className="space-y-6">
               {!hasStarted ? (
-                <div className="bg-black bg-opacity-50 rounded-xl p-8 text-center border-2 border-red-900">
-                  <h2 className="text-3xl font-bold text-yellow-400 mb-2">
+                <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.gold, background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}}>
+                  {/* Character Header */}
+                  <div className="mb-6">
+                    {/* Player Name */}
+                    <h2 className="text-3xl mb-2 tracking-wide" style={{color: '#F5F5DC', textShadow: '0 0 15px rgba(245, 245, 220, 0.4)', fontWeight: '400'}}>
+                      {hero.name}
+                    </h2>
+                    
+                    {/* Class and Level */}
+                    <p className="text-base mb-4" style={{color: COLORS.silver}}>
+                      Novice {hero.class.name} — Level {level}
+                    </p>
+                  </div>
+                  
+                  {/* Date Section */}
+                  <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.gold}}>
                     {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                   </h2>
-                  <p className="text-lg text-gray-300 mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric' })}</p>
-                  <p className="text-sm text-gray-400 italic mb-4">"Begin your trials for today..."</p>
-                  <p className="mb-4 text-sm text-gray-400">⚠️ Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
-                  <button onClick={start} className="bg-yellow-500 text-black px-8 py-3 rounded-lg font-bold text-xl hover:bg-yellow-400 transition-all shadow-lg shadow-yellow-500/50">START DAY</button>
+                  <p className="text-base text-gray-300 mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric' })}</p>
+                  <p className="text-sm italic mb-4" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
+                  <p className="text-sm text-gray-400 italic mb-4">"{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"</p>
+                  <p className="mb-4 text-sm text-gray-400">Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
+                  <button onClick={start} className="px-8 py-3 rounded-lg font-bold text-xl transition-all shadow-lg" style={{backgroundColor: COLORS.gold, color: COLORS.obsidian.base}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFD700'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.gold}>START DAY</button>
                 </div>
               ) : (
                 <>
@@ -3406,11 +3425,11 @@ setMiniBossCount(0);
                     <div className="text-center mb-4">
                       {/* Section header with decorative divider */}
                       <div className="mb-3">
-                        <h2 className="text-2xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
+                        <h2 className="text-2xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
                         <div className="flex items-center justify-center gap-2">
-                          <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                          <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-                          <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+                          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+                          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
                         </div>
                       </div>
                       <p className="text-sm" style={{color: '#F5F5DC'}}>{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
@@ -4108,30 +4127,44 @@ setMiniBossCount(0);
           )}
 
           {showInventoryModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowInventoryModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-lg w-full border-2 border-red-500 relative" onClick={e => e.stopPropagation()}>
+            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50" onClick={() => setShowInventoryModal(false)}>
+              <div className="rounded-xl p-6 max-w-lg w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(40, 30, 10, 0.95), rgba(30, 20, 0, 0.95), rgba(20, 10, 0, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
                 <button onClick={() => setShowInventoryModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
                 
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-red-400">SUPPLIES</h2>
-                  <p className="text-gray-400 text-sm mt-1 italic">"What keeps you alive in the darkness..."</p>
+                  <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.amber.base, letterSpacing: '0.1em'}}>SUPPLIES</h2>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to right, transparent, rgba(184, 134, 11, 0.3))`}}></div>
+                    <span style={{color: 'rgba(184, 134, 11, 0.4)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to left, transparent, rgba(184, 134, 11, 0.3))`}}></div>
+                  </div>
+                  <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"What keeps you alive in the darkness..."</p>
                 </div>
                 
                 <div className="space-y-4">
                   {/* Health Potions */}
-                  <div className="bg-red-900 bg-opacity-50 rounded-lg p-4 border-2 border-red-700">
+                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
-                        <p className="font-bold text-white text-lg">Health Potion</p>
-                        <p className="text-sm text-red-300 mb-1">Restores 30 HP</p>
-                        <p className="text-xs text-gray-400 italic">"Crimson elixir. Mends wounds."</p>
+                        <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Health Potion</p>
+                        <p className="text-sm mb-1" style={{color: '#FF6B6B'}}>Restores 30 HP</p>
+                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Crimson elixir. Mends wounds."</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl text-red-400 font-bold mb-2">{healthPots}</p>
+                        <p className="text-3xl font-bold mb-2" style={{color: '#FF6B6B'}}>{healthPots}</p>
                         <button 
                           onClick={useHealth} 
                           disabled={healthPots === 0 || hp >= getMaxHp()}
-                          className="bg-red-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-red-700 transition-all text-sm"
+                          className="px-4 py-2 rounded transition-all text-sm border-2"
+                          style={{
+                            backgroundColor: (healthPots === 0 || hp >= getMaxHp()) ? '#2C3E50' : COLORS.crimson.base,
+                            borderColor: (healthPots === 0 || hp >= getMaxHp()) ? '#95A5A6' : COLORS.crimson.border,
+                            color: '#F5F5DC',
+                            cursor: (healthPots === 0 || hp >= getMaxHp()) ? 'not-allowed' : 'pointer',
+                            opacity: (healthPots === 0 || hp >= getMaxHp()) ? 0.5 : 1
+                          }}
+                          onMouseEnter={(e) => {if (!(healthPots === 0 || hp >= getMaxHp())) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
+                          onMouseLeave={(e) => {if (!(healthPots === 0 || hp >= getMaxHp())) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
                         >
                           Use
                         </button>
@@ -4140,15 +4173,15 @@ setMiniBossCount(0);
                   </div>
                   
                   {/* Stamina Potions */}
-                  <div className="bg-blue-900 bg-opacity-50 rounded-lg p-4 border-2 border-blue-700">
+                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(30, 58, 95, 0.2)', borderColor: 'rgba(30, 58, 95, 0.5)'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
-                        <p className="font-bold text-white text-lg">Stamina Potion</p>
-                        <p className="text-sm text-cyan-300 mb-1">Restores 50 SP</p>
-                        <p className="text-xs text-gray-400 italic">"Azure draught. Vigor renewed."</p>
+                        <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Stamina Potion</p>
+                        <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>Restores 50 SP</p>
+                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl text-blue-400 font-bold mb-2">{staminaPots}</p>
+                        <p className="text-3xl font-bold mb-2" style={{color: '#6BB6FF'}}>{staminaPots}</p>
                         <button 
                           onClick={() => { 
                             if (staminaPots > 0 && stamina < getMaxStamina()) { 
@@ -4158,7 +4191,16 @@ setMiniBossCount(0);
                             } 
                           }} 
                           disabled={staminaPots === 0 || stamina >= getMaxStamina()}
-                          className="bg-blue-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-blue-700 transition-all text-sm"
+                          className="px-4 py-2 rounded transition-all text-sm border-2"
+                          style={{
+                            backgroundColor: (staminaPots === 0 || stamina >= getMaxStamina()) ? '#2C3E50' : COLORS.sapphire.base,
+                            borderColor: (staminaPots === 0 || stamina >= getMaxStamina()) ? '#95A5A6' : COLORS.sapphire.border,
+                            color: '#F5F5DC',
+                            cursor: (staminaPots === 0 || stamina >= getMaxStamina()) ? 'not-allowed' : 'pointer',
+                            opacity: (staminaPots === 0 || stamina >= getMaxStamina()) ? 0.5 : 1
+                          }}
+                          onMouseEnter={(e) => {if (!(staminaPots === 0 || stamina >= getMaxStamina())) e.currentTarget.style.backgroundColor = COLORS.sapphire.hover}}
+                          onMouseLeave={(e) => {if (!(staminaPots === 0 || stamina >= getMaxStamina())) e.currentTarget.style.backgroundColor = COLORS.sapphire.base}}
                         >
                           Use
                         </button>
@@ -4167,19 +4209,28 @@ setMiniBossCount(0);
                   </div>
                   
                   {/* Cleanse Potions */}
-                  <div className={`bg-purple-900 bg-opacity-50 rounded-lg p-4 border-2 ${curseLevel > 0 ? 'border-purple-400 ring-2 ring-purple-500 animate-pulse' : 'border-purple-700'}`}>
+                  <div className={`rounded-lg p-4 border-2 ${curseLevel > 0 ? 'animate-pulse' : ''}`} style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', borderColor: curseLevel > 0 ? 'rgba(138, 59, 181, 0.8)' : 'rgba(107, 44, 145, 0.5)', boxShadow: curseLevel > 0 ? '0 0 20px rgba(138, 59, 181, 0.4)' : 'none'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
-                        <p className="font-bold text-white text-lg">Cleanse Potion</p>
-                        <p className="text-sm text-purple-300 mb-1">Removes curse</p>
-                        <p className="text-xs text-gray-400 italic">"Purifying brew. Breaks the hold."</p>
+                        <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
+                        <p className="text-sm mb-1" style={{color: '#B794F4'}}>Removes curse</p>
+                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the hold."</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl text-purple-400 font-bold mb-2">{cleansePots}</p>
+                        <p className="text-3xl font-bold mb-2" style={{color: '#B794F4'}}>{cleansePots}</p>
                         <button 
                           onClick={useCleanse} 
                           disabled={cleansePots === 0 || curseLevel === 0}
-                          className="bg-purple-600 px-4 py-2 rounded disabled:bg-gray-600 disabled:cursor-not-allowed hover:bg-purple-700 transition-all text-sm"
+                          className="px-4 py-2 rounded transition-all text-sm border-2"
+                          style={{
+                            backgroundColor: (cleansePots === 0 || curseLevel === 0) ? '#2C3E50' : COLORS.amethyst.base,
+                            borderColor: (cleansePots === 0 || curseLevel === 0) ? '#95A5A6' : COLORS.amethyst.border,
+                            color: '#F5F5DC',
+                            cursor: (cleansePots === 0 || curseLevel === 0) ? 'not-allowed' : 'pointer',
+                            opacity: (cleansePots === 0 || curseLevel === 0) ? 0.5 : 1
+                          }}
+                          onMouseEnter={(e) => {if (!(cleansePots === 0 || curseLevel === 0)) e.currentTarget.style.backgroundColor = COLORS.amethyst.hover}}
+                          onMouseLeave={(e) => {if (!(cleansePots === 0 || curseLevel === 0)) e.currentTarget.style.backgroundColor = COLORS.amethyst.base}}
                         >
                           Use
                         </button>
@@ -4189,12 +4240,12 @@ setMiniBossCount(0);
                   
                   {/* Lucky Charm (if active) */}
                   {luckyCharmActive && (
-                    <div className="bg-green-900 bg-opacity-50 rounded-lg p-4 border-2 border-green-500">
+                    <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(47, 82, 51, 0.2)', borderColor: 'rgba(47, 82, 51, 0.5)'}}>
                       <div>
-                        <p className="font-bold text-white text-lg mb-1">Lucky Charm</p>
-                        <p className="text-sm text-green-300 mb-1">2x loot from next elite boss</p>
-                        <p className="text-xs text-gray-400 italic">"Fortune favors the bold."</p>
-                        <p className="text-xs text-green-400 mt-2">✓ Active</p>
+                        <p className="font-bold text-lg mb-1" style={{color: '#F5F5DC'}}>Lucky Charm</p>
+                        <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
+                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Fortune favors the bold."</p>
+                        <p className="text-xs mt-2" style={{color: '#68D391'}}>✓ Active</p>
                       </div>
                     </div>
                   )}
@@ -4202,7 +4253,10 @@ setMiniBossCount(0);
                 
                 <button 
                   onClick={() => setShowInventoryModal(false)} 
-                  className="w-full mt-6 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                  className="w-full mt-6 py-2 rounded-lg transition-all border-2"
+                  style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
                 >
                   Close
                 </button>
@@ -4212,20 +4266,25 @@ setMiniBossCount(0);
 
           {showCraftingModal && (
             <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
-              <div className="bg-gray-900 rounded-xl p-6 max-w-2xl w-full border-2 border-orange-500 my-8 relative" onClick={e => e.stopPropagation()}>
+              <div className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative" style={{background: 'linear-gradient(to bottom, rgba(40, 10, 60, 0.95), rgba(30, 0, 40, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
                 <button onClick={() => setShowCraftingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
                 
                 <div className="text-center mb-6">
-                  <h2 className="text-2xl font-bold text-orange-400">
+                  <h2 className="text-3xl font-bold mb-2" style={{color: '#B794F4', letterSpacing: '0.1em'}}>
                     THE MERCHANT
                   </h2>
-                  <p className="text-gray-400 text-sm mt-1 italic">"{getMerchantDialogue()}"</p>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(183, 148, 244, 0.3))'}}></div>
+                    <span style={{color: 'rgba(183, 148, 244, 0.4)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(183, 148, 244, 0.3))'}}></div>
+                  </div>
+                  <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{getMerchantDialogue()}"</p>
                 </div>
                 
-                <div className="bg-black bg-opacity-50 rounded-lg p-4 mb-6 border border-purple-600">
+                <div className="rounded-lg p-4 mb-6 border-2" style={{backgroundColor: 'rgba(107, 44, 145, 0.3)', borderColor: 'rgba(183, 148, 244, 0.4)'}}>
                   <p className="text-center text-lg">
-                    <span className="text-gray-400">Current Essence:</span> 
-                    <span className="text-purple-400 font-bold text-2xl ml-2">{essence}</span>
+                    <span style={{color: COLORS.silver}}>Current Essence:</span> 
+                    <span className="font-bold text-2xl ml-2" style={{color: '#B794F4'}}>{essence}</span>
                   </p>
                 </div>
                 
@@ -4233,88 +4292,91 @@ setMiniBossCount(0);
                   <button 
                     onClick={() => craftItem('healthPotion')} 
                     disabled={essence < 25}
-                    className="p-4 rounded-lg border-2 transition-all cursor-pointer" style={{backgroundColor: essence >= 25 ? 'rgba(139, 0, 0, 0.5)' : '#2C3E50', borderColor: essence >= 25 ? '#CD853F' : '#95A5A6', opacity: essence >= 25 ? 1 : 0.5, cursor: essence >= 25 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 25) e.currentTarget.style.backgroundColor = 'rgba(165, 42, 42, 0.7)'}} onMouseLeave={(e) => {if (essence >= 25) e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.5)'}}
+                    className="p-4 rounded-lg border-2 transition-all cursor-pointer" style={{backgroundColor: essence >= 25 ? 'rgba(139, 0, 0, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: essence >= 25 ? 'rgba(139, 0, 0, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: essence >= 25 ? 1 : 0.5, cursor: essence >= 25 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 25) e.currentTarget.style.backgroundColor = 'rgba(165, 42, 42, 0.5)'}} onMouseLeave={(e) => {if (essence >= 25) e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Health Potion</p>
-                      <p className="text-sm mb-2" style={{color: '#F5A9A9'}}>Restores 30 HP</p>
+                      <p className="text-sm mb-2" style={{color: '#FF6B6B'}}>Restores 30 HP</p>
                       <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>25 Essence</p>
-                      <p className="text-xs text-gray-400 italic">"Crimson elixir. Mends wounds, not souls."</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Crimson elixir. Mends wounds, not souls."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('staminaPotion')} 
                     disabled={essence < 20}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: essence >= 20 ? 'rgba(30, 58, 95, 0.5)' : '#2C3E50', borderColor: essence >= 20 ? '#C0C0C0' : '#95A5A6', opacity: essence >= 20 ? 1 : 0.5, cursor: essence >= 20 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 20) e.currentTarget.style.backgroundColor = 'rgba(43, 80, 130, 0.7)'}} onMouseLeave={(e) => {if (essence >= 20) e.currentTarget.style.backgroundColor = 'rgba(30, 58, 95, 0.5)'}}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: essence >= 20 ? 'rgba(30, 58, 95, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: essence >= 20 ? 'rgba(30, 58, 95, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: essence >= 20 ? 1 : 0.5, cursor: essence >= 20 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 20) e.currentTarget.style.backgroundColor = 'rgba(43, 80, 130, 0.5)'}} onMouseLeave={(e) => {if (essence >= 20) e.currentTarget.style.backgroundColor = 'rgba(30, 58, 95, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Stamina Potion</p>
-                      <p className="text-sm mb-2" style={{color: '#87CEEB'}}>Restores 50 SP</p>
+                      <p className="text-sm mb-2" style={{color: '#6BB6FF'}}>Restores 50 SP</p>
                       <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>20 Essence</p>
-                      <p className="text-xs text-gray-400 italic">"Azure draught. Vigor renewed."</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('cleansePotion')} 
                     disabled={essence < 50}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: essence >= 50 ? 'rgba(107, 44, 145, 0.5)' : '#2C3E50', borderColor: essence >= 50 ? '#C0C0C0' : '#95A5A6', opacity: essence >= 50 ? 1 : 0.5, cursor: essence >= 50 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 50) e.currentTarget.style.backgroundColor = 'rgba(138, 59, 181, 0.7)'}} onMouseLeave={(e) => {if (essence >= 50) e.currentTarget.style.backgroundColor = 'rgba(107, 44, 145, 0.5)'}}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: essence >= 50 ? 'rgba(107, 44, 145, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: essence >= 50 ? 'rgba(107, 44, 145, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: essence >= 50 ? 1 : 0.5, cursor: essence >= 50 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 50) e.currentTarget.style.backgroundColor = 'rgba(138, 59, 181, 0.5)'}} onMouseLeave={(e) => {if (essence >= 50) e.currentTarget.style.backgroundColor = 'rgba(107, 44, 145, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
                       <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>50 Essence</p>
-                      <p className="text-sm mb-2" style={{color: '#DDA0DD'}}>Removes curse</p>
-                      <p className="text-xs text-gray-400 italic">"Purifying brew. Breaks the curse's hold."</p>
+                      <p className="text-sm mb-2" style={{color: '#B794F4'}}>Removes curse</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the curse's hold."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('weaponOil')} 
                     disabled={essence < 40 || weaponOilActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.5)' : '#2C3E50', borderColor: (essence >= 40 && !weaponOilActive) ? '#CD7F32' : '#95A5A6', opacity: (essence >= 40 && !weaponOilActive) ? 1 : 0.5, cursor: (essence >= 40 && !weaponOilActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(218, 165, 32, 0.7)'}} onMouseLeave={(e) => {if (essence >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.5)'}}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (essence >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (essence >= 40 && !weaponOilActive) ? 1 : 0.5, cursor: (essence >= 40 && !weaponOilActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(218, 165, 32, 0.5)'}} onMouseLeave={(e) => {if (essence >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Weapon Oil</p>
                       <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Essence</p>
                       <p className="text-sm mb-1" style={{color: '#DAA520'}}>+5 weapon until dawn</p>
                       {weaponOilActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
-                      <p className="text-xs text-gray-400 italic">"Darkened oil. Edges sharpen, strikes deepen."</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Darkened oil. Edges sharpen, strikes deepen."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('armorPolish')} 
                     disabled={essence < 40 || armorPolishActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.5)' : '#2C3E50', borderColor: (essence >= 40 && !armorPolishActive) ? '#C0C0C0' : '#95A5A6', opacity: (essence >= 40 && !armorPolishActive) ? 1 : 0.5, cursor: (essence >= 40 && !armorPolishActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 102, 102, 0.7)'}} onMouseLeave={(e) => {if (essence >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 77, 77, 0.5)'}}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (essence >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (essence >= 40 && !armorPolishActive) ? 1 : 0.5, cursor: (essence >= 40 && !armorPolishActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 102, 102, 0.5)'}} onMouseLeave={(e) => {if (essence >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 77, 77, 0.3)'}}
                   >
                     <div className="mb-2">
-                      <p className="font-bold text-white text-lg mb-2">Armor Polish</p>
-                      <p className="text-sm text-purple-400 font-bold mb-2">40 Essence</p>
-                      <p className="text-sm text-cyan-300 mb-1">+5 armor until dawn</p>
-                      {armorPolishActive && <p className="text-xs text-green-400 mb-2">✓ Active</p>}
-                      <p className="text-xs text-gray-400 italic">"Protective salve. Steel hardens, flesh endures."</p>
+                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Armor Polish</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Essence</p>
+                      <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>+5 armor until dawn</p>
+                      {armorPolishActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
+                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Protective salve. Steel hardens, flesh endures."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('luckyCharm')} 
                     disabled={essence < 80 || luckyCharmActive}
-                    className={`p-4 rounded-lg border-2 transition-all ${essence >= 80 && !luckyCharmActive ? 'bg-green-900 bg-opacity-50 border-green-700 hover:bg-green-800' : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'}`}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (essence >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (essence >= 80 && !luckyCharmActive) ? 1 : 0.5, cursor: (essence >= 80 && !luckyCharmActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 66, 0.5)'}} onMouseLeave={(e) => {if (essence >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(47, 82, 51, 0.3)'}}
                   >
                     <div className="mb-2">
-                      <p className="font-bold text-white text-lg mb-2">Lucky Charm</p>
-                      <p className="text-sm text-purple-400 font-bold mb-2">80 Essence</p>
-                      <p className="text-sm text-green-300 mb-1">2x loot from next elite boss</p>
-                      {luckyCharmActive && <p className="text-xs text-green-400 mb-2">✓ Active</p>}
-                      <p className="text-xs text-gray-400 italic">"Blessed talisman. Fortune favors the bold."</p>
+                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Lucky Charm</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>80 Essence</p>
+                      <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
+                      {luckyCharmActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
+                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Blessed talisman. Fortune favors the bold."</p>
                     </div>
                   </button>
                 </div>
                 
                 <button 
                   onClick={() => setShowCraftingModal(false)} 
-                  className="w-full mt-6 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+                  className="w-full mt-6 py-2 rounded-lg transition-all border-2"
+                  style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
                 >
                   Close
                 </button>
@@ -4323,43 +4385,63 @@ setMiniBossCount(0);
           )}
 
           {showCustomizeModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-blue-400">CUSTOMIZE YOUR HERO</h3>
-        <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white">
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2" style={{background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+      <div className="mb-6 relative">
+        <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white absolute -top-2 right-0">
           <X size={24}/>
         </button>
+        <div className="text-center">
+          <h3 className="text-3xl font-bold mb-2" style={{color: '#F5F5DC', letterSpacing: '0.1em'}}>CUSTOMIZE YOUR HERO</h3>
+          <div className="flex items-center justify-center gap-2">
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+            <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+          </div>
+        </div>
       </div>
       
       <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-2">Hero Name</label>
+        <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Hero Name</label>
         <input 
           type="text" 
           placeholder="Enter your hero's name" 
           value={customName}
           onChange={e => setCustomName(e.target.value)}
-          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none" 
+          className="w-full p-3 rounded-lg border focus:outline-none" 
+          style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(212, 175, 55, 0.3)', fontFamily: 'Cinzel, serif'}}
+          onFocus={e => e.target.style.borderColor = COLORS.gold}
+          onBlur={e => e.target.style.borderColor = 'rgba(212, 175, 55, 0.3)'}
           autoFocus 
         />
       </div>
       
-      <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-2">Choose Your Class</label>
+      <div className="mb-6">
+        <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Choose Your Class</label>
         <div className="grid grid-cols-2 gap-2">
           {classes.map(cls => (
             <button
               key={cls.name}
               type="button"
               onClick={() => setCustomClass(cls)}
-              className={`p-4 rounded-lg border-2 transition-all ${
-                customClass?.name === cls.name 
-                  ? `bg-${cls.color}-900 border-${cls.color}-500` 
-                  : 'bg-gray-800 border-gray-700 hover:border-gray-500'
-              }`}
+              className="p-4 rounded-lg border-2 transition-all"
+              style={{
+                backgroundColor: customClass?.name === cls.name ? 'rgba(212, 175, 55, 0.15)' : 'rgba(0, 0, 0, 0.3)',
+                borderColor: customClass?.name === cls.name ? COLORS.gold : 'rgba(128, 128, 128, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                if (customClass?.name !== cls.name) {
+                  e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.5)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (customClass?.name !== cls.name) {
+                  e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.3)';
+                }
+              }}
             >
               <div className="text-4xl mb-2">{cls.emblem}</div>
-              <div className="font-bold text-white">{cls.name}</div>
+              <div className="font-bold" style={{color: '#F5F5DC'}}>{cls.name}</div>
             </button>
           ))}
         </div>
@@ -4380,7 +4462,10 @@ setMiniBossCount(0);
               addLog(`✨ Hero customized! ${customName.trim() ? `Name: ${customName.trim()}` : ''} ${customClass ? `Class: ${customClass.name}` : ''}`);
             }
           }}
-          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all"
+          className="flex-1 py-2 rounded-lg transition-all font-bold border-2"
+          style={{backgroundColor: COLORS.gold, borderColor: COLORS.obsidian.base, color: COLORS.obsidian.base}}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFD700'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.gold}
         >
           Confirm
         </button>
@@ -4390,7 +4475,10 @@ setMiniBossCount(0);
             setCustomClass(null);
             setShowCustomizeModal(false);
           }} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 py-2 rounded-lg transition-all border-2"
+          style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
         >
           Cancel
         </button>
@@ -4839,13 +4927,18 @@ setMiniBossCount(0);
 )}
 
          {showModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-red-500 relative" onClick={e => e.stopPropagation()}>
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50" onClick={() => setShowModal(false)}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
       
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-red-400">ACCEPT NEW TRIAL</h3>
-        <p className="text-gray-400 text-sm mt-1 italic">"The darkness demands sacrifice..."</p>
+        <h3 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.1em'}}>ACCEPT NEW TRIAL</h3>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+        </div>
+        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"The darkness demands sacrifice..."</p>
       </div>
       
       <input 
@@ -4853,39 +4946,44 @@ setMiniBossCount(0);
         placeholder="Name your trial" 
         value={newTask.title} 
         onChange={e => setNewTask({...newTask, title: e.target.value})} 
-        className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-red-500 focus:outline-none" 
+        className="w-full p-3 rounded-lg mb-4 border focus:outline-none" 
+        style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(220, 20, 60, 0.3)', fontFamily: 'Cinzel, serif'}}
+        onFocus={e => e.target.style.borderColor = '#DC143C'}
+        onBlur={e => e.target.style.borderColor = 'rgba(220, 20, 60, 0.3)'}
         autoFocus 
       />
       
       <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-2">Trial Difficulty</label>
+        <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Trial Difficulty</label>
         <div className="grid grid-cols-2 gap-3">
           <button 
             type="button" 
             onClick={() => setNewTask({...newTask, priority: 'important'})} 
-            className={`p-4 rounded-lg border-2 transition-all ${
-              newTask.priority === 'important' 
-                ? 'bg-yellow-900 border-yellow-500 text-yellow-200 shadow-lg shadow-yellow-500/50' 
-                : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-yellow-700'
-            }`}
+            className="p-4 rounded-lg border-2 transition-all"
+            style={{
+              backgroundColor: newTask.priority === 'important' ? 'rgba(184, 134, 11, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+              borderColor: newTask.priority === 'important' ? COLORS.gold : 'rgba(128, 128, 128, 0.3)',
+              color: '#F5F5DC'
+            }}
           >
             <div className="font-bold mb-1">IMPORTANT</div>
-            <div className="text-xs">1.25x XP</div>
-            <div className="text-xs text-gray-500 mt-1 italic">Greater reward</div>
+            <div className="text-xs" style={{color: COLORS.gold}}>1.25x XP</div>
+            <div className="text-xs mt-1 italic" style={{color: COLORS.silver}}>Greater reward</div>
           </button>
           
           <button 
             type="button" 
             onClick={() => setNewTask({...newTask, priority: 'routine'})} 
-            className={`p-4 rounded-lg border-2 transition-all ${
-              newTask.priority === 'routine' 
-                ? 'bg-blue-900 border-blue-500 text-blue-200 shadow-lg shadow-blue-500/50' 
-                : 'bg-gray-800 border-gray-700 text-gray-400 hover:border-blue-700'
-            }`}
+            className="p-4 rounded-lg border-2 transition-all"
+            style={{
+              backgroundColor: newTask.priority === 'routine' ? 'rgba(30, 58, 95, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+              borderColor: newTask.priority === 'routine' ? 'rgba(30, 58, 95, 0.6)' : 'rgba(128, 128, 128, 0.3)',
+              color: '#F5F5DC'
+            }}
           >
             <div className="font-bold mb-1">ROUTINE</div>
-            <div className="text-xs">1.0x XP</div>
-            <div className="text-xs text-gray-500 mt-1 italic">Standard trial</div>
+            <div className="text-xs" style={{color: '#6BB6FF'}}>1.0x XP</div>
+            <div className="text-xs mt-1 italic" style={{color: COLORS.silver}}>Standard trial</div>
           </button>
         </div>
       </div>
@@ -4894,13 +4992,25 @@ setMiniBossCount(0);
         <button 
           onClick={addTask} 
           disabled={!newTask.title} 
-          className="flex-1 bg-red-600 py-2 rounded-lg hover:bg-red-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="flex-1 py-2 rounded-lg transition-all border-2"
+          style={{
+            backgroundColor: !newTask.title ? '#2C3E50' : COLORS.crimson.base,
+            borderColor: !newTask.title ? '#95A5A6' : COLORS.crimson.border,
+            color: '#F5F5DC',
+            cursor: !newTask.title ? 'not-allowed' : 'pointer',
+            opacity: !newTask.title ? 0.5 : 1
+          }}
+          onMouseEnter={(e) => {if (newTask.title) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
+          onMouseLeave={(e) => {if (newTask.title) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
         >
           Accept Trial
         </button>
         <button 
           onClick={() => setShowModal(false)} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 py-2 rounded-lg transition-all border-2"
+          style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
         >
           Cancel
         </button>
@@ -4910,13 +5020,18 @@ setMiniBossCount(0);
 )}
 
 {showImportModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500 relative" onClick={e => e.stopPropagation()}>
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50" onClick={() => setShowImportModal(false)}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(0, 40, 40, 0.95), rgba(0, 30, 30, 0.95), rgba(0, 20, 20, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <button onClick={() => setShowImportModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
       
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-blue-400">IMPORT FROM PLANNER</h3>
-        <p className="text-gray-400 text-sm mt-1 italic">"Draw upon your prepared plans..."</p>
+        <h3 className="text-3xl font-bold mb-2" style={{color: '#5DD3D3', letterSpacing: '0.1em'}}>IMPORT FROM PLANNER</h3>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(93, 211, 211, 0.3))'}}></div>
+          <span style={{color: 'rgba(93, 211, 211, 0.4)', fontSize: '8px'}}>◆</span>
+          <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(93, 211, 211, 0.3))'}}></div>
+        </div>
+        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Draw upon your prepared plans..."</p>
       </div>
       
       <div className="space-y-2">
@@ -4933,20 +5048,38 @@ setMiniBossCount(0);
               key={day}
               onClick={() => importFromPlanner(day)}
               disabled={taskCount === 0}
-              className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
-                isRealWorldToday
-                  ? 'bg-blue-900 border-blue-500 hover:bg-blue-800'
-                  : taskCount > 0
-                    ? 'bg-gray-800 border-gray-700 hover:border-blue-500 hover:bg-gray-750'
-                    : 'bg-gray-800 border-gray-700 opacity-50 cursor-not-allowed'
-              }`}
+              className="w-full p-4 rounded-lg border-2 transition-all text-left"
+              style={{
+                backgroundColor: isRealWorldToday 
+                  ? 'rgba(0, 77, 77, 0.4)' 
+                  : taskCount > 0 
+                    ? 'rgba(0, 0, 0, 0.3)' 
+                    : 'rgba(0, 0, 0, 0.3)',
+                borderColor: isRealWorldToday 
+                  ? 'rgba(93, 211, 211, 0.6)' 
+                  : taskCount > 0 
+                    ? 'rgba(128, 128, 128, 0.3)' 
+                    : 'rgba(128, 128, 128, 0.3)',
+                opacity: taskCount === 0 ? 0.5 : 1,
+                cursor: taskCount === 0 ? 'not-allowed' : 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                if (taskCount > 0 && !isRealWorldToday) {
+                  e.currentTarget.style.borderColor = 'rgba(93, 211, 211, 0.5)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (taskCount > 0 && !isRealWorldToday) {
+                  e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.3)';
+                }
+              }}
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <span className="font-bold text-white">{day}</span>
-                  {isRealWorldToday && <span className="ml-2 text-xs text-blue-400">(Today)</span>}
+                  <span className="font-bold" style={{color: '#F5F5DC'}}>{day}</span>
+                  {isRealWorldToday && <span className="ml-2 text-xs" style={{color: '#5DD3D3'}}>(Today)</span>}
                 </div>
-                <span className={`text-sm ${taskCount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
+                <span className="text-sm" style={{color: taskCount > 0 ? '#68D391' : COLORS.silver}}>
                   {taskCount} task{taskCount !== 1 ? 's' : ''}
                 </span>
               </div>
@@ -4957,7 +5090,10 @@ setMiniBossCount(0);
       
       <button 
         onClick={() => setShowImportModal(false)} 
-        className="w-full mt-4 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+        className="w-full mt-4 py-2 rounded-lg transition-all border-2"
+        style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
+        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
       >
         Cancel
       </button>
