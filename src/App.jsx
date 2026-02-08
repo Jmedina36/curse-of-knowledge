@@ -373,6 +373,7 @@ const HERO_TITLES = ['Novice', 'Seeker', 'Wanderer', 'Survivor', 'Warrior', 'Cha
 
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
+  const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -3407,18 +3408,18 @@ setMiniBossCount(0);
                       <p className="text-sm" style={{color: '#F5F5DC'}}>{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name} • XP Rate: {Math.floor(GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * 100)}%</p>
                     </div>
                     
-                    <div className="flex gap-2 justify-center mb-4">
-                      <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all border-2" style={{backgroundColor: '#1E3A5F', borderColor: '#C0C0C0', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2B5082'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1E3A5F'}>
-                        <Calendar size={20}/>Import from Planner
+                    <div className="flex gap-3 justify-center mb-6">
+                      <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 px-6 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)'}>
+                        <Calendar size={18}/>Import from Planner
                       </button>
-                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all border-2" style={{backgroundColor: '#9B1B30', borderColor: '#DAA520', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#B8293E'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#9B1B30'}>
-                        <Plus size={20}/>Accept Trial
+                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-6 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" style={{backgroundColor: 'rgba(139, 0, 0, 0.6)', borderColor: '#8B0000', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.6)'}>
+                        <Plus size={18}/>Accept Trial
                       </button>
                     </div>
                     
                     {tasks.length === 0 ? (
-                      <div className="text-center py-8 text-gray-400">
-                        <p>No trials yet. Accept your first trial to begin.</p>
+                      <div className="text-center py-12">
+                        <p className="text-lg italic" style={{color: '#F5F5DC'}}>NO TRIALS YET. ACCEPT YOUR FIRST TRIAL TO BEGIN.</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -3483,35 +3484,36 @@ setMiniBossCount(0);
                     )}
                   </div>
                   
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-4 mt-6">
                     <button 
   onClick={miniBoss} 
   disabled={!isDayActive || eliteBossDefeatedToday || xp < 200} 
-  className="px-6 py-4 rounded-xl font-bold text-xl transition-all shadow-lg border-2 disabled:cursor-not-allowed disabled:shadow-none" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? '#2C3E50' : '#6B0F1A', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? '#95A5A6' : '#CD853F', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 0.6 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 200) e.currentTarget.style.backgroundColor = '#8B1A28'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 200) e.currentTarget.style.backgroundColor = '#6B0F1A'}}
+  className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 200) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 200) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
-  FACE THE DARKNESS
-  {!isDayActive ? (
-    <div className="text-sm font-normal mt-1 text-gray-400">Day dormant - add tasks to begin</div>
-  ) : eliteBossDefeatedToday ? (
-    <div className="text-sm font-normal mt-1 text-green-400">✓ Today's trial complete</div>
-  ) : (
-    <div className={`text-sm font-normal mt-1 ${xp >= 200 ? 'text-green-400' : 'text-yellow-400'}`}>
-      {xp >= 200 ? `Ready • 200 XP` : `${200 - xp} XP needed`}
-      {timeUntilMidnight && !eliteBossDefeatedToday && xp >= 200 && (
-        <span className="text-red-400 ml-2">• ⏰ {timeUntilMidnight} until midnight!</span>
-      )}
-    </div>
-  )}
+  <div className="text-center">
+    <div className="mb-2">FACE THE DARKNESS</div>
+    {!isDayActive ? (
+      <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Day dormant — add tasks to begin</div>
+    ) : eliteBossDefeatedToday ? (
+      <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>✓ Today's trial complete</div>
+    ) : (
+      <div className="text-xs font-normal uppercase" style={{color: xp >= 200 ? '#4ADE80' : '#FBBF24'}}>
+        {xp >= 200 ? `Ready • 200 XP` : `${200 - xp} XP needed`}
+      </div>
+    )}
+  </div>
 </button>
                     <button 
   onClick={finalBoss} 
   disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
-  className="px-6 py-4 rounded-xl font-bold text-xl transition-all shadow-lg border-2 disabled:cursor-not-allowed disabled:shadow-none" style={{backgroundColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? '#2C3E50' : '#1C1C1C', borderColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? '#95A5A6' : '#D4AF37', color: '#F5F5DC', opacity: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 0.6 : 1}} onMouseEnter={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = '#2D2D2D'}} onMouseLeave={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = '#1C1C1C'}}
+  className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 0.5 : 1}} onMouseEnter={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
-  THE GAUNTLET
-  {!gauntletUnlocked && (
-    <div className="text-sm font-normal mt-1">{gauntletMilestone - xp} XP needed</div>
-  )}
+  <div className="text-center">
+    <div className="mb-2">THE GAUNTLET</div>
+    {!gauntletUnlocked && (
+      <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>{gauntletMilestone - xp} XP needed</div>
+    )}
+  </div>
 </button>
                   </div>
                   
@@ -3536,7 +3538,7 @@ setMiniBossCount(0);
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-blue-900">
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
-                <h2 className="text-2xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>WEEKLY PLANNER</h2>
+                <h2 className="text-2xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -3545,31 +3547,60 @@ setMiniBossCount(0);
               </div>
               <p className="text-sm mb-6 italic text-center" style={{color: '#C0C0C0'}}>"Chart your path through the coming trials..."</p>
               
+              {/* Sub-navigation tabs */}
+              <div className="flex gap-2 justify-center mb-6">
+                <button 
+                  onClick={() => setPlannerSubTab('weekly')}
+                  className="px-6 py-2 rounded-lg transition-all border-2"
+                  style={{
+                    backgroundColor: plannerSubTab === 'weekly' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
+                    borderColor: plannerSubTab === 'weekly' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
+                    color: '#F5F5DC'
+                  }}
+                >
+                  Weekly Plan
+                </button>
+                <button 
+                  onClick={() => setPlannerSubTab('calendar')}
+                  className="px-6 py-2 rounded-lg transition-all border-2"
+                  style={{
+                    backgroundColor: plannerSubTab === 'calendar' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
+                    borderColor: plannerSubTab === 'calendar' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
+                    color: '#F5F5DC'
+                  }}
+                >
+                  Calendar
+                </button>
+              </div>
+              
+              {/* Weekly Plan Content */}
+              {plannerSubTab === 'weekly' && (
+              
               <div className="grid gap-4">
                 {Object.keys(weeklyPlan).map(day => (
-                  <div key={day} className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
-                    <div className="flex justify-between items-center mb-3">
+                  <div key={day} className="rounded-lg p-6 border-2" style={{backgroundColor: 'rgba(15, 23, 42, 0.8)', borderColor: 'rgba(30, 41, 59, 0.8)'}}>
+                    <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="text-xl font-bold text-blue-300">{day}</h3>
+                        <h3 className="text-xl font-bold uppercase mb-1" style={{color: '#D4AF37'}}>{day}</h3>
                         <p className="text-xs">
   {(() => {
     const today = new Date();
     const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
     if (day === todayDayName) {
-      return <span className="text-yellow-400 font-bold">Today</span>;
+      return <span className="font-bold" style={{color: '#D4AF37'}}>Today</span>;
     } else {
-      return <span className="text-gray-400">{getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
+      return <span style={{color: '#9CA3AF'}}>{getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
     }
   })()}
 </p>
                       </div>
-                      <button onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm transition-all flex items-center gap-1">
-                        <Plus size={16}/> Add Task
+                      <button onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 border-2" style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)'}>
+                        <Plus size={16}/> ADD TASK
                       </button>
                     </div>
                     
                     {weeklyPlan[day].length === 0 ? (
-                      <p className="text-gray-500 text-sm italic">No tasks planned</p>
+                      <p className="text-sm italic" style={{color: '#9CA3AF'}}>NO TASKS PLANNED</p>
                     ) : (
                       <div className="space-y-2">
                       {[...weeklyPlan[day]].sort((a, b) => {
@@ -3650,26 +3681,27 @@ setMiniBossCount(0);
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {activeTab === 'calendar' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-green-900">
-              <h2 className="text-2xl font-bold text-green-400 mb-2 text-center">MONTHLY CALENDAR</h2>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Mark your victories and defeats across the passage of time..."</p>
+              )}
               
+              {/* Calendar Content */}
+              {plannerSubTab === 'calendar' && (
+              <div>
               <div className="flex justify-between items-center mb-6">
-                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all">← Previous</button>
-                <h3 className="text-2xl font-bold text-green-300">{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' })} {currentYear}</h3>
-                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded transition-all">Next →</button>
+                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-6 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
+                  ← PREV
+                </button>
+                <h3 className="text-2xl font-bold uppercase tracking-wider" style={{color: '#F5F5DC'}}>{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }).toUpperCase()} {currentYear}</h3>
+                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-6 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
+                  NEXT →
+                </button>
               </div>
               
-              <div className="bg-gray-800 rounded-lg p-4">
-                <div className="grid grid-cols-7 gap-2 mb-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (<div key={day} className="text-center text-gray-400 font-bold text-sm py-2">{day}</div>))}
+              <div className="rounded-lg p-6" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)'}}>
+                <div className="grid grid-cols-7 gap-3 mb-4">
+                  {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(day => (<div key={day} className="text-center font-bold text-sm py-2" style={{color: '#9CA3AF'}}>{day}</div>))}
                 </div>
                 
-                <div className="grid grid-cols-7 gap-2">
+                <div className="grid grid-cols-7 gap-3">
                   {(() => {
                     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
                     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -3684,11 +3716,35 @@ setMiniBossCount(0);
                       const hasTasks = dayTasks.length > 0;
                       const completedTasks = dayTasks.filter(t => t.done).length;
                       const allDone = hasTasks && completedTasks === dayTasks.length;
+                      
+                      let bgColor, borderColor;
+                      if (isToday) {
+                        bgColor = '#92400E';
+                        borderColor = '#B45309';
+                      } else if (hasTasks) {
+                        if (allDone) {
+                          bgColor = 'rgba(34, 197, 94, 0.3)';
+                          borderColor = 'rgba(34, 197, 94, 0.6)';
+                        } else {
+                          bgColor = 'rgba(234, 179, 8, 0.3)';
+                          borderColor = 'rgba(234, 179, 8, 0.6)';
+                        }
+                      } else {
+                        bgColor = 'rgba(30, 41, 59, 0.5)';
+                        borderColor = 'rgba(51, 65, 85, 0.6)';
+                      }
+                      
                       days.push(
-                        <button key={day} onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} className={`aspect-square rounded-lg p-2 transition-all hover:scale-105 relative ${isToday ? 'bg-blue-600 border-2 border-blue-400 shadow-lg' : hasTasks ? allDone ? 'bg-green-700 border-2 border-green-500' : 'bg-yellow-700 border-2 border-yellow-500' : 'bg-gray-700 hover:bg-gray-600'}`}>
-                          <div className="text-lg font-bold text-white">{day}</div>
-                          {hasTasks && (<div className="text-xs text-white mt-1">{completedTasks}/{dayTasks.length}</div>)}
-                          {isToday && (<div className="absolute top-0 right-0 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>)}
+                        <button 
+                          key={day} 
+                          onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} 
+                          className="aspect-square rounded-lg p-4 transition-all hover:scale-105 relative border-2 flex items-center justify-center"
+                          style={{backgroundColor: bgColor, borderColor: borderColor}}
+                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                          <div className="text-lg font-bold" style={{color: '#F5F5DC'}}>{day}</div>
+                          {isToday && (<div className="absolute top-1 right-1 w-2 h-2 rounded-full animate-pulse" style={{backgroundColor: '#FBBF24'}}></div>)}
                         </button>
                       );
                     }
@@ -3697,12 +3753,26 @@ setMiniBossCount(0);
                 </div>
               </div>
               
-              <div className="mt-4 flex flex-wrap gap-4 justify-center text-sm">
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-blue-600 border-2 border-blue-400 rounded"></div><span className="text-gray-300">Today</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-700 border-2 border-yellow-500 rounded"></div><span className="text-gray-300">Has Tasks (In Progress)</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-green-700 border-2 border-green-500 rounded"></div><span className="text-gray-300">All Tasks Complete</span></div>
-                <div className="flex items-center gap-2"><div className="w-4 h-4 bg-gray-700 rounded"></div><span className="text-gray-300">No Tasks</span></div>
+              <div className="mt-6 flex flex-wrap gap-6 justify-center text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2" style={{backgroundColor: '#92400E', borderColor: '#B45309'}}></div>
+                  <span style={{color: '#F5F5DC'}}>TODAY</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2" style={{backgroundColor: 'rgba(234, 179, 8, 0.3)', borderColor: 'rgba(234, 179, 8, 0.6)'}}></div>
+                  <span style={{color: '#F5F5DC'}}>IN PROGRESS</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2" style={{backgroundColor: 'rgba(34, 197, 94, 0.3)', borderColor: 'rgba(34, 197, 94, 0.6)'}}></div>
+                  <span style={{color: '#F5F5DC'}}>COMPLETE</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.5)', borderColor: 'rgba(51, 65, 85, 0.6)'}}></div>
+                  <span style={{color: '#F5F5DC'}}>EMPTY</span>
+                </div>
               </div>
+              </div>
+              )}
             </div>
           )}
 
