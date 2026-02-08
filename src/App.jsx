@@ -4,7 +4,7 @@
 // FIXES: Calendar sync, date display on planner, missing dependencies, poison bug
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target } from 'lucide-react';
 
 // Import Cinzel font from Google Fonts
 const style = document.createElement('style');
@@ -2980,36 +2980,56 @@ setMiniBossCount(0);
             </h1>
             <p className="text-sm mb-6 italic" style={{color: '#C0C0C0'}}>"Study or be consumed by the abyss..."</p>
             
-            <div className={`bg-gradient-to-br ${getCardStyle(hero.class, currentDay).bg} rounded-xl p-6 max-w-2xl mx-auto relative overflow-hidden ${getCardStyle(hero.class, currentDay).glow}`} style={{border: getCardStyle(hero.class, currentDay).border}}>
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white opacity-15 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1}}>
+            <div className="rounded-xl p-6 max-w-2xl mx-auto relative overflow-hidden" style={{
+              background: (() => {
+                const colorMap = {
+                  red: '#4A0E0E',
+                  purple: '#2D1B4E',
+                  green: '#1B4D3E',
+                  yellow: '#3D4A2F',
+                  amber: '#4A3422'
+                };
+                return colorMap[hero.class.color] || colorMap.yellow;
+              })(),
+              border: '2px solid rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 50px rgba(0, 0, 0, 0.3)'
+            }}>
+              
+              {/* Large watermark emblem in center background */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1, opacity: 0.05, color: '#F5F5DC'}}>
                 {getCardStyle(hero.class, currentDay).emblem}
               </div>
               
               <div className="relative z-10">
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-5xl">{getCardStyle(hero.class, currentDay).emblem}</div>
-                    <div className="text-right">
-                      <p className="text-xs text-white text-opacity-70 uppercase tracking-wide">{GAME_CONSTANTS.DAY_NAMES[(new Date().getDay() + 6) % 7].name}</p>
-                      <p className="text-sm text-white text-opacity-80">
-                        {timeUntilMidnight && isDayActive && <span className="text-red-400">({timeUntilMidnight}) </span>}
-                        {!isDayActive && <span className="text-gray-400">💤 </span>}
-                        Day {currentDay} {!isDayActive && <span className="text-gray-400 text-xs">• Dormant</span>}
-                      </p>
-                      <p className="text-2xl font-bold text-white">Lvl {level}</p>
-                    </div>
+                {/* Header with day/level info */}
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-wider mb-1" style={{color: '#F5F5DC'}}>{GAME_CONSTANTS.DAY_NAMES[(new Date().getDay() + 6) % 7].name}</p>
+                    <p className="text-sm mb-1" style={{color: '#F5F5DC'}}>
+                      Day {currentDay} {!isDayActive && <span className="text-xs">• Dormant</span>}
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-white leading-tight">{hero.name}</p>
-                    <p className="text-lg text-white text-opacity-90">{hero.title} {hero.class.name}</p>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold" style={{color: '#F5F5DC'}}>LVL {level}</p>
                   </div>
                 </div>
                 
-                <div className="mb-4 bg-black bg-opacity-40 rounded-lg p-3 border border-white border-opacity-20">
-                  <div className="flex justify-between text-sm text-white mb-2">
-                    <span className="font-bold">EXPERIENCE</span>
+                {/* Hero name and title */}
+                <div className="text-center mb-4">
+                  <h2 className="text-4xl font-bold mb-2 uppercase" style={{color: '#F5F5DC', letterSpacing: '0.1em'}}>{hero.name}</h2>
+                  <p className="text-sm uppercase tracking-wide" style={{color: '#F5F5DC'}}>{hero.title} {hero.class.name}</p>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <div style={{width: '40px', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                    <span style={{color: 'rgba(245, 245, 220, 0.5)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '40px', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                  </div>
+                </div>
+                
+                {/* Experience bar */}
+                <div className="mb-4 rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                  <div className="flex justify-between text-sm mb-2" style={{color: '#D4AF37'}}>
+                    <span className="font-bold uppercase tracking-wide">Experience</span>
                     <span className="font-bold">{(() => {
-                      // Calculate XP consumed by previous levels
                       let xpSpent = 0;
                       for (let i = 1; i < level; i++) {
                         xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
@@ -3019,18 +3039,30 @@ setMiniBossCount(0);
                       return `${currentLevelXp} / ${xpNeeded}`;
                     })()}</span>
                   </div>
-                  <div className="bg-black bg-opacity-50 rounded-full h-4 overflow-hidden">
-                    <div className="bg-gradient-to-r from-yellow-500 to-orange-400 h-4 rounded-full transition-all duration-300 shadow-lg" style={{width: `${(() => {
-                      let xpSpent = 0;
-                      for (let i = 1; i < level; i++) {
-                        xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
-                      }
-                      const currentLevelXp = xp - xpSpent;
-                      const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
-                      return (currentLevelXp / xpNeeded) * 100;
-                    })()}%`}}></div>
+                  <div className="rounded-full h-4 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                    <div className="h-4 rounded-full transition-all duration-300" style={{
+                      background: (() => {
+                        const gradientMap = {
+                          red: 'linear-gradient(90deg, #8B0000 0%, #DC143C 100%)',
+                          purple: 'linear-gradient(90deg, #4B0082 0%, #9370DB 100%)',
+                          green: 'linear-gradient(90deg, #004d00 0%, #32CD32 100%)',
+                          yellow: 'linear-gradient(90deg, #8B4513 0%, #D2691E 100%)',
+                          amber: 'linear-gradient(90deg, #8B4513 0%, #CD853F 100%)'
+                        };
+                        return gradientMap[hero.class.color] || 'linear-gradient(90deg, #8B4513 0%, #D2691E 100%)';
+                      })(),
+                      width: `${(() => {
+                        let xpSpent = 0;
+                        for (let i = 1; i < level; i++) {
+                          xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
+                        }
+                        const currentLevelXp = xp - xpSpent;
+                        const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
+                        return (currentLevelXp / xpNeeded) * 100;
+                      })()}%`
+                    }}></div>
                   </div>
-                  <p className="text-xs text-white text-opacity-60 mt-1 text-right">{(() => {
+                  <p className="text-xs text-right mt-1" style={{color: '#F5F5DC', opacity: 0.7}}>{(() => {
                     let xpSpent = 0;
                     for (let i = 1; i < level; i++) {
                       xpSpent += Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, i - 1));
@@ -3038,149 +3070,125 @@ setMiniBossCount(0);
                     const currentLevelXp = xp - xpSpent;
                     const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
                     return xpNeeded - currentLevelXp;
-                  })()} XP to next level</p>
+                  })()} XP TO NEXT LEVEL</p>
                 </div>
                 
-                {skipCount > 0 && (
-                  <div className={`mb-4 rounded-lg p-3 border-2 ${
-                    skipCount >= 3 ? 'bg-black border-red-600 animate-pulse' : 
-                    skipCount >= 2 ? 'bg-red-950 bg-opacity-50 border-red-700' : 
-                    'bg-gray-900 bg-opacity-50 border-red-800'
-                  }`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Skull className="text-red-500" size={20}/>
-                        <span className="font-bold text-red-400 uppercase tracking-wide">
-                          {skipCount === 3 ? '☠️ FINAL WARNING ☠️' : 'Curse Progress'}
-                        </span>
-                      </div>
-                      <span className="text-2xl font-bold text-red-400">{skipCount}/4</span>
+                {/* Combat Stats Header */}
+                <div className="flex items-center justify-center gap-3 mb-3">
+                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Combat Stats</p>
+                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                </div>
+                
+                {/* Combat stats 2x2 grid */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  {/* HP */}
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                    <div className="flex justify-center mb-1">
+                      <HeartPulse size={20} style={{color: '#FF6B6B'}}/>
                     </div>
-                    {skipCount === 3 && (
-                      <p className="text-xs text-red-300 mt-2 italic">One more skip and you die. No mercy.</p>
-                    )}
-                    {consecutiveDays > 0 && skipCount > 0 && (
-                      <p className="text-xs text-green-400 mt-2">
-                        🙏 Redemption: {consecutiveDays}/{GAME_CONSTANTS.SKIP_REDEMPTION_DAYS} days
-                      </p>
-                    )}
+                    <p className="text-xl font-bold mb-1" style={{color: '#F5F5DC'}}>{hp}/{getMaxHp()}</p>
+                    <div className="rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                      <div className="h-2 rounded-full transition-all duration-300" style={{backgroundColor: '#DC2626', width: `${(hp / getMaxHp()) * 100}%`}}></div>
+                    </div>
+                  </div>
+                  
+                  {/* Stamina */}
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                    <div className="flex justify-center mb-1">
+                      <Sparkles size={20} style={{color: '#3B82F6'}}/>
+                    </div>
+                    <p className="text-xl font-bold mb-1" style={{color: '#F5F5DC'}}>{stamina}/{getMaxStamina()}</p>
+                    <div className="rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                      <div className="h-2 rounded-full transition-all duration-300" style={{backgroundColor: '#3B82F6', width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
+                    </div>
+                  </div>
+                  
+                  {/* Attack */}
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                    <div className="flex justify-center mb-1">
+                      <Swords size={20} style={{color: '#F59E0B'}}/>
+                    </div>
+                    <p className="text-xl font-bold mb-1" style={{color: '#F5F5DC'}}>{getBaseAttack() + weapon + (level - 1) * 2}</p>
+                    <p className="text-xs uppercase" style={{color: '#F5F5DC'}}>Damage Per Hit</p>
+                  </div>
+                  
+                  {/* Defense */}
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                    <div className="flex justify-center mb-1">
+                      <ShieldCheck size={20} style={{color: '#F5F5DC'}}/>
+                    </div>
+                    <p className="text-2xl font-bold mb-1" style={{color: '#F5F5DC'}}>{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
+                    <p className="text-xs uppercase" style={{color: '#F5F5DC'}}>Damage Resist</p>
+                  </div>
+                </div>
+                
+                {/* Customize button */}
+                {canCustomize && (
+                  <div className="mb-3">
+                    <button 
+                      onClick={() => setShowCustomizeModal(true)}
+                      className="w-full py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
+                      style={{backgroundColor: 'rgba(184, 134, 11, 0.6)', border: '2px solid #B8860B', color: '#F5F5DC'}}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.8)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(184, 134, 11, 0.4)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.6)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      ✦ Customize Your Hero
+                    </button>
                   </div>
                 )}
                 
-                {curseLevel > 0 && (
-  <div className={`mb-4 rounded-lg p-3 border-2 animate-pulse ${
-    curseLevel === 3 ? 'bg-red-950 bg-opacity-90 border-red-500' :
-    curseLevel === 2 ? 'bg-purple-950 bg-opacity-80 border-purple-500' :
-    'bg-purple-950 bg-opacity-70 border-purple-600'
-  }`}>
-    <div className="flex items-center gap-2">
-      <span className="text-2xl">
-        {curseLevel === 3 ? '☠️' : curseLevel === 2 ? '🌑🌑' : '🌑'}
-      </span>
-      <div>
-        <p className={`font-bold uppercase ${
-          curseLevel === 3 ? 'text-red-300' : 'text-purple-300'
-        }`}>
-          {curseLevel === 3 ? 'CONDEMNED' : curseLevel === 2 ? 'DEEPLY CURSED' : 'CURSED'}
-        </p>
-        <p className={`text-xs ${
-          curseLevel === 3 ? 'text-red-400' : 'text-purple-400'
-        }`}>
-          {curseLevel === 3 ? '90% XP penalty • One failure from death' :
-           curseLevel === 2 ? '75% XP penalty • Enemies hit harder' :
-           '50% XP penalty'}
-        </p>
-      </div>
-    </div>
-  </div>
-)}
-                
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-red-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Heart size={20} className="text-red-400"/>
-                    </div>
-                    <p className="text-xl font-bold text-white text-center">{hp}/{getMaxHp()}</p>
-                    <div className="bg-black bg-opacity-30 rounded-full h-2 overflow-hidden mt-1">
-                      <div className="bg-red-500 h-2 rounded-full transition-all duration-300" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-cyan-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Zap size={20} className="text-cyan-400"/>
-                    </div>
-                    <p className="text-xl font-bold text-white text-center">{stamina}/{getMaxStamina()}</p>
-                    <div className="bg-black bg-opacity-30 rounded-full h-2 overflow-hidden mt-1">
-                      <div className="bg-cyan-500 h-2 rounded-full transition-all duration-300" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-orange-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Sword size={20} className="text-orange-400"/>
-                    </div>
-                    <p className="text-xl font-bold text-white text-center">{getBaseAttack() + weapon + (level - 1) * 2}</p>
-                    <p className="text-xs text-white text-opacity-50 text-center">damage per hit</p>
-                  </div>
-                  
-                  <div className="bg-black bg-opacity-40 rounded-lg p-3 border border-blue-500 border-opacity-30">
-                    <div className="flex items-center justify-center mb-1">
-                      <Shield size={20} className="text-blue-400"/>
-                    </div>
-                    <p className="text-xl font-bold text-white text-center">{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
-                    <p className="text-xs text-white text-opacity-50 text-center">damage resist</p>
-                  </div>
+                {/* Decorative divider with text */}
+                <div className="flex items-center justify-center gap-3 mb-4 mt-4">
+                  <div style={{flex: '1', height: '1px', background: 'rgba(220, 20, 60, 0.4)'}}></div>
+                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: '#DC143C', letterSpacing: '0.2em'}}>Equipment</p>
+                  <div style={{flex: '1', height: '1px', background: 'rgba(220, 20, 60, 0.4)'}}></div>
                 </div>
                 
-                 {curseLevel > 0 && (
-  <div className="pt-3 border-t-2 border-white border-opacity-20">
-  <button 
-    onClick={useCleanse}
-    disabled={cleansePots === 0}
-                      className="w-full bg-black bg-opacity-40 rounded-lg p-3 border border-purple-500 border-opacity-30 hover:bg-opacity-60 transition-all disabled:opacity-40 disabled:cursor-not-allowed animate-pulse"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">✨</span>
-                          <div className="text-left">
-                            <p className="text-sm text-white font-bold">Cleanse Potion</p>
-                            <p className="text-xs text-purple-300">Remove Curse</p>
-                          </div>
-                        </div>
-                        <span className="text-xl font-bold text-purple-400">{cleansePots}</span>
-                      </div>
-                    </button>
-                  </div>
-                  )}
-                
-                {canCustomize && (
-  <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
-    <button 
-      onClick={() => setShowCustomizeModal(true)}
-      className="w-full bg-blue-600 hover:bg-blue-700 px-4 py-3 rounded-lg transition-all font-bold text-white"
-    >
-      Customize Your Hero!
-    </button>
-  </div>
-)}
-                
-                <div className="pt-3 border-t-2 border-white border-opacity-20 mt-3">
-                  {/* Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
+                {/* Inventory and Merchant buttons */}
+                <div className="grid grid-cols-2 gap-2">
                   <button 
                     onClick={() => setShowInventoryModal(true)}
-                    className="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center"
+                    className="py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
+                    style={{backgroundColor: 'rgba(139, 0, 0, 0.7)', border: '2px solid #8B0000', color: '#F5F5DC'}}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.9)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.7)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     Inventory
                   </button>
                   <button 
                     onClick={() => setShowCraftingModal(true)}
-                    className="bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-500 hover:to-orange-600 px-4 py-3 rounded-lg transition-all font-bold text-white flex items-center justify-center"
+                    className="py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
+                    style={{backgroundColor: 'rgba(120, 53, 15, 0.7)', border: '2px solid #92400E', color: '#F5F5DC'}}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.9)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(120, 53, 15, 0.4)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.7)';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     Merchant
                   </button>
-                </div>
                 </div>
               </div>
             </div>
