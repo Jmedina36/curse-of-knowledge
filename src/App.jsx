@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer } from 'lucide-react';
-import useGameSFX from '../hooks/useGameSFX';
+import useGameSFX from './hooks/useGameSFX';
 import DebugPanel from './DebugPanel';
 import AchievementsPanel from './AchievementsPanel';
 
