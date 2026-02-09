@@ -371,6 +371,17 @@ const GAME_CONSTANTS = {
 
 const HERO_TITLES = ['Novice', 'Seeker', 'Wanderer', 'Survivor', 'Warrior', 'Champion', 'Legend'];
 
+// Global CSS to hide scrollbars
+const globalStyles = `
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+`;
+
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
@@ -2833,6 +2844,7 @@ setMiniBossCount(0);
   <div className={`min-h-screen text-white relative overflow-hidden ${currentAnimation || ''} ${
     curseLevel === 3 ? 'border-8 border-red-600 animate-pulse' : ''
   }`} style={{ fontFamily: "'Cinzel', serif", background: 'linear-gradient(to bottom, #1a0a0a, #0d0505)' }}>
+      <style>{globalStyles}</style>
       {victoryFlash && (
         <div className="fixed inset-0 pointer-events-none z-50 victory-flash"></div>
       )}
@@ -3195,11 +3207,11 @@ setMiniBossCount(0);
             <div className="rounded-xl p-6 max-w-2xl mx-auto relative overflow-hidden" style={{
               background: (() => {
                 const colorMap = {
-                  red: '#4A0E0E',
-                  purple: '#2D1B4E',
-                  green: '#1B4D3E',
-                  yellow: '#3D4A2F',
-                  amber: '#4A3422'
+                  red: '#3D0A0A',      // Warrior - Deep crimson red (darker, richer)
+                  purple: '#2A1A3D',   // Mage - Deep royal purple (more saturated)
+                  green: '#1A2A3A',    // Rogue - Deep indigo/midnight blue (stealth, shadows)
+                  yellow: '#3D3A1F',   // Paladin - Deep gold/bronze (less muddy)
+                  amber: '#1E3A2E'     // Ranger - Forest green (nature theme)
                 };
                 return colorMap[hero.class.color] || colorMap.yellow;
               })(),
@@ -3215,43 +3227,47 @@ setMiniBossCount(0);
                     {getCardStyle(hero.class, currentDay).emblem}
                   </div>
                   
-                  <div className="relative z-10 py-3">
-                    {/* Hero name - more prominent */}
-                    <div className="text-center mb-4">
-                      <h3 className="text-2xl font-bold" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>{hero.name}</h3>
+                  <div className="relative z-10 py-2">
+                    {/* Hero name - large and prominent in beige */}
+                    <div className="text-center mb-2">
+                      <h3 className="text-3xl font-black" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>{hero.name}</h3>
+                      <p className="text-sm mt-1" style={{color: COLORS.silver}}>{hero.class.name}</p>
                     </div>
                     
-                    {/* HP Bar with dark box */}
-                    <div className="mb-3 rounded-lg p-3" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(139, 0, 0, 0.3)'}}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>Health</span>
-                        <span className="text-sm font-bold" style={{color: hp <= 10 ? '#DC2626' : '#F5F5DC'}}>{hp}/{getMaxHp()}</span>
+                    {/* HP and Stamina side-by-side */}
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {/* HP Bar */}
+                      <div className="rounded-lg p-2" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(139, 0, 0, 0.3)'}}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>HP</span>
+                          <span className="text-xs font-bold" style={{color: hp <= 10 ? '#DC2626' : '#F5F5DC'}}>{hp}/{getMaxHp()}</span>
+                        </div>
+                        <div className="rounded-full h-1.5 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
+                          <div 
+                            className="h-1.5 rounded-full transition-all" 
+                            style={{
+                              width: `${(hp / getMaxHp()) * 100}%`,
+                              background: hp <= 10 ? 'linear-gradient(to right, #7F1D1D, #DC2626)' : 'linear-gradient(to right, #7F1D1D, #EF4444)'
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="rounded-full h-2 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
-                        <div 
-                          className="h-2 rounded-full transition-all" 
-                          style={{
-                            width: `${(hp / getMaxHp()) * 100}%`,
-                            background: hp <= 10 ? 'linear-gradient(to right, #7F1D1D, #DC2626)' : 'linear-gradient(to right, #7F1D1D, #EF4444)'
-                          }}
-                        />
-                      </div>
-                    </div>
-                    
-                    {/* Stamina Bar with dark box */}
-                    <div className="mb-4 rounded-lg p-3" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(30, 58, 95, 0.3)'}}>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>Stamina</span>
-                        <span className="text-sm font-bold" style={{color: '#93C5FD'}}>{stamina}/{getMaxStamina()}</span>
-                      </div>
-                      <div className="rounded-full h-2 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
-                        <div 
-                          className="h-2 rounded-full transition-all" 
-                          style={{
-                            width: `${(stamina / getMaxStamina()) * 100}%`,
-                            background: 'linear-gradient(to right, #0C4A6E, #0EA5E9)'
-                          }}
-                        />
+                      
+                      {/* Stamina Bar */}
+                      <div className="rounded-lg p-2" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(30, 58, 95, 0.3)'}}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>SP</span>
+                          <span className="text-xs font-bold" style={{color: '#93C5FD'}}>{stamina}/{getMaxStamina()}</span>
+                        </div>
+                        <div className="rounded-full h-1.5 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
+                          <div 
+                            className="h-1.5 rounded-full transition-all" 
+                            style={{
+                              width: `${(stamina / getMaxStamina()) * 100}%`,
+                              background: 'linear-gradient(to right, #0C4A6E, #0EA5E9)'
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                     
@@ -3324,13 +3340,13 @@ setMiniBossCount(0);
                     <div className="h-4 rounded-full transition-all duration-300" style={{
                       background: (() => {
                         const gradientMap = {
-                          red: 'linear-gradient(90deg, #8B0000 0%, #DC143C 100%)',
-                          purple: 'linear-gradient(90deg, #4B0082 0%, #9370DB 100%)',
-                          green: 'linear-gradient(90deg, #004d00 0%, #32CD32 100%)',
-                          yellow: 'linear-gradient(90deg, #8B4513 0%, #D2691E 100%)',
-                          amber: 'linear-gradient(90deg, #8B4513 0%, #CD853F 100%)'
+                          red: 'linear-gradient(90deg, #8B0000 0%, #DC143C 100%)',           // Warrior - unchanged
+                          purple: 'linear-gradient(90deg, #4B0082 0%, #9370DB 100%)',        // Mage - unchanged
+                          green: 'linear-gradient(90deg, #1E3A5F 0%, #3B82F6 100%)',         // Rogue - dark indigo to blue (stealth theme)
+                          yellow: 'linear-gradient(90deg, #B8860B 0%, #FFD700 100%)',        // Paladin - dark gold to bright gold
+                          amber: 'linear-gradient(90deg, #166534 0%, #22C55E 100%)'          // Ranger - dark forest to bright green
                         };
-                        return gradientMap[hero.class.color] || 'linear-gradient(90deg, #8B4513 0%, #D2691E 100%)';
+                        return gradientMap[hero.class.color] || 'linear-gradient(90deg, #B8860B 0%, #FFD700 100%)';
                       })(),
                       width: `${(() => {
                         let xpSpent = 0;
@@ -3523,7 +3539,7 @@ setMiniBossCount(0);
                     <div className="text-center mb-4">
                       {/* Section header with decorative divider */}
                       <div className="mb-3">
-                        <h2 className="text-2xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
+                        <h2 className="text-4xl font-bold mb-3" style={{color: '#DC143C', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
                         <div className="flex items-center justify-center gap-2 mb-2">
                           <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
                           <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
@@ -3684,7 +3700,7 @@ setMiniBossCount(0);
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
-                <h2 className="text-2xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
+                <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -4115,7 +4131,7 @@ setMiniBossCount(0);
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
-                <h2 className="text-2xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>CHRONICLES OF THE CURSED</h2>
+                <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>CHRONICLES OF THE CURSED</h2>
                 <div className="flex items-center justify-center gap-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -4294,6 +4310,17 @@ setMiniBossCount(0);
 
           {activeTab === 'legacy' && (
             <div className="space-y-6">
+              {/* Main Page Header */}
+              <div className="text-center mb-6">
+                <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>HALL OF LEGENDS</h2>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                  <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                </div>
+                <p className="text-gray-400 text-sm italic">"Remember the fallen... Honor the victorious..."</p>
+              </div>
+              
               {/* The Liberated Section */}
               <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
                 <div className="text-center mb-6">
