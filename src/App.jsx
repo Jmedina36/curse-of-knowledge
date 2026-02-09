@@ -1151,7 +1151,11 @@ if (tasks.length === 0) {
       });
     });
     
-    setTasks(newTasks);
+    // Preserve existing overdue tasks and merge with new tasks
+    setTasks(prevTasks => {
+      const overdueTasksToKeep = prevTasks.filter(t => t.overdue && !t.done);
+      return [...overdueTasksToKeep, ...newTasks];
+    });
     setHasStarted(true);
     
     // Activate day on import
@@ -1160,7 +1164,12 @@ if (tasks.length === 0) {
       addLog(`Day ${currentDay} ACTIVATED - Complete tasks before midnight!`);
     }
     
-    addLog(`Imported ${newTasks.length} tasks from ${dayName}'s plan`);
+    const overdueCount = tasks.filter(t => t.overdue && !t.done).length;
+    if (overdueCount > 0) {
+      addLog(`Imported ${newTasks.length} tasks from ${dayName}'s plan (${overdueCount} overdue tasks carried over)`);
+    } else {
+      addLog(`Imported ${newTasks.length} tasks from ${dayName}'s plan`);
+    }
     setShowImportModal(false);
   };
 
@@ -2874,6 +2883,24 @@ setMiniBossCount(0);
           0%, 100% { opacity: 0.3; }
           50% { opacity: 0.6; }
         }
+        @keyframes pulse-red-border {
+          0%, 100% { 
+            border-color: rgba(220, 38, 38, 0.6);
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.3);
+          }
+          50% { 
+            border-color: rgba(220, 38, 38, 1);
+            box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+          }
+        }
+        @keyframes gold-glow {
+          0%, 100% { 
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+          }
+          50% { 
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.7);
+          }
+        }
         @keyframes screen-shake {
           0%, 100% { transform: translate(0, 0); }
           10% { transform: translate(-5px, -5px); }
@@ -3006,7 +3033,7 @@ setMiniBossCount(0);
               <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 107, 107, 0.3), transparent)'}}></div>
             </div>
             
-            <p className="text-sm mb-6 italic" style={{color: '#C0C0C0'}}>"Study or be consumed by the abyss..."</p>
+            <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Study or be consumed by the abyss..."</p>
             
           </header>
         </div>
@@ -3535,19 +3562,17 @@ setMiniBossCount(0);
                 </div>
               ) : (
                 <>
-                  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-red-900">
+                  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
+                    {/* Section header with decorative divider */}
                     <div className="text-center mb-4">
-                      {/* Section header with decorative divider */}
-                      <div className="mb-3">
-                        <h2 className="text-4xl font-bold mb-3" style={{color: '#DC143C', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
-                        <div className="flex items-center justify-center gap-2 mb-2">
-                          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
-                          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
-                          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
-                        </div>
-                        <p className="text-sm italic" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
+                      <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
+                      <div className="flex items-center justify-center gap-2">
+                        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                        <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                       </div>
                     </div>
+                    <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
                     
                     <div className="flex gap-3 justify-center mb-6">
                       <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 px-6 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)'}>
@@ -3568,8 +3593,14 @@ setMiniBossCount(0);
   // Incomplete tasks first, completed tasks last
   if (!a.done && b.done) return -1;
   if (a.done && !b.done) return 1;
-  // Among incomplete tasks, important tasks first
+  
+  // Among incomplete tasks: overdue first, then important, then routine
   if (!a.done && !b.done) {
+    // Overdue tasks always come first
+    if (a.overdue && !b.overdue) return -1;
+    if (!a.overdue && b.overdue) return 1;
+    
+    // If both overdue or both not overdue, sort by priority
     if (a.priority === 'important' && b.priority !== 'important') return -1;
     if (a.priority !== 'important' && b.priority === 'important') return 1;
   }
@@ -3581,8 +3612,8 @@ setMiniBossCount(0);
       : t.overdue
         ? 'bg-red-900/20 border-red-600 opacity-80'
       : t.priority === 'important'
-        ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500 shadow-lg shadow-yellow-500/20'
-        : ''
+        ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500'
+        : 'bg-gradient-to-r from-blue-900/30 to-gray-800 border-blue-500'
   }`}
   style={{
     backgroundColor: t.done 
@@ -3591,26 +3622,54 @@ setMiniBossCount(0);
         ? undefined 
         : t.priority === 'important' 
           ? undefined 
-          : 'rgba(30, 41, 59, 0.5)',
+          : undefined,
     borderColor: t.done 
       ? 'rgba(34, 197, 94, 0.6)' 
       : t.overdue 
         ? undefined 
         : t.priority === 'important' 
           ? undefined 
-          : 'rgba(51, 65, 85, 0.6)'
+          : undefined,
+    position: 'relative',
+    overflow: 'hidden',
+    animation: t.overdue && !t.done 
+      ? 'pulse-red-border 2s ease-in-out infinite' 
+      : undefined,
+    boxShadow: t.priority === 'important' && !t.done && !t.overdue
+      ? '0 0 20px rgba(234, 179, 8, 0.6)'
+      : undefined
   }}>
-    <div className="flex items-center gap-3">
-      {t.overdue && !t.done && (
-        <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">OVERDUE</span>
-      )}
+    {/* OVERDUE watermark - centered from left edge to Focus button */}
+    {t.overdue && !t.done && (
+      <div className="absolute left-0 inset-y-0 flex items-center pointer-events-none" style={{zIndex: 0, right: '180px', justifyContent: 'center'}}>
+        <span style={{
+          fontSize: '3rem',
+          fontWeight: 900,
+          color: '#DC2626',
+          opacity: 0.15,
+          letterSpacing: '0.2em'
+        }}>OVERDUE</span>
+      </div>
+    )}
+    {/* COMPLETED watermark - centered horizontally */}
+    {t.done && (
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{zIndex: 0}}>
+        <span style={{
+          fontSize: '3rem',
+          fontWeight: 900,
+          color: '#22C55E',
+          opacity: 0.15,
+          letterSpacing: '0.2em'
+        }}>COMPLETED</span>
+      </div>
+    )}
+    <div className="flex items-center gap-3" style={{position: 'relative', zIndex: 1}}>
       <div className="flex-1">
         <p className={t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300 font-medium text-lg' : 'text-white font-medium text-lg'}>
           {t.title}
         </p>
         <p className="text-sm text-gray-400 mt-1">
           {t.priority === 'important' ? 'IMPORTANT • 1.25x XP' : 'ROUTINE • 1.0x XP'}
-          {t.overdue && !t.done && <span className="text-red-400 ml-2">• 50% XP Penalty</span>}
         </p>
       </div>
       
@@ -3638,7 +3697,6 @@ setMiniBossCount(0);
           </button>
         </div>
       )}
-      {t.done && (<span className="text-green-400 font-bold flex items-center gap-1">Done</span>)}
     </div>
   </div>
 ))}   
@@ -3701,13 +3759,13 @@ setMiniBossCount(0);
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
                 <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
-                <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="flex items-center justify-center gap-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                 </div>
               </div>
-              <p className="text-sm mb-6 italic text-center" style={{color: '#C0C0C0'}}>"Chart your path through the coming trials..."</p>
+              <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Chart your path through the coming trials..."</p>
               
               {/* Sub-navigation tabs */}
               <div className="flex gap-2 justify-center mb-6">
@@ -3943,20 +4001,15 @@ setMiniBossCount(0);
     background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(28, 28, 28, 0.6))',
     borderColor: 'rgba(184, 134, 11, 0.6)'
   }}>
-    <div className="text-center mb-6">
-      <h2 className="text-2xl font-bold mb-2" style={{
-        color: '#D4AF37',
-        fontFamily: 'Cinzel, serif',
-        letterSpacing: '0.15em',
-        textShadow: '0 0 20px rgba(212, 175, 55, 0.3)'
-      }}>KNOWLEDGE FORGE</h2>
-      <div className="flex items-center justify-center gap-2 mb-2">
-        <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+    <div className="text-center mb-4">
+      <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>KNOWLEDGE FORGE</h2>
+      <div className="flex items-center justify-center gap-2">
+        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
         <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-        <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
       </div>
-      <p className="text-sm italic" style={{color: '#C0C0C0'}}>"Sharpen your mind, temper your wisdom..."</p>
     </div>
+    <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Sharpen your mind, temper your wisdom..."</p>
     
     <div className="flex justify-between items-center mb-6">
       <div>
@@ -4138,7 +4191,7 @@ setMiniBossCount(0);
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                 </div>
               </div>
-              <p className="text-gray-400 text-sm mb-6 italic text-center">"Your struggle against the eternal darkness..."</p>
+              <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Your struggle against the eternal darkness..."</p>
               
               {/* Current Cycle Status */}
               <div className="mb-6 bg-gradient-to-r from-red-900 to-gray-900 rounded-xl p-6 border-2 border-red-600">
@@ -4313,12 +4366,12 @@ setMiniBossCount(0);
               {/* Main Page Header */}
               <div className="text-center mb-6">
                 <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>HALL OF LEGENDS</h2>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                <div className="flex items-center justify-center gap-2">
+                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-                  <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                 </div>
-                <p className="text-gray-400 text-sm italic">"Remember the fallen... Honor the victorious..."</p>
+                <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Remember the fallen... Honor the victorious..."</p>
               </div>
               
               {/* The Liberated Section */}
