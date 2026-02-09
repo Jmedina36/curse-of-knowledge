@@ -2995,6 +2995,200 @@ setMiniBossCount(0);
             
             <p className="text-sm mb-6 italic" style={{color: '#C0C0C0'}}>"Study or be consumed by the abyss..."</p>
             
+          </header>
+        </div>
+
+        {/* Navigation Section - Full Width */}
+        <nav className="flex gap-4 justify-center items-center mb-8 pt-6 pb-6 border-t-2 border-b-2" style={{
+          borderColor: 'rgba(212, 175, 55, 0.2)',
+          background: 'linear-gradient(to bottom, rgba(40, 10, 10, 0.4), rgba(30, 0, 0, 0.4))',
+          boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.3)'
+        }}>
+          {[
+                {id:'quest', icon:Sword, label:'Quests'},
+                {id:'planner', icon:Calendar, label:'Planner'},
+                {id:'study', icon:Hammer, label:'Forge'},
+                {id:'legacy', icon:Skull, label:'Legacy'},
+                {id:'progress', icon:Trophy, label:'Progress'},
+              ].map(t => (
+                <button 
+                  key={t.id} 
+                  onClick={() => setActiveTab(t.id)} 
+                  className="flex flex-col items-center gap-2 px-6 py-3 rounded-lg transition-all border-2"
+                  style={{
+                    backgroundColor: activeTab === t.id ? 'rgba(184, 134, 11, 0.3)' : 'transparent',
+                    borderColor: activeTab === t.id ? '#D4AF37' : 'transparent',
+                    opacity: activeTab === t.id ? 1 : 0.7
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = 1;
+                    if (activeTab !== t.id) e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (activeTab !== t.id) {
+                      e.currentTarget.style.opacity = 0.7;
+                      e.currentTarget.style.borderColor = 'transparent';
+                    }
+                  }}
+                >
+                  <t.icon size={24} style={{color: activeTab === t.id ? '#D4AF37' : '#F5F5DC'}}/>
+                  <span 
+                    className="text-xs uppercase tracking-wider"
+                    style={{
+                      color: activeTab === t.id ? '#D4AF37' : '#F5F5DC',
+                      fontWeight: activeTab === t.id ? 'bold' : 'normal'
+                    }}
+                  >
+                    {t.label}
+                  </span>
+                </button>
+              ))}
+        </nav>
+
+        <div className="max-w-6xl mx-auto">
+          {showDebug && (
+            <div className="bg-purple-950 bg-opacity-50 border-2 border-purple-600 rounded-xl p-4 mb-6">
+              <h3 className="text-lg font-bold text-purple-300 mb-3 text-center">Debug / Testing Panel</h3>
+              
+              <div className="mb-3">
+                <h4 className="text-sm font-semibold text-purple-200 mb-2">⚡ Stats & Resources</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <button onClick={() => { setHp(30); addLog('Debug: HP set to 30'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Set HP to 30</button>
+                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Full Heal</button>
+                  <button onClick={() => { setXp(x => x + 50); addLog('Debug: +50 XP'); }} className="bg-yellow-700 hover:bg-yellow-600 px-3 py-2 rounded text-sm transition-all">+50 XP</button>
+                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP (craft cost)'); }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-sm transition-all">+100 XP</button>
+                </div>
+              </div>
+
+              <div className="mb-3">
+                <h4 className="text-sm font-semibold text-purple-200 mb-2">🎒 Items & Equipment</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); addLog('Debug: +3 of each potion'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">+3 Potions</button>
+                  <button onClick={() => { setCleansePots(c => c + 1); addLog('Debug: +1 Cleanse Potion'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+1 Cleanse Potion</button>
+                  <button onClick={() => { setWeapon(w => w + 10); setArmor(a => a + 10); addLog('Debug: +10 weapon/armor'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+10 Weapon/Armor</button>
+                </div>
+              </div>
+
+              <div className="mb-3">
+  <h4 className="text-sm font-semibold text-purple-200 mb-2">⚔️ Combat & Progression</h4>
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+    <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Spawn Regular Enemy</button>
+    <button onClick={() => {
+      const numEnemies = Math.floor(Math.random() * 3) + 2;
+      setWaveCount(numEnemies);
+      addLog(`DEBUG WAVE: ${numEnemies} enemies`);
+      spawnRegularEnemy(true, 1, numEnemies);
+    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Wave (2-4)</button>
+    <button onClick={() => { 
+      setBattleType('elite'); 
+      spawnRandomMiniBoss(true); 
+    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Elite Boss</button>
+    <button onClick={() => {
+      setBattleType('final');
+      const bossHealth = 300;
+      const bossNameGenerated = makeBossName();
+      setBossName(bossNameGenerated);
+      setBossHp(bossHealth);
+      setBossMax(bossHealth);
+      setShowBoss(true);
+      setBattling(true);
+      setBattleMenu('main'); // Reset to main menu
+      setBattleMode(true);
+      setIsFinalBoss(true);
+      setCanFlee(false);
+      setVictoryLoot([]); // Clear previous loot
+      addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
+    }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Spawn Final Boss</button>
+    <button onClick={() => { 
+      const currentIndex = classes.findIndex(c => c.name === hero.class.name); 
+      const nextIndex = (currentIndex + 1) % classes.length; 
+      setHero(prev => ({ ...prev, class: classes[nextIndex] })); 
+      addLog(`Debug: Changed to ${classes[nextIndex].name}`); 
+    }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Change Class</button>
+    <button onClick={() => { 
+      setSkipCount(s => Math.min(3, s + 1)); 
+      addLog('Debug: +1 skip count'); 
+    }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">+1 Skip Count</button>
+  </div>
+</div>
+
+              <div className="mb-3">
+  <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse Level</h4>
+  <div className="grid grid-cols-4 gap-2">
+    <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear</button>
+    <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed (Lvl 1)'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-sm transition-all">Lvl 1</button>
+    <button onClick={() => { setCurseLevel(2); addLog('Debug: Deep Curse (Lvl 2)'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-sm transition-all">Lvl 2</button>
+    <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED (Lvl 3)'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">Lvl 3</button>
+  </div>
+</div>
+
+              <div>
+  <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
+  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+    <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Chronicle</button>
+    <button onClick={() => { setGraveyard([]); setHeroes([]); addLog('Debug: Legacy tab cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Legacy</button>
+    <button onClick={() => { if (window.confirm('Clear ALL achievements & history?')) { setGraveyard([]); setHeroes([]); setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] }); addLog('Debug: Achievements cleared'); } }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Clear Achievements</button>
+    <button onClick={() => { if (window.confirm('Clear all calendar tasks?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Clear Calendar</button>
+    <button onClick={() => { if (window.confirm('Clear weekly planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Clear Planner</button>
+    <button onClick={() => { localStorage.removeItem('fantasyStudyQuest'); alert('LocalStorage cleared! Refresh the page to start fresh.'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Clear LocalStorage</button>
+  </div>
+  
+  <button 
+    onClick={() => { 
+      if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start completely fresh? This cannot be undone!')) {
+        const newHero = makeName();
+        setHero(newHero);
+        setCanCustomize(true);
+        setCurrentDay(1);
+        setHasStarted(false);
+        setHp(GAME_CONSTANTS.MAX_HP);
+        setStamina(GAME_CONSTANTS.MAX_STAMINA);
+        setXp(0);
+        setLevel(1);
+        setHealthPots(0);
+        setStaminaPots(0);
+        setCleansePots(0);
+        setWeapon(0);
+        setArmor(0);
+        setTasks([]);
+        setActiveTask(null);
+        setTimer(0);
+        setRunning(false);
+        setShowPomodoro(false);
+        setPomodoroTask(null);
+        setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
+        setCalendarTasks({});
+        setShowBoss(false);
+        setBattling(false);
+        setLog([]);
+        setGraveyard([]);
+        setHeroes([]);
+        setSkipCount(0);
+        setConsecutiveDays(0);
+        setLastPlayedDate(null);
+        setMiniBossCount(0);
+        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
+        localStorage.removeItem('fantasyStudyQuest');
+        addLog('🔄 FULL RESET - Everything cleared!');
+        setActiveTab('quest');
+      }
+    }}
+    className="w-full mt-3 bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-500 animate-pulse"
+  >
+    🔄 FULL RESET - Delete Everything
+  </button>
+</div>
+
+              <p className="text-xs text-gray-400 mt-3 italic">
+  Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Curse Lvl: {curseLevel} • Cleanse: {cleansePots}
+</p>
+            </div>
+          )}
+
+
+
+          {activeTab === 'quest' && (
+            <div className="space-y-6">
             <div className="rounded-xl p-6 max-w-2xl mx-auto relative overflow-hidden" style={{
               background: (() => {
                 const colorMap = {
@@ -3207,207 +3401,6 @@ setMiniBossCount(0);
                 </div>
               </div>
             </div>
-          </header>
-
-          {/* Navigation Section */}
-          <div className="mb-8">
-            <div className="text-center mb-4">
-              <p className="text-xs tracking-[0.3em] uppercase" style={{color: '#D4AF37'}}>Navigation</p>
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <div style={{width: '200px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent)'}}></div>
-              </div>
-            </div>
-            
-            <nav className="flex gap-4 justify-center items-center">
-              {[
-                {id:'quest', icon:Sword, label:'Quests'},
-                {id:'planner', icon:Calendar, label:'Planner'},
-                {id:'study', icon:Hammer, label:'Forge'},
-                {id:'legacy', icon:Skull, label:'Legacy'},
-                {id:'progress', icon:Trophy, label:'Progress'},
-              ].map(t => (
-                <button 
-                  key={t.id} 
-                  onClick={() => setActiveTab(t.id)} 
-                  className="flex flex-col items-center gap-2 px-6 py-3 rounded-lg transition-all border-2"
-                  style={{
-                    backgroundColor: activeTab === t.id ? 'rgba(184, 134, 11, 0.3)' : 'transparent',
-                    borderColor: activeTab === t.id ? '#D4AF37' : 'transparent',
-                    opacity: activeTab === t.id ? 1 : 0.7
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = 1;
-                    if (activeTab !== t.id) e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab !== t.id) {
-                      e.currentTarget.style.opacity = 0.7;
-                      e.currentTarget.style.borderColor = 'transparent';
-                    }
-                  }}
-                >
-                  <t.icon size={24} style={{color: activeTab === t.id ? '#D4AF37' : '#F5F5DC'}}/>
-                  <span 
-                    className="text-xs uppercase tracking-wider"
-                    style={{
-                      color: activeTab === t.id ? '#D4AF37' : '#F5F5DC',
-                      fontWeight: activeTab === t.id ? 'bold' : 'normal'
-                    }}
-                  >
-                    {t.label}
-                  </span>
-                </button>
-              ))}
-            </nav>
-            
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <div style={{width: '200px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent)'}}></div>
-            </div>
-          </div>
-
-          {showDebug && (
-            <div className="bg-purple-950 bg-opacity-50 border-2 border-purple-600 rounded-xl p-4 mb-6">
-              <h3 className="text-lg font-bold text-purple-300 mb-3 text-center">Debug / Testing Panel</h3>
-              
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">⚡ Stats & Resources</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setHp(30); addLog('Debug: HP set to 30'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Set HP to 30</button>
-                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Full Heal</button>
-                  <button onClick={() => { setXp(x => x + 50); addLog('Debug: +50 XP'); }} className="bg-yellow-700 hover:bg-yellow-600 px-3 py-2 rounded text-sm transition-all">+50 XP</button>
-                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP (craft cost)'); }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-sm transition-all">+100 XP</button>
-                </div>
-              </div>
-
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">🎒 Items & Equipment</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); addLog('Debug: +3 of each potion'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">+3 Potions</button>
-                  <button onClick={() => { setCleansePots(c => c + 1); addLog('Debug: +1 Cleanse Potion'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+1 Cleanse Potion</button>
-                  <button onClick={() => { setWeapon(w => w + 10); setArmor(a => a + 10); addLog('Debug: +10 weapon/armor'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+10 Weapon/Armor</button>
-                </div>
-              </div>
-
-              <div className="mb-3">
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">⚔️ Combat & Progression</h4>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-    <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Spawn Regular Enemy</button>
-    <button onClick={() => {
-      const numEnemies = Math.floor(Math.random() * 3) + 2;
-      setWaveCount(numEnemies);
-      addLog(`DEBUG WAVE: ${numEnemies} enemies`);
-      spawnRegularEnemy(true, 1, numEnemies);
-    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Wave (2-4)</button>
-    <button onClick={() => { 
-      setBattleType('elite'); 
-      spawnRandomMiniBoss(true); 
-    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Elite Boss</button>
-    <button onClick={() => {
-      setBattleType('final');
-      const bossHealth = 300;
-      const bossNameGenerated = makeBossName();
-      setBossName(bossNameGenerated);
-      setBossHp(bossHealth);
-      setBossMax(bossHealth);
-      setShowBoss(true);
-      setBattling(true);
-      setBattleMenu('main'); // Reset to main menu
-      setBattleMode(true);
-      setIsFinalBoss(true);
-      setCanFlee(false);
-      setVictoryLoot([]); // Clear previous loot
-      addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
-    }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Spawn Final Boss</button>
-    <button onClick={() => { 
-      const currentIndex = classes.findIndex(c => c.name === hero.class.name); 
-      const nextIndex = (currentIndex + 1) % classes.length; 
-      setHero(prev => ({ ...prev, class: classes[nextIndex] })); 
-      addLog(`Debug: Changed to ${classes[nextIndex].name}`); 
-    }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Change Class</button>
-    <button onClick={() => { 
-      setSkipCount(s => Math.min(3, s + 1)); 
-      addLog('Debug: +1 skip count'); 
-    }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">+1 Skip Count</button>
-  </div>
-</div>
-
-              <div className="mb-3">
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse Level</h4>
-  <div className="grid grid-cols-4 gap-2">
-    <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear</button>
-    <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed (Lvl 1)'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-sm transition-all">Lvl 1</button>
-    <button onClick={() => { setCurseLevel(2); addLog('Debug: Deep Curse (Lvl 2)'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-sm transition-all">Lvl 2</button>
-    <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED (Lvl 3)'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">Lvl 3</button>
-  </div>
-</div>
-
-              <div>
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-    <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Chronicle</button>
-    <button onClick={() => { setGraveyard([]); setHeroes([]); addLog('Debug: Legacy tab cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Legacy</button>
-    <button onClick={() => { if (window.confirm('Clear ALL achievements & history?')) { setGraveyard([]); setHeroes([]); setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] }); addLog('Debug: Achievements cleared'); } }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Clear Achievements</button>
-    <button onClick={() => { if (window.confirm('Clear all calendar tasks?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Clear Calendar</button>
-    <button onClick={() => { if (window.confirm('Clear weekly planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Clear Planner</button>
-    <button onClick={() => { localStorage.removeItem('fantasyStudyQuest'); alert('LocalStorage cleared! Refresh the page to start fresh.'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Clear LocalStorage</button>
-  </div>
-  
-  <button 
-    onClick={() => { 
-      if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start completely fresh? This cannot be undone!')) {
-        const newHero = makeName();
-        setHero(newHero);
-        setCanCustomize(true);
-        setCurrentDay(1);
-        setHasStarted(false);
-        setHp(GAME_CONSTANTS.MAX_HP);
-        setStamina(GAME_CONSTANTS.MAX_STAMINA);
-        setXp(0);
-        setLevel(1);
-        setHealthPots(0);
-        setStaminaPots(0);
-        setCleansePots(0);
-        setWeapon(0);
-        setArmor(0);
-        setTasks([]);
-        setActiveTask(null);
-        setTimer(0);
-        setRunning(false);
-        setShowPomodoro(false);
-        setPomodoroTask(null);
-        setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
-        setCalendarTasks({});
-        setShowBoss(false);
-        setBattling(false);
-        setLog([]);
-        setGraveyard([]);
-        setHeroes([]);
-        setSkipCount(0);
-        setConsecutiveDays(0);
-        setLastPlayedDate(null);
-        setMiniBossCount(0);
-        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
-        localStorage.removeItem('fantasyStudyQuest');
-        addLog('🔄 FULL RESET - Everything cleared!');
-        setActiveTab('quest');
-      }
-    }}
-    className="w-full mt-3 bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-500 animate-pulse"
-  >
-    🔄 FULL RESET - Delete Everything
-  </button>
-</div>
-
-              <p className="text-xs text-gray-400 mt-3 italic">
-  Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Curse Lvl: {curseLevel} • Cleanse: {cleansePots}
-</p>
-            </div>
-          )}
-
-
-
-          {activeTab === 'quest' && (
-            <div className="space-y-6">
               {!hasStarted ? (
                 <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.gold, background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}}>
                   {/* Character Header */}
@@ -5962,7 +5955,7 @@ setMiniBossCount(0);
     </div>
   </div>
 )}
-        </div>
+        </div> {/* Close max-w-6xl container */}
         
         <div className="flex justify-center mt-8 pb-6">
           <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
