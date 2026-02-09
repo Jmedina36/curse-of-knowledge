@@ -3089,141 +3089,167 @@ setMiniBossCount(0);
 
         <div className="max-w-6xl mx-auto">
           {showDebug && (
-            <div className="bg-purple-950 bg-opacity-50 border-2 border-purple-600 rounded-xl p-4 mb-6">
-              <h3 className="text-lg font-bold text-purple-300 mb-3 text-center">Debug / Testing Panel</h3>
+            <div className="max-w-4xl mx-auto mb-6 rounded-xl p-6 border-2 relative" style={{
+              background: 'linear-gradient(to bottom, rgba(40, 20, 10, 0.95), rgba(20, 10, 5, 0.95))',
+              borderColor: 'rgba(139, 0, 0, 0.6)',
+              boxShadow: '0 0 30px rgba(139, 0, 0, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5)'
+            }}>
+              <div className="text-center mb-6">
+                <h3 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.15em'}}>ARCANE CONSOLE</h3>
+                <div className="flex items-center justify-center gap-2">
+                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.5))'}}></div>
+                  <span style={{color: 'rgba(220, 20, 60, 0.6)', fontSize: '8px'}}>◆</span>
+                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.5))'}}></div>
+                </div>
+                <p className="text-sm italic mt-2" style={{color: '#C0C0C0'}}>"Bend reality to your will..."</p>
+              </div>
+
+              {/* Quick Stats Display */}
+              <div className="bg-black bg-opacity-40 rounded-lg p-3 mb-4 border border-gray-800">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-center">
+                  <div><span className="text-gray-400">Day:</span> <span className="text-white font-bold">{currentDay}</span></div>
+                  <div><span className="text-gray-400">HP:</span> <span className="text-red-400 font-bold">{hp}/{getMaxHp()}</span></div>
+                  <div><span className="text-gray-400">SP:</span> <span className="text-blue-400 font-bold">{stamina}/{getMaxStamina()}</span></div>
+                  <div><span className="text-gray-400">Level:</span> <span className="text-yellow-400 font-bold">{level}</span></div>
+                  <div><span className="text-gray-400">XP:</span> <span className="text-yellow-400 font-bold">{xp}</span></div>
+                  <div><span className="text-gray-400">Skips:</span> <span className="text-orange-400 font-bold">{skipCount}/4</span></div>
+                  <div><span className="text-gray-400">Curse:</span> <span className="text-purple-400 font-bold">{curseLevel}</span></div>
+                  <div><span className="text-gray-400">Class:</span> <span className="text-white font-bold">{hero.class.name}</span></div>
+                </div>
+              </div>
               
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">⚡ Stats & Resources</h4>
+              {/* Resources */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>⚡ RESOURCES</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setHp(30); addLog('Debug: HP set to 30'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Set HP to 30</button>
-                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Full Heal</button>
-                  <button onClick={() => { setXp(x => x + 50); addLog('Debug: +50 XP'); }} className="bg-yellow-700 hover:bg-yellow-600 px-3 py-2 rounded text-sm transition-all">+50 XP</button>
-                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP (craft cost)'); }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-sm transition-all">+100 XP</button>
+                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Full Heal</button>
+                  <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
+                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
+                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
                 </div>
               </div>
 
-              <div className="mb-3">
-                <h4 className="text-sm font-semibold text-purple-200 mb-2">🎒 Items & Equipment</h4>
+              {/* Combat */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>⚔️ COMBAT</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); addLog('Debug: +3 of each potion'); }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">+3 Potions</button>
-                  <button onClick={() => { setCleansePots(c => c + 1); addLog('Debug: +1 Cleanse Potion'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+1 Cleanse Potion</button>
-                  <button onClick={() => { setWeapon(w => w + 10); setArmor(a => a + 10); addLog('Debug: +10 weapon/armor'); }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">+10 Weapon/Armor</button>
+                  <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-3 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
+                  <button onClick={() => { setBattleType('elite'); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
+                  <button onClick={() => {
+                    setBattleType('final');
+                    const bossHealth = 300;
+                    const bossNameGenerated = makeBossName();
+                    setBossName(bossNameGenerated);
+                    setBossHp(bossHealth);
+                    setBossMax(bossHealth);
+                    setShowBoss(true);
+                    setBattling(true);
+                    setBattleMenu('main');
+                    setBattleMode(true);
+                    setIsFinalBoss(true);
+                    setCanFlee(false);
+                    setVictoryLoot([]);
+                    addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
+                  }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Final Boss</button>
                 </div>
               </div>
 
-              <div className="mb-3">
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">⚔️ Combat & Progression</h4>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-    <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Spawn Regular Enemy</button>
-    <button onClick={() => {
-      const numEnemies = Math.floor(Math.random() * 3) + 2;
-      setWaveCount(numEnemies);
-      addLog(`DEBUG WAVE: ${numEnemies} enemies`);
-      spawnRegularEnemy(true, 1, numEnemies);
-    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Wave (2-4)</button>
-    <button onClick={() => { 
-      setBattleType('elite'); 
-      spawnRandomMiniBoss(true); 
-    }} className="bg-red-700 hover:bg-red-600 px-3 py-2 rounded text-sm transition-all">Spawn Elite Boss</button>
-    <button onClick={() => {
-      setBattleType('final');
-      const bossHealth = 300;
-      const bossNameGenerated = makeBossName();
-      setBossName(bossNameGenerated);
-      setBossHp(bossHealth);
-      setBossMax(bossHealth);
-      setShowBoss(true);
-      setBattling(true);
-      setBattleMenu('main'); // Reset to main menu
-      setBattleMode(true);
-      setIsFinalBoss(true);
-      setCanFlee(false);
-      setVictoryLoot([]); // Clear previous loot
-      addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
-    }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Spawn Final Boss</button>
-    <button onClick={() => { 
-      const currentIndex = classes.findIndex(c => c.name === hero.class.name); 
-      const nextIndex = (currentIndex + 1) % classes.length; 
-      setHero(prev => ({ ...prev, class: classes[nextIndex] })); 
-      addLog(`Debug: Changed to ${classes[nextIndex].name}`); 
-    }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Change Class</button>
-    <button onClick={() => { 
-      setSkipCount(s => Math.min(3, s + 1)); 
-      addLog('Debug: +1 skip count'); 
-    }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">+1 Skip Count</button>
-  </div>
-</div>
+              {/* Day & Curse */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>🌙 DAY & CURSE</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <button onClick={() => { setCurrentDay(d => d + 1); addLog(`Debug: Advanced to Day ${currentDay + 1}`); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>+1 Day</button>
+                  <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Clear Curse</button>
+                  <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Curse Lvl 1</button>
+                  <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Curse Lvl 3</button>
+                </div>
+              </div>
 
-              <div className="mb-3">
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">🌙 Curse Level</h4>
-  <div className="grid grid-cols-4 gap-2">
-    <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear</button>
-    <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed (Lvl 1)'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-sm transition-all">Lvl 1</button>
-    <button onClick={() => { setCurseLevel(2); addLog('Debug: Deep Curse (Lvl 2)'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-sm transition-all">Lvl 2</button>
-    <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED (Lvl 3)'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-sm transition-all">Lvl 3</button>
-  </div>
-</div>
+              {/* Tasks */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>📋 TASKS</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <button onClick={() => { 
+                    setTasks(t => [...t, { id: Date.now(), title: 'Test Task', priority: 'routine', done: false, overdue: false }]); 
+                    addLog('Debug: Added test task'); 
+                  }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>+Test Task</button>
+                  <button onClick={() => { 
+                    setTasks(t => [...t, { id: Date.now(), title: 'Important Task', priority: 'important', done: false, overdue: false }]); 
+                    addLog('Debug: Added important task'); 
+                  }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+Important Task</button>
+                  <button onClick={() => { 
+                    setTasks(t => t.map(task => ({ ...task, overdue: true }))); 
+                    addLog('Debug: All tasks now overdue'); 
+                  }} className="bg-red-800 hover:bg-red-700 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Mark All Overdue</button>
+                  <button onClick={() => { 
+                    setTasks(t => t.map(task => ({ ...task, done: true }))); 
+                    addLog('Debug: Completed all tasks'); 
+                  }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Complete All</button>
+                  <button onClick={() => { 
+                    setTasks([]); 
+                    addLog('Debug: Tasks cleared'); 
+                  }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Tasks</button>
+                </div>
+              </div>
 
-              <div>
-  <h4 className="text-sm font-semibold text-purple-200 mb-2">🗑️ Data Management</h4>
-  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-    <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Chronicle</button>
-    <button onClick={() => { setGraveyard([]); setHeroes([]); addLog('Debug: Legacy tab cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-sm transition-all">Clear Legacy</button>
-    <button onClick={() => { if (window.confirm('Clear ALL achievements & history?')) { setGraveyard([]); setHeroes([]); setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] }); addLog('Debug: Achievements cleared'); } }} className="bg-purple-700 hover:bg-purple-600 px-3 py-2 rounded text-sm transition-all">Clear Achievements</button>
-    <button onClick={() => { if (window.confirm('Clear all calendar tasks?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-green-700 hover:bg-green-600 px-3 py-2 rounded text-sm transition-all">Clear Calendar</button>
-    <button onClick={() => { if (window.confirm('Clear weekly planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-blue-700 hover:bg-blue-600 px-3 py-2 rounded text-sm transition-all">Clear Planner</button>
-    <button onClick={() => { localStorage.removeItem('fantasyStudyQuest'); alert('LocalStorage cleared! Refresh the page to start fresh.'); }} className="bg-orange-700 hover:bg-orange-600 px-3 py-2 rounded text-sm transition-all">Clear LocalStorage</button>
-  </div>
-  
-  <button 
-    onClick={() => { 
-      if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start completely fresh? This cannot be undone!')) {
-        const newHero = makeName();
-        setHero(newHero);
-        setCanCustomize(true);
-        setCurrentDay(1);
-        setHasStarted(false);
-        setHp(GAME_CONSTANTS.MAX_HP);
-        setStamina(GAME_CONSTANTS.MAX_STAMINA);
-        setXp(0);
-        setLevel(1);
-        setHealthPots(0);
-        setStaminaPots(0);
-        setCleansePots(0);
-        setWeapon(0);
-        setArmor(0);
-        setTasks([]);
-        setActiveTask(null);
-        setTimer(0);
-        setRunning(false);
-        setShowPomodoro(false);
-        setPomodoroTask(null);
-        setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
-        setCalendarTasks({});
-        setShowBoss(false);
-        setBattling(false);
-        setLog([]);
-        setGraveyard([]);
-        setHeroes([]);
-        setSkipCount(0);
-        setConsecutiveDays(0);
-        setLastPlayedDate(null);
-        setMiniBossCount(0);
-        setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
-        localStorage.removeItem('fantasyStudyQuest');
-        addLog('🔄 FULL RESET - Everything cleared!');
-        setActiveTab('quest');
-      }
-    }}
-    className="w-full mt-3 bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-500 animate-pulse"
-  >
-    🔄 FULL RESET - Delete Everything
-  </button>
-</div>
+              {/* Data Management */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>🗑️ DATA</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
+                  <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
+                  <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
+                </div>
+              </div>
 
-              <p className="text-xs text-gray-400 mt-3 italic">
-  Current: {hero.class.name} • Day {currentDay} • HP: {hp} • SP: {stamina} • Level: {level} • XP: {xp} • Skips: {skipCount} • Curse Lvl: {curseLevel} • Cleanse: {cleansePots}
-</p>
+              {/* Full Reset */}
+              <button 
+                onClick={() => { 
+                  if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start fresh? Cannot be undone!')) {
+                    const newHero = makeName();
+                    setHero(newHero);
+                    setCanCustomize(true);
+                    setCurrentDay(1);
+                    setHasStarted(false);
+                    setHp(GAME_CONSTANTS.MAX_HP);
+                    setStamina(GAME_CONSTANTS.MAX_STAMINA);
+                    setXp(0);
+                    setLevel(1);
+                    setHealthPots(0);
+                    setStaminaPots(0);
+                    setCleansePots(0);
+                    setWeapon(0);
+                    setArmor(0);
+                    setTasks([]);
+                    setActiveTask(null);
+                    setTimer(0);
+                    setRunning(false);
+                    setShowPomodoro(false);
+                    setPomodoroTask(null);
+                    setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
+                    setCalendarTasks({});
+                    setShowBoss(false);
+                    setBattling(false);
+                    setLog([]);
+                    setGraveyard([]);
+                    setHeroes([]);
+                    setSkipCount(0);
+                    setConsecutiveDays(0);
+                    setLastPlayedDate(null);
+                    setMiniBossCount(0);
+                    setCurseLevel(0);
+                    setIsDayActive(false);
+                    setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
+                    localStorage.removeItem('fantasyStudyQuest');
+                    addLog('🔄 FULL RESET - Everything cleared!');
+                    setActiveTab('quest');
+                  }
+                }}
+                className="w-full bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-600"
+                style={{color: '#F5F5DC', letterSpacing: '0.1em'}}
+              >
+                🔄 FULL RESET
+              </button>
             </div>
           )}
 
