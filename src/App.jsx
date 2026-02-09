@@ -1061,7 +1061,7 @@ if (tasks.length === 0) {
       setHp(h => Math.max(0, h - GAME_CONSTANTS.LATE_START_PENALTY));
       addLog(`A late start! -${GAME_CONSTANTS.LATE_START_PENALTY} HP`);
     } else if (!earlyBirdBonus) {
-      addLog('The day's trials await...');
+      addLog("The day's trials await...");
     }
     
     setHasStarted(true);
