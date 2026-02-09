@@ -3208,45 +3208,71 @@ setMiniBossCount(0);
             }}>
               
               {heroCardCollapsed ? (
-                // Collapsed state - show minimal info
-                <>
-                <div className="flex items-center justify-between py-2 relative z-10">
-                  <div className="flex items-center gap-4">
-                    <span className="text-3xl">{hero.class.emblem}</span>
-                    <div>
-                      <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>{hero.name}</p>
-                      <p className="text-xs" style={{color: '#C0C0C0'}}>Level {level} {hero.class.name}</p>
-                    </div>
+                // Collapsed state - minimal medieval theme
+                <div className="relative">
+                  {/* Large watermark emblem in center background */}
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '8rem', lineHeight: 1, opacity: 0.05, color: '#F5F5DC'}}>
+                    {getCardStyle(hero.class, currentDay).emblem}
                   </div>
-                  <div className="flex gap-4 items-center">
-                    <div className="text-right">
-                      <p className="text-xs" style={{color: '#C0C0C0'}}>HP</p>
-                      <p className="font-bold" style={{color: hp <= 10 ? '#DC2626' : '#F5F5DC'}}>{hp}/{GAME_CONSTANTS.MAX_HP}</p>
+                  
+                  <div className="relative z-10 py-3">
+                    {/* Hero name - more prominent */}
+                    <div className="text-center mb-4">
+                      <h3 className="text-2xl font-bold" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>{hero.name}</h3>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs" style={{color: '#C0C0C0'}}>SP</p>
-                      <p className="font-bold" style={{color: '#93C5FD'}}>{stamina}/{GAME_CONSTANTS.MAX_STAMINA}</p>
+                    
+                    {/* HP Bar with dark box */}
+                    <div className="mb-3 rounded-lg p-3" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(139, 0, 0, 0.3)'}}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>Health</span>
+                        <span className="text-sm font-bold" style={{color: hp <= 10 ? '#DC2626' : '#F5F5DC'}}>{hp}/{getMaxHp()}</span>
+                      </div>
+                      <div className="rounded-full h-2 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
+                        <div 
+                          className="h-2 rounded-full transition-all" 
+                          style={{
+                            width: `${(hp / getMaxHp()) * 100}%`,
+                            background: hp <= 10 ? 'linear-gradient(to right, #7F1D1D, #DC2626)' : 'linear-gradient(to right, #7F1D1D, #EF4444)'
+                          }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Stamina Bar with dark box */}
+                    <div className="mb-4 rounded-lg p-3" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(30, 58, 95, 0.3)'}}>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>Stamina</span>
+                        <span className="text-sm font-bold" style={{color: '#93C5FD'}}>{stamina}/{getMaxStamina()}</span>
+                      </div>
+                      <div className="rounded-full h-2 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
+                        <div 
+                          className="h-2 rounded-full transition-all" 
+                          style={{
+                            width: `${(stamina / getMaxStamina()) * 100}%`,
+                            background: 'linear-gradient(to right, #0C4A6E, #0EA5E9)'
+                          }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Expand Button - Centered */}
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
+                        className="px-4 py-1 rounded transition-all border-2 hover:scale-105"
+                        style={{
+                          background: 'rgba(0, 0, 0, 0.5)',
+                          borderColor: 'rgba(212, 175, 55, 0.4)',
+                          color: '#D4AF37',
+                          fontSize: '0.7rem',
+                          letterSpacing: '0.1em'
+                        }}
+                      >
+                        ▼ EXPAND HERO
+                      </button>
                     </div>
                   </div>
                 </div>
-                
-                {/* Expand Button - Centered */}
-                <div className="flex justify-center mt-3">
-                  <button
-                    onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
-                    className="px-4 py-1 rounded transition-all border-2 hover:scale-105"
-                    style={{
-                      background: 'rgba(0, 0, 0, 0.5)',
-                      borderColor: 'rgba(212, 175, 55, 0.4)',
-                      color: '#D4AF37',
-                      fontSize: '0.7rem',
-                      letterSpacing: '0.1em'
-                    }}
-                  >
-                    ▼ EXPAND HERO
-                  </button>
-                </div>
-                </>
               ) : (
                 // Expanded state - full hero card
                 <>
@@ -3498,11 +3524,12 @@ setMiniBossCount(0);
                       {/* Section header with decorative divider */}
                       <div className="mb-3">
                         <h2 className="text-2xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-2 mb-2">
                           <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
                           <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
                           <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
                         </div>
+                        <p className="text-sm italic" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
                       </div>
                     </div>
                     
@@ -3654,7 +3681,7 @@ setMiniBossCount(0);
           )}
 
           {activeTab === 'planner' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-blue-900">
+            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
                 <h2 className="text-2xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
@@ -3896,43 +3923,69 @@ setMiniBossCount(0);
           )}
 
           {activeTab === 'study' && (
-  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-purple-900">
+  <div className="rounded-xl p-6 border-2" style={{
+    background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(28, 28, 28, 0.6))',
+    borderColor: 'rgba(184, 134, 11, 0.6)'
+  }}>
     <div className="text-center mb-6">
-      <h2 className="text-2xl font-bold text-purple-400 mb-2">KNOWLEDGE FORGE</h2>
+      <h2 className="text-2xl font-bold mb-2" style={{
+        color: '#D4AF37',
+        fontFamily: 'Cinzel, serif',
+        letterSpacing: '0.15em',
+        textShadow: '0 0 20px rgba(212, 175, 55, 0.3)'
+      }}>KNOWLEDGE FORGE</h2>
       <div className="flex items-center justify-center gap-2 mb-2">
-        <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(183, 148, 244, 0.3))'}}></div>
-        <span style={{color: 'rgba(183, 148, 244, 0.4)', fontSize: '8px'}}>◆</span>
-        <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(183, 148, 244, 0.3))'}}></div>
+        <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+        <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+        <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
       </div>
-      <p className="text-gray-400 text-sm italic">"Sharpen your mind, temper your wisdom..."</p>
+      <p className="text-sm italic" style={{color: '#C0C0C0'}}>"Sharpen your mind, temper your wisdom..."</p>
     </div>
     
     <div className="flex justify-between items-center mb-6">
       <div>
-        <p className="text-lg text-gray-300">Your Decks: <span className="font-bold text-purple-400">{flashcardDecks.length}</span></p>
-        <p className="text-sm text-gray-500">Study to earn XP and loot!</p>
+        <p className="text-lg" style={{color: '#F5F5DC'}}>Your Decks: <span className="font-bold" style={{color: '#D4AF37'}}>{flashcardDecks.length}</span></p>
+        <p className="text-sm" style={{color: '#95A5A6'}}>Study to earn XP and loot!</p>
       </div>
       <button 
         onClick={() => setShowDeckModal(true)}
-        className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-all flex items-center gap-2"
+        className="px-4 py-2 rounded-lg transition-all flex items-center gap-2 border-2"
+        style={{
+          background: 'linear-gradient(to bottom, #B8860B, #8B6914)',
+          borderColor: '#CD7F32',
+          color: '#F5F5DC',
+          boxShadow: '0 2px 8px rgba(184, 134, 11, 0.3)'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #DAA520, #B8860B)'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #B8860B, #8B6914)'}
       >
         <Plus size={20}/> New Deck
       </button>
     </div>
     
     {flashcardDecks.length === 0 ? (
-      <div className="text-center py-12 rounded-lg border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.5)', borderColor: 'rgba(51, 65, 85, 0.6)'}}>
-        <p className="text-gray-400 mb-2 text-lg">The forge stands empty...</p>
-        <p className="text-sm text-gray-500">Create your first deck to begin forging knowledge</p>
+      <div className="text-center py-12 rounded-lg border-2" style={{
+        background: 'linear-gradient(to bottom, rgba(28, 28, 28, 0.5), rgba(0, 0, 0, 0.5))',
+        borderColor: 'rgba(139, 69, 19, 0.4)'
+      }}>
+        <p className="mb-2 text-lg" style={{color: '#C0C0C0'}}>The forge stands empty...</p>
+        <p className="text-sm" style={{color: '#95A5A6'}}>Create your first deck to begin forging knowledge</p>
       </div>
     ) : (
       <div className="space-y-4">
         {flashcardDecks.map((deck, idx) => (
-          <div key={idx} className="bg-gray-800 rounded-lg p-4 border-2 border-purple-700">
+          <div key={idx} className="rounded-lg p-4 border-2" style={{
+            background: 'rgba(15, 23, 42, 0.8)',
+            borderColor: 'rgba(184, 134, 11, 0.5)',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+          }}>
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
-                <h3 className="text-xl font-bold text-purple-300">{deck.name}</h3>
-                <p className="text-sm text-gray-400">
+                <h3 className="text-xl font-bold" style={{
+                  color: '#D4AF37',
+                  fontFamily: 'Cinzel, serif'
+                }}>{deck.name}</h3>
+                <p className="text-sm" style={{color: '#C0C0C0'}}>
                   {deck.cards.length} card{deck.cards.length !== 1 ? 's' : ''} • 
                   {deck.cards.filter(c => c.mastered).length} mastered
                 </p>
@@ -3944,7 +3997,10 @@ setMiniBossCount(0);
                     addLog(`🗑️ Deleted deck: ${deck.name}`);
                   }
                 }}
-                className="text-red-400 hover:text-red-300"
+                className="transition-all"
+                style={{color: '#9B1B30'}}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#B8293E'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#9B1B30'}
               >
                 <X size={20}/>
               </button>
@@ -3966,7 +4022,15 @@ setMiniBossCount(0);
                   setShowStudyModal(true);
                 }}
                 disabled={deck.cards.length === 0}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
+                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
+                style={{
+                  background: deck.cards.length === 0 ? '#2C3E50' : 'linear-gradient(to bottom, #2F5233, #1E3421)',
+                  borderColor: deck.cards.length === 0 ? '#95A5A6' : '#C0C0C0',
+                  color: '#F5F5DC',
+                  opacity: deck.cards.length === 0 ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => { if (deck.cards.length > 0) e.currentTarget.style.background = 'linear-gradient(to bottom, #3D6B45, #2F5233)'; }}
+                onMouseLeave={(e) => { if (deck.cards.length > 0) e.currentTarget.style.background = 'linear-gradient(to bottom, #2F5233, #1E3421)'; }}
               >
                 Study Deck
               </button>
@@ -3980,7 +4044,15 @@ setMiniBossCount(0);
                   generateQuiz(idx);
                 }}
                 disabled={deck.cards.length < 4}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded transition-all disabled:bg-gray-600 disabled:cursor-not-allowed"
+                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
+                style={{
+                  background: deck.cards.length < 4 ? '#2C3E50' : 'linear-gradient(to bottom, #1E3A5F, #152840)',
+                  borderColor: deck.cards.length < 4 ? '#95A5A6' : '#C0C0C0',
+                  color: '#F5F5DC',
+                  opacity: deck.cards.length < 4 ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #2B5082, #1E3A5F)'; }}
+                onMouseLeave={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #1E3A5F, #152840)'; }}
               >
                 Practice Quiz
               </button>
@@ -3989,19 +4061,29 @@ setMiniBossCount(0);
                   setSelectedDeck(idx);
                   setShowCardModal(true);
                 }}
-                className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded transition-all"
+                className="px-4 py-2 rounded transition-all border-2"
+                style={{
+                  background: 'linear-gradient(to bottom, #B8860B, #8B6914)',
+                  borderColor: '#CD7F32',
+                  color: '#F5F5DC'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #DAA520, #B8860B)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #B8860B, #8B6914)'}
               >
                 Add Card
               </button>
             </div>
             
             {deck.cards.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-700">
-                <p className="text-xs text-gray-500 mb-2">Cards in this deck:</p>
+              <div className="mt-3 pt-3" style={{borderTop: '1px solid rgba(139, 69, 19, 0.3)'}}>
+                <p className="text-xs mb-2" style={{color: '#95A5A6'}}>Cards in this deck:</p>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {deck.cards.map((card, cardIdx) => (
-                    <div key={cardIdx} className="flex justify-between items-center text-sm bg-gray-900 rounded p-2">
-                      <span className="text-gray-300 flex-1 truncate">
+                    <div key={cardIdx} className="flex justify-between items-center text-sm rounded p-2" style={{
+                      background: 'rgba(0, 0, 0, 0.4)',
+                      border: '1px solid rgba(139, 69, 19, 0.2)'
+                    }}>
+                      <span className="flex-1 truncate" style={{color: '#F5F5DC'}}>
                         {card.mastered && '✓ '}{card.front}
                       </span>
                       <button
@@ -4010,7 +4092,10 @@ setMiniBossCount(0);
                             i === idx ? {...d, cards: d.cards.filter((_, ci) => ci !== cardIdx)} : d
                           ));
                         }}
-                        className="text-red-400 hover:text-red-300 ml-2"
+                        className="ml-2 transition-all"
+                        style={{color: '#9B1B30'}}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#B8293E'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#9B1B30'}
                       >
                         <X size={14}/>
                       </button>
@@ -4300,7 +4385,7 @@ setMiniBossCount(0);
                             if (staminaPots > 0 && stamina < getMaxStamina()) { 
                               setStaminaPots(s => s - 1); 
                               setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); 
-                              addLog(`⚡ Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); 
+                              addLog(`Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); 
                             } 
                           }} 
                           disabled={staminaPots === 0 || stamina >= getMaxStamina()}
@@ -4358,7 +4443,7 @@ setMiniBossCount(0);
                         <p className="font-bold text-lg mb-1" style={{color: '#F5F5DC'}}>Lucky Charm</p>
                         <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Fortune favors the bold."</p>
-                        <p className="text-xs mt-2" style={{color: '#68D391'}}>✓ Active</p>
+                        <p className="text-xs mt-2" style={{color: '#68D391'}}>Active</p>
                       </div>
                     </div>
                   )}
@@ -4383,21 +4468,29 @@ setMiniBossCount(0);
                 <button onClick={() => setShowCraftingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
                 
                 <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold mb-2" style={{color: '#B794F4', letterSpacing: '0.1em'}}>
+                  <h2 className="text-3xl font-bold mb-2" style={{
+                    color: '#D4AF37',
+                    fontFamily: 'Cinzel, serif',
+                    letterSpacing: '0.15em',
+                    textShadow: '0 0 20px rgba(212, 175, 55, 0.3)'
+                  }}>
                     THE MERCHANT
                   </h2>
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(183, 148, 244, 0.3))'}}></div>
-                    <span style={{color: 'rgba(183, 148, 244, 0.4)', fontSize: '8px'}}>◆</span>
-                    <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(183, 148, 244, 0.3))'}}></div>
+                    <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                    <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   </div>
                   <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{getMerchantDialogue()}"</p>
                 </div>
                 
-                <div className="rounded-lg p-4 mb-6 border-2" style={{backgroundColor: 'rgba(107, 44, 145, 0.3)', borderColor: 'rgba(183, 148, 244, 0.4)'}}>
+                <div className="rounded-lg p-4 mb-6 border-2" style={{
+                  background: 'rgba(184, 134, 11, 0.2)',
+                  borderColor: 'rgba(212, 175, 55, 0.4)'
+                }}>
                   <p className="text-center text-lg">
                     <span style={{color: COLORS.silver}}>Current Essence:</span> 
-                    <span className="font-bold text-2xl ml-2" style={{color: '#B794F4'}}>{essence}</span>
+                    <span className="font-bold text-2xl ml-2" style={{color: '#D4AF37'}}>{essence}</span>
                   </p>
                 </div>
                 
@@ -4450,7 +4543,7 @@ setMiniBossCount(0);
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Weapon Oil</p>
                       <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Essence</p>
                       <p className="text-sm mb-1" style={{color: '#DAA520'}}>+5 weapon until dawn</p>
-                      {weaponOilActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
+                      {weaponOilActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>Active</p>}
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Darkened oil. Edges sharpen, strikes deepen."</p>
                     </div>
                   </button>
@@ -4464,7 +4557,7 @@ setMiniBossCount(0);
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Armor Polish</p>
                       <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Essence</p>
                       <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>+5 armor until dawn</p>
-                      {armorPolishActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
+                      {armorPolishActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>Active</p>}
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Protective salve. Steel hardens, flesh endures."</p>
                     </div>
                   </button>
@@ -4601,13 +4694,24 @@ setMiniBossCount(0);
 )}
 
 {showDeckModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowDeckModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-purple-500" onClick={e => e.stopPropagation()}>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-purple-400">Create New Deck</h3>
-        <button onClick={() => setShowDeckModal(false)} className="text-gray-400 hover:text-white">
-          <X size={24}/>
-        </button>
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowDeckModal(false)}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
+      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      borderColor: COLORS.gold,
+      boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
+    }} onClick={e => e.stopPropagation()}>
+      <button onClick={() => setShowDeckModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <X size={24}/>
+      </button>
+      
+      <div className="text-center mb-6">
+        <h2 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.1em'}}>CREATE DECK</h2>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+        </div>
+        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Forge knowledge in the fires of determination..."</p>
       </div>
       
       <input 
@@ -4615,7 +4719,12 @@ setMiniBossCount(0);
         placeholder="Deck name (e.g., Spanish Vocabulary)" 
         value={newDeck.name} 
         onChange={e => setNewDeck({name: e.target.value})} 
-        className="w-full p-3 bg-gray-800 text-white rounded-lg mb-4 border border-gray-700 focus:border-purple-500 focus:outline-none" 
+        className="w-full p-3 rounded-lg mb-4 border focus:outline-none" 
+        style={{
+          background: 'rgba(0, 0, 0, 0.4)',
+          color: '#F5F5DC',
+          borderColor: 'rgba(139, 0, 0, 0.3)'
+        }}
         autoFocus 
       />
       
@@ -4624,19 +4733,35 @@ setMiniBossCount(0);
           onClick={() => {
             if (newDeck.name.trim()) {
               setFlashcardDecks(prev => [...prev, { name: newDeck.name, cards: [] }]);
-              addLog(`📚 Created deck: ${newDeck.name}`);
+              addLog(`Created deck: ${newDeck.name}`);
               setNewDeck({name: ''});
               setShowDeckModal(false);
             }
           }}
           disabled={!newDeck.name.trim()} 
-          className="flex-1 py-2 rounded-lg transition-all border-2" style={{backgroundColor: !newDeck.name.trim() ? '#2C3E50' : '#6B2C91', borderColor: !newDeck.name.trim() ? '#95A5A6' : '#C0C0C0', color: '#F5F5DC', cursor: !newDeck.name.trim() ? 'not-allowed' : 'pointer', opacity: !newDeck.name.trim() ? 0.6 : 1}} onMouseEnter={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = '#8A3BB5'}} onMouseLeave={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = '#6B2C91'}}
+          className="flex-1 py-2 rounded-lg transition-all border-2" 
+          style={{
+            backgroundColor: !newDeck.name.trim() ? 'rgba(44, 62, 80, 0.5)' : COLORS.crimson.base,
+            borderColor: !newDeck.name.trim() ? 'rgba(149, 165, 166, 0.3)' : COLORS.crimson.border,
+            color: '#F5F5DC',
+            cursor: !newDeck.name.trim() ? 'not-allowed' : 'pointer',
+            opacity: !newDeck.name.trim() ? 0.5 : 1
+          }} 
+          onMouseEnter={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}} 
+          onMouseLeave={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
         >
           Create Deck
         </button>
         <button 
           onClick={() => { setShowDeckModal(false); setNewDeck({name: ''}); }} 
-          className="flex-1 py-2 rounded-lg transition-all border-2" style={{backgroundColor: '#2C3E50', borderColor: '#95A5A6', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#34495E'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2C3E50'}
+          className="flex-1 py-2 rounded-lg transition-all border-2" 
+          style={{
+            backgroundColor: COLORS.slate.base,
+            borderColor: COLORS.slate.border,
+            color: '#F5F5DC'
+          }} 
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover} 
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
         >
           Cancel
         </button>
@@ -4646,34 +4771,55 @@ setMiniBossCount(0);
 )}
 
 {showCardModal && selectedDeck !== null && (
-  <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center p-4 z-50" onClick={() => setShowCardModal(false)}>
-    <div className="bg-gray-900 rounded-xl p-6 max-w-md w-full border-2 border-blue-500" onClick={e => e.stopPropagation()}>
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-blue-400">Add Card to {flashcardDecks[selectedDeck]?.name}</h3>
-        <button onClick={() => setShowCardModal(false)} className="text-gray-400 hover:text-white">
-          <X size={24}/>
-        </button>
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCardModal(false)}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
+      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      borderColor: COLORS.gold,
+      boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
+    }} onClick={e => e.stopPropagation()}>
+      <button onClick={() => setShowCardModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+        <X size={24}/>
+      </button>
+      
+      <div className="text-center mb-6">
+        <h2 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.1em'}}>ADD CARD</h2>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+        </div>
+        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck]?.name}"</p>
       </div>
       
       <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-2">Front (Question)</label>
+        <label className="block text-sm mb-2" style={{color: COLORS.silver}}>Front (Question)</label>
         <textarea 
           placeholder="e.g., What is the capital of France?" 
           value={newCard.front} 
           onChange={e => setNewCard({...newCard, front: e.target.value})} 
-          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none resize-none" 
+          className="w-full p-3 rounded-lg border focus:outline-none resize-none" 
+          style={{
+            background: 'rgba(0, 0, 0, 0.4)',
+            color: '#F5F5DC',
+            borderColor: 'rgba(139, 0, 0, 0.3)'
+          }}
           rows="3"
           autoFocus 
         />
       </div>
       
       <div className="mb-4">
-        <label className="block text-sm text-gray-400 mb-2">Back (Answer)</label>
+        <label className="block text-sm mb-2" style={{color: COLORS.silver}}>Back (Answer)</label>
         <textarea 
           placeholder="e.g., Paris" 
           value={newCard.back} 
           onChange={e => setNewCard({...newCard, back: e.target.value})} 
-          className="w-full p-3 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-blue-500 focus:outline-none resize-none" 
+          className="w-full p-3 rounded-lg border focus:outline-none resize-none" 
+          style={{
+            background: 'rgba(0, 0, 0, 0.4)',
+            color: '#F5F5DC',
+            borderColor: 'rgba(139, 0, 0, 0.3)'
+          }}
           rows="3"
         />
       </div>
@@ -4687,19 +4833,35 @@ setMiniBossCount(0);
                   ? {...deck, cards: [...deck.cards, {...newCard, mastered: false}]}
                   : deck
               ));
-              addLog(`📝 Added card to ${flashcardDecks[selectedDeck].name}`);
+              addLog(`Added card to ${flashcardDecks[selectedDeck].name}`);
               setNewCard({front: '', back: ''});
               setShowCardModal(false);
             }
           }}
           disabled={!newCard.front.trim() || !newCard.back.trim()} 
-          className="flex-1 bg-blue-600 py-2 rounded-lg hover:bg-blue-700 transition-all disabled:bg-gray-700 disabled:cursor-not-allowed"
+          className="flex-1 py-2 rounded-lg transition-all border-2"
+          style={{
+            backgroundColor: (!newCard.front.trim() || !newCard.back.trim()) ? 'rgba(44, 62, 80, 0.5)' : COLORS.crimson.base,
+            borderColor: (!newCard.front.trim() || !newCard.back.trim()) ? 'rgba(149, 165, 166, 0.3)' : COLORS.crimson.border,
+            color: '#F5F5DC',
+            cursor: (!newCard.front.trim() || !newCard.back.trim()) ? 'not-allowed' : 'pointer',
+            opacity: (!newCard.front.trim() || !newCard.back.trim()) ? 0.5 : 1
+          }}
+          onMouseEnter={(e) => {if (newCard.front.trim() && newCard.back.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
+          onMouseLeave={(e) => {if (newCard.front.trim() && newCard.back.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
         >
           Add Card
         </button>
         <button 
           onClick={() => { setShowCardModal(false); setNewCard({front: '', back: ''}); }} 
-          className="flex-1 bg-gray-700 py-2 rounded-lg hover:bg-gray-600 transition-all"
+          className="flex-1 py-2 rounded-lg transition-all border-2"
+          style={{
+            backgroundColor: COLORS.slate.base,
+            borderColor: COLORS.slate.border,
+            color: '#F5F5DC'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
         >
           Cancel
         </button>
@@ -4709,56 +4871,73 @@ setMiniBossCount(0);
 )}
 
 {showStudyModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
-  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-start justify-center p-4 z-50">
-    <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
-      <div className="mb-6 flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold text-purple-400">{flashcardDecks[selectedDeck].name}</h2>
-          <p className="text-gray-400">Cards remaining: {studyQueue.length} | Total studied: {flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</p>
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
+    <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
+      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      borderColor: COLORS.gold,
+      boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
+    }}>
+      <button 
+        onClick={() => {
+          if (reviewingMistakes) {
+            setShowStudyModal(false);
+            setReviewingMistakes(false);
+            setStudyQueue([]);
+            setIsFlipped(false);
+            setShowQuizModal(true);
+            setShowQuizResults(true);
+          } else {
+            setShowStudyModal(false);
+            setSelectedDeck(null);
+            setCurrentCardIndex(0);
+            setStudyQueue([]);
+            setIsFlipped(false);
+          }
+        }}
+        className="absolute top-4 right-4 text-gray-400 hover:text-white"
+      >
+        <X size={32}/>
+      </button>
+      
+      <div className="text-center mb-6">
+        <h2 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
         </div>
-        <button 
-          onClick={() => {
-            if (reviewingMistakes) {
-              // Return to quiz results without marking as reviewed
-              setShowStudyModal(false);
-              setReviewingMistakes(false);
-              setStudyQueue([]);
-              setIsFlipped(false);
-              setShowQuizModal(true);
-              setShowQuizResults(true);
-            } else {
-              setShowStudyModal(false);
-              setSelectedDeck(null);
-              setCurrentCardIndex(0);
-              setStudyQueue([]);
-              setIsFlipped(false);
-            }
-          }}
-          className="text-gray-400 hover:text-white"
-        >
-          <X size={32}/>
-        </button>
+        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Each card brings you closer to mastery..."</p>
+        <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Cards remaining: {studyQueue.length} | Total studied: {flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</p>
       </div>
       
       <div 
         onClick={() => setIsFlipped(!isFlipped)}
-        className="bg-gray-800 rounded-xl p-12 mb-6 min-h-[300px] flex items-center justify-center cursor-pointer hover:bg-gray-750 transition-all border-2 border-purple-500"
+        className="rounded-xl p-12 mb-6 min-h-[300px] flex items-center justify-center cursor-pointer transition-all border-2"
+        style={{
+          background: 'rgba(0, 0, 0, 0.4)',
+          borderColor: 'rgba(139, 0, 0, 0.6)'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(40, 0, 0, 0.5)'}
+        onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.4)'}
       >
         <div className="text-center">
-          <p className="text-sm text-gray-500 mb-4">{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
-          <p className="text-2xl text-white whitespace-pre-wrap">
+          <p className="text-sm mb-4" style={{color: COLORS.silver}}>{isFlipped ? 'ANSWER' : 'QUESTION'}</p>
+          <p className="text-2xl whitespace-pre-wrap" style={{color: '#F5F5DC'}}>
             {isFlipped 
               ? flashcardDecks[selectedDeck].cards[studyQueue[0]].back 
               : flashcardDecks[selectedDeck].cards[studyQueue[0]].front}
           </p>
-          <p className="text-sm text-gray-500 mt-6 italic">Click to flip</p>
+          <p className="text-sm mt-6 italic" style={{color: COLORS.silver}}>Click to flip</p>
         </div>
       </div>
       
-      <div className="bg-gray-800 rounded-full h-2 mb-6">
+      <div className="rounded-full h-2 mb-6" style={{background: 'rgba(0, 0, 0, 0.4)'}}>
         <div 
-          className="bg-purple-500 h-2 rounded-full transition-all" 
-          style={{width: `${((flashcardDecks[selectedDeck].cards.length - studyQueue.length) / flashcardDecks[selectedDeck].cards.length) * 100}%`}}
+          className="h-2 rounded-full transition-all" 
+          style={{
+            width: `${((flashcardDecks[selectedDeck].cards.length - studyQueue.length) / flashcardDecks[selectedDeck].cards.length) * 100}%`,
+            background: 'linear-gradient(to right, #8B0000, #DC143C)'
+          }}
         />
       </div>
       
@@ -4766,20 +4945,25 @@ setMiniBossCount(0);
         <div className="flex gap-4">
           <button
             onClick={() => {
-              // Add current card to end of queue, remove from front
               const currentCard = studyQueue[0];
               const newQueue = [...studyQueue.slice(1), currentCard];
               setStudyQueue(newQueue);
               setIsFlipped(false);
             }}
-            className="flex-1 bg-red-600 hover:bg-red-700 py-4 rounded-lg font-bold text-lg transition-all"
+            className="flex-1 py-4 rounded-lg font-bold text-lg transition-all border-2"
+            style={{
+              backgroundColor: COLORS.burgundy.base,
+              borderColor: COLORS.burgundy.border,
+              color: '#F5F5DC'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.burgundy.hover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.burgundy.base}
           >
-            ❌ Review Again
+            Review Again
           </button>
           
           <button
             onClick={() => {
-              // Mark as mastered, give XP
               const currentCard = studyQueue[0];
               setFlashcardDecks(prev => prev.map((deck, idx) => 
                 idx === selectedDeck 
@@ -4791,27 +4975,23 @@ setMiniBossCount(0);
               
               setXp(x => x + 5);
               
-              // Remove from queue
               const newQueue = studyQueue.slice(1);
               
               if (newQueue.length === 0) {
-                // Deck complete
                 const cardsStudied = flashcardDecks[selectedDeck].cards.length;
                 const xpGain = 25;
                 setXp(x => x + xpGain);
-                addLog(`🎓 Completed deck! +${xpGain} bonus XP`);
+                addLog(`Completed deck! +${xpGain} bonus XP`);
                 
-                // Loot chance
                 const roll = Math.random();
                 if (roll < 0.3) {
                   setHealthPots(h => h + 1);
-                  addLog('💊 Found Health Potion!');
+                  addLog('Found Health Potion!');
                 } else if (roll < 0.5) {
                   setStaminaPots(s => s + 1);
-                  addLog('⚡ Found Stamina Potion!');
+                  addLog('Found Stamina Potion!');
                 }
                 
-                // If we were reviewing mistakes, mark as reviewed and return to quiz results
                 if (reviewingMistakes) {
                   setMistakesReviewed(true);
                   setReviewingMistakes(false);
@@ -4819,7 +4999,7 @@ setMiniBossCount(0);
                   setShowQuizModal(true);
                   setShowQuizResults(true);
                   setIsFlipped(false);
-                  addLog('✅ Mistakes reviewed! Retake unlocked.');
+                  addLog('Mistakes reviewed! Retake unlocked.');
                 } else {
                   setShowStudyModal(false);
                   setSelectedDeck(null);
@@ -4832,9 +5012,16 @@ setMiniBossCount(0);
                 setIsFlipped(false);
               }
             }}
-            className="flex-1 bg-green-600 hover:bg-green-700 py-4 rounded-lg font-bold text-lg transition-all"
+            className="flex-1 py-4 rounded-lg font-bold text-lg transition-all border-2"
+            style={{
+              backgroundColor: COLORS.crimson.base,
+              borderColor: COLORS.crimson.border,
+              color: '#F5F5DC'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.hover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.base}
           >
-            ✓ Got It! (+5 XP)
+            Got It! (+5 XP)
           </button>
         </div>
       )}
@@ -4843,38 +5030,50 @@ setMiniBossCount(0);
 )}
 
 {showQuizModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
-  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-start justify-center p-4 z-50">
-    <div className="bg-gradient-to-b from-blue-900 to-black rounded-xl p-8 max-w-2xl w-full border-4 border-blue-600 shadow-2xl">
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
+    <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
+      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      borderColor: COLORS.gold,
+      boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
+    }}>
       {!showQuizResults ? (
         <>
-          <div className="mb-6 flex justify-between items-center">
-            <div>
-              <h2 className="text-2xl font-bold text-blue-400">📝 {flashcardDecks[selectedDeck].name} - Quiz</h2>
-              <p className="text-gray-400">Question {currentQuizIndex + 1} of {quizQuestions.length} | Score: {quizScore}/{quizQuestions.length}</p>
+          <button 
+            onClick={() => {
+              setShowQuizModal(false);
+              setSelectedDeck(null);
+              setQuizQuestions([]);
+              setCurrentQuizIndex(0);
+              setQuizScore(0);
+              setSelectedAnswer(null);
+              setShowQuizResults(false);
+              setWrongCardIndices([]);
+              setIsRetakeQuiz(false);
+              setMistakesReviewed(false);
+              setReviewingMistakes(false);
+            }}
+            className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          >
+            <X size={32}/>
+          </button>
+          
+          <div className="text-center mb-6">
+            <h2 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+              <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+              <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
             </div>
-            <button 
-              onClick={() => {
-                setShowQuizModal(false);
-                setSelectedDeck(null);
-                setQuizQuestions([]);
-                setCurrentQuizIndex(0);
-                setQuizScore(0);
-                setSelectedAnswer(null);
-                setShowQuizResults(false);
-                setWrongCardIndices([]);
-                setIsRetakeQuiz(false);
-                setMistakesReviewed(false);
-                setReviewingMistakes(false);
-              }}
-              className="text-gray-400 hover:text-white"
-            >
-              <X size={32}/>
-            </button>
+            <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Test your knowledge in the crucible of trial..."</p>
+            <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Question {currentQuizIndex + 1} of {quizQuestions.length} | Score: {quizScore}/{quizQuestions.length}</p>
           </div>
           
-          <div className="bg-gray-800 rounded-xl p-8 mb-6 min-h-[200px] border-2 border-blue-500">
-            <p className="text-sm text-gray-500 mb-4">QUESTION</p>
-            <p className="text-2xl text-white mb-8">{quizQuestions[currentQuizIndex]?.question}</p>
+          <div className="rounded-xl p-8 mb-6 min-h-[200px] border-2" style={{
+            background: 'rgba(0, 0, 0, 0.4)',
+            borderColor: 'rgba(139, 0, 0, 0.6)'
+          }}>
+            <p className="text-sm mb-4" style={{color: COLORS.silver}}>QUESTION</p>
+            <p className="text-2xl mb-8" style={{color: '#F5F5DC'}}>{quizQuestions[currentQuizIndex]?.question}</p>
             
             <div className="space-y-3">
               {quizQuestions[currentQuizIndex]?.choices.map((choice, idx) => (
@@ -4901,10 +5100,13 @@ setMiniBossCount(0);
             </div>
           </div>
           
-          <div className="bg-gray-800 rounded-full h-2 mb-6">
+          <div className="rounded-full h-2 mb-6" style={{background: 'rgba(0, 0, 0, 0.4)'}}>
             <div 
-              className="bg-blue-500 h-2 rounded-full transition-all" 
-              style={{width: `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`}}
+              className="h-2 rounded-full transition-all" 
+              style={{
+                width: `${((currentQuizIndex + 1) / quizQuestions.length) * 100}%`,
+                background: 'linear-gradient(to right, #8B0000, #DC143C)'
+              }}
             />
           </div>
           
@@ -4922,23 +5124,23 @@ setMiniBossCount(0);
                   setWrongCardIndices(prev => [...prev, quizQuestions[currentQuizIndex].cardIndex]);
                 }
                 
-                const nextIndex = currentQuizIndex + 1;
+                  const nextIndex = currentQuizIndex + 1;
                 if (nextIndex >= quizQuestions.length) {
                   // Quiz complete - award XP and loot
                   const baseXP = finalScore * 10;
                   const xpGain = isRetakeQuiz ? Math.floor(baseXP * 0.5) : baseXP;
                   setXp(x => x + xpGain);
-                  addLog(`📝 Quiz complete! +${xpGain} XP${isRetakeQuiz ? ' (retake)' : ''}`);
+                  addLog(`Quiz complete! +${xpGain} XP${isRetakeQuiz ? ' (retake)' : ''}`);
                   
                   // Loot for good performance (70%+) - only on first attempt
                   if (!isRetakeQuiz && finalScore >= quizQuestions.length * 0.7) {
                     const roll = Math.random();
                     if (roll < 0.4) {
                       setHealthPots(h => h + 1);
-                      addLog('💊 Found Health Potion!');
+                      addLog('Found Health Potion!');
                     } else if (roll < 0.7) {
                       setStaminaPots(s => s + 1);
-                      addLog('⚡ Found Stamina Potion!');
+                      addLog('Found Stamina Potion!');
                     }
                   }
                   
@@ -4948,7 +5150,14 @@ setMiniBossCount(0);
                   setSelectedAnswer(null);
                 }
               }}
-              className="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-lg font-bold text-lg transition-all"
+              className="w-full py-4 rounded-lg font-bold text-lg transition-all border-2"
+              style={{
+                backgroundColor: COLORS.crimson.base,
+                borderColor: COLORS.crimson.border,
+                color: '#F5F5DC'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.hover}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.base}
             >
               {currentQuizIndex + 1 === quizQuestions.length ? 'See Results' : 'Next Question →'}
             </button>
@@ -4956,34 +5165,57 @@ setMiniBossCount(0);
         </>
       ) : (
         <div className="text-center">
+          <button 
+            onClick={() => {
+              setShowQuizModal(false);
+              setSelectedDeck(null);
+              setQuizQuestions([]);
+              setCurrentQuizIndex(0);
+              setQuizScore(0);
+              setSelectedAnswer(null);
+              setShowQuizResults(false);
+              setWrongCardIndices([]);
+              setIsRetakeQuiz(false);
+              setMistakesReviewed(false);
+              setReviewingMistakes(false);
+            }}
+            className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          >
+            <X size={32}/>
+          </button>
+          
           <div className="mb-8">
-            <div className="text-8xl mb-4">
-              {quizScore === quizQuestions.length ? '🏆' : quizScore >= quizQuestions.length * 0.7 ? '⭐' : '📖'}
+            <h2 className="text-3xl font-bold mb-2" style={{color: '#DC143C', letterSpacing: '0.1em'}}>TRIAL COMPLETE</h2>
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+              <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
+              <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
             </div>
-            <h2 className="text-3xl font-bold text-blue-400 mb-2">Quiz Complete!</h2>
-            <p className="text-5xl font-bold text-white mb-4">{quizScore} / {quizQuestions.length}</p>
-            <p className="text-xl text-gray-300">
-              {quizScore === quizQuestions.length && 'Perfect Score! 🎉'}
-              {quizScore >= quizQuestions.length * 0.7 && quizScore < quizQuestions.length && 'Great Job! 💪'}
-              {quizScore < quizQuestions.length * 0.7 && 'Keep Studying! 📚'}
+            <p className="text-5xl font-bold mb-4" style={{color: '#F5F5DC'}}>{quizScore} / {quizQuestions.length}</p>
+            <p className="text-xl mb-2" style={{color: COLORS.silver}}>
+              {quizScore === quizQuestions.length && 'Flawless Victory!'}
+              {quizScore >= quizQuestions.length * 0.7 && quizScore < quizQuestions.length && 'Well Fought!'}
+              {quizScore < quizQuestions.length * 0.7 && 'The Path Demands More...'}
             </p>
             {wrongCardIndices.length > 0 && (
-              <p className="text-red-400 mt-2">Missed {wrongCardIndices.length} question{wrongCardIndices.length !== 1 ? 's' : ''}</p>
+              <p className="mt-2 italic" style={{color: '#FF6B6B'}}>{wrongCardIndices.length} question{wrongCardIndices.length !== 1 ? 's' : ''} yet unmastered</p>
             )}
           </div>
           
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <p className="text-yellow-400 text-xl mb-2">+{isRetakeQuiz ? Math.floor(quizScore * 10 * 0.5) : quizScore * 10} XP Earned{isRetakeQuiz ? ' (Retake - 50%)' : ''}</p>
+          <div className="rounded-lg p-6 mb-6 border-2" style={{
+            background: 'rgba(184, 134, 11, 0.2)',
+            borderColor: 'rgba(212, 175, 55, 0.4)'
+          }}>
+            <p className="text-xl mb-2" style={{color: COLORS.gold}}>+{isRetakeQuiz ? Math.floor(quizScore * 10 * 0.5) : quizScore * 10} XP Earned{isRetakeQuiz ? ' (Retake - 50%)' : ''}</p>
             {!isRetakeQuiz && quizScore >= quizQuestions.length * 0.7 && (
-              <p className="text-gray-400">Bonus loot awarded! Check your inventory.</p>
+              <p style={{color: COLORS.silver}}>Bonus loot awarded! Check your inventory.</p>
             )}
           </div>
           
           <div className="space-y-3">
-            {wrongCardIndices.length > 0 && (
+            {wrongCardIndices.length > 0 && !mistakesReviewed && (
               <button
                 onClick={() => {
-                  // Open study modal with only wrong cards
                   setStudyQueue([...wrongCardIndices]);
                   setReviewingMistakes(true);
                   setShowQuizModal(false);
@@ -4991,27 +5223,38 @@ setMiniBossCount(0);
                   setIsFlipped(false);
                   setShowStudyModal(true);
                 }}
-                className="w-full bg-purple-600 hover:bg-purple-700 py-4 rounded-lg font-bold text-lg transition-all"
+                className="w-full py-4 rounded-lg font-bold text-lg transition-all border-2"
+                style={{
+                  backgroundColor: COLORS.burgundy.base,
+                  borderColor: COLORS.burgundy.border,
+                  color: '#F5F5DC'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.burgundy.hover}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.burgundy.base}
               >
-                📖 Review Mistakes ({wrongCardIndices.length} card{wrongCardIndices.length !== 1 ? 's' : ''})
+                Review Mistakes ({wrongCardIndices.length} card{wrongCardIndices.length !== 1 ? 's' : ''})
               </button>
             )}
             
             <button
               onClick={() => {
-                // Retake quiz with reduced XP
                 setShowQuizModal(false);
                 setShowQuizResults(false);
                 generateQuiz(selectedDeck, true);
               }}
               disabled={wrongCardIndices.length > 0 && !mistakesReviewed}
-              className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
-                wrongCardIndices.length > 0 && !mistakesReviewed
-                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+              className="w-full py-4 rounded-lg font-bold text-lg transition-all border-2"
+              style={{
+                backgroundColor: (wrongCardIndices.length > 0 && !mistakesReviewed) ? 'rgba(44, 62, 80, 0.5)' : COLORS.crimson.base,
+                borderColor: (wrongCardIndices.length > 0 && !mistakesReviewed) ? 'rgba(149, 165, 166, 0.3)' : COLORS.crimson.border,
+                color: (wrongCardIndices.length > 0 && !mistakesReviewed) ? COLORS.silver : '#F5F5DC',
+                cursor: (wrongCardIndices.length > 0 && !mistakesReviewed) ? 'not-allowed' : 'pointer',
+                opacity: (wrongCardIndices.length > 0 && !mistakesReviewed) ? 0.5 : 1
+              }}
+              onMouseEnter={(e) => {if (!(wrongCardIndices.length > 0 && !mistakesReviewed)) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
+              onMouseLeave={(e) => {if (!(wrongCardIndices.length > 0 && !mistakesReviewed)) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
             >
-              {wrongCardIndices.length > 0 && !mistakesReviewed ? '🔒 Review Mistakes First' : '🔄 Retake Quiz (50% XP)'}
+              {wrongCardIndices.length > 0 && !mistakesReviewed ? 'Review Mistakes First' : 'Retake Quiz (50% XP)'}
             </button>
             
             <button
@@ -5028,7 +5271,14 @@ setMiniBossCount(0);
                 setMistakesReviewed(false);
                 setReviewingMistakes(false);
               }}
-              className="w-full bg-gray-600 hover:bg-gray-700 py-4 rounded-lg font-bold text-lg transition-all"
+              className="w-full py-4 rounded-lg font-bold text-lg transition-all border-2"
+              style={{
+                backgroundColor: COLORS.slate.base,
+                borderColor: COLORS.slate.border,
+                color: '#F5F5DC'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
             >
               Close
             </button>
@@ -5548,16 +5798,16 @@ setMiniBossCount(0);
                 
                 <div className="space-y-4">
                   {/* Enemy HP Section */}
-                  <div className="rounded-lg p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
-                    <div className="flex justify-between mb-2">
+                  <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
+                    <div className="flex justify-between mb-1">
                       <span className="text-sm uppercase tracking-wider" style={{color: '#CD7F32'}}>
                         {bossName || 'Enemy'}
                         {enragedTurns > 0 && <span className="ml-3 text-orange-400 font-bold animate-pulse"> ENRAGED ({enragedTurns})</span>}
                       </span>
                       <span style={{color: '#F5F5DC'}}>{bossHp}/{bossMax}</span>
                     </div>
-                    <div className="rounded-full h-4 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                      <div className={`h-4 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{
+                    <div className="rounded-full h-3 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
+                      <div className={`h-3 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{
                         width: `${(bossHp / bossMax) * 100}%`,
                         background: 'linear-gradient(to right, #DC143C, #FF6B6B)'
                       }}></div>
@@ -5616,10 +5866,10 @@ setMiniBossCount(0);
                   ) : null}
                   
                   {/* VS Divider */}
-                  <div className="text-center py-4">
+                  <div className="text-center py-2">
                     <div className="flex items-center justify-center gap-3">
                       <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                      <p className="text-2xl font-bold uppercase tracking-wider" style={{
+                      <p className="text-xl font-bold uppercase tracking-wider" style={{
                         color: '#D4AF37',
                         textShadow: '0 0 10px rgba(212, 175, 55, 0.5)',
                         letterSpacing: '0.2em'
@@ -5629,19 +5879,19 @@ setMiniBossCount(0);
                   </div>
                   
                   {/* Player Section */}
-                  <div className="rounded-lg p-4" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(0, 100, 0, 0.5)'}}>
-                    <div className="flex justify-between mb-2">
+                  <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(0, 100, 0, 0.5)'}}>
+                    <div className="flex justify-between mb-1">
                       <span className="text-sm uppercase tracking-wider" style={{color: '#68D391'}}>{hero.name}</span>
                       <span style={{color: '#F5F5DC'}}>HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span>
                     </div>
-                    <div className="rounded-full h-4 overflow-hidden mb-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                      <div className={`h-4 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{
+                    <div className="rounded-full h-3 overflow-hidden mb-1" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
+                      <div className={`h-3 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{
                         width: `${(hp / getMaxHp()) * 100}%`,
                         background: 'linear-gradient(to right, #2F5233, #68D391)'
                       }}></div>
                     </div>
-                    <div className="rounded-full h-3 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                      <div className="h-3 rounded-full transition-all duration-300" style={{
+                    <div className="rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
+                      <div className="h-2 rounded-full transition-all duration-300" style={{
                         width: `${(stamina / getMaxStamina()) * 100}%`,
                         background: 'linear-gradient(to right, #0E7490, #06B6D4)'
                       }}></div>
@@ -5658,8 +5908,8 @@ setMiniBossCount(0);
                   {/* Actions Section */}
                   {battling && bossHp > 0 && hp > 0 && (
                     <>
-                      <div className="text-center pt-4 pb-4">
-                        <p className="text-sm font-bold uppercase tracking-[0.3em] mb-2" style={{color: '#D4AF37'}}>Actions</p>
+                      <div className="text-center pt-2 pb-2">
+                        <p className="text-sm font-bold uppercase tracking-[0.3em] mb-1" style={{color: '#D4AF37'}}>Actions</p>
                         <div className="flex items-center justify-center gap-2">
                           <div style={{width: '200px', height: '2px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.6), transparent)'}}></div>
                         </div>
@@ -5670,7 +5920,7 @@ setMiniBossCount(0);
                         <div className="grid grid-cols-3 gap-3">
                           <button 
                             onClick={() => setBattleMenu('fight')} 
-                            className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
+                            className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
                             style={{
                               background: 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(80, 0, 0, 0.8))',
                               borderColor: 'rgba(139, 0, 0, 0.6)',
@@ -5683,7 +5933,7 @@ setMiniBossCount(0);
                           <button 
                             onClick={() => setBattleMenu('items')}
                             disabled={healthPots === 0 && staminaPots === 0}
-                            className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{
                               background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(120, 87, 7, 0.8))' : 'rgba(44, 62, 80, 0.6)',
                               borderColor: (healthPots > 0 || staminaPots > 0) ? 'rgba(184, 134, 11, 0.6)' : 'rgba(128, 128, 128, 0.3)',
@@ -5697,7 +5947,7 @@ setMiniBossCount(0);
                             <button 
                               onClick={flee}
                               disabled={stamina < 25}
-                              className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                               style={{
                                 background: stamina >= 25 ? 'linear-gradient(to bottom, rgba(47, 82, 51, 0.8), rgba(30, 52, 33, 0.8))' : 'rgba(44, 62, 80, 0.6)',
                                 borderColor: stamina >= 25 ? 'rgba(47, 82, 51, 0.6)' : 'rgba(128, 128, 128, 0.3)',
@@ -5712,7 +5962,7 @@ setMiniBossCount(0);
                           {showDodgeButton && (
                             <button 
                               onClick={dodge}
-                              className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 animate-pulse"
+                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 animate-pulse"
                               style={{
                                 background: 'linear-gradient(to bottom, rgba(30, 58, 95, 0.8), rgba(20, 40, 65, 0.8))',
                                 borderColor: 'rgba(30, 58, 95, 0.6)',
@@ -5732,7 +5982,7 @@ setMiniBossCount(0);
                           <div className="grid grid-cols-2 gap-3 mb-3">
                             <button 
                               onClick={attack}
-                              className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
+                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
                               style={{
                                 background: 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(80, 0, 0, 0.8))',
                                 borderColor: 'rgba(139, 0, 0, 0.6)',
@@ -5747,7 +5997,7 @@ setMiniBossCount(0);
                               <button 
                                 onClick={specialAttack}
                                 disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) || (hero.class.name === 'Ranger' && bossDebuffs.marked)}
-                                className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
                                   background: stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.8), rgba(8, 77, 94, 0.8))' : 'rgba(44, 62, 80, 0.6)',
                                   borderColor: stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost ? 'rgba(13, 116, 142, 0.6)' : 'rgba(128, 128, 128, 0.3)',
@@ -5782,7 +6032,7 @@ setMiniBossCount(0);
                             <button 
                               onClick={useHealth}
                               disabled={healthPots === 0}
-                              className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                               style={{
                                 background: healthPots > 0 ? 'linear-gradient(to bottom, rgba(220, 38, 38, 0.8), rgba(153, 27, 27, 0.8))' : 'rgba(44, 62, 80, 0.6)',
                                 borderColor: healthPots > 0 ? 'rgba(220, 38, 38, 0.6)' : 'rgba(128, 128, 128, 0.3)',
@@ -5802,7 +6052,7 @@ setMiniBossCount(0);
                                 }
                               }}
                               disabled={staminaPots === 0}
-                              className="rounded-lg py-4 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                               style={{
                                 background: staminaPots > 0 ? 'linear-gradient(to bottom, rgba(6, 182, 212, 0.8), rgba(8, 145, 178, 0.8))' : 'rgba(44, 62, 80, 0.6)',
                                 borderColor: staminaPots > 0 ? 'rgba(6, 182, 212, 0.6)' : 'rgba(128, 128, 128, 0.3)',
@@ -5953,31 +6203,46 @@ setMiniBossCount(0);
             </div>
           )}
           {showPomodoro && pomodoroTask && (
-  <div className="fixed inset-0 bg-black bg-opacity-95 flex items-start justify-center p-4 z-50">
-    <div className="bg-gradient-to-b from-purple-900 to-black rounded-xl p-12 max-w-2xl w-full border-4 border-purple-600 shadow-2xl">
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
+    <div className="rounded-xl p-12 max-w-2xl w-full border-2 relative my-8" style={{
+      background: 'linear-gradient(to bottom, rgba(10, 30, 50, 0.95), rgba(5, 20, 40, 0.95), rgba(0, 10, 30, 0.95))',
+      borderColor: COLORS.gold,
+      boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
+    }}>
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-purple-400 mb-2">
-          {isBreak ? 'BREAK TIME' : 'FOCUS SESSION'}
+        <h2 className="text-3xl font-bold mb-2" style={{
+          color: '#6BB6FF',
+          letterSpacing: '0.1em'
+        }}>
+          {isBreak ? 'RESPITE' : 'DEEP FOCUS'}
         </h2>
-        <p className="text-xl text-gray-300 mb-8">{pomodoroTask.title}</p>
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(30, 58, 95, 0.3))'}}></div>
+          <span style={{color: 'rgba(30, 58, 95, 0.4)', fontSize: '8px'}}>◆</span>
+          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(30, 58, 95, 0.3))'}}></div>
+        </div>
+        <p className="text-xl mb-8" style={{color: COLORS.silver}}>{pomodoroTask.title}</p>
         
         <div className="mb-8">
-          <div className="text-8xl font-bold text-white mb-4">
+          <div className="text-8xl font-bold mb-4" style={{color: '#F5F5DC'}}>
             {Math.floor(pomodoroTimer / 60)}:{String(pomodoroTimer % 60).padStart(2, '0')}
           </div>
-          <div className="text-gray-400 text-lg">
-            {isBreak ? '5 minute break' : '25 minute work session'}
+          <div className="text-lg" style={{color: '#95A5A6'}}>
+            {isBreak ? '5 minute respite' : '25 minute battle'}
           </div>
         </div>
         
         <div className="mb-6">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <span className="text-white text-xl">Pomodoros Completed: {pomodorosCompleted}</span>
+            <span className="text-xl" style={{color: '#F5F5DC'}}>Sessions Completed: {pomodorosCompleted}</span>
           </div>
-          <div className="bg-gray-800 rounded-full h-3 overflow-hidden">
+          <div className="rounded-full h-3 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.4)'}}>
             <div 
-              className={`h-3 rounded-full transition-all ${isBreak ? 'bg-green-500' : 'bg-purple-500'}`} 
-              style={{width: `${((isBreak ? 5 * 60 : 25 * 60) - pomodoroTimer) / (isBreak ? 5 * 60 : 25 * 60) * 100}%`}}
+              className="h-3 rounded-full transition-all"
+              style={{
+                width: `${((isBreak ? 5 * 60 : 25 * 60) - pomodoroTimer) / (isBreak ? 5 * 60 : 25 * 60) * 100}%`,
+                background: isBreak ? 'linear-gradient(to right, #2F5233, #52C77A)' : 'linear-gradient(to right, #1E3A5F, #6BB6FF)'
+              }}
             ></div>
           </div>
         </div>
@@ -5985,7 +6250,14 @@ setMiniBossCount(0);
         <div className="flex gap-4 justify-center mb-6">
           <button 
             onClick={() => setPomodoroRunning(!pomodoroRunning)}
-            className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2" style={{backgroundColor: '#1E3A5F', borderColor: '#C0C0C0', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#2B5082'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#1E3A5F'}
+            className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2"
+            style={{
+              backgroundColor: COLORS.sapphire.base,
+              borderColor: COLORS.sapphire.border,
+              color: '#F5F5DC'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.sapphire.hover}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.sapphire.base}
           >
             {pomodoroRunning ? 'Pause' : 'Resume'}
           </button>
