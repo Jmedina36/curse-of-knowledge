@@ -374,6 +374,7 @@ const HERO_TITLES = ['Novice', 'Seeker', 'Wanderer', 'Survivor', 'Warrior', 'Cha
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
+  const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -3000,6 +3001,8 @@ setMiniBossCount(0);
 
         {/* Navigation Section - Full Width */}
         <nav className="flex gap-4 justify-center items-center mb-8 pt-6 pb-6 border-t-2 border-b-2" style={{
+          marginLeft: 'calc(-50vw + 50%)',
+          marginRight: 'calc(-50vw + 50%)',
           borderColor: 'rgba(212, 175, 55, 0.2)',
           background: 'linear-gradient(to bottom, rgba(40, 10, 10, 0.4), rgba(30, 0, 0, 0.4))',
           boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.3)'
@@ -3204,6 +3207,49 @@ setMiniBossCount(0);
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 50px rgba(0, 0, 0, 0.3)'
             }}>
               
+              {heroCardCollapsed ? (
+                // Collapsed state - show minimal info
+                <>
+                <div className="flex items-center justify-between py-2 relative z-10">
+                  <div className="flex items-center gap-4">
+                    <span className="text-3xl">{hero.class.emblem}</span>
+                    <div>
+                      <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>{hero.name}</p>
+                      <p className="text-xs" style={{color: '#C0C0C0'}}>Level {level} {hero.class.name}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4 items-center">
+                    <div className="text-right">
+                      <p className="text-xs" style={{color: '#C0C0C0'}}>HP</p>
+                      <p className="font-bold" style={{color: hp <= 10 ? '#DC2626' : '#F5F5DC'}}>{hp}/{GAME_CONSTANTS.MAX_HP}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs" style={{color: '#C0C0C0'}}>SP</p>
+                      <p className="font-bold" style={{color: '#93C5FD'}}>{stamina}/{GAME_CONSTANTS.MAX_STAMINA}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Expand Button - Centered */}
+                <div className="flex justify-center mt-3">
+                  <button
+                    onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
+                    className="px-4 py-1 rounded transition-all border-2 hover:scale-105"
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      borderColor: 'rgba(212, 175, 55, 0.4)',
+                      color: '#D4AF37',
+                      fontSize: '0.7rem',
+                      letterSpacing: '0.1em'
+                    }}
+                  >
+                    ▼ EXPAND HERO
+                  </button>
+                </div>
+                </>
+              ) : (
+                // Expanded state - full hero card
+                <>
               {/* Large watermark emblem in center background */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1, opacity: 0.05, color: '#F5F5DC'}}>
                 {getCardStyle(hero.class, currentDay).emblem}
@@ -3399,7 +3445,26 @@ setMiniBossCount(0);
                     Merchant
                   </button>
                 </div>
+                
+                {/* Collapse Button - Centered at bottom */}
+                <div className="flex justify-center mt-4">
+                  <button
+                    onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
+                    className="px-4 py-1 rounded transition-all border-2 hover:scale-105"
+                    style={{
+                      background: 'rgba(0, 0, 0, 0.5)',
+                      borderColor: 'rgba(212, 175, 55, 0.4)',
+                      color: '#D4AF37',
+                      fontSize: '0.7rem',
+                      letterSpacing: '0.1em'
+                    }}
+                  >
+                    {heroCardCollapsed ? '▼ EXPAND HERO' : '▲ COLLAPSE HERO'}
+                  </button>
+                </div>
               </div>
+              </>
+              )}
             </div>
               {!hasStarted ? (
                 <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.gold, background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}}>
