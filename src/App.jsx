@@ -49,7 +49,6 @@ const GAME_CONSTANTS = {
   PLAYER_HP_PER_DAY: 8,
   PLAYER_SP_PER_DAY: 8,
   PLAYER_ATK_PER_DAY: 2,
-  PLAYER_DEF_PER_DAY: 1,
   HEALTH_POTION_HEAL: 30,
   STAMINA_POTION_RESTORE: 50,
   STAMINA_PER_TASK: 20,
@@ -57,8 +56,8 @@ const GAME_CONSTANTS = {
   LOOT_RATES: {
     HEALTH_POTION: 0.25,
     STAMINA_POTION: 0.50,
-    WEAPON: 0.75,
-    ARMOR: 1.00
+    WEAPON: 0.65,
+    ARMOR: 0.80
   },
   MINI_BOSS_LOOT_RATES: {
     HEALTH_POTION: 0.25,
@@ -117,6 +116,61 @@ const GAME_CONSTANTS = {
     Rogue: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 10 damage per turn. Poisoned enemies take +25% damage from all attacks' },
     Paladin: { name: 'Divine Smite', cost: 30, damageMultiplier: 3.0, effect: 'Heals you for 30 HP' },
     Ranger: { name: 'Marked Shot', cost: 35, damageMultiplier: 1.8, effect: 'Boss takes +50% damage from your next attack. Creates devastating combos' }
+  },
+  
+  ARMOR_STAT_RANGES: {
+    helmet: { min: 1, max: 5 },
+    chest: { min: 2, max: 8 },
+    gloves: { min: 1, max: 5 },
+    boots: { min: 1, max: 5 }
+  },
+  
+  ARMOR_NAMES: {
+    helmet: ['Worn Cap', 'Leather Hood', 'Simple Helm', 'Patched Coif', 'Tattered Cowl', 'Cloth Hat', 'Frayed Circlet'],
+    chest: ['Worn Tunic', 'Leather Vest', 'Patched Jerkin', 'Simple Breastplate', 'Tattered Robe', 'Cloth Shirt', 'Frayed Cuirass'],
+    gloves: ['Worn Gloves', 'Leather Grips', 'Simple Gauntlets', 'Patched Mitts', 'Tattered Wraps', 'Cloth Bindings', 'Frayed Guards'],
+    boots: ['Worn Boots', 'Leather Sandals', 'Simple Greaves', 'Patched Shoes', 'Tattered Footwraps', 'Cloth Slippers', 'Frayed Sabatons']
+  },
+  
+  STARTING_EQUIPMENT: {
+    Warrior: {
+      helmet: { name: 'Iron Cap', defense: 2 },
+      chest: { name: 'Chainmail Vest', defense: 2 },
+      gloves: { name: 'Leather Grips', defense: 1 },
+      boots: { name: 'Steel-toed Boots', defense: 2 }
+    },
+    Paladin: {
+      helmet: { name: 'Holy Circlet', defense: 1 },
+      chest: { name: 'Blessed Tunic', defense: 2 },
+      gloves: { name: 'Prayer Wraps', defense: 1 },
+      boots: { name: 'Temple Sandals', defense: 1 }
+    },
+    Ranger: {
+      helmet: { name: 'Leather Hood', defense: 1 },
+      chest: { name: "Ranger's Vest", defense: 2 },
+      gloves: { name: "Archer's Gloves", defense: 1 },
+      boots: { name: 'Trail Boots', defense: 2 }
+    },
+    Rogue: {
+      helmet: { name: 'Shadow Cowl', defense: 1 },
+      chest: { name: 'Dark Leather', defense: 2 },
+      gloves: { name: 'Fingerless Gloves', defense: 1 },
+      boots: { name: 'Soft Boots', defense: 1 }
+    },
+    Mage: {
+      helmet: { name: 'Apprentice Hat', defense: 1 },
+      chest: { name: "Scholar's Robe", defense: 2 },
+      gloves: { name: 'Silk Wraps', defense: 1 },
+      boots: { name: 'Cloth Slippers', defense: 1 }
+    }
+  },
+  
+  BASE_DEFENSE_BY_CLASS: {
+    Warrior: 8,
+    Paladin: 6,
+    Ranger: 5,
+    Rogue: 4,
+    Mage: 3
   },
   
   ENEMY_DIALOGUE: {
@@ -450,17 +504,40 @@ const FantasyStudyQuest = () => {
     return GAME_CONSTANTS.BASE_ATTACK + (currentDay - 1) * GAME_CONSTANTS.PLAYER_ATK_PER_DAY;
   }, [currentDay]);
   
-  const getBaseDefense = useCallback(() => {
-    // Square root scaling to match boss attack curve
-    const baseDefense = GAME_CONSTANTS.BASE_DEFENSE + Math.floor(Math.sqrt(currentDay - 1) * 2);
-    return baseDefense;
-  }, [currentDay]);
-  
   const [healthPots, setHealthPots] = useState(0);
   const [staminaPots, setStaminaPots] = useState(0);
   const [cleansePots, setCleansePots] = useState(0);
   const [weapon, setWeapon] = useState(0);
   const [armor, setArmor] = useState(0);
+  
+  // Armor equipment system
+  const [equippedArmor, setEquippedArmor] = useState({
+    helmet: null,
+    chest: null,
+    gloves: null,
+    boots: null
+  });
+  const [armorInventory, setArmorInventory] = useState({
+    helmet: [],
+    chest: [],
+    gloves: [],
+    boots: []
+  });
+  
+  const getBaseDefense = useCallback(() => {
+    if (!hero) return 5;
+    
+    // Get base defense from class
+    const baseDefense = GAME_CONSTANTS.BASE_DEFENSE_BY_CLASS[hero.class.name] || 5;
+    
+    // Calculate total defense from equipped armor
+    const armorDefense = Object.values(equippedArmor).reduce((total, piece) => {
+      return total + (piece ? piece.defense : 0);
+    }, 0);
+    
+    return baseDefense + armorDefense;
+  }, [hero, equippedArmor]);
+  
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newTask, setNewTask] = useState({ title: '', priority: 'routine' });
@@ -589,6 +666,7 @@ const [showCustomizeModal, setShowCustomizeModal] = useState(false);
 const [customName, setCustomName] = useState('');
 const [customClass, setCustomClass] = useState(null);
   const [showInventoryModal, setShowInventoryModal] = useState(false);
+  const [suppliesTab, setSuppliesTab] = useState('potions'); // 'potions' or 'armor'
   const [showCraftingModal, setShowCraftingModal] = useState(false);
   const [weaponOilActive, setWeaponOilActive] = useState(false);
   const [armorPolishActive, setArmorPolishActive] = useState(false);
@@ -819,6 +897,8 @@ const getDateKey = useCallback((date) => {
         if (data.cleansePots !== undefined) setCleansePots(data.cleansePots);
         if (data.weapon !== undefined) setWeapon(data.weapon);
         if (data.armor !== undefined) setArmor(data.armor);
+        if (data.equippedArmor) setEquippedArmor(data.equippedArmor);
+        if (data.armorInventory) setArmorInventory(data.armorInventory);
         if (data.tasks) setTasks(data.tasks);
         if (data.flashcardDecks) setFlashcardDecks(data.flashcardDecks);
         if (data.graveyard) setGraveyard(data.graveyard);
@@ -867,18 +947,33 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     }
   }, []);
   
+  // Initialize starting equipment when hero is created
+  useEffect(() => {
+    if (hero && hero.class && hero.class.name && !equippedArmor.helmet) {
+      const startingGear = GAME_CONSTANTS.STARTING_EQUIPMENT[hero.class.name];
+      if (startingGear) {
+        setEquippedArmor({
+          helmet: startingGear.helmet,
+          chest: startingGear.chest,
+          gloves: startingGear.gloves,
+          boots: startingGear.boots
+        });
+      }
+    }
+  }, [hero, equippedArmor.helmet]);
+  
   useEffect(() => {
     if (hero) {
      const saveData = {
   hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots,
-  weapon, armor, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
+  weapon, armor, equippedArmor, armorInventory, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
+ }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedArmor, armorInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -1454,9 +1549,21 @@ if (task.overdue) {
       setWeapon(w => w + gain);
       addLog(`The hero's weapon has been upgraded! +${gain}`);
     } else if (roll < GAME_CONSTANTS.LOOT_RATES.ARMOR) {
-      const gain = 1 + Math.floor(currentDay / 2);
-      setArmor(a => a + gain);
-      addLog(`The hero's armor has been upgraded! +${gain}`);
+      // Generate random armor piece
+      const slots = ['helmet', 'chest', 'gloves', 'boots'];
+      const slot = slots[Math.floor(Math.random() * slots.length)];
+      const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+      const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+      const name = names[Math.floor(Math.random() * names.length)];
+      
+      const newArmor = { name, defense, id: Date.now() };
+      setArmorInventory(prev => ({
+        ...prev,
+        [slot]: [...prev[slot], newArmor]
+      }));
+      
+      addLog(`Armor found: ${name} (+${defense} DEF)`);
     }
     
     // Mark task as done
@@ -1821,7 +1928,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         
         const baseDamage = Math.max(1, Math.floor(
           baseAttack - 
-          (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
+          (getBaseDefense() + (armorPolishActive ? 5 : 0))
         ));
         
         setHp(h => Math.max(0, h - baseDamage));
@@ -2082,10 +2189,22 @@ if (battleType === 'elite') {
             lootMessages.push(`Weapon +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
             addLog(`The hero's weapon grows stronger! +${gain} attack power (Total: ${weapon + gain})${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else {
-            const gain = (4 + Math.floor(currentDay / 3)) * luckMultiplier;
-            setArmor(a => a + gain);
-            lootMessages.push(`Armor +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
-            addLog(`The hero's armor is reinforced! +${gain} defense (Total: ${armor + gain})${luckyCharmActive ? ' - a fortuitous discovery!' : ''}`);
+            // Generate random armor piece
+            const slots = ['helmet', 'chest', 'gloves', 'boots'];
+            const slot = slots[Math.floor(Math.random() * slots.length)];
+            const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+            const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newArmor = { name, defense, id: Date.now() };
+            setArmorInventory(prev => ({
+              ...prev,
+              [slot]: [...prev[slot], newArmor]
+            }));
+            
+            lootMessages.push(`${name} (+${defense} DEF)`);
+            addLog(`Armor found: ${name} (+${defense} DEF)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           }
           
           if (luckyCharmActive) {
@@ -2134,7 +2253,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 
 let bossDamage = Math.max(1, Math.floor(
   baseAttack - 
-  (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
+  (getBaseDefense() + (armorPolishActive ? 5 : 0))
 ));
 
 // Curse level increases enemy damage
@@ -2605,10 +2724,22 @@ if (enragedTurns > 0) {
       lootMessages.push(`⚔️ Weapon +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
       addLog(`💎 Looted: Weapon Upgrade! +${gain} (Total: ${weapon + gain})${luckyCharmActive ? ' (Lucky Charm!)' : ''}`);
     } else {
-      const gain = (4 + Math.floor(currentDay / 3)) * luckMultiplier;
-      setArmor(a => a + gain);
-      lootMessages.push(`🛡️ Armor +${gain}${luckyCharmActive ? ' (Lucky!)' : ''}`);
-      addLog(`💎 Looted: Armor Upgrade! +${gain} (Total: ${armor + gain})${luckyCharmActive ? ' (Lucky Charm!)' : ''}`);
+      // Generate random armor piece
+      const slots = ['helmet', 'chest', 'gloves', 'boots'];
+      const slot = slots[Math.floor(Math.random() * slots.length)];
+      const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+      const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+      const name = names[Math.floor(Math.random() * names.length)];
+      
+      const newArmor = { name, defense, id: Date.now() };
+      setArmorInventory(prev => ({
+        ...prev,
+        [slot]: [...prev[slot], newArmor]
+      }));
+      
+      lootMessages.push(`🛡️ ${name} (+${defense} DEF)`);
+      addLog(`💎 Looted: ${name} (+${defense} DEF)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     }
     
     if (luckyCharmActive) {
@@ -2660,7 +2791,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 
 let bossDamage = Math.max(1, Math.floor(
   baseAttack - 
-  (getBaseDefense() + armor + (armorPolishActive ? 5 : 0))
+  (getBaseDefense() + (armorPolishActive ? 5 : 0))
 ));
 
 // Curse level increases enemy damage
@@ -3249,6 +3380,20 @@ setMiniBossCount(0);
                   <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
                   <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
                   <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
+                  <button onClick={() => {
+                    const slots = ['helmet', 'chest', 'gloves', 'boots'];
+                    const slot = slots[Math.floor(Math.random() * slots.length)];
+                    const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+                    const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                    const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+                    const name = names[Math.floor(Math.random() * names.length)];
+                    const newArmor = { name, defense, id: Date.now() };
+                    setArmorInventory(prev => ({
+                      ...prev,
+                      [slot]: [...prev[slot], newArmor]
+                    }));
+                    addLog(`Debug: Found ${name} (+${defense} DEF)`);
+                  }} className="bg-amber-800 hover:bg-amber-700 px-4 py-2 rounded text-xs transition-all border border-amber-600" style={{color: '#F5F5DC'}}>+Random Armor</button>
                 </div>
               </div>
 
@@ -3607,7 +3752,7 @@ setMiniBossCount(0);
                     <div className="flex justify-center mb-1">
                       <ShieldCheck size={20} style={{color: '#F5F5DC'}}/>
                     </div>
-                    <p className="text-2xl font-bold mb-1" style={{color: '#F5F5DC'}}>{Math.floor(((getBaseDefense() + armor) / ((getBaseDefense() + armor) + 50)) * 100)}%</p>
+                    <p className="text-2xl font-bold mb-1" style={{color: '#F5F5DC'}}>{Math.floor((getBaseDefense() / (getBaseDefense() + 50)) * 100)}%</p>
                     <p className="text-xs uppercase" style={{color: '#F5F5DC'}}>Damage Resist</p>
                   </div>
                 </div>
@@ -3642,10 +3787,13 @@ setMiniBossCount(0);
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                 </div>
                 
-                {/* Inventory and Merchant buttons */}
+                {/* Supplies and Merchant buttons */}
                 <div className="grid grid-cols-2 gap-2">
                   <button 
-                    onClick={() => setShowInventoryModal(true)}
+                    onClick={() => {
+                      setSuppliesTab('potions');
+                      setShowInventoryModal(true);
+                    }}
                     className="py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
                     style={{backgroundColor: 'rgba(139, 0, 0, 0.7)', border: '2px solid #8B0000', color: '#F5F5DC'}}
                     onMouseEnter={(e) => {
@@ -3659,7 +3807,7 @@ setMiniBossCount(0);
                       e.currentTarget.style.boxShadow = 'none';
                     }}
                   >
-                    Inventory
+                    Supplies
                   </button>
                   <button 
                     onClick={() => setShowCraftingModal(true)}
@@ -4648,7 +4796,35 @@ setMiniBossCount(0);
                   <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"What keeps you alive in the darkness..."</p>
                 </div>
                 
+                {/* Tabs */}
+                <div className="grid grid-cols-2 gap-2 mb-6">
+                  <button
+                    onClick={() => setSuppliesTab('potions')}
+                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    style={{
+                      backgroundColor: suppliesTab === 'potions' ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
+                      borderColor: suppliesTab === 'potions' ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
+                      color: '#F5F5DC'
+                    }}
+                  >
+                    Potions
+                  </button>
+                  <button
+                    onClick={() => setSuppliesTab('armor')}
+                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    style={{
+                      backgroundColor: suppliesTab === 'armor' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(184, 134, 11, 0.3)',
+                      borderColor: suppliesTab === 'armor' ? '#B8860B' : 'rgba(184, 134, 11, 0.5)',
+                      color: '#F5F5DC'
+                    }}
+                  >
+                    Armor
+                  </button>
+                </div>
+                
                 <div className="space-y-4">
+                  {suppliesTab === 'potions' ? (
+                    <>
                   {/* Health Potions */}
                   <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
                     <div className="flex justify-between items-center mb-2">
@@ -4755,6 +4931,138 @@ setMiniBossCount(0);
                         <p className="text-xs mt-2" style={{color: '#68D391'}}>Active</p>
                       </div>
                     </div>
+                  )}
+                    </>
+                  ) : (
+                    <>
+                  {/* Equipment Section */}
+                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(184, 134, 11, 0.2)', borderColor: 'rgba(184, 134, 11, 0.5)'}}>
+                    <h3 className="font-bold text-lg mb-3 text-center" style={{color: COLORS.gold}}>EQUIPPED ARMOR</h3>
+                    
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      {/* Helmet */}
+                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Helmet</p>
+                        {equippedArmor.helmet ? (
+                          <div>
+                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.helmet.name}</p>
+                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} DEF</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                        )}
+                      </div>
+                      
+                      {/* Chest */}
+                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Chest</p>
+                        {equippedArmor.chest ? (
+                          <div>
+                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.chest.name}</p>
+                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} DEF</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                        )}
+                      </div>
+                      
+                      {/* Gloves */}
+                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Gloves</p>
+                        {equippedArmor.gloves ? (
+                          <div>
+                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.gloves.name}</p>
+                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} DEF</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                        )}
+                      </div>
+                      
+                      {/* Boots */}
+                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Boots</p>
+                        {equippedArmor.boots ? (
+                          <div>
+                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.boots.name}</p>
+                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} DEF</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
+                      <p className="text-sm" style={{color: COLORS.silver}}>
+                        Total Defense: <span className="font-bold text-lg" style={{color: COLORS.gold}}>{getBaseDefense()}</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Armor Inventory */}
+                  {(armorInventory.helmet.length > 0 || armorInventory.chest.length > 0 || armorInventory.gloves.length > 0 || armorInventory.boots.length > 0) ? (
+                    <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(47, 82, 51, 0.2)', borderColor: 'rgba(47, 82, 51, 0.5)'}}>
+                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#68D391'}}>COLLECTED ARMOR</h3>
+                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Pieces found in battle or unequipped</p>
+                      
+                      <div className="space-y-3 max-h-64 overflow-y-auto">
+                        {['helmet', 'chest', 'gloves', 'boots'].map(slot => 
+                          armorInventory[slot].length > 0 ? (
+                            <div key={slot}>
+                              <p className="text-xs uppercase mb-2 font-bold" style={{color: COLORS.silver}}>{slot}s</p>
+                              {armorInventory[slot].map((piece, idx) => (
+                                <div key={piece.id} className="rounded p-2 mb-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                                  <div>
+                                    <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{piece.name}</p>
+                                    <p className="text-xs" style={{color: '#68D391'}}>+{piece.defense} DEF</p>
+                                  </div>
+                                  <button
+                                    onClick={() => {
+                                      // Get the currently equipped piece (if any)
+                                      const oldPiece = equippedArmor[slot];
+                                      
+                                      // Equip the new piece
+                                      setEquippedArmor(prev => ({ ...prev, [slot]: piece }));
+                                      
+                                      // Update inventory: remove the new piece, add the old piece (if it exists)
+                                      setArmorInventory(prev => ({
+                                        ...prev,
+                                        [slot]: [
+                                          ...prev[slot].filter(p => p.id !== piece.id),
+                                          ...(oldPiece ? [oldPiece] : [])
+                                        ]
+                                      }));
+                                      
+                                      addLog(`Equipped: ${piece.name} (+${piece.defense} DEF)`);
+                                      if (oldPiece) {
+                                        addLog(`Unequipped: ${oldPiece.name}`);
+                                      }
+                                    }}
+                                    className="px-3 py-1 rounded text-xs border transition-all"
+                                    style={{
+                                      backgroundColor: COLORS.emerald.base,
+                                      borderColor: COLORS.emerald.border,
+                                      color: '#F5F5DC'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.hover}
+                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.base}
+                                  >
+                                    Equip
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          ) : null
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="rounded-lg p-6 border-2 text-center" style={{backgroundColor: 'rgba(47, 82, 51, 0.1)', borderColor: 'rgba(47, 82, 51, 0.3)'}}>
+                      <p className="text-sm italic" style={{color: '#95A5A6'}}>No armor collected yet. Defeat enemies to find armor pieces.</p>
+                    </div>
+                  )}
+                    </>
                   )}
                 </div>
                 
