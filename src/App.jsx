@@ -223,6 +223,43 @@ const GAME_CONSTANTS = {
     }
   },
   
+  // ACHIEVEMENTS SYSTEM
+  ACHIEVEMENTS: [
+    // STUDY
+    { id: 'first_card', name: 'First Steps', desc: 'Create your first flashcard', category: 'STUDY', rarity: 'COMMON', req: { type: 'cards_created', count: 1 }, reward: { xp: 10 } },
+    { id: 'deck_master', name: 'Deck Master', desc: 'Create 5 flashcard decks', category: 'STUDY', rarity: 'RARE', req: { type: 'decks_created', count: 5 }, reward: { xp: 50, maxSP: 5 } },
+    { id: 'perfect_recall', name: 'Perfect Recall', desc: 'Master 50 flashcards', category: 'STUDY', rarity: 'EPIC', req: { type: 'cards_mastered', count: 50 }, reward: { xp: 100, maxHP: 10 } },
+    // COMBAT
+    { id: 'first_blood', name: 'First Blood', desc: 'Win your first battle', category: 'COMBAT', rarity: 'COMMON', req: { type: 'battles_won', count: 1 }, reward: { xp: 10, weapon: 2 } },
+    { id: 'boss_slayer', name: 'Elite Slayer', desc: 'Defeat an elite boss', category: 'COMBAT', rarity: 'RARE', req: { type: 'elite_bosses_defeated', count: 1 }, reward: { xp: 50, armor: 5 } },
+    { id: 'gauntlet_champion', name: 'Gauntlet Champion', desc: 'Complete the Gauntlet trial', category: 'COMBAT', rarity: 'EPIC', req: { type: 'gauntlet_completed', count: 1 }, reward: { xp: 100, weapon: 5, armor: 5 } },
+    // PERSISTENCE
+    { id: 'committed', name: 'Committed', desc: 'Complete 3 days without skipping', category: 'PERSISTENCE', rarity: 'COMMON', req: { type: 'streak_days', count: 3 }, reward: { xp: 25 }, progress: true },
+    { id: 'unbroken_spirit', name: 'Unbroken Spirit', desc: '7-day streak without skipping', category: 'PERSISTENCE', rarity: 'RARE', req: { type: 'streak_days', count: 7 }, reward: { xp: 75, maxHP: 10, maxSP: 10 }, progress: true },
+    { id: 'iron_will', name: 'Iron Will', desc: '14-day streak without skipping', category: 'PERSISTENCE', rarity: 'EPIC', req: { type: 'streak_days', count: 14 }, reward: { xp: 150, weapon: 10, armor: 10 }, progress: true },
+    { id: 'curse_breaker', name: 'Curse Breaker', desc: 'Complete a full 7-day cycle', category: 'PERSISTENCE', rarity: 'RARE', req: { type: 'cycles_completed', count: 1 }, reward: { xp: 100 }, progress: true },
+    // MASTERY
+    { id: 'rising_hero', name: 'Rising Hero', desc: 'Reach level 5', category: 'MASTERY', rarity: 'COMMON', req: { type: 'level_reached', count: 5 }, reward: { xp: 50 } },
+    { id: 'veteran_warrior', name: 'Veteran Warrior', desc: 'Reach level 10', category: 'MASTERY', rarity: 'EPIC', req: { type: 'level_reached', count: 10 }, reward: { xp: 200, maxHP: 20, maxSP: 20 } },
+    { id: 'perfect_day', name: 'Perfect Day', desc: 'Complete every task in a single day', category: 'MASTERY', rarity: 'RARE', req: { type: 'perfect_days', count: 1 }, reward: { xp: 75 }, progress: true },
+    { id: 'perfectionist', name: 'Perfectionist', desc: 'Achieve 5 perfect days', category: 'MASTERY', rarity: 'LEGENDARY', req: { type: 'perfect_days', count: 5 }, reward: { xp: 300, weapon: 15, armor: 15 }, progress: true }
+  ],
+  
+  ACHIEVEMENT_CATEGORIES: {
+    ALL: { name: 'All Trials' },
+    STUDY: { name: 'Study' },
+    COMBAT: { name: 'Combat' },
+    PERSISTENCE: { name: 'Persistence' },
+    MASTERY: { name: 'Mastery' }
+  },
+  
+  RARITY_COLORS: {
+    COMMON: '#9CA3AF',
+    RARE: '#60A5FA',
+    EPIC: '#A78BFA',
+    LEGENDARY: '#FBBF24'
+  },
+  
   BOSS_DIALOGUE: {
     DAY_1: {
       START: "Welcome to Week 1. Again. And again. And again.",
@@ -471,6 +508,23 @@ const [quizQuestions, setQuizQuestions] = useState([]);
 const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
 const [quizScore, setQuizScore] = useState(0);
 const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  // Achievement system state
+  const [achievementStats, setAchievementStats] = useState({
+    cards_created: 0,
+    decks_created: 0,
+    cards_mastered: 0,
+    battles_won: 0,
+    elite_bosses_defeated: 0,
+    gauntlet_completed: 0,
+    streak_days: 0,
+    cycles_completed: 0,
+    level_reached: 1,
+    perfect_days: 0
+  });
+  const [unlockedAchievements, setUnlockedAchievements] = useState([]);
+  const [showAchievementNotification, setShowAchievementNotification] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
 const [showQuizResults, setShowQuizResults] = useState(false);
 const [wrongCardIndices, setWrongCardIndices] = useState([]);
 const [isRetakeQuiz, setIsRetakeQuiz] = useState(false);
@@ -658,6 +712,48 @@ const getDateKey = useCallback((date) => {
   const addLog = useCallback((msg) => {
     setLog(prev => [...prev, msg].slice(-GAME_CONSTANTS.LOG_MAX_ENTRIES));
   }, []);
+  
+  // Achievement system functions
+  const checkAchievements = useCallback((stats = achievementStats) => {
+    GAME_CONSTANTS.ACHIEVEMENTS.forEach(achievement => {
+      // Skip if already unlocked
+      if (unlockedAchievements.includes(achievement.id)) return;
+      
+      // Check if requirement is met
+      const statValue = stats[achievement.req.type] || 0;
+      if (statValue >= achievement.req.count) {
+        unlockAchievement(achievement);
+      }
+    });
+  }, [achievementStats, unlockedAchievements]);
+  
+  const unlockAchievement = useCallback((achievement) => {
+    // Add to unlocked list
+    setUnlockedAchievements(prev => [...prev, achievement.id]);
+    
+    // Grant rewards
+    const reward = achievement.reward;
+    if (reward.xp) setXp(prev => prev + reward.xp);
+    if (reward.maxHP) setHp(prev => prev + reward.maxHP); // Directly increase HP
+    if (reward.maxSP) setStamina(prev => prev + reward.maxSP); // Directly increase stamina
+    if (reward.weapon) setWeapon(prev => prev + reward.weapon);
+    if (reward.armor) setArmor(prev => prev + reward.armor);
+    
+    // Show notification
+    setShowAchievementNotification(achievement);
+    setTimeout(() => setShowAchievementNotification(null), 5000);
+    
+    // Log unlock
+    addLog(`🏆 Achievement Unlocked: ${achievement.name}!`);
+  }, [addLog]);
+  
+  const updateAchievementStat = useCallback((type, increment = 1) => {
+    setAchievementStats(prev => {
+      const newStats = { ...prev, [type]: prev[type] + increment };
+      checkAchievements(newStats);
+      return newStats;
+    });
+  }, [checkAchievements]);
   
   const generateQuiz = useCallback((deckIndex, isRetake = false) => {
     const deck = flashcardDecks[deckIndex];
@@ -872,6 +968,12 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           
           // Advance day
           setCurrentDay(nextDay);
+          
+          // Track cycle completion (every 7 days)
+          if (currentDay === 7) {
+            updateAchievementStat('cycles_completed');
+          }
+          
           setHero(prev => ({
             ...prev,
             day: nextDay,
@@ -947,6 +1049,15 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     }
     return () => clearInterval(int);
   }, [running, timerEndTime, activeTask, tasks, addLog]);
+  
+  // Track level achievements
+  useEffect(() => {
+    const currentLevel = Math.floor(xp / GAME_CONSTANTS.XP_PER_LEVEL) + 1;
+    if (currentLevel > achievementStats.level_reached) {
+      setAchievementStats(prev => ({ ...prev, level_reached: currentLevel }));
+      checkAchievements({ ...achievementStats, level_reached: currentLevel });
+    }
+  }, [xp, achievementStats, checkAchievements]);
 
   useEffect(() => {
   let interval;
@@ -1014,6 +1125,9 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     const newSkipCount = skipCount + 1;
     setSkipCount(newSkipCount);
     setConsecutiveDays(0);
+    
+    // Reset streak when skipping
+    setAchievementStats(prev => ({ ...prev, streak_days: 0 }));
     
     const penaltyIndex = Math.min(newSkipCount - 1, GAME_CONSTANTS.SKIP_PENALTIES.length - 1);
     const penalty = GAME_CONSTANTS.SKIP_PENALTIES[penaltyIndex];
@@ -1100,6 +1214,10 @@ if (tasks.length === 0) {
     }
     
     setHasStarted(true);
+    setIsDayActive(true);
+    
+    // Track streak (day started without skipping)
+    updateAchievementStat('streak_days');
   };
 
 // END OF PART 1 - Continue with part 2
@@ -2797,6 +2915,8 @@ setMiniBossCount(0);
       // Gauntlet defeated - lock until next milestone
       setGauntletUnlocked(false);
       setGauntletMilestone(m => m + 1000);
+      updateAchievementStat('gauntlet_completed');
+      updateAchievementStat('battles_won');
       addLog(`The Gauntlet has fallen! Next trial at ${gauntletMilestone + 1000} XP.`);
       
       // Close battle but keep all progress
@@ -2809,9 +2929,13 @@ setMiniBossCount(0);
       setTimeout(() => setActiveTab('home'), 1000);
     } else if (!isFinalBoss && bossHp <= 0) {
       // Elite boss defeated - just close screen (day advances at midnight)
+      updateAchievementStat('elite_bosses_defeated');
+      updateAchievementStat('battles_won');
+      
       const totalTasks = tasks.length;
       const completedTasks = tasks.filter(t => t.done).length;
       if (totalTasks > 0 && completedTasks === totalTasks) {
+        updateAchievementStat('perfect_days');
         setStudyStats(prev => ({ ...prev, perfectDays: prev.perfectDays + 1 }));
         setXp(x => x + GAME_CONSTANTS.PERFECT_DAY_BONUS);
         addLog(`A perfect day of dedication! +${GAME_CONSTANTS.PERFECT_DAY_BONUS} XP`);
@@ -4242,181 +4366,225 @@ setMiniBossCount(0);
 )}
 
           {activeTab === 'progress' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
-              {/* Section header with decorative divider */}
-              <div className="text-center mb-4">
-                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>CHRONICLES OF THE CURSED</h2>
-                <div className="flex items-center justify-center gap-2">
-                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                  <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: COLORS.gold}}>
+              {/* Header */}
+              <div className="text-center mb-6">
+                <h2 className="text-4xl font-bold mb-2" style={{color: COLORS.gold, letterSpacing: '0.15em'}}>TRIALS CONQUERED</h2>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+                  <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+                  <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
                 </div>
-              </div>
-              <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Your struggle against the eternal darkness..."</p>
-              
-              {/* Current Cycle Status */}
-              <div className="mb-6 bg-gradient-to-r from-red-900 to-gray-900 rounded-xl p-6 border-2 border-red-600">
-                <h3 className="text-xl font-bold text-red-300 mb-4 text-center">Current Cycle</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Day</p>
-                    <p className="text-3xl font-bold text-red-400">{currentDay}/7</p>
-                    <p className="text-xs text-gray-500">{GAME_CONSTANTS.DAY_NAMES[(currentDay - 1) % 7].name}</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Curse Level</p>
-                    <p className="text-3xl font-bold text-purple-400">{curseLevel}</p>
-                    <p className="text-xs text-gray-500">{curseLevel === 0 ? 'Pure' : curseLevel === 1 ? 'Cursed' : curseLevel === 2 ? 'Deep Curse' : 'Condemned'}</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Skip Count</p>
-                    <p className="text-3xl font-bold text-yellow-400">{skipCount}</p>
-                    <p className="text-xs text-gray-500">{skipCount >= 3 ? 'DANGER' : 'of 4 max'}</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Trials Today</p>
-                    <p className="text-3xl font-bold text-cyan-400">{tasks.filter(t => t.done).length}/{tasks.length}</p>
-                    <p className="text-xs text-gray-500">{tasks.length > 0 ? `${Math.floor((tasks.filter(t => t.done).length / tasks.length) * 100)}%` : 'None'}</p>
+                <p className="text-xl" style={{color: COLORS.gold}}>{unlockedAchievements.length} / {GAME_CONSTANTS.ACHIEVEMENTS.length}</p>
+                
+                {/* Progress bar */}
+                <div className="mt-4 mx-auto max-w-md">
+                  <div className="h-3 rounded-full overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.4)'}}>
+                    <div 
+                      className="h-3 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${(unlockedAchievements.length / GAME_CONSTANTS.ACHIEVEMENTS.length) * 100}%`,
+                        background: 'linear-gradient(to right, #B8860B, #D4AF37, #FFD700)'
+                      }}
+                    ></div>
                   </div>
                 </div>
               </div>
               
-              {/* Combat Power */}
-              <div className="mb-6 bg-gradient-to-r from-blue-900 to-purple-900 rounded-xl p-6 border-2 border-blue-600">
-                <h3 className="text-xl font-bold text-blue-300 mb-4 text-center">Combat Power</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Health</p>
-                    <p className="text-3xl font-bold text-red-400">{hp}/{getMaxHp()}</p>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                      <div className="bg-red-500 h-2 rounded-full" style={{width: `${(hp / getMaxHp()) * 100}%`}}></div>
-                    </div>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Stamina</p>
-                    <p className="text-3xl font-bold text-cyan-400">{stamina}/{getMaxStamina()}</p>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                      <div className="bg-cyan-500 h-2 rounded-full" style={{width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
-                    </div>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Attack</p>
-                    <p className="text-3xl font-bold text-orange-400">{GAME_CONSTANTS.BASE_ATTACK + (level * GAME_CONSTANTS.PLAYER_ATK_PER_DAY) + weapon}</p>
-                    <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_ATTACK} • Weapon: +{weapon}</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Defense</p>
-                    <p className="text-3xl font-bold text-green-400">{getBaseDefense() + armor}</p>
-                    <p className="text-xs text-gray-500">Base: {GAME_CONSTANTS.BASE_DEFENSE} • Armor: +{armor}</p>
-                  </div>
-                </div>
+              {/* Category tabs */}
+              <div className="flex justify-center gap-2 mb-6 flex-wrap">
+                {Object.entries(GAME_CONSTANTS.ACHIEVEMENT_CATEGORIES).map(([key, cat]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedCategory(key)}
+                    className="px-4 py-2 rounded-lg transition-all border-2 text-sm font-bold uppercase"
+                    style={{
+                      backgroundColor: selectedCategory === key ? 'rgba(212, 175, 55, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+                      borderColor: selectedCategory === key ? COLORS.gold : 'rgba(212, 175, 55, 0.3)',
+                      color: selectedCategory === key ? COLORS.gold : COLORS.silver
+                    }}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
               </div>
-              
-              {/* Progression */}
-              <div className="mb-6 bg-gradient-to-r from-yellow-900 to-orange-900 rounded-xl p-6 border-2 border-yellow-600">
-                <h3 className="text-xl font-bold text-yellow-300 mb-4 text-center">Progression</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Level</p>
-                    <p className="text-3xl font-bold text-yellow-400">{level}</p>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-2">
-                      <div className="bg-yellow-500 h-2 rounded-full" style={{width: `${(xp % GAME_CONSTANTS.XP_PER_LEVEL) / GAME_CONSTANTS.XP_PER_LEVEL * 100}%`}}></div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-1">{xp % GAME_CONSTANTS.XP_PER_LEVEL}/{GAME_CONSTANTS.XP_PER_LEVEL} XP</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Total XP</p>
-                    <p className="text-3xl font-bold text-purple-400">{xp}</p>
-                    <p className="text-xs text-gray-500">earned</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Essence</p>
-                    <p className="text-3xl font-bold text-purple-400">{essence}</p>
-                    <p className="text-xs text-gray-500">souls collected</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Legacy Stats */}
-              <div className="mb-6 bg-gradient-to-r from-green-900 to-teal-900 rounded-xl p-6 border-2 border-green-600">
-                <h3 className="text-xl font-bold text-green-300 mb-4 text-center">Legacy</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Liberated</p>
-                    <p className="text-3xl font-bold text-green-400">{heroes.length}</p>
-                    <p className="text-xs text-gray-500">broke the curse</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Consumed</p>
-                    <p className="text-3xl font-bold text-red-400">{graveyard.length}</p>
-                    <p className="text-xs text-gray-500">claimed by darkness</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Survival Rate</p>
-                    <p className="text-3xl font-bold text-yellow-400">
-                      {heroes.length + graveyard.length > 0 ? Math.floor((heroes.length / (heroes.length + graveyard.length)) * 100) : 0}%
-                    </p>
-                    <p className="text-xs text-gray-500">{heroes.length + graveyard.length} total cycles</p>
-                  </div>
-                  <div className="bg-black bg-opacity-40 rounded-lg p-4">
-                    <p className="text-sm text-gray-400">Current Streak</p>
-                    <p className="text-3xl font-bold text-orange-400">{consecutiveDays}</p>
-                    <p className="text-xs text-gray-500">days without skip</p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Achievements */}
-              <div className="bg-gradient-to-r from-purple-900 to-pink-900 rounded-xl p-6 border-2 border-purple-600">
-                <h3 className="text-xl font-bold text-purple-300 mb-4 text-center">Trials Conquered</h3>
-                <div className="space-y-3">
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.length > 0 ? 'bg-yellow-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Curse Breaker</p>
-                      <p className="text-xs text-gray-400">Complete a full 7-day cycle</p>
-                    </div>
-                    <span className="text-lg font-bold text-yellow-400">{heroes.length > 0 ? '✓' : '—'}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.some(h => h.skipCount === 0) ? 'bg-green-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Flawless Victory</p>
-                      <p className="text-xs text-gray-400">Complete a cycle with zero skips</p>
-                    </div>
-                    <span className="text-lg font-bold text-green-400">{heroes.some(h => h.skipCount === 0) ? '✓' : '—'}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${level >= 10 ? 'bg-purple-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Veteran Warrior</p>
-                      <p className="text-xs text-gray-400">Reach level 10</p>
-                    </div>
-                    <span className="text-lg font-bold text-purple-400">{level >= 10 ? '✓' : `${level}/10`}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${essence >= 500 ? 'bg-cyan-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Soul Collector</p>
-                      <p className="text-xs text-gray-400">Accumulate 500 essence</p>
-                    </div>
-                    <span className="text-lg font-bold text-cyan-400">{essence >= 500 ? '✓' : `${essence}/500`}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${heroes.length >= 3 ? 'bg-orange-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Legend Born</p>
-                      <p className="text-xs text-gray-400">Liberate 3 heroes from the curse</p>
-                    </div>
-                    <span className="text-lg font-bold text-orange-400">{heroes.length >= 3 ? '✓' : `${heroes.length}/3`}</span>
-                  </div>
-                  
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${consecutiveDays >= 7 ? 'bg-red-900 bg-opacity-50' : 'bg-gray-800 opacity-50'}`}>
-                    <div className="flex-1">
-                      <p className="font-bold text-white">Unbroken Spirit</p>
-                      <p className="text-xs text-gray-400">7-day streak without skipping</p>
-                    </div>
-                    <span className="text-lg font-bold text-red-400">{consecutiveDays >= 7 ? '✓' : `${consecutiveDays}/7`}</span>
-                  </div>
+              {/* Achievement Grid */}
+              <div className="max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {GAME_CONSTANTS.ACHIEVEMENTS
+                    .filter(ach => selectedCategory === 'ALL' || ach.category === selectedCategory)
+                    .map(achievement => {
+                      const isUnlocked = unlockedAchievements.includes(achievement.id);
+                      const statValue = achievementStats[achievement.req.type] || 0;
+                      const progress = Math.min(statValue / achievement.req.count, 1);
+                      const rarityColor = GAME_CONSTANTS.RARITY_COLORS[achievement.rarity];
+                      
+                      return (
+                        <div
+                          key={achievement.id}
+                          className="rounded-lg p-3 border-2 transition-all relative overflow-hidden"
+                          style={{
+                            background: isUnlocked 
+                              ? `linear-gradient(135deg, rgba(60, 10, 10, 0.9), rgba(80, 20, 20, 0.9), rgba(40, 0, 0, 0.9))`
+                              : 'linear-gradient(135deg, rgba(25, 25, 25, 0.8), rgba(35, 35, 35, 0.8), rgba(20, 20, 20, 0.8))',
+                            borderColor: isUnlocked ? rarityColor : 'rgba(100, 100, 100, 0.3)',
+                            borderWidth: '2px',
+                            borderStyle: 'double',
+                            opacity: isUnlocked ? 1 : 0.7,
+                            boxShadow: isUnlocked 
+                              ? `0 0 20px ${rarityColor}60, inset 0 0 30px rgba(0,0,0,0.5)` 
+                              : 'inset 0 0 20px rgba(0,0,0,0.4)'
+                          }}
+                        >
+                          {/* Decorative corner elements */}
+                          {isUnlocked && (
+                            <>
+                              <div style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                width: '30px',
+                                height: '30px',
+                                borderTop: `3px solid ${rarityColor}40`,
+                                borderLeft: `3px solid ${rarityColor}40`,
+                              }}></div>
+                              <div style={{
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                width: '30px',
+                                height: '30px',
+                                borderTop: `3px solid ${rarityColor}40`,
+                                borderRight: `3px solid ${rarityColor}40`,
+                              }}></div>
+                              <div style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                left: 0,
+                                width: '30px',
+                                height: '30px',
+                                borderBottom: `3px solid ${rarityColor}40`,
+                                borderLeft: `3px solid ${rarityColor}40`,
+                              }}></div>
+                              <div style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                right: 0,
+                                width: '30px',
+                                height: '30px',
+                                borderBottom: `3px solid ${rarityColor}40`,
+                                borderRight: `3px solid ${rarityColor}40`,
+                              }}></div>
+                            </>
+                          )}
+                          
+                          <div style={{position: 'relative', zIndex: 1}}>
+                            <div className="flex items-center justify-between mb-1.5">
+                              <h3 className="font-bold text-base flex-1" style={{
+                                color: isUnlocked ? COLORS.gold : COLORS.silver,
+                                textShadow: isUnlocked ? '0 0 8px rgba(212, 175, 55, 0.5)' : 'none',
+                                letterSpacing: '0.02em'
+                              }}>
+                                {achievement.name}
+                              </h3>
+                              <span 
+                                className="text-xs px-2 py-0.5 rounded uppercase font-bold ml-2"
+                                style={{
+                                  backgroundColor: `${rarityColor}30`,
+                                  color: rarityColor,
+                                  border: `1px solid ${rarityColor}`,
+                                  textShadow: `0 0 5px ${rarityColor}80`
+                                }}
+                              >
+                                {achievement.rarity}
+                              </span>
+                            </div>
+                            
+                            <p className="text-xs mb-2 italic" style={{
+                              color: isUnlocked ? '#C0C0C0' : '#888',
+                              lineHeight: '1.3'
+                            }}>
+                              {achievement.desc}
+                            </p>
+                            
+                            {/* Progress bar for incremental achievements */}
+                            {achievement.progress && !isUnlocked && (
+                              <div className="mb-2">
+                                <div className="h-1.5 rounded-full overflow-hidden" style={{
+                                  background: 'rgba(0, 0, 0, 0.6)',
+                                  border: '1px solid rgba(100, 100, 100, 0.3)'
+                                }}>
+                                  <div 
+                                    className="h-1.5 rounded-full transition-all"
+                                    style={{
+                                      width: `${progress * 100}%`,
+                                      background: `linear-gradient(to right, ${rarityColor}60, ${rarityColor})`,
+                                      boxShadow: `0 0 8px ${rarityColor}80`
+                                    }}
+                                  ></div>
+                                </div>
+                                <p className="text-xs mt-0.5" style={{
+                                  color: rarityColor,
+                                  fontWeight: 'bold'
+                                }}>
+                                  {statValue} / {achievement.req.count}
+                                </p>
+                              </div>
+                            )}
+                            
+                            {/* Rewards - compact display */}
+                            <div className="mt-2 pt-2" style={{
+                              borderTop: `1px solid ${isUnlocked ? 'rgba(212, 175, 55, 0.3)' : 'rgba(100, 100, 100, 0.2)'}`
+                            }}>
+                              <div className="flex items-center gap-1.5 flex-wrap text-xs font-bold" style={{
+                                color: isUnlocked ? COLORS.gold : '#666'
+                              }}>
+                                {achievement.reward.xp && (
+                                  <span className="px-1.5 py-0.5 rounded" style={{
+                                    background: 'rgba(0, 0, 0, 0.4)',
+                                    border: '1px solid rgba(100, 100, 100, 0.3)'
+                                  }}>
+                                    +{achievement.reward.xp} XP
+                                  </span>
+                                )}
+                                {achievement.reward.maxHP && (
+                                  <span className="px-1.5 py-0.5 rounded" style={{
+                                    background: 'rgba(139, 0, 0, 0.3)',
+                                    border: '1px solid rgba(220, 20, 60, 0.5)'
+                                  }}>
+                                    +{achievement.reward.maxHP} HP
+                                  </span>
+                                )}
+                                {achievement.reward.maxSP && (
+                                  <span className="px-1.5 py-0.5 rounded" style={{
+                                    background: 'rgba(0, 100, 200, 0.3)',
+                                    border: '1px solid rgba(100, 149, 237, 0.5)'
+                                  }}>
+                                    +{achievement.reward.maxSP} SP
+                                  </span>
+                                )}
+                                {achievement.reward.weapon && (
+                                  <span className="px-1.5 py-0.5 rounded" style={{
+                                    background: 'rgba(255, 140, 0, 0.3)',
+                                    border: '1px solid rgba(255, 140, 0, 0.5)'
+                                  }}>
+                                    +{achievement.reward.weapon} ATK
+                                  </span>
+                                )}
+                                {achievement.reward.armor && (
+                                  <span className="px-1.5 py-0.5 rounded" style={{
+                                    background: 'rgba(46, 139, 87, 0.3)',
+                                    border: '1px solid rgba(46, 139, 87, 0.5)'
+                                  }}>
+                                    +{achievement.reward.armor} DEF
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>
@@ -4908,6 +5076,7 @@ setMiniBossCount(0);
             if (newDeck.name.trim()) {
               setFlashcardDecks(prev => [...prev, { name: newDeck.name, cards: [] }]);
               addLog(`Created deck: ${newDeck.name}`);
+              updateAchievementStat('decks_created');
               setNewDeck({name: ''});
               setShowDeckModal(false);
             }
@@ -5025,6 +5194,7 @@ setMiniBossCount(0);
                   : deck
               ));
               addLog(`Added card to ${flashcardDecks[selectedDeck].name}`);
+              updateAchievementStat('cards_created');
               setNewCard({front: '', back: ''});
               setShowCardModal(false);
             }
@@ -5178,6 +5348,7 @@ setMiniBossCount(0);
                   : deck
               ));
               
+              updateAchievementStat('cards_mastered');
               setXp(x => x + 5);
               
               const newQueue = studyQueue.slice(1);
@@ -6614,6 +6785,39 @@ setMiniBossCount(0);
   </div>
 )}
         </div> {/* Close max-w-6xl container */}
+        
+        {/* Achievement Unlock Notification */}
+        {showAchievementNotification && (
+          <div className="fixed top-20 right-4 z-50 animate-bounce">
+            <div 
+              className="rounded-lg p-4 border-2 shadow-2xl max-w-sm"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95))',
+                borderColor: GAME_CONSTANTS.RARITY_COLORS[showAchievementNotification.rarity],
+                boxShadow: `0 0 30px ${GAME_CONSTANTS.RARITY_COLORS[showAchievementNotification.rarity]}80`
+              }}
+            >
+              <div className="mb-2">
+                <p className="text-xs uppercase font-bold mb-1" style={{color: GAME_CONSTANTS.RARITY_COLORS[showAchievementNotification.rarity]}}>
+                  {showAchievementNotification.rarity} ACHIEVEMENT UNLOCKED
+                </p>
+                <h3 className="font-bold text-xl mb-1" style={{color: COLORS.gold}}>
+                  {showAchievementNotification.name}
+                </h3>
+                <p className="text-sm mb-2" style={{color: COLORS.silver}}>
+                  {showAchievementNotification.desc}
+                </p>
+              </div>
+              <div className="text-xs font-bold" style={{color: COLORS.gold}}>
+                Rewards: {showAchievementNotification.reward.xp && `+${showAchievementNotification.reward.xp} XP `}
+                {showAchievementNotification.reward.maxHP && `+${showAchievementNotification.reward.maxHP} HP `}
+                {showAchievementNotification.reward.maxSP && `+${showAchievementNotification.reward.maxSP} SP `}
+                {showAchievementNotification.reward.weapon && `+${showAchievementNotification.reward.weapon} Weapon `}
+                {showAchievementNotification.reward.armor && `+${showAchievementNotification.reward.armor} Armor `}
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="flex justify-center mt-8 pb-6">
           <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
