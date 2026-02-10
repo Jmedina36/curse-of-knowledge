@@ -3120,7 +3120,7 @@ setMiniBossCount(0);
               
               {/* Resources */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>⚡ RESOURCES</h4>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>RESOURCES</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Full Heal</button>
                   <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
@@ -3131,7 +3131,7 @@ setMiniBossCount(0);
 
               {/* Combat */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>⚔️ COMBAT</h4>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-3 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
                   <button onClick={() => { setBattleType('elite'); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
@@ -3156,7 +3156,7 @@ setMiniBossCount(0);
 
               {/* Day & Curse */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>🌙 DAY & CURSE</h4>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DAY & CURSE</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <button onClick={() => { setCurrentDay(d => d + 1); addLog(`Debug: Advanced to Day ${currentDay + 1}`); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>+1 Day</button>
                   <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Clear Curse</button>
@@ -3167,7 +3167,7 @@ setMiniBossCount(0);
 
               {/* Tasks */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>📋 TASKS</h4>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>TASKS</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   <button onClick={() => { 
                     setTasks(t => [...t, { id: Date.now(), title: 'Test Task', priority: 'routine', done: false, overdue: false }]); 
@@ -3194,7 +3194,7 @@ setMiniBossCount(0);
 
               {/* Data Management */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>🗑️ DATA</h4>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DATA</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                   <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
                   <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
@@ -3563,18 +3563,6 @@ setMiniBossCount(0);
             </div>
               {!hasStarted ? (
                 <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.gold, background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}}>
-                  {/* Character Header */}
-                  <div className="mb-6">
-                    {/* Player Name */}
-                    <h2 className="text-3xl mb-2 tracking-wide" style={{color: '#F5F5DC', textShadow: '0 0 15px rgba(245, 245, 220, 0.4)', fontWeight: '400'}}>
-                      {hero.name}
-                    </h2>
-                    
-                    {/* Class and Level */}
-                    <p className="text-base mb-4" style={{color: COLORS.silver}}>
-                      Novice {hero.class.name} — Level {level}
-                    </p>
-                  </div>
                   
                   {/* Date Section */}
                   <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.gold}}>
@@ -3867,12 +3855,9 @@ setMiniBossCount(0);
       }`}
     >
       <div className="flex-1 flex items-start gap-2">
-        {item.priority === 'important' && !item.completed && (
-          <span className="text-xl">⭐</span>
-        )}
         <div>
           <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
-            {item.completed && '✓ '}{item.title}
+            {item.title}
           </p>
           {item.priority === 'important' && (
             <p className="text-xs text-yellow-400 mt-1">IMPORTANT • 1.25x XP</p>
@@ -3910,7 +3895,7 @@ setMiniBossCount(0);
                 return updated;
               });
               
-              addLog(`🗑️ Deleted "${item.title}" from ${day} plan and future calendar dates`);
+              addLog(`Deleted "${item.title}" from ${day} plan and future calendar dates`);
             }
           }}
           className="text-red-400 hover:text-red-300"
@@ -4697,8 +4682,8 @@ setMiniBossCount(0);
           )}
 
           {showCustomizeModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50" onClick={() => setShowCustomizeModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2" style={{background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCustomizeModal(false)}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white absolute -top-2 right-0">
           <X size={24}/>
@@ -5654,7 +5639,7 @@ setMiniBossCount(0);
               })); 
               setNewPlanItem({ title: '', priority: 'routine' }); 
               setShowPlanModal(false); 
-              addLog(`📅 Added "${newPlanItem.title}" to ${selectedDay}`); 
+              addLog(`Added "${newPlanItem.title}" to ${selectedDay}`); 
             } 
           }}
           disabled={!newPlanItem.title} 
@@ -5826,9 +5811,6 @@ setMiniBossCount(0);
                     : 'bg-gray-800'
                 }`}
               >
-                {task.priority === 'important' && !task.done && (
-                  <span className="text-xl">⭐</span>
-                )}
                 <input 
                   type="checkbox" 
                   checked={task.done} 
