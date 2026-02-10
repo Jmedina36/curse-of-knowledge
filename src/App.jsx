@@ -4683,8 +4683,24 @@ setMiniBossCount(0);
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCustomizeModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
-        <button onClick={() => setShowCustomizeModal(false)} className="text-gray-400 hover:text-white absolute -top-2 right-0">
-          <X size={24}/>
+        <button 
+          onClick={() => setShowCustomizeModal(false)} 
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
         </button>
         <div className="text-center">
           <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>CUSTOMIZE YOUR HERO</h3>
@@ -4789,18 +4805,35 @@ setMiniBossCount(0);
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
-      <button onClick={() => setShowDeckModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
-        <X size={24}/>
-      </button>
-      
-      <div className="text-center mb-6">
-        <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>CREATE DECK</h2>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
-          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => setShowDeckModal(false)} 
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>CREATE DECK</h2>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Forge knowledge in the fires of determination..."</p>
         </div>
-        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Forge knowledge in the fires of determination..."</p>
       </div>
       
       <input 
@@ -5381,16 +5414,35 @@ setMiniBossCount(0);
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
-      <button onClick={() => setShowModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
-      
-      <div className="text-center mb-6">
-        <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ACCEPT NEW TRIAL</h3>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-          <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => setShowModal(false)} 
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ACCEPT NEW TRIAL</h3>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"The darkness demands sacrifice..."</p>
         </div>
-        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"The darkness demands sacrifice..."</p>
       </div>
       
       <input 
@@ -5557,7 +5609,25 @@ setMiniBossCount(0);
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowPlanModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2" style={{background: 'linear-gradient(to bottom, rgba(10, 40, 60, 0.95), rgba(0, 30, 50, 0.95), rgba(0, 20, 40, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
-        <button onClick={() => setShowPlanModal(false)} className="absolute -top-2 right-0 text-gray-400 hover:text-white"><X size={24}/></button>
+        <button 
+          onClick={() => setShowPlanModal(false)} 
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
         <div className="text-center">
           <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>PLAN FOR {selectedDay.toUpperCase()}</h3>
           <div className="flex items-center justify-center gap-2">
@@ -5683,14 +5753,21 @@ setMiniBossCount(0);
           <X size={20}/>
         </button>
         <div className="text-center">
-          <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>
+          <div className="text-2xl font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>
   {(() => {
     const [year, month, day] = selectedDate.split('-').map(Number);
     const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString('default', { weekday: 'long', month: 'long', day: 'numeric' }).toUpperCase();
+    const weekday = date.toLocaleDateString('default', { weekday: 'long' }).toUpperCase();
+    const monthDay = date.toLocaleDateString('default', { month: 'long', day: 'numeric' }).toUpperCase();
+    return (
+      <>
+        <div>{weekday}</div>
+        <div className="text-xl mt-1">{monthDay}</div>
+      </>
+    );
   })()}
-</h3>
-          <div className="flex items-center justify-center gap-2">
+</div>
+          <div className="flex items-center justify-center gap-2 mt-2">
             <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(104, 211, 145, 0.3))'}}></div>
             <span style={{color: 'rgba(104, 211, 145, 0.4)', fontSize: '8px'}}>◆</span>
             <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(104, 211, 145, 0.3))'}}></div>
