@@ -3055,7 +3055,7 @@ setMiniBossCount(0);
                 <button 
                   key={t.id} 
                   onClick={() => setActiveTab(t.id)} 
-                  className="flex flex-col items-center gap-2 px-6 py-3 rounded-lg transition-all border-2"
+                  className="flex flex-col items-center gap-2 px-8 py-3 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: activeTab === t.id ? 'rgba(184, 134, 11, 0.3)' : 'transparent',
                     borderColor: activeTab === t.id ? '#D4AF37' : 'transparent',
@@ -3121,10 +3121,10 @@ setMiniBossCount(0);
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>RESOURCES</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Full Heal</button>
-                  <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
-                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
-                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
+                  <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Full Heal</button>
+                  <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
+                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
+                  <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
                 </div>
               </div>
 
@@ -3132,8 +3132,8 @@ setMiniBossCount(0);
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-3 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
-                  <button onClick={() => { setBattleType('elite'); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
+                  <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-4 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
+                  <button onClick={() => { setBattleType('elite'); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
                   <button onClick={() => {
                     setBattleType('final');
                     const bossHealth = 300;
@@ -3149,7 +3149,7 @@ setMiniBossCount(0);
                     setCanFlee(false);
                     setVictoryLoot([]);
                     addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
-                  }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Final Boss</button>
+                  }} className="bg-purple-900 hover:bg-purple-800 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Final Boss</button>
                 </div>
               </div>
 
@@ -3157,10 +3157,10 @@ setMiniBossCount(0);
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DAY & CURSE</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setCurrentDay(d => d + 1); addLog(`Debug: Advanced to Day ${currentDay + 1}`); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>+1 Day</button>
-                  <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Clear Curse</button>
-                  <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Curse Lvl 1</button>
-                  <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Curse Lvl 3</button>
+                  <button onClick={() => { setCurrentDay(d => d + 1); addLog(`Debug: Advanced to Day ${currentDay + 1}`); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>+1 Day</button>
+                  <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Clear Curse</button>
+                  <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Curse Lvl 1</button>
+                  <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED'); }} className="bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Curse Lvl 3</button>
                 </div>
               </div>
 
@@ -3171,23 +3171,23 @@ setMiniBossCount(0);
                   <button onClick={() => { 
                     setTasks(t => [...t, { id: Date.now(), title: 'Test Task', priority: 'routine', done: false, overdue: false }]); 
                     addLog('Debug: Added test task'); 
-                  }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>+Test Task</button>
+                  }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>+Test Task</button>
                   <button onClick={() => { 
                     setTasks(t => [...t, { id: Date.now(), title: 'Important Task', priority: 'important', done: false, overdue: false }]); 
                     addLog('Debug: Added important task'); 
-                  }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+Important Task</button>
+                  }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+Important Task</button>
                   <button onClick={() => { 
                     setTasks(t => t.map(task => ({ ...task, overdue: true }))); 
                     addLog('Debug: All tasks now overdue'); 
-                  }} className="bg-red-800 hover:bg-red-700 px-3 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Mark All Overdue</button>
+                  }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Mark All Overdue</button>
                   <button onClick={() => { 
                     setTasks(t => t.map(task => ({ ...task, done: true }))); 
                     addLog('Debug: Completed all tasks'); 
-                  }} className="bg-green-800 hover:bg-green-700 px-3 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Complete All</button>
+                  }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Complete All</button>
                   <button onClick={() => { 
                     setTasks([]); 
                     addLog('Debug: Tasks cleared'); 
-                  }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Tasks</button>
+                  }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Tasks</button>
                 </div>
               </div>
 
@@ -3195,9 +3195,9 @@ setMiniBossCount(0);
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DATA</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
-                  <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
-                  <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
+                  <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
+                  <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
+                  <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
                 </div>
               </div>
 
@@ -3244,7 +3244,7 @@ setMiniBossCount(0);
                     setActiveTab('quest');
                   }
                 }}
-                className="w-full bg-red-900 hover:bg-red-800 px-4 py-3 rounded text-sm font-bold transition-all border-2 border-red-600"
+                className="w-full bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-sm font-bold transition-all border-2 border-red-600"
                 style={{color: '#F5F5DC', letterSpacing: '0.1em'}}
               >
                 🔄 FULL RESET
@@ -3296,7 +3296,7 @@ setMiniBossCount(0);
                     </div>
                     
                     {/* HP and Stamina side-by-side */}
-                    <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className="grid grid-cols-2 gap-2 mb-4">
                       {/* HP Bar */}
                       <div className="rounded-lg p-2" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(139, 0, 0, 0.3)'}}>
                         <div className="flex justify-between items-center mb-1">
@@ -3336,7 +3336,7 @@ setMiniBossCount(0);
                     <div className="flex justify-center">
                       <button
                         onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
-                        className="px-4 py-1 rounded transition-all border-2 hover:scale-105"
+                        className="px-3 py-1 rounded transition-all border-2 hover:scale-105"
                         style={{
                           background: 'rgba(0, 0, 0, 0.5)',
                           borderColor: 'rgba(212, 175, 55, 0.4)',
@@ -3439,7 +3439,7 @@ setMiniBossCount(0);
                 </div>
                 
                 {/* Combat Stats Header */}
-                <div className="flex items-center justify-center gap-3 mb-3">
+                <div className="flex items-center justify-center gap-3 mb-4">
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                   <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Combat Stats</p>
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
@@ -3448,7 +3448,7 @@ setMiniBossCount(0);
                 {/* Combat stats 2x2 grid */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {/* HP */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
                     <div className="flex justify-center mb-1">
                       <HeartPulse size={20} style={{color: '#FF6B6B'}}/>
                     </div>
@@ -3459,7 +3459,7 @@ setMiniBossCount(0);
                   </div>
                   
                   {/* Stamina */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
                     <div className="flex justify-center mb-1">
                       <Sparkles size={20} style={{color: '#3B82F6'}}/>
                     </div>
@@ -3470,7 +3470,7 @@ setMiniBossCount(0);
                   </div>
                   
                   {/* Attack */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
                     <div className="flex justify-center mb-1">
                       <Swords size={20} style={{color: '#F59E0B'}}/>
                     </div>
@@ -3479,7 +3479,7 @@ setMiniBossCount(0);
                   </div>
                   
                   {/* Defense */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
                     <div className="flex justify-center mb-1">
                       <ShieldCheck size={20} style={{color: '#F5F5DC'}}/>
                     </div>
@@ -3560,7 +3560,7 @@ setMiniBossCount(0);
                 <div className="flex justify-center mt-4">
                   <button
                     onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
-                    className="px-4 py-1 rounded transition-all border-2 hover:scale-105"
+                    className="px-3 py-1 rounded transition-all border-2 hover:scale-105"
                     style={{
                       background: 'rgba(0, 0, 0, 0.5)',
                       borderColor: 'rgba(212, 175, 55, 0.4)',
@@ -3587,14 +3587,28 @@ setMiniBossCount(0);
                   <p className="text-sm italic mb-4" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
                   <p className="text-sm text-gray-400 italic mb-4">"{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"</p>
                   <p className="mb-4 text-sm text-gray-400">Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
-                  <button onClick={start} className="px-8 py-3 rounded-lg font-bold text-xl transition-all shadow-lg" style={{backgroundColor: COLORS.gold, color: COLORS.obsidian.base}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FFD700'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.gold}>START DAY</button>
+                  <button 
+                    onClick={start} 
+                    className="px-8 py-3 rounded-lg font-bold text-xl transition-all shadow-lg" 
+                    style={{backgroundColor: COLORS.gold, color: COLORS.obsidian.base}} 
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = '#FFD700';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 6px 16px rgba(212, 175, 55, 0.5)';
+                    }} 
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = COLORS.gold;
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '';
+                    }}
+                  >START DAY</button>
                 </div>
               ) : (
                 <>
                   <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
                     {/* Section header with decorative divider */}
                     <div className="text-center mb-4">
-                      <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
+                      <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
                       <div className="flex items-center justify-center gap-2">
                         <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                         <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -3604,10 +3618,38 @@ setMiniBossCount(0);
                     <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
                     
                     <div className="flex gap-3 justify-center mb-6">
-                      <button onClick={() => setShowImportModal(true)} className="flex items-center gap-2 px-6 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)'}>
+                      <button 
+                        onClick={() => setShowImportModal(true)} 
+                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" 
+                        style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} 
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(120, 53, 15, 0.4)';
+                        }} 
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '';
+                        }}
+                      >
                         <Calendar size={18}/>Import from Planner
                       </button>
-                      <button onClick={() => setShowModal(true)} className="flex items-center gap-2 px-6 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" style={{backgroundColor: 'rgba(139, 0, 0, 0.6)', borderColor: '#8B0000', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.6)'}>
+                      <button 
+                        onClick={() => setShowModal(true)} 
+                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" 
+                        style={{backgroundColor: 'rgba(139, 0, 0, 0.6)', borderColor: '#8B0000', color: '#F5F5DC'}} 
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.8)';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.4)';
+                        }} 
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.6)';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '';
+                        }}
+                      >
                         <Plus size={18}/>Accept Trial
                       </button>
                     </div>
@@ -3666,7 +3708,9 @@ setMiniBossCount(0);
       : undefined,
     boxShadow: t.priority === 'important' && !t.done && !t.overdue
       ? '0 0 20px rgba(234, 179, 8, 0.6)'
-      : undefined
+      : t.done
+        ? '0 1px 3px rgba(0, 0, 0, 0.1)'
+        : '0 2px 4px rgba(0, 0, 0, 0.2)'
   }}>
     {/* OVERDUE watermark - centered from left edge to Focus button */}
     {t.overdue && !t.done && (
@@ -3720,7 +3764,7 @@ setMiniBossCount(0);
           </button>
           <button 
             onClick={() => complete(t.id)} 
-            className="px-4 py-1 rounded font-bold transition-all flex items-center gap-1 border-2" style={{backgroundColor: COLORS.emerald.base, borderColor: COLORS.emerald.border, color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.hover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.base}
+            className="px-3 py-1 rounded font-bold transition-all flex items-center gap-1 border-2" style={{backgroundColor: COLORS.emerald.base, borderColor: COLORS.emerald.border, color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.hover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.base}
           >
             Complete
           </button>
@@ -3768,7 +3812,7 @@ setMiniBossCount(0);
                   
                   <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
                     {/* Section header with decorative divider */}
-                    <div className="text-center mb-3">
+                    <div className="text-center mb-4">
                       <h3 className="text-lg font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>CHRONICLE OF EVENTS</h3>
                       <div className="flex items-center justify-center gap-2">
                         <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
@@ -3787,7 +3831,7 @@ setMiniBossCount(0);
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
-                <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
+                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
                 <div className="flex items-center justify-center gap-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -3800,7 +3844,7 @@ setMiniBossCount(0);
               <div className="flex gap-2 justify-center mb-6">
                 <button 
                   onClick={() => setPlannerSubTab('weekly')}
-                  className="px-6 py-2 rounded-lg transition-all border-2"
+                  className="px-4 py-2 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: plannerSubTab === 'weekly' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
                     borderColor: plannerSubTab === 'weekly' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
@@ -3811,7 +3855,7 @@ setMiniBossCount(0);
                 </button>
                 <button 
                   onClick={() => setPlannerSubTab('calendar')}
-                  className="px-6 py-2 rounded-lg transition-all border-2"
+                  className="px-4 py-2 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: plannerSubTab === 'calendar' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
                     borderColor: plannerSubTab === 'calendar' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
@@ -3828,7 +3872,7 @@ setMiniBossCount(0);
               <div className="grid gap-4">
                 {Object.keys(weeklyPlan).map(day => (
                   <div key={day} className="rounded-lg p-6 border-2" style={{backgroundColor: 'rgba(15, 23, 42, 0.8)', borderColor: 'rgba(30, 41, 59, 0.8)'}}>
-                    <div className="flex justify-between items-center mb-3">
+                    <div className="flex justify-between items-center mb-4">
                       <div className="flex-1 text-center">
                         <h3 className="text-xl font-bold uppercase mb-1" style={{color: '#D4AF37'}}>{day}</h3>
                         <p className="text-xs mb-2">
@@ -3880,7 +3924,9 @@ setMiniBossCount(0);
         overflow: 'hidden',
         boxShadow: item.priority === 'important' && !item.completed
           ? '0 0 20px rgba(234, 179, 8, 0.6)'
-          : undefined
+          : item.completed
+            ? '0 1px 3px rgba(0, 0, 0, 0.1)'
+            : '0 2px 4px rgba(0, 0, 0, 0.2)'
       }}
     >
       {/* COMPLETED watermark - centered horizontally */}
@@ -3937,11 +3983,11 @@ setMiniBossCount(0);
               {plannerSubTab === 'calendar' && (
               <div>
               <div className="flex justify-between items-center mb-6">
-                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-6 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
+                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-4 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
                   ← PREV
                 </button>
                 <h3 className="text-2xl font-bold uppercase tracking-wider" style={{color: '#F5F5DC'}}>{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }).toUpperCase()} {currentYear}</h3>
-                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-6 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
+                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-4 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
                   NEXT →
                 </button>
               </div>
@@ -3977,7 +4023,13 @@ setMiniBossCount(0);
                           key={day} 
                           onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} 
                           className="aspect-square rounded-lg p-2 transition-all hover:scale-105 relative border-2 flex flex-col items-center justify-center"
-                          style={{backgroundColor: bgColor, borderColor: borderColor}}
+                          style={{
+                            backgroundColor: bgColor, 
+                            borderColor: borderColor,
+                            boxShadow: isToday 
+                              ? '0 4px 6px rgba(234, 179, 8, 0.3)' 
+                              : '0 1px 3px rgba(0, 0, 0, 0.15)'
+                          }}
                           onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                           onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                         >
@@ -4011,7 +4063,7 @@ setMiniBossCount(0);
     borderColor: 'rgba(184, 134, 11, 0.6)'
   }}>
     <div className="text-center mb-4">
-      <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>KNOWLEDGE FORGE</h2>
+      <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>KNOWLEDGE FORGE</h2>
       <div className="flex items-center justify-center gap-2">
         <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
         <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -4193,7 +4245,7 @@ setMiniBossCount(0);
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
-                <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>CHRONICLES OF THE CURSED</h2>
+                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>CHRONICLES OF THE CURSED</h2>
                 <div className="flex items-center justify-center gap-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -4374,7 +4426,7 @@ setMiniBossCount(0);
             <div className="space-y-6">
               {/* Main Page Header */}
               <div className="text-center mb-6">
-                <h2 className="text-4xl font-bold mb-3" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>HALL OF LEGENDS</h2>
+                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>HALL OF LEGENDS</h2>
                 <div className="flex items-center justify-center gap-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -4899,18 +4951,35 @@ setMiniBossCount(0);
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
-      <button onClick={() => setShowCardModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
-        <X size={24}/>
-      </button>
-      
-      <div className="text-center mb-6">
-        <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ADD CARD</h2>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.3))'}}></div>
-          <span style={{color: 'rgba(220, 20, 60, 0.4)', fontSize: '8px'}}>◆</span>
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.3))'}}></div>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => setShowCardModal(false)} 
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ADD CARD</h2>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck]?.name}"</p>
         </div>
-        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck]?.name}"</p>
       </div>
       
       <div className="mb-4">
@@ -4999,37 +5068,51 @@ setMiniBossCount(0);
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
-      <button 
-        onClick={() => {
-          if (reviewingMistakes) {
-            setShowStudyModal(false);
-            setReviewingMistakes(false);
-            setStudyQueue([]);
-            setIsFlipped(false);
-            setShowQuizModal(true);
-            setShowQuizResults(true);
-          } else {
-            setShowStudyModal(false);
-            setSelectedDeck(null);
-            setCurrentCardIndex(0);
-            setStudyQueue([]);
-            setIsFlipped(false);
-          }
-        }}
-        className="absolute top-4 right-4 text-gray-400 hover:text-white"
-      >
-        <X size={32}/>
-      </button>
-      
-      <div className="text-center mb-6">
-        <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-          <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
-          <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => {
+            if (reviewingMistakes) {
+              setShowStudyModal(false);
+              setReviewingMistakes(false);
+              setStudyQueue([]);
+              setIsFlipped(false);
+              setShowQuizModal(true);
+              setShowQuizResults(true);
+            } else {
+              setShowStudyModal(false);
+              setSelectedDeck(null);
+              setCurrentCardIndex(0);
+              setStudyQueue([]);
+              setIsFlipped(false);
+            }
+          }}
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Each card brings you closer to mastery..."</p>
+          <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Cards remaining: {studyQueue.length} | Total studied: {flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</p>
         </div>
-        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Each card brings you closer to mastery..."</p>
-        <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Cards remaining: {studyQueue.length} | Total studied: {flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</p>
       </div>
       
       <div 
@@ -5160,34 +5243,48 @@ setMiniBossCount(0);
     }}>
       {!showQuizResults ? (
         <>
-          <button 
-            onClick={() => {
-              setShowQuizModal(false);
-              setSelectedDeck(null);
-              setQuizQuestions([]);
-              setCurrentQuizIndex(0);
-              setQuizScore(0);
-              setSelectedAnswer(null);
-              setShowQuizResults(false);
-              setWrongCardIndices([]);
-              setIsRetakeQuiz(false);
-              setMistakesReviewed(false);
-              setReviewingMistakes(false);
-            }}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white"
-          >
-            <X size={32}/>
-          </button>
-          
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-              <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
-              <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          <div className="mb-6 relative">
+            <button 
+              onClick={() => {
+                setShowQuizModal(false);
+                setSelectedDeck(null);
+                setQuizQuestions([]);
+                setCurrentQuizIndex(0);
+                setQuizScore(0);
+                setSelectedAnswer(null);
+                setShowQuizResults(false);
+                setWrongCardIndices([]);
+                setIsRetakeQuiz(false);
+                setMistakesReviewed(false);
+                setReviewingMistakes(false);
+              }}
+              className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+              style={{
+                backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                borderColor: 'rgba(212, 175, 55, 0.4)',
+                color: '#D4AF37'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                e.currentTarget.style.borderColor = '#D4AF37';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+              }}
+            >
+              <X size={20}/>
+            </button>
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+                <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+                <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+              </div>
+              <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Test your knowledge in the crucible of trial..."</p>
+              <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Question {currentQuizIndex + 1} of {quizQuestions.length} | Score: {quizScore}/{quizQuestions.length}</p>
             </div>
-            <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Test your knowledge in the crucible of trial..."</p>
-            <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Question {currentQuizIndex + 1} of {quizQuestions.length} | Score: {quizScore}/{quizQuestions.length}</p>
           </div>
           
           <div className="rounded-xl p-8 mb-6 min-h-[200px] border-2" style={{
@@ -5526,16 +5623,35 @@ setMiniBossCount(0);
 {showImportModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowImportModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(0, 40, 40, 0.95), rgba(0, 30, 30, 0.95), rgba(0, 20, 20, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
-      <button onClick={() => setShowImportModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
-      
-      <div className="text-center mb-6">
-        <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>IMPORT FROM PLANNER</h3>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-          <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
-          <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => setShowImportModal(false)} 
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>IMPORT FROM PLANNER</h3>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Draw upon your prepared plans..."</p>
         </div>
-        <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Draw upon your prepared plans..."</p>
       </div>
       
       <div className="space-y-2">
@@ -5851,7 +5967,7 @@ setMiniBossCount(0);
       
       <div className="mb-4">
         <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Add Event</label>
-        <div className="flex gap-2 mb-3">
+        <div className="flex gap-2 mb-4">
           <input 
             type="text" 
             placeholder="e.g., Midterm Exam, Office Hours..." 
@@ -5932,7 +6048,7 @@ setMiniBossCount(0);
               }}>
                 {/* Header Section */}
                 <div className="text-center mb-6">
-                  <p className="text-xs uppercase tracking-[0.3em] mb-3" style={{color: '#CD7F32', letterSpacing: '0.3em'}}>
+                  <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{color: '#CD7F32', letterSpacing: '0.3em'}}>
                     {isFinalBoss ? (inPhase3 ? 'PHASE 3: ABYSS AWAKENING' : inPhase2 ? 'PHASE 2: THE PRESSURE' : 'THE UNDYING LEGEND') : 
                      battleType === 'elite' ? 'TORMENTED CHAMPION' : 
                      battleType === 'wave' ? `WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
@@ -6143,7 +6259,7 @@ setMiniBossCount(0);
                       {/* Fight Submenu */}
                       {battleMenu === 'fight' && (
                         <>
-                          <div className="grid grid-cols-2 gap-3 mb-3">
+                          <div className="grid grid-cols-2 gap-3 mb-4">
                             <button 
                               onClick={attack}
                               className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
@@ -6192,7 +6308,7 @@ setMiniBossCount(0);
                       {/* Items Submenu */}
                       {battleMenu === 'items' && (
                         <>
-                          <div className="grid grid-cols-2 gap-3 mb-3">
+                          <div className="grid grid-cols-2 gap-3 mb-4">
                             <button 
                               onClick={useHealth}
                               disabled={healthPots === 0}
@@ -6303,7 +6419,7 @@ setMiniBossCount(0);
                           </div>
                           <div className="space-y-2">
                             {victoryLoot.map((loot, idx) => (
-                              <div key={idx} className="rounded px-3 py-2 fade-in" style={{
+                              <div key={idx} className="rounded px-4 py-2 fade-in" style={{
                                 backgroundColor: 'rgba(0, 0, 0, 0.3)',
                                 border: '1px solid rgba(212, 175, 55, 0.3)',
                                 animationDelay: `${idx * 0.1}s`
@@ -6369,24 +6485,52 @@ setMiniBossCount(0);
           {showPomodoro && pomodoroTask && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-12 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(10, 30, 50, 0.95), rgba(5, 20, 40, 0.95), rgba(0, 10, 30, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
-      <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2" style={{
-          color: '#6BB6FF',
-          letterSpacing: '0.1em'
-        }}>
-          {isBreak ? 'RESPITE' : 'DEEP FOCUS'}
-        </h2>
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(30, 58, 95, 0.3))'}}></div>
-          <span style={{color: 'rgba(30, 58, 95, 0.4)', fontSize: '8px'}}>◆</span>
-          <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(30, 58, 95, 0.3))'}}></div>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => {
+            setShowPomodoro(false);
+            setPomodoroTask(null);
+            setPomodoroRunning(false);
+            addLog(`Focus session ended. Completed ${pomodorosCompleted} pomodoro${pomodorosCompleted !== 1 ? 's' : ''}.`);
+          }}
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2" style={{
+            color: '#D4AF37',
+            letterSpacing: '0.1em'
+          }}>
+            {isBreak ? 'RESPITE' : 'DEEP FOCUS'}
+          </h2>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-xl mb-8" style={{color: COLORS.silver}}>{pomodoroTask.title}</p>
         </div>
-        <p className="text-xl mb-8" style={{color: COLORS.silver}}>{pomodoroTask.title}</p>
-        
+      </div>
+      
+      <div className="text-center">
         <div className="mb-8">
           <div className="text-8xl font-bold mb-4" style={{color: '#F5F5DC'}}>
             {Math.floor(pomodoroTimer / 60)}:{String(pomodoroTimer % 60).padStart(2, '0')}
@@ -6397,7 +6541,7 @@ setMiniBossCount(0);
         </div>
         
         <div className="mb-6">
-          <div className="flex items-center justify-center gap-2 mb-3">
+          <div className="flex items-center justify-center gap-2 mb-4">
             <span className="text-xl" style={{color: '#F5F5DC'}}>Sessions Completed: {pomodorosCompleted}</span>
           </div>
           <div className="rounded-full h-3 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.4)'}}>
@@ -6405,7 +6549,9 @@ setMiniBossCount(0);
               className="h-3 rounded-full transition-all"
               style={{
                 width: `${((isBreak ? 5 * 60 : 25 * 60) - pomodoroTimer) / (isBreak ? 5 * 60 : 25 * 60) * 100}%`,
-                background: isBreak ? 'linear-gradient(to right, #2F5233, #52C77A)' : 'linear-gradient(to right, #1E3A5F, #6BB6FF)'
+                background: isBreak 
+                  ? 'linear-gradient(to right, #52C77A, #84E1A0)' 
+                  : 'linear-gradient(to right, #B8860B, #D4AF37)'
               }}
             ></div>
           </div>
@@ -6416,12 +6562,20 @@ setMiniBossCount(0);
             onClick={() => setPomodoroRunning(!pomodoroRunning)}
             className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2"
             style={{
-              backgroundColor: COLORS.sapphire.base,
-              borderColor: COLORS.sapphire.border,
+              backgroundColor: 'rgba(139, 0, 0, 0.6)',
+              borderColor: '#8B0000',
               color: '#F5F5DC'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.sapphire.hover}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.sapphire.base}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.8)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.6)';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '';
+            }}
           >
             {pomodoroRunning ? 'Pause' : 'Resume'}
           </button>
@@ -6434,24 +6588,27 @@ setMiniBossCount(0);
                 setPomodoroRunning(true);
                 addLog('Skipped break - back to work!');
               }}
-              className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2" style={{backgroundColor: '#B8860B', borderColor: '#CD7F32', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#DAA520'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B8860B'}
+              className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2"
+              style={{
+                backgroundColor: 'rgba(184, 134, 11, 0.6)',
+                borderColor: '#B8860B',
+                color: '#F5F5DC'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.8)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(184, 134, 11, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.6)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '';
+              }}
             >
               Skip Break
             </button>
           )}
         </div>
-        
-        <button 
-          onClick={() => {
-            setShowPomodoro(false);
-            setPomodoroTask(null);
-            setPomodoroRunning(false);
-            addLog(`Focus session ended. Completed ${pomodorosCompleted} pomodoro${pomodorosCompleted !== 1 ? 's' : ''}.`);
-          }}
-          className="px-8 py-3 rounded-lg font-bold transition-all border-2" style={{backgroundColor: '#2C3E50', borderColor: '#95A5A6', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#34495E'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2C3E50'}
-        >
-          Finish Task & Return
-        </button>
       </div>
     </div>
   </div>
