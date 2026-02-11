@@ -1,7 +1,7 @@
-// FANTASY STUDY QUEST - v3.3 SEVEN DAYS EDITION (CALENDAR FIX)
+// FANTASY STUDY QUEST - v3.9.0 BUG FIX EDITION
 // PART 1 OF 3 - Copy this first
-// Last updated: 2026-01-14
-// FIXES: Calendar sync, date display on planner, missing dependencies, poison bug
+// Last updated: 2026-02-11
+// FIXES: Wave battles, planner sync, inventory sorting, delete button
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target } from 'lucide-react';
@@ -625,7 +625,7 @@ const FantasyStudyQuest = () => {
   const [stamina, setStamina] = useState(GAME_CONSTANTS.MAX_STAMINA);
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
-  const [essence, setEssence] = useState(0); // Crafting currency from combat
+  const [gold, setGold] = useState(0); // Currency from combat
   const [currency, setCurrency] = useState(0); // Gold for shop purchases
   const [pityCounter, setPityCounter] = useState(0); // Fights without upgrade (pity timer)
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
@@ -904,6 +904,15 @@ const [wrongCardIndices, setWrongCardIndices] = useState([]);
 const [isRetakeQuiz, setIsRetakeQuiz] = useState(false);
 const [mistakesReviewed, setMistakesReviewed] = useState(false);
 const [reviewingMistakes, setReviewingMistakes] = useState(false);
+
+// Match game state
+const [showMatchModal, setShowMatchModal] = useState(false);
+const [matchCards, setMatchCards] = useState([]); // Array of {id, text, type: 'term'|'definition', pairId, matched}
+const [selectedMatchCards, setSelectedMatchCards] = useState([]); // Array of selected card indices
+const [matchedPairs, setMatchedPairs] = useState([]); // Array of pairIds that have been matched
+const [matchStartTime, setMatchStartTime] = useState(null);
+const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glowing
+
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showCalendarModal, setShowCalendarModal] = useState(false);
@@ -919,7 +928,7 @@ const [reviewingMistakes, setReviewingMistakes] = useState(false);
 const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
 const [totalWaveEnemies, setTotalWaveEnemies] = useState(0);
-const [waveEssenceTotal, setWaveEssenceTotal] = useState(0);
+const [waveGoldTotal, setWaveGoldTotal] = useState(0);
   const [battling, setBattling] = useState(false);
   const [battleMenu, setBattleMenu] = useState('main'); // 'main', 'fight', 'items'
   const [isFinalBoss, setIsFinalBoss] = useState(false);
@@ -1172,6 +1181,47 @@ const getDateKey = useCallback((date) => {
     setShowQuizModal(true);
   }, [flashcardDecks]);
   
+  const startMatchGame = useCallback((deckIndex) => {
+    const deck = flashcardDecks[deckIndex];
+    if (!deck || deck.cards.length < 4) {
+      alert('Need at least 4 cards for Match!');
+      return;
+    }
+    
+    // Take up to 8 cards (so 16 total cards in the grid)
+    const cardsToUse = deck.cards.slice(0, Math.min(8, deck.cards.length));
+    
+    // Create array with both terms and definitions
+    const matchCardsArray = [];
+    cardsToUse.forEach((card, idx) => {
+      matchCardsArray.push({
+        id: `term-${idx}`,
+        text: card.front,
+        type: 'term',
+        pairId: idx,
+        matched: false
+      });
+      matchCardsArray.push({
+        id: `def-${idx}`,
+        text: card.back,
+        type: 'definition',
+        pairId: idx,
+        matched: false
+      });
+    });
+    
+    // Shuffle the cards
+    const shuffled = matchCardsArray.sort(() => Math.random() - 0.5);
+    
+    setMatchCards(shuffled);
+    setSelectedMatchCards([]);
+    setMatchedPairs([]);
+    setMatchGlowCards([]);
+    setMatchStartTime(Date.now());
+    setSelectedDeck(deckIndex);
+    setShowMatchModal(true);
+  }, [flashcardDecks]);
+  
   useEffect(() => {
     const saved = localStorage.getItem('fantasyStudyQuest');
     if (saved) {
@@ -1182,7 +1232,12 @@ const getDateKey = useCallback((date) => {
         if (data.hp !== undefined) setHp(data.hp);
         if (data.stamina !== undefined) setStamina(data.stamina);
         if (data.xp !== undefined) setXp(data.xp);
-        if (data.essence !== undefined) setEssence(data.essence);
+        // Migrate old "essence" saves to "gold"
+        if (data.gold !== undefined) {
+          setGold(data.gold);
+        } else if (data.essence !== undefined) {
+          setGold(data.essence); // Backwards compatibility
+        }
         if (data.gauntletMilestone !== undefined) setGauntletMilestone(data.gauntletMilestone);
         if (data.gauntletUnlocked !== undefined) setGauntletUnlocked(data.gauntletUnlocked);
         if (data.isDayActive !== undefined) setIsDayActive(data.isDayActive);
@@ -1285,7 +1340,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   useEffect(() => {
     if (hero) {
      const saveData = {
-  hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots,
+  hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots,
   weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, 
   equippedPendant, equippedRing, pendantInventory, ringInventory,
   tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
@@ -1295,7 +1350,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -1733,18 +1788,18 @@ if (tasks.length === 0) {
       return "I see the mark upon you. The curse is hungry.";
     }
     
-    // Essence-based dialogue
-    if (essence >= 200) {
+    // Gold-based dialogue
+    if (gold >= 200) {
       return "Ah, a successful hunter. The darkness has been generous.";
     }
-    if (essence >= 100) {
+    if (gold >= 100) {
       return "You've gathered enough. Choose wisely.";
     }
-    if (essence >= 50) {
+    if (gold >= 50) {
       return "Modest spoils, but sufficient for survival.";
     }
-    if (essence < 20) {
-      return "Empty-handed? The forge requires essence to work.";
+    if (gold < 20) {
+      return "Empty-handed? The forge requires gold to work.";
     }
     
     // Default
@@ -1763,12 +1818,12 @@ if (tasks.length === 0) {
     
     const recipe = craftingRecipes[itemType];
     
-    if (essence < recipe.cost) {
-      addLog(`The hero needs ${recipe.cost} Essence to craft ${recipe.name} (have ${essence})`);
+    if (gold < recipe.cost) {
+      addLog(`The hero needs ${recipe.cost} Gold to craft ${recipe.name} (have ${gold})`);
       return;
     }
     
-    setEssence(e => e - recipe.cost);
+    setGold(e => e - recipe.cost);
     
     switch(itemType) {
       case 'healthPotion':
@@ -1791,7 +1846,7 @@ if (tasks.length === 0) {
         break;
     }
     
-    addLog(`The hero forged: ${recipe.emoji} ${recipe.name} (-${recipe.cost} Essence)`);
+    addLog(`The hero forged: ${recipe.emoji} ${recipe.name} (-${recipe.cost} Gold)`);
   };
   
   const startTask = (id) => {
@@ -1989,7 +2044,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCurrentWaveEnemy(waveIndex);
     setTotalWaveEnemies(totalWaves);
     if (waveIndex === 1) {
-      setWaveEssenceTotal(0); // Reset total at start of wave
+      setWaveGoldTotal(0); // Reset total at start of wave
     }
     addLog(`Wave assault - Enemy ${waveIndex}/${totalWaves}: ${enemyName}`);
   } else {
@@ -2466,30 +2521,30 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   // Different XP based on battle type
   let xpGain;
-  let essenceGain;
+  let goldGain;
   if (isFinalBoss) {
     xpGain = GAME_CONSTANTS.XP_REWARDS.finalBoss;
-    essenceGain = 100; // Final boss
+    goldGain = 100; // Final boss
   } else if (battleType === 'elite') {
     xpGain = GAME_CONSTANTS.XP_REWARDS.miniBoss;
-    essenceGain = 50; // Elite boss
+    goldGain = 50; // Elite boss
   } else if (battleType === 'wave') {
     xpGain = 25; // Regular enemy XP
-    essenceGain = 8; // Wave enemies drop less
+    goldGain = 8; // Wave enemies drop less
   } else {
     xpGain = 25; // Regular enemy XP
-    essenceGain = 10; // Regular enemies
+    goldGain = 10; // Regular enemies
   }
   
   setXp(x => x + xpGain);
-  setEssence(e => e + essenceGain);
+  setGold(e => e + goldGain);
   
-  // Accumulate wave essence for final display
+  // Accumulate wave gold for final display
   if (battleType === 'wave') {
-    setWaveEssenceTotal(t => t + essenceGain);
+    setWaveGoldTotal(t => t + goldGain);
   }
   
-  addLog(`Victory! The hero earned +${xpGain} XP, +${essenceGain} Essence`);
+  addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
   
   // Set victory dialogue
   if (battleType === 'elite' || battleType === 'final') {
@@ -2732,9 +2787,9 @@ if (battleType === 'elite') {
         addLog('The hero\'s wounds close as vitality returns!');
       }
       
-      // Add essence gain to loot display
-      const displayEssence = battleType === 'wave' ? waveEssenceTotal : essenceGain;
-      lootMessages.unshift(`+${displayEssence} Essence`);
+      // Add gold gain to loot display
+      const displayGold = battleType === 'wave' ? waveGoldTotal : goldGain;
+      lootMessages.unshift(`+${displayGold} Gold`);
       
       setVictoryLoot(lootMessages);
       setVictoryFlash(true);
@@ -2903,10 +2958,10 @@ if (enragedTurns > 0) {
               
               setTimeout(() => {
                 const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-                const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
+                const goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
                 setXp(x => x + xpGain);
-                setEssence(e => e + essenceGain);
-                addLog(`Victory! The hero earned +${xpGain} XP, +${essenceGain} Essence`);
+                setGold(e => e + goldGain);
+                addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
                 
                 // Set victory dialogue
                 if (battleType === 'elite' || battleType === 'final') {
@@ -3185,16 +3240,16 @@ if (enragedTurns > 0) {
       setRecklessStacks(0);
       
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-      const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : (battleType === 'wave' ? 8 : 10));
+      const goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : (battleType === 'wave' ? 8 : 10));
       setXp(x => x + xpGain);
-      setEssence(e => e + essenceGain);
+      setGold(e => e + goldGain);
       
-      // Accumulate wave essence for final display
+      // Accumulate wave gold for final display
       if (battleType === 'wave') {
-        setWaveEssenceTotal(t => t + essenceGain);
+        setWaveGoldTotal(t => t + goldGain);
       }
       
-      addLog(`Victory! The hero earned +${xpGain} XP, +${essenceGain} Essence`);
+      addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
       
       // Set victory dialogue
       if (battleType === 'elite' || battleType === 'final') {
@@ -3332,9 +3387,9 @@ if (enragedTurns > 0) {
         addLog('The hero\'s wounds close as vitality returns!');
       }
       
-      // Add essence gain to loot display
-      const displayEssence = battleType === 'wave' ? waveEssenceTotal : essenceGain;
-      lootMessages.unshift(`+${displayEssence} Essence`);
+      // Add gold gain to loot display
+      const displayGold = battleType === 'wave' ? waveGoldTotal : goldGain;
+      lootMessages.unshift(`+${displayGold} Gold`);
       
       setVictoryLoot(lootMessages);
       setVictoryFlash(true);
@@ -3480,10 +3535,10 @@ if (enragedTurns > 0) {
                 
                 setTimeout(() => {
                   const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-                  const essenceGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
+                  const goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
                   setXp(x => x + xpGain);
-                  setEssence(e => e + essenceGain);
-                  addLog(`Victory! The hero earned +${xpGain} XP, +${essenceGain} Essence`);
+                  setGold(e => e + goldGain);
+                  addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
                   
                   // Set victory dialogue
                   if (battleType === 'elite' || battleType === 'final') {
@@ -3938,11 +3993,11 @@ setMiniBossCount(0);
               boxShadow: '0 0 30px rgba(139, 0, 0, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5)'
             }}>
               <div className="text-center mb-6">
-                <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>ARCANE CONSOLE</h3>
+                <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ARCANE CONSOLE</h3>
                 <div className="flex items-center justify-center gap-2">
-                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(220, 20, 60, 0.5))'}}></div>
-                  <span style={{color: 'rgba(220, 20, 60, 0.6)', fontSize: '8px'}}>◆</span>
-                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(220, 20, 60, 0.5))'}}></div>
+                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                 </div>
                 <p className="text-sm italic mt-2" style={{color: '#C0C0C0'}}>"Bend reality to your will..."</p>
               </div>
@@ -4260,8 +4315,23 @@ setMiniBossCount(0);
                     setHealthPots(0);
                     setStaminaPots(0);
                     setCleansePots(0);
+                    
+                    // Reset old gear system (for compatibility)
                     setWeapon(0);
                     setArmor(0);
+                    
+                    // Reset new loot system
+                    setGold(0);
+                    setEquippedWeapon(null);
+                    setWeaponInventory([]);
+                    setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
+                    setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
+                    setEquippedPendant(null);
+                    setEquippedRing(null);
+                    setPendantInventory([]);
+                    setRingInventory([]);
+                    setWaveGoldTotal(0);
+                    
                     setTasks([]);
                     setActiveTask(null);
                     setTimer(0);
@@ -4270,8 +4340,44 @@ setMiniBossCount(0);
                     setPomodoroTask(null);
                     setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
                     setCalendarTasks({});
+                    setCalendarFocus({});
+                    setCalendarEvents({});
+                    
+                    // Reset battle/boss system
                     setShowBoss(false);
                     setBattling(false);
+                    setBattleMode(false);
+                    setBossHp(0);
+                    setBossMax(0);
+                    setBattleType('regular');
+                    setBattleMenu('main');
+                    setIsFinalBoss(false);
+                    setBossName('');
+                    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+                    setRecklessStacks(0);
+                    setInPhase1(false);
+                    setInPhase2(false);
+                    setInPhase3(false);
+                    setPhase1TurnCounter(0);
+                    setPhase2TurnCounter(0);
+                    setPhase2DamageStacks(0);
+                    setPhase3TurnCounter(0);
+                    setShadowAdds([]);
+                    setAoeWarning(false);
+                    setBossFlash(false);
+                    setPlayerFlash(false);
+                    setCurrentWaveEnemy(0);
+                    setTotalWaveEnemies(1);
+                    
+                    // Reset taunt system
+                    setEnemyDialogue('');
+                    setPlayerTaunt('');
+                    setEnemyTauntResponse('');
+                    setShowTauntBoxes(false);
+                    setIsTauntAvailable(false);
+                    setHasTriggeredLowHpTaunt(false);
+                    setEnragedTurns(0);
+                    
                     setLog([]);
                     setGraveyard([]);
                     setHeroes([]);
@@ -4280,8 +4386,32 @@ setMiniBossCount(0);
                     setLastPlayedDate(null);
                     setMiniBossCount(0);
                     setCurseLevel(0);
+                    setEliteBossDefeatedToday(false);
                     setIsDayActive(false);
                     setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
+                    
+                    // Reset flashcard system
+                    setFlashcardDecks([]);
+                    setSelectedDeck(null);
+                    setCurrentCardIndex(0);
+                    setStudyQueue([]);
+                    setWrongCardIndices([]);
+                    
+                    // Reset achievements
+                    setAchievementStats({
+                      tasksCompleted: 0,
+                      studyMinutes: 0,
+                      deepWorkSessions: 0,
+                      perfectDays: 0,
+                      bossesDefeated: 0,
+                      eliteBossesDefeated: 0,
+                      battlesFled: 0,
+                      battlesWon: 0,
+                      cardsStudied: 0,
+                      consecutiveDays: 0
+                    });
+                    setUnlockedAchievements([]);
+                    
                     localStorage.removeItem('fantasyStudyQuest');
                     addLog('🔄 FULL RESET - Everything cleared!');
                     setActiveTab('quest');
@@ -5197,76 +5327,26 @@ setMiniBossCount(0);
               </button>
             </div>
             
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  if (deck.cards.length === 0) {
-                    alert('Add some cards first!');
-                    return;
-                  }
-                  setSelectedDeck(idx);
-                  setCurrentCardIndex(0);
-                  // Initialize queue with all card indices
-                  const allCardIndices = Array.from({length: deck.cards.length}, (_, i) => i);
-                  setStudyQueue(allCardIndices);
-                  setIsFlipped(false);
-                  setShowStudyModal(true);
-                }}
-                disabled={deck.cards.length === 0}
-                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
-                style={{
-                  background: deck.cards.length === 0 ? '#2C3E50' : 'linear-gradient(to bottom, #2F5233, #1E3421)',
-                  borderColor: deck.cards.length === 0 ? '#95A5A6' : '#C0C0C0',
-                  color: '#F5F5DC',
-                  opacity: deck.cards.length === 0 ? 0.5 : 1
-                }}
-                onMouseEnter={(e) => { if (deck.cards.length > 0) e.currentTarget.style.background = 'linear-gradient(to bottom, #3D6B45, #2F5233)'; }}
-                onMouseLeave={(e) => { if (deck.cards.length > 0) e.currentTarget.style.background = 'linear-gradient(to bottom, #2F5233, #1E3421)'; }}
-              >
-                Study Deck
-              </button>
-              <button
-                onClick={() => {
-                  if (deck.cards.length < 4) {
-                    alert('Need at least 4 cards for a quiz!');
-                    return;
-                  }
-                  setSelectedDeck(idx);
-                  generateQuiz(idx);
-                }}
-                disabled={deck.cards.length < 4}
-                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
-                style={{
-                  background: deck.cards.length < 4 ? '#2C3E50' : 'linear-gradient(to bottom, #1E3A5F, #152840)',
-                  borderColor: deck.cards.length < 4 ? '#95A5A6' : '#C0C0C0',
-                  color: '#F5F5DC',
-                  opacity: deck.cards.length < 4 ? 0.5 : 1
-                }}
-                onMouseEnter={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #2B5082, #1E3A5F)'; }}
-                onMouseLeave={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #1E3A5F, #152840)'; }}
-              >
-                Practice Quiz
-              </button>
-              <button
-                onClick={() => {
-                  setSelectedDeck(idx);
-                  setShowCardModal(true);
-                }}
-                className="px-4 py-2 rounded transition-all border-2"
-                style={{
-                  background: 'linear-gradient(to bottom, #B8860B, #8B6914)',
-                  borderColor: '#CD7F32',
-                  color: '#F5F5DC'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #DAA520, #B8860B)'}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #B8860B, #8B6914)'}
-              >
-                Add Card
-              </button>
-            </div>
+            {/* Add Card Button - Top */}
+            <button
+              onClick={() => {
+                setSelectedDeck(idx);
+                setShowCardModal(true);
+              }}
+              className="w-full py-2 rounded transition-all border-2 mb-2"
+              style={{
+                background: 'linear-gradient(to bottom, #B8860B, #8B6914)',
+                borderColor: '#CD7F32',
+                color: '#F5F5DC'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #DAA520, #B8860B)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #B8860B, #8B6914)'}
+            >
+              Add Card
+            </button>
             
             {deck.cards.length > 0 && (
-              <div className="mt-3 pt-3" style={{borderTop: '1px solid rgba(139, 69, 19, 0.3)'}}>
+              <div className="mt-1 pt-3" style={{borderTop: '1px solid rgba(139, 69, 19, 0.3)'}}>
                 <p className="text-xs mb-2" style={{color: '#95A5A6'}}>Cards in this deck:</p>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {deck.cards.map((card, cardIdx) => (
@@ -5295,6 +5375,80 @@ setMiniBossCount(0);
                 </div>
               </div>
             )}
+            
+            {/* Study Mode Buttons - Bottom */}
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => {
+                  if (deck.cards.length === 0) {
+                    alert('Add some cards first!');
+                    return;
+                  }
+                  setSelectedDeck(idx);
+                  setCurrentCardIndex(0);
+                  // Initialize queue with all card indices
+                  const allCardIndices = Array.from({length: deck.cards.length}, (_, i) => i);
+                  setStudyQueue(allCardIndices);
+                  setIsFlipped(false);
+                  setShowStudyModal(true);
+                }}
+                disabled={deck.cards.length === 0}
+                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
+                style={{
+                  background: deck.cards.length === 0 ? '#2C3E50' : 'linear-gradient(to bottom, #2F5233, #1E3421)',
+                  borderColor: deck.cards.length === 0 ? '#95A5A6' : '#C0C0C0',
+                  color: '#F5F5DC',
+                  opacity: deck.cards.length === 0 ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => { if (deck.cards.length > 0) e.currentTarget.style.background = 'linear-gradient(to bottom, #3D6B45, #2F5233)'; }}
+                onMouseLeave={(e) => { if (deck.cards.length > 0) e.currentTarget.style.background = 'linear-gradient(to bottom, #2F5233, #1E3421)'; }}
+              >
+                Review
+              </button>
+              <button
+                onClick={() => {
+                  if (deck.cards.length < 4) {
+                    alert('Need at least 4 cards for Match!');
+                    return;
+                  }
+                  startMatchGame(idx);
+                }}
+                disabled={deck.cards.length < 4}
+                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
+                style={{
+                  background: deck.cards.length < 4 ? '#2C3E50' : 'linear-gradient(to bottom, #5C2E5C, #3D1F3D)',
+                  borderColor: deck.cards.length < 4 ? '#95A5A6' : '#C0C0C0',
+                  color: '#F5F5DC',
+                  opacity: deck.cards.length < 4 ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #7A3C7A, #5C2E5C)'; }}
+                onMouseLeave={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #5C2E5C, #3D1F3D)'; }}
+              >
+                Match
+              </button>
+              <button
+                onClick={() => {
+                  if (deck.cards.length < 4) {
+                    alert('Need at least 4 cards for a quiz!');
+                    return;
+                  }
+                  setSelectedDeck(idx);
+                  generateQuiz(idx);
+                }}
+                disabled={deck.cards.length < 4}
+                className="flex-1 py-2 rounded transition-all border-2 disabled:cursor-not-allowed"
+                style={{
+                  background: deck.cards.length < 4 ? '#2C3E50' : 'linear-gradient(to bottom, #1E3A5F, #152840)',
+                  borderColor: deck.cards.length < 4 ? '#95A5A6' : '#C0C0C0',
+                  color: '#F5F5DC',
+                  opacity: deck.cards.length < 4 ? 0.5 : 1
+                }}
+                onMouseEnter={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #2B5082, #1E3A5F)'; }}
+                onMouseLeave={(e) => { if (deck.cards.length >= 4) e.currentTarget.style.background = 'linear-gradient(to bottom, #1E3A5F, #152840)'; }}
+              >
+                Quiz
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -5573,14 +5727,32 @@ setMiniBossCount(0);
           {showInventoryModal && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowInventoryModal(false)}>
               <div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" style={{background: 'linear-gradient(to bottom, rgba(40, 30, 10, 0.95), rgba(30, 20, 0, 0.95), rgba(20, 10, 0, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
-                <button onClick={() => setShowInventoryModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
+                <button 
+                  onClick={() => setShowInventoryModal(false)} 
+                  className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    borderColor: 'rgba(212, 175, 55, 0.4)',
+                    color: '#D4AF37'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                    e.currentTarget.style.borderColor = '#D4AF37';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+                  }}
+                >
+                  <X size={20}/>
+                </button>
                 
                 <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.amber.base, letterSpacing: '0.1em'}}>SUPPLIES</h2>
+                  <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.gold, letterSpacing: '0.1em'}}>SUPPLIES</h2>
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to right, transparent, rgba(184, 134, 11, 0.3))`}}></div>
-                    <span style={{color: 'rgba(184, 134, 11, 0.4)', fontSize: '8px'}}>◆</span>
-                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to left, transparent, rgba(184, 134, 11, 0.3))`}}></div>
+                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))`}}></div>
+                    <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))`}}></div>
                   </div>
                   <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"What keeps you alive in the darkness..."</p>
                 </div>
@@ -6260,13 +6432,31 @@ setMiniBossCount(0);
           {showCraftingModal && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
               <div className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative" style={{background: 'linear-gradient(to bottom, rgba(40, 10, 60, 0.95), rgba(30, 0, 40, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
-                <button onClick={() => setShowCraftingModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X size={24}/></button>
+                <button 
+                  onClick={() => setShowCraftingModal(false)} 
+                  className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    borderColor: 'rgba(212, 175, 55, 0.4)',
+                    color: '#D4AF37'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                    e.currentTarget.style.borderColor = '#D4AF37';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+                  }}
+                >
+                  <X size={20}/>
+                </button>
                 
                 <div className="text-center mb-6">
                   <h2 className="text-3xl font-bold mb-2" style={{
                     color: '#D4AF37',
                     fontFamily: 'Cinzel, serif',
-                    letterSpacing: '0.15em',
+                    letterSpacing: '0.1em',
                     textShadow: '0 0 20px rgba(212, 175, 55, 0.3)'
                   }}>
                     THE MERCHANT
@@ -6284,46 +6474,46 @@ setMiniBossCount(0);
                   borderColor: 'rgba(212, 175, 55, 0.4)'
                 }}>
                   <p className="text-center text-lg">
-                    <span style={{color: COLORS.silver}}>Current Essence:</span> 
-                    <span className="font-bold text-2xl ml-2" style={{color: '#D4AF37'}}>{essence}</span>
+                    <span style={{color: COLORS.silver}}>Current Gold:</span> 
+                    <span className="font-bold text-2xl ml-2" style={{color: '#D4AF37'}}>{gold}</span>
                   </p>
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4">
                   <button 
                     onClick={() => craftItem('healthPotion')} 
-                    disabled={essence < 25}
-                    className="p-4 rounded-lg border-2 transition-all cursor-pointer" style={{backgroundColor: essence >= 25 ? 'rgba(139, 0, 0, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: essence >= 25 ? 'rgba(139, 0, 0, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: essence >= 25 ? 1 : 0.5, cursor: essence >= 25 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 25) e.currentTarget.style.backgroundColor = 'rgba(165, 42, 42, 0.5)'}} onMouseLeave={(e) => {if (essence >= 25) e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.3)'}}
+                    disabled={gold < 25}
+                    className="p-4 rounded-lg border-2 transition-all cursor-pointer" style={{backgroundColor: gold >= 25 ? 'rgba(139, 0, 0, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: gold >= 25 ? 'rgba(139, 0, 0, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: gold >= 25 ? 1 : 0.5, cursor: gold >= 25 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 25) e.currentTarget.style.backgroundColor = 'rgba(165, 42, 42, 0.5)'}} onMouseLeave={(e) => {if (gold >= 25) e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Health Potion</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>25 Gold</p>
                       <p className="text-sm mb-2" style={{color: '#FF6B6B'}}>Restores 30 HP</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>25 Essence</p>
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Crimson elixir. Mends wounds, not souls."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('staminaPotion')} 
-                    disabled={essence < 20}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: essence >= 20 ? 'rgba(30, 58, 95, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: essence >= 20 ? 'rgba(30, 58, 95, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: essence >= 20 ? 1 : 0.5, cursor: essence >= 20 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 20) e.currentTarget.style.backgroundColor = 'rgba(43, 80, 130, 0.5)'}} onMouseLeave={(e) => {if (essence >= 20) e.currentTarget.style.backgroundColor = 'rgba(30, 58, 95, 0.3)'}}
+                    disabled={gold < 20}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: gold >= 20 ? 'rgba(30, 58, 95, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: gold >= 20 ? 'rgba(30, 58, 95, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: gold >= 20 ? 1 : 0.5, cursor: gold >= 20 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 20) e.currentTarget.style.backgroundColor = 'rgba(43, 80, 130, 0.5)'}} onMouseLeave={(e) => {if (gold >= 20) e.currentTarget.style.backgroundColor = 'rgba(30, 58, 95, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Stamina Potion</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>20 Gold</p>
                       <p className="text-sm mb-2" style={{color: '#6BB6FF'}}>Restores 50 SP</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>20 Essence</p>
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('cleansePotion')} 
-                    disabled={essence < 50}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: essence >= 50 ? 'rgba(107, 44, 145, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: essence >= 50 ? 'rgba(107, 44, 145, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: essence >= 50 ? 1 : 0.5, cursor: essence >= 50 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 50) e.currentTarget.style.backgroundColor = 'rgba(138, 59, 181, 0.5)'}} onMouseLeave={(e) => {if (essence >= 50) e.currentTarget.style.backgroundColor = 'rgba(107, 44, 145, 0.3)'}}
+                    disabled={gold < 50}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: gold >= 50 ? 'rgba(107, 44, 145, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: gold >= 50 ? 'rgba(107, 44, 145, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: gold >= 50 ? 1 : 0.5, cursor: gold >= 50 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 50) e.currentTarget.style.backgroundColor = 'rgba(138, 59, 181, 0.5)'}} onMouseLeave={(e) => {if (gold >= 50) e.currentTarget.style.backgroundColor = 'rgba(107, 44, 145, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>50 Essence</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>50 Gold</p>
                       <p className="text-sm mb-2" style={{color: '#B794F4'}}>Removes curse</p>
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the curse's hold."</p>
                     </div>
@@ -6331,12 +6521,12 @@ setMiniBossCount(0);
                   
                   <button 
                     onClick={() => craftItem('weaponOil')} 
-                    disabled={essence < 40 || weaponOilActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (essence >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (essence >= 40 && !weaponOilActive) ? 1 : 0.5, cursor: (essence >= 40 && !weaponOilActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(218, 165, 32, 0.5)'}} onMouseLeave={(e) => {if (essence >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.3)'}}
+                    disabled={gold < 40 || weaponOilActive}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (gold >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (gold >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (gold >= 40 && !weaponOilActive) ? 1 : 0.5, cursor: (gold >= 40 && !weaponOilActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(218, 165, 32, 0.5)'}} onMouseLeave={(e) => {if (gold >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Weapon Oil</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Essence</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Gold</p>
                       <p className="text-sm mb-1" style={{color: '#DAA520'}}>+5 weapon until dawn</p>
                       {weaponOilActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>Active</p>}
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Darkened oil. Edges sharpen, strikes deepen."</p>
@@ -6345,12 +6535,12 @@ setMiniBossCount(0);
                   
                   <button 
                     onClick={() => craftItem('armorPolish')} 
-                    disabled={essence < 40 || armorPolishActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (essence >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (essence >= 40 && !armorPolishActive) ? 1 : 0.5, cursor: (essence >= 40 && !armorPolishActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 102, 102, 0.5)'}} onMouseLeave={(e) => {if (essence >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 77, 77, 0.3)'}}
+                    disabled={gold < 40 || armorPolishActive}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (gold >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (gold >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (gold >= 40 && !armorPolishActive) ? 1 : 0.5, cursor: (gold >= 40 && !armorPolishActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 102, 102, 0.5)'}} onMouseLeave={(e) => {if (gold >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 77, 77, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Armor Polish</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Essence</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Gold</p>
                       <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>+5 armor until dawn</p>
                       {armorPolishActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>Active</p>}
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Protective salve. Steel hardens, flesh endures."</p>
@@ -6359,12 +6549,12 @@ setMiniBossCount(0);
                   
                   <button 
                     onClick={() => craftItem('luckyCharm')} 
-                    disabled={essence < 80 || luckyCharmActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (essence >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (essence >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (essence >= 80 && !luckyCharmActive) ? 1 : 0.5, cursor: (essence >= 80 && !luckyCharmActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (essence >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 66, 0.5)'}} onMouseLeave={(e) => {if (essence >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(47, 82, 51, 0.3)'}}
+                    disabled={gold < 80 || luckyCharmActive}
+                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (gold >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (gold >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (gold >= 80 && !luckyCharmActive) ? 1 : 0.5, cursor: (gold >= 80 && !luckyCharmActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 66, 0.5)'}} onMouseLeave={(e) => {if (gold >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(47, 82, 51, 0.3)'}}
                   >
                     <div className="mb-2">
                       <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Lucky Charm</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>80 Essence</p>
+                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>80 Gold</p>
                       <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
                       {luckyCharmActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
                       <p className="text-xs italic" style={{color: COLORS.silver}}>"Blessed talisman. Fortune favors the bold."</p>
@@ -6590,7 +6780,7 @@ setMiniBossCount(0);
   </div>
 )}
 
-{showCardModal && selectedDeck !== null && (
+{showCardModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCardModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
       background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
@@ -6624,7 +6814,7 @@ setMiniBossCount(0);
             <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
-          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck]?.name}"</p>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck].name}"</p>
         </div>
       </div>
       
@@ -7156,6 +7346,173 @@ setMiniBossCount(0);
   </div>
 )}
 
+{/* Match Game Modal */}
+{showMatchModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
+  <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
+    <div className="rounded-xl p-8 max-w-4xl w-full border-2 relative my-8" style={{
+      background: 'linear-gradient(to bottom, rgba(30, 10, 40, 0.95), rgba(20, 0, 30, 0.95), rgba(15, 0, 20, 0.95))',
+      borderColor: COLORS.gold,
+      boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
+    }}>
+      <div className="mb-6 relative">
+        <button 
+          onClick={() => {
+            setShowMatchModal(false);
+            setSelectedDeck(null);
+            setMatchCards([]);
+            setSelectedMatchCards([]);
+            setMatchedPairs([]);
+            setMatchGlowCards([]);
+          }}
+          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            color: '#D4AF37'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            e.currentTarget.style.borderColor = '#D4AF37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+          }}
+        >
+          <X size={20}/>
+        </button>
+        <div className="text-center">
+          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>MATCH GAME</h2>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+          </div>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck].name}"</p>
+          <p className="text-xs mt-1" style={{color: '#95A5A6'}}>
+            Matched: {matchedPairs.length}/{matchCards.length / 2} pairs
+            {matchStartTime && ` | Time: ${Math.floor((Date.now() - matchStartTime) / 1000)}s`}
+          </p>
+        </div>
+      </div>
+      
+      {matchedPairs.length === matchCards.length / 2 ? (
+        // Victory screen
+        <div className="text-center py-12">
+          <h3 className="text-4xl font-bold mb-4" style={{color: '#D4AF37'}}>COMPLETE!</h3>
+          <p className="text-2xl mb-6" style={{color: '#68D391'}}>
+            Time: {Math.floor((Date.now() - matchStartTime) / 1000)} seconds
+          </p>
+          <p className="text-lg mb-6" style={{color: COLORS.silver}}>
+            All pairs matched!
+          </p>
+          <button
+            onClick={() => {
+              // Award XP based on speed
+              const timeBonus = Math.max(10, 50 - Math.floor((Date.now() - matchStartTime) / 1000));
+              setXp(x => x + timeBonus);
+              setGold(g => g + 5);
+              addLog(`Match game completed! +${timeBonus} XP, +5 Gold`);
+              
+              setShowMatchModal(false);
+              setSelectedDeck(null);
+              setMatchCards([]);
+              setSelectedMatchCards([]);
+              setMatchedPairs([]);
+              setMatchGlowCards([]);
+            }}
+            className="px-8 py-3 rounded-lg font-bold transition-all border-2"
+            style={{
+              background: 'linear-gradient(to bottom, #68D391, #48BB78)',
+              borderColor: '#9AE6B4',
+              color: '#F5F5DC'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #48BB78, #38A169)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #68D391, #48BB78)'}
+          >
+            Collect Rewards
+          </button>
+        </div>
+      ) : (
+        // Game grid
+        <div className={`grid gap-3 ${matchCards.length <= 8 ? 'grid-cols-4' : 'grid-cols-4'}`}>
+          {matchCards.map((card, idx) => {
+            const isSelected = selectedMatchCards.includes(idx);
+            const isMatched = card.matched;
+            const isGlowing = matchGlowCards.includes(idx);
+            
+            return (
+              <button
+                key={card.id}
+                onClick={() => {
+                  if (isMatched || selectedMatchCards.includes(idx) || selectedMatchCards.length >= 2) return;
+                  
+                  const newSelected = [...selectedMatchCards, idx];
+                  setSelectedMatchCards(newSelected);
+                  
+                  if (newSelected.length === 2) {
+                    // Check if they match
+                    const card1 = matchCards[newSelected[0]];
+                    const card2 = matchCards[newSelected[1]];
+                    
+                    if (card1.pairId === card2.pairId) {
+                      // Match!
+                      setMatchGlowCards(newSelected);
+                      
+                      setTimeout(() => {
+                        setMatchCards(prev => prev.map((c, i) => 
+                          newSelected.includes(i) ? {...c, matched: true} : c
+                        ));
+                        setMatchedPairs(prev => [...prev, card1.pairId]);
+                        setSelectedMatchCards([]);
+                        setMatchGlowCards([]);
+                      }, 800);
+                    } else {
+                      // No match
+                      setTimeout(() => {
+                        setSelectedMatchCards([]);
+                      }, 1000);
+                    }
+                  }
+                }}
+                disabled={isMatched}
+                className={`p-4 rounded-lg border-2 transition-all min-h-[100px] flex items-center justify-center text-center ${
+                  isMatched ? 'opacity-0 pointer-events-none' : ''
+                } ${isGlowing ? 'animate-pulse' : ''}`}
+                style={{
+                  backgroundColor: isMatched 
+                    ? 'transparent'
+                    : isGlowing
+                      ? 'rgba(104, 211, 145, 0.4)'
+                      : isSelected 
+                        ? 'rgba(184, 134, 11, 0.3)'
+                        : 'rgba(0, 0, 0, 0.4)',
+                  borderColor: isMatched
+                    ? 'transparent'
+                    : isGlowing
+                      ? '#68D391'
+                      : isSelected
+                        ? '#D4AF37'
+                        : 'rgba(139, 0, 0, 0.6)',
+                  boxShadow: isGlowing
+                    ? '0 0 20px rgba(104, 211, 145, 0.8), 0 0 40px rgba(104, 211, 145, 0.4)'
+                    : isSelected
+                      ? '0 0 10px rgba(212, 175, 55, 0.4)'
+                      : 'none',
+                  color: '#F5F5DC',
+                  cursor: isMatched ? 'default' : 'pointer'
+                }}
+              >
+                <span className="text-sm">{card.text}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  </div>
+)}
+
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
@@ -7180,7 +7537,7 @@ setMiniBossCount(0);
           <X size={20}/>
         </button>
         <div className="text-center">
-          <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ACCEPT NEW TRIAL</h3>
+          <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>NEW TRIAL</h3>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
             <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
@@ -8286,12 +8643,12 @@ setMiniBossCount(0);
               className="rounded-lg p-4 border-2 shadow-2xl max-w-sm"
               style={{
                 background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95))',
-                borderColor: GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity].color,
-                boxShadow: `0 0 30px ${GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity].color}80`
+                borderColor: GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity.toLowerCase()]?.color || '#9E9E9E',
+                boxShadow: `0 0 30px ${GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity.toLowerCase()]?.color || '#9E9E9E'}80`
               }}
             >
               <div className="mb-2">
-                <p className="text-xs uppercase font-bold mb-1" style={{color: GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity].color}}>
+                <p className="text-xs uppercase font-bold mb-1" style={{color: GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity.toLowerCase()]?.color || '#9E9E9E'}}>
                   {showAchievementNotification.rarity} ACHIEVEMENT UNLOCKED
                 </p>
                 <h3 className="font-bold text-xl mb-1" style={{color: COLORS.gold}}>
@@ -8317,7 +8674,7 @@ setMiniBossCount(0);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.8.0 - Fourth-Wall Taunt System</p>
+          <p className="text-xs text-gray-600">v3.9.0 - Wave Battles & Planner Sync Fix</p>
         </div>
       </div>
       )}
