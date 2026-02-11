@@ -1212,20 +1212,7 @@ const getDateKey = useCallback((date) => {
 if (data.eliteBossDefeatedToday !== undefined) setEliteBossDefeatedToday(data.eliteBossDefeatedToday);
 if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.studyStats) setStudyStats(data.studyStats);
-        if (data.weeklyPlan) {
-          // Migrate old tasks without IDs
-          const migratedPlan = {};
-          Object.keys(data.weeklyPlan).forEach(day => {
-            migratedPlan[day] = data.weeklyPlan[day].map(task => {
-              if (!task.id) {
-                // Add ID to old tasks
-                return { ...task, id: Date.now() + Math.random() };
-              }
-              return task;
-            });
-          });
-          setWeeklyPlan(migratedPlan);
-        }
+        if (data.weeklyPlan) setWeeklyPlan(data.weeklyPlan);
         if (data.calendarTasks) setCalendarTasks(data.calendarTasks);
         if (data.calendarFocus) setCalendarFocus(data.calendarFocus);
         if (data.calendarEvents) {
@@ -4961,9 +4948,10 @@ setMiniBossCount(0);
   if (a.priority !== 'important' && b.priority === 'important') return 1;
   return 0;
 }).map((item) => {
+  const idx = weeklyPlan[day].indexOf(item);
   return (
     <div 
-      key={item.id || item.title} 
+      key={idx} 
       className={`rounded-lg p-4 border-2 ${
         item.completed 
           ? 'opacity-60' 
@@ -5010,11 +4998,7 @@ setMiniBossCount(0);
         </div>
         <div className="flex gap-2">
           <button 
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent event bubbling
-              console.log('Delete button clicked for:', item.title);
-              
+            onClick={() => {
               const today = new Date();
               const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
               const isToday = day === todayDayName;
@@ -5024,18 +5008,10 @@ setMiniBossCount(0);
                 : `Delete "${item.title}" from ${day}'s plan?`;
               
               if (window.confirm(confirmMsg)) {
-                console.log('Confirmed deletion for:', item.title, 'ID:', item.id);
-                // Remove from weekly plan - filter by unique ID (or title+priority for old tasks)
+                // Remove from weekly plan
                 setWeeklyPlan(prev => ({
                   ...prev,
-                  [day]: prev[day].filter(t => {
-                    if (item.id && t.id) {
-                      return t.id !== item.id; // Use ID if available
-                    } else {
-                      // Fallback: match by title and priority (for old tasks without IDs)
-                      return !(t.title === item.title && t.priority === item.priority);
-                    }
-                  })
+                  [day]: prev[day].filter((_, i) => i !== idx)
                 }));
                 
                 // Only remove from quest tab if deleting from today
@@ -5045,12 +5021,9 @@ setMiniBossCount(0);
                 } else {
                   addLog(`Deleted "${item.title}" from ${day} plan`);
                 }
-              } else {
-                console.log('Deletion cancelled');
               }
             }}
-            className="text-red-400 hover:text-red-300 cursor-pointer"
-            style={{position: 'relative', zIndex: 10}}
+            className="text-red-400 hover:text-red-300"
           >
             <X size={16}/>
           </button>
@@ -7483,8 +7456,7 @@ setMiniBossCount(0);
                 ...prev, 
                 [selectedDay]: [...prev[selectedDay], {
                   ...newPlanItem, 
-                  completed: false,
-                  id: Date.now() + Math.random() // Unique ID
+                  completed: false
                 }] 
               })); 
               
