@@ -147,10 +147,10 @@ const GAME_CONSTANTS = {
   
   GEAR_BUDGET: {
     common: { totalBudget: 10, affixCount: 1, affixPowerRange: [8, 12] },
-    uncommon: { totalBudget: 25, affixCount: 2, affixPowerRange: [10, 15] },
-    rare: { totalBudget: 50, affixCount: 3, affixPowerRange: [14, 20] },
-    epic: { totalBudget: 90, affixCount: 4, affixPowerRange: [20, 28] },
-    legendary: { totalBudget: 150, affixCount: 5, affixPowerRange: [25, 35] }
+    uncommon: { totalBudget: 18, affixCount: 2, affixPowerRange: [7, 11] },
+    rare: { totalBudget: 28, affixCount: 3, affixPowerRange: [7, 12] },
+    epic: { totalBudget: 40, affixCount: 4, affixPowerRange: [8, 12] },
+    legendary: { totalBudget: 55, affixCount: 5, affixPowerRange: [9, 13] }
   },
   
   AFFIX_COSTS: {
@@ -668,12 +668,21 @@ const FantasyStudyQuest = () => {
   
   const getMaxHp = useCallback(() => {
     const pendantBonus = equippedPendant ? equippedPendant.hp : 0;
-    return GAME_CONSTANTS.MAX_HP + pendantBonus;
-  }, [equippedPendant]);
+    
+    // Add flatHP from armor affixes
+    let armorHpBonus = 0;
+    Object.values(equippedArmor).forEach(piece => {
+      if (piece && piece.affixes && piece.affixes.flatHP) {
+        armorHpBonus += piece.affixes.flatHP;
+      }
+    });
+    
+    return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + armorHpBonus);
+  }, [equippedPendant, equippedArmor]);
   
   const getMaxStamina = useCallback(() => {
     const ringBonus = equippedRing ? equippedRing.stamina : 0;
-    return GAME_CONSTANTS.MAX_STAMINA + ringBonus;
+    return Math.floor(GAME_CONSTANTS.MAX_STAMINA + ringBonus);
   }, [equippedRing]);
   
   const getBaseAttack = useCallback(() => {
@@ -685,7 +694,24 @@ const FantasyStudyQuest = () => {
     // Add equipped weapon attack
     const weaponAttack = equippedWeapon ? equippedWeapon.attack : 0;
     
-    return baseAttack + weaponAttack;
+    // Add weapon affixes
+    let affixBonus = 0;
+    if (equippedWeapon && equippedWeapon.affixes) {
+      const affixes = equippedWeapon.affixes;
+      
+      // Flat damage bonus
+      if (affixes.flatDamage) {
+        affixBonus += affixes.flatDamage;
+      }
+      
+      // Percent damage bonus (applied to total)
+      if (affixes.percentDamage) {
+        const percentBonus = (baseAttack + weaponAttack + affixBonus) * (affixes.percentDamage / 100);
+        affixBonus += percentBonus;
+      }
+    }
+    
+    return Math.floor(baseAttack + weaponAttack + affixBonus);
   }, [hero, equippedWeapon]);
   
   const getBaseDefense = useCallback(() => {
@@ -699,7 +725,17 @@ const FantasyStudyQuest = () => {
       return total + (piece ? piece.defense : 0);
     }, 0);
     
-    return baseDefense + armorDefense;
+    // Add armor affixes
+    let affixBonus = 0;
+    Object.values(equippedArmor).forEach(piece => {
+      if (piece && piece.affixes) {
+        if (piece.affixes.flatArmor) {
+          affixBonus += piece.affixes.flatArmor;
+        }
+      }
+    });
+    
+    return Math.floor(baseDefense + armorDefense + affixBonus);
   }, [hero, equippedArmor]);
   
   // Rarity rolling system
@@ -708,11 +744,11 @@ const FantasyStudyQuest = () => {
     
     // Elite and boss enemies have better drop rates
     const rates = enemyType === 'boss' ? {
-      common: 0,
-      uncommon: 20,
-      rare: 40,
+      common: 5,
+      uncommon: 15,
+      rare: 35,
       epic: 30,
-      legendary: 10
+      legendary: 15
     } : enemyType === 'elite' ? {
       common: 30,
       uncommon: 35,
@@ -752,6 +788,51 @@ const FantasyStudyQuest = () => {
       legendary: 2.5
     };
     return multipliers[rarity] || 1.0;
+  }, []);
+  
+  // Generate affixes for equipment based on rarity
+  const generateAffixes = useCallback((rarity, type = 'weapon') => {
+    const budget = GAME_CONSTANTS.GEAR_BUDGET[rarity];
+    if (!budget) return {};
+    
+    const affixCosts = GAME_CONSTANTS.AFFIX_COSTS[type];
+    const affixTypes = Object.keys(affixCosts);
+    
+    // Randomly select affixes
+    const selectedAffixes = [];
+    const availableAffixes = [...affixTypes];
+    
+    for (let i = 0; i < budget.affixCount && availableAffixes.length > 0; i++) {
+      const randomIndex = Math.floor(Math.random() * availableAffixes.length);
+      selectedAffixes.push(availableAffixes[randomIndex]);
+      availableAffixes.splice(randomIndex, 1);
+    }
+    
+    // Distribute budget across selected affixes
+    const affixes = {};
+    let remainingBudget = budget.totalBudget;
+    
+    selectedAffixes.forEach((affixType, index) => {
+      const isLast = index === selectedAffixes.length - 1;
+      const cost = affixCosts[affixType];
+      
+      if (isLast) {
+        // Give remaining budget to last affix
+        affixes[affixType] = remainingBudget / cost;
+      } else {
+        // Random allocation between powerRange
+        const minAlloc = Math.floor(budget.affixPowerRange[0]);
+        const maxAlloc = Math.floor(budget.affixPowerRange[1]);
+        const budgetPoints = Math.min(
+          remainingBudget,
+          Math.floor(Math.random() * (maxAlloc - minAlloc + 1)) + minAlloc
+        );
+        affixes[affixType] = budgetPoints / cost;
+        remainingBudget -= budgetPoints;
+      }
+    });
+    
+    return affixes;
   }, []);
   
   const [tasks, setTasks] = useState([]);
@@ -1131,7 +1212,20 @@ const getDateKey = useCallback((date) => {
 if (data.eliteBossDefeatedToday !== undefined) setEliteBossDefeatedToday(data.eliteBossDefeatedToday);
 if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.studyStats) setStudyStats(data.studyStats);
-        if (data.weeklyPlan) setWeeklyPlan(data.weeklyPlan);
+        if (data.weeklyPlan) {
+          // Migrate old tasks without IDs
+          const migratedPlan = {};
+          Object.keys(data.weeklyPlan).forEach(day => {
+            migratedPlan[day] = data.weeklyPlan[day].map(task => {
+              if (!task.id) {
+                // Add ID to old tasks
+                return { ...task, id: Date.now() + Math.random() };
+              }
+              return task;
+            });
+          });
+          setWeeklyPlan(migratedPlan);
+        }
         if (data.calendarTasks) setCalendarTasks(data.calendarTasks);
         if (data.calendarFocus) setCalendarFocus(data.calendarFocus);
         if (data.calendarEvents) {
@@ -1787,31 +1881,43 @@ if (task.overdue) {
       addLog('⚡ Found Stamina Potion!');
     } else if (roll < GAME_CONSTANTS.LOOT_RATES.WEAPON) {
       // Generate random weapon
+      const rarity = rollRarity('normal');
+      const multiplier = getRarityMultiplier(rarity);
+      
       const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-      const attack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const attack = Math.floor(baseAttack * multiplier);
       const names = GAME_CONSTANTS.WEAPON_NAMES;
       const name = names[Math.floor(Math.random() * names.length)];
+      const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newWeapon = { name, attack, id: Date.now() };
+      const affixes = generateAffixes(rarity, 'weapon');
+      const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
       setWeaponInventory(prev => [...prev, newWeapon]);
       
-      addLog(`Weapon found: ${name} (+${attack} ATK)`);
+      addLog(`Weapon found: ${rarityName} ${name} (+${attack} ATK)`);
     } else if (roll < GAME_CONSTANTS.LOOT_RATES.ARMOR) {
       // Generate random armor piece
+      const rarity = rollRarity('normal');
+      const multiplier = getRarityMultiplier(rarity);
+      
       const slots = ['helmet', 'chest', 'gloves', 'boots'];
       const slot = slots[Math.floor(Math.random() * slots.length)];
       const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-      const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const defense = Math.floor(baseDefense * multiplier);
       const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
       const name = names[Math.floor(Math.random() * names.length)];
+      const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newArmor = { name, defense, id: Date.now() };
+      const affixes = generateAffixes(rarity, 'armor');
+      const newArmor = { name, defense, rarity, affixes, id: Date.now() };
       setArmorInventory(prev => ({
         ...prev,
         [slot]: [...prev[slot], newArmor]
       }));
       
-      addLog(`Armor found: ${name} (+${defense} DEF)`);
+      addLog(`Armor found: ${rarityName} ${name} (+${defense} DEF)`);
     }
     
     // Mark task as done
@@ -2198,19 +2304,46 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Calculate base damage
     const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
     
-    // Crit system
+    // Crit system with weapon affixes
+    let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    let critMultiplier = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
+    
+    // Add weapon affixes to crit
+    if (equippedWeapon && equippedWeapon.affixes) {
+      if (equippedWeapon.affixes.critChance) {
+        critChance += equippedWeapon.affixes.critChance;
+      }
+      if (equippedWeapon.affixes.critMultiplier) {
+        critMultiplier += equippedWeapon.affixes.critMultiplier;
+      }
+    }
+    
     const critRoll = Math.random() * 100;
-    const critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance; // Can be modified by gear later
     const isCrit = critRoll < critChance;
-    const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
+    const actualCritMultiplier = isCrit ? critMultiplier : 1.0;
     
     // Apply crit and enemy defense
-    const damage = Math.max(1, (rawDamage * critMultiplier) - enemyDef);
+    const damage = Math.max(1, (rawDamage * actualCritMultiplier) - enemyDef);
     let finalDamage = damage;
     let bonusMessages = [];
     
     if (isCrit) {
-      bonusMessages.push(`💥 CRITICAL HIT! (${critMultiplier}x damage)`);
+      bonusMessages.push(`💥 CRITICAL HIT! (${actualCritMultiplier.toFixed(1)}x damage)`);
+    }
+    
+    // Check for poison proc from weapon affixes
+    if (equippedWeapon && equippedWeapon.affixes && equippedWeapon.affixes.poisonChance) {
+      const poisonProcRoll = Math.random() * 100;
+      if (poisonProcRoll < equippedWeapon.affixes.poisonChance) {
+        const poisonDmg = Math.floor(equippedWeapon.affixes.poisonDamage || 5);
+        setBossDebuffs(prev => ({
+          ...prev,
+          poisonTurns: 5,
+          poisonDamage: poisonDmg,
+          poisonedVulnerability: 0.15
+        }));
+        bonusMessages.push(`☠️ Poison applied! (${poisonDmg} dmg/turn, +15% vulnerability)`);
+      }
     }
     
     if (bossDebuffs.poisonTurns > 0) {
@@ -2393,13 +2526,11 @@ if (battleType === 'elite') {
   
   // Check if wave continues
   if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
-    // More enemies in wave
+    // More enemies in wave - keep battle screen open
     const nextEnemy = currentWaveEnemy + 1;
     addLog(`Next wave enemy incoming...`);
     setTimeout(() => spawnRegularEnemy(true, nextEnemy, totalWaveEnemies), 1500);
-    setShowBoss(false);
-    setBattling(false);
-    setBattleMode(false);
+    // Don't close battle screen - let it transition to next enemy
     return;
   }
   
@@ -2441,7 +2572,8 @@ if (battleType === 'elite') {
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newWeapon = { name, attack, rarity, id: Date.now() };
+            const affixes = generateAffixes(rarity, 'weapon');
+            const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
             setWeaponInventory(prev => [...prev, newWeapon]);
             
             lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
@@ -2461,7 +2593,8 @@ if (battleType === 'elite') {
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newArmor = { name, defense, rarity, id: Date.now() };
+            const affixes = generateAffixes(rarity, 'armor');
+            const newArmor = { name, defense, rarity, affixes, id: Date.now() };
             setArmorInventory(prev => ({
               ...prev,
               [slot]: [...prev[slot], newArmor]
@@ -2533,7 +2666,8 @@ if (battleType === 'elite') {
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newWeapon = { name, attack, rarity, id: Date.now() };
+            const affixes = generateAffixes(rarity, 'weapon');
+            const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
             setWeaponInventory(prev => [...prev, newWeapon]);
             
             lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
@@ -2553,7 +2687,8 @@ if (battleType === 'elite') {
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newArmor = { name, defense, rarity, id: Date.now() };
+            const affixes = generateAffixes(rarity, 'armor');
+            const newArmor = { name, defense, rarity, affixes, id: Date.now() };
             setArmorInventory(prev => ({
               ...prev,
               [slot]: [...prev[slot], newArmor]
@@ -2646,6 +2781,17 @@ const playerArmor = getBaseDefense() + (armorPolishActive ? 5 : 0);
 const K = GAME_CONSTANTS.ARMOR_K_CONSTANT; // 60
 const damageReduction = K / (K + playerArmor);
 let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
+
+// Apply percentDR from armor affixes
+let percentDR = 0;
+Object.values(equippedArmor).forEach(piece => {
+  if (piece && piece.affixes && piece.affixes.percentDR) {
+    percentDR += piece.affixes.percentDR;
+  }
+});
+if (percentDR > 0) {
+  bossDamage = Math.floor(bossDamage * (1 - percentDR / 100));
+}
 
 // Curse level increases enemy damage
 if (curseLevel === 2) {
@@ -3120,7 +3266,8 @@ if (enragedTurns > 0) {
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newWeapon = { name, attack, rarity, id: Date.now() };
+      const affixes = generateAffixes(rarity, 'weapon');
+      const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
       setWeaponInventory(prev => [...prev, newWeapon]);
       
       lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
@@ -3140,7 +3287,8 @@ if (enragedTurns > 0) {
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newArmor = { name, defense, rarity, id: Date.now() };
+      const affixes = generateAffixes(rarity, 'armor');
+      const newArmor = { name, defense, rarity, affixes, id: Date.now() };
       setArmorInventory(prev => ({
         ...prev,
         [slot]: [...prev[slot], newArmor]
@@ -3236,6 +3384,17 @@ const playerArmor = getBaseDefense() + (armorPolishActive ? 5 : 0);
 const K = GAME_CONSTANTS.ARMOR_K_CONSTANT; // 60
 const damageReduction = K / (K + playerArmor);
 let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
+
+// Apply percentDR from armor affixes
+let percentDR = 0;
+Object.values(equippedArmor).forEach(piece => {
+  if (piece && piece.affixes && piece.affixes.percentDR) {
+    percentDR += piece.affixes.percentDR;
+  }
+});
+if (percentDR > 0) {
+  bossDamage = Math.floor(bossDamage * (1 - percentDR / 100));
+}
 
 // Curse level increases enemy damage
 if (curseLevel === 2) {
@@ -3824,28 +3983,176 @@ setMiniBossCount(0);
                   <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
                   <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
                   <button onClick={() => {
+                    const rarity = rollRarity('normal');
+                    const multiplier = getRarityMultiplier(rarity);
                     const slots = ['helmet', 'chest', 'gloves', 'boots'];
                     const slot = slots[Math.floor(Math.random() * slots.length)];
                     const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-                    const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                    const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                    const defense = Math.floor(baseDefense * multiplier);
                     const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
                     const name = names[Math.floor(Math.random() * names.length)];
-                    const newArmor = { name, defense, id: Date.now() };
+                    const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+                    const affixes = generateAffixes(rarity, 'armor');
+                    const newArmor = { name, defense, rarity, affixes, id: Date.now() };
                     setArmorInventory(prev => ({
                       ...prev,
                       [slot]: [...prev[slot], newArmor]
                     }));
-                    addLog(`Debug: Found ${name} (+${defense} DEF)`);
+                    addLog(`Debug: Found ${rarityName} ${name} (+${defense} DEF)`);
                   }} className="bg-amber-800 hover:bg-amber-700 px-4 py-2 rounded text-xs transition-all border border-amber-600" style={{color: '#F5F5DC'}}>+Random Armor</button>
                   <button onClick={() => {
+                    const rarity = rollRarity('normal');
+                    const multiplier = getRarityMultiplier(rarity);
                     const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-                    const attack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                    const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                    const attack = Math.floor(baseAttack * multiplier);
                     const names = GAME_CONSTANTS.WEAPON_NAMES;
                     const name = names[Math.floor(Math.random() * names.length)];
-                    const newWeapon = { name, attack, id: Date.now() };
+                    const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+                    const affixes = generateAffixes(rarity, 'weapon');
+                    const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
                     setWeaponInventory(prev => [...prev, newWeapon]);
-                    addLog(`Debug: Found ${name} (+${attack} ATK)`);
+                    addLog(`Debug: Found ${rarityName} ${name} (+${attack} ATK)`);
                   }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>+Random Weapon</button>
+                </div>
+              </div>
+
+              {/* Loot Testing */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LOOT TESTING</h4>
+                
+                {/* Weapons by Rarity */}
+                <div className="mb-3">
+                  <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Spawn Weapons:</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {['common', 'uncommon', 'rare', 'epic', 'legendary'].map(rarity => (
+                      <button key={rarity} onClick={() => {
+                        const multiplier = getRarityMultiplier(rarity);
+                        const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+                        const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                        const attack = Math.floor(baseAttack * multiplier);
+                        const names = GAME_CONSTANTS.WEAPON_NAMES;
+                        const name = names[Math.floor(Math.random() * names.length)];
+                        const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+                        const affixes = generateAffixes(rarity, 'weapon');
+                        const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
+                        setWeaponInventory(prev => [...prev, newWeapon]);
+                        addLog(`Debug: ${rarityName} ${name} (+${attack} ATK)`);
+                      }} className="hover:brightness-110 px-2 py-2 rounded text-xs transition-all border-2" style={{
+                        backgroundColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color + '40',
+                        borderColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color,
+                        color: '#F5F5DC'
+                      }}>
+                        {GAME_CONSTANTS.RARITY_TIERS[rarity].name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Armor by Rarity */}
+                <div className="mb-3">
+                  <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Spawn Armor:</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {['common', 'uncommon', 'rare', 'epic', 'legendary'].map(rarity => (
+                      <button key={rarity} onClick={() => {
+                        const multiplier = getRarityMultiplier(rarity);
+                        const slots = ['helmet', 'chest', 'gloves', 'boots'];
+                        const slot = slots[Math.floor(Math.random() * slots.length)];
+                        const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+                        const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                        const defense = Math.floor(baseDefense * multiplier);
+                        const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+                        const name = names[Math.floor(Math.random() * names.length)];
+                        const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+                        const affixes = generateAffixes(rarity, 'armor');
+                        const newArmor = { name, defense, rarity, affixes, id: Date.now() };
+                        setArmorInventory(prev => ({
+                          ...prev,
+                          [slot]: [...prev[slot], newArmor]
+                        }));
+                        addLog(`Debug: ${rarityName} ${name} (+${defense} DEF)`);
+                      }} className="hover:brightness-110 px-2 py-2 rounded text-xs transition-all border-2" style={{
+                        backgroundColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color + '40',
+                        borderColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color,
+                        color: '#F5F5DC'
+                      }}>
+                        {GAME_CONSTANTS.RARITY_TIERS[rarity].name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Special Affix Testing */}
+                <div>
+                  <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Special Affixes:</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <button onClick={() => {
+                      const rarity = 'epic';
+                      const multiplier = getRarityMultiplier(rarity);
+                      const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+                      const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                      const attack = Math.floor(baseAttack * multiplier);
+                      const names = GAME_CONSTANTS.WEAPON_NAMES;
+                      const name = names[Math.floor(Math.random() * names.length)];
+                      // Force poison affixes
+                      const affixes = {
+                        poisonChance: 20,
+                        poisonDamage: 8,
+                        flatDamage: 10
+                      };
+                      const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
+                      setWeaponInventory(prev => [...prev, newWeapon]);
+                      addLog(`Debug: Poisonous ${name} (20% poison, 8 dmg/turn)`);
+                    }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>
+                      Poison Weapon
+                    </button>
+                    <button onClick={() => {
+                      const rarity = 'epic';
+                      const multiplier = getRarityMultiplier(rarity);
+                      const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+                      const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                      const attack = Math.floor(baseAttack * multiplier);
+                      const names = GAME_CONSTANTS.WEAPON_NAMES;
+                      const name = names[Math.floor(Math.random() * names.length)];
+                      // Force crit affixes
+                      const affixes = {
+                        critChance: 8,
+                        critMultiplier: 0.8,
+                        percentDamage: 15
+                      };
+                      const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
+                      setWeaponInventory(prev => [...prev, newWeapon]);
+                      addLog(`Debug: Critical ${name} (8% crit, +0.8x mult)`);
+                    }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>
+                      Crit Weapon
+                    </button>
+                    <button onClick={() => {
+                      const rarity = 'epic';
+                      const multiplier = getRarityMultiplier(rarity);
+                      const slots = ['helmet', 'chest', 'gloves', 'boots'];
+                      const slot = slots[Math.floor(Math.random() * slots.length)];
+                      const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+                      const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                      const defense = Math.floor(baseDefense * multiplier);
+                      const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+                      const name = names[Math.floor(Math.random() * names.length)];
+                      // Force tank affixes
+                      const affixes = {
+                        flatArmor: 10,
+                        percentDR: 5,
+                        flatHP: 20
+                      };
+                      const newArmor = { name, defense, rarity, affixes, id: Date.now() };
+                      setArmorInventory(prev => ({
+                        ...prev,
+                        [slot]: [...prev[slot], newArmor]
+                      }));
+                      addLog(`Debug: Tank ${name} (+10 armor, +5% DR, +20 HP)`);
+                    }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>
+                      Tank Armor
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -4654,10 +4961,9 @@ setMiniBossCount(0);
   if (a.priority !== 'important' && b.priority === 'important') return 1;
   return 0;
 }).map((item) => {
-  const idx = weeklyPlan[day].indexOf(item);
   return (
     <div 
-      key={idx} 
+      key={item.id || item.title} 
       className={`rounded-lg p-4 border-2 ${
         item.completed 
           ? 'opacity-60' 
@@ -4704,17 +5010,47 @@ setMiniBossCount(0);
         </div>
         <div className="flex gap-2">
           <button 
-            onClick={() => {
-              if (window.confirm(`Delete "${item.title}" from weekly plan? This will also remove it from all future calendar dates.`)) {
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent event bubbling
+              console.log('Delete button clicked for:', item.title);
+              
+              const today = new Date();
+              const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+              const isToday = day === todayDayName;
+              
+              const confirmMsg = isToday 
+                ? `Delete "${item.title}" from today's plan? This will also remove it from your quest tasks.`
+                : `Delete "${item.title}" from ${day}'s plan?`;
+              
+              if (window.confirm(confirmMsg)) {
+                console.log('Confirmed deletion for:', item.title, 'ID:', item.id);
+                // Remove from weekly plan - filter by unique ID (or title+priority for old tasks)
                 setWeeklyPlan(prev => ({
                   ...prev,
-                  [day]: prev[day].filter((_, i) => i !== idx)
+                  [day]: prev[day].filter(t => {
+                    if (item.id && t.id) {
+                      return t.id !== item.id; // Use ID if available
+                    } else {
+                      // Fallback: match by title and priority (for old tasks without IDs)
+                      return !(t.title === item.title && t.priority === item.priority);
+                    }
+                  })
                 }));
                 
-                addLog(`Deleted "${item.title}" from ${day} plan`);
+                // Only remove from quest tab if deleting from today
+                if (isToday) {
+                  setTasks(prevTasks => prevTasks.filter(t => t.title !== item.title));
+                  addLog(`Deleted "${item.title}" from today's plan and tasks`);
+                } else {
+                  addLog(`Deleted "${item.title}" from ${day} plan`);
+                }
+              } else {
+                console.log('Deletion cancelled');
               }
             }}
-            className="text-red-400 hover:text-red-300"
+            className="text-red-400 hover:text-red-300 cursor-pointer"
+            style={{position: 'relative', zIndex: 10}}
           >
             <X size={16}/>
           </button>
@@ -5441,15 +5777,44 @@ setMiniBossCount(0);
                   <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
                     <h3 className="font-bold text-lg mb-3 text-center" style={{color: '#FF6B6B'}}>EQUIPPED WEAPON</h3>
                     
-                    <div className="rounded p-3 border mb-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                    <div className="rounded p-4 border-2 mb-3" style={{
+                      backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                      borderColor: equippedWeapon ? getRarityColor(equippedWeapon.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
+                      boxShadow: equippedWeapon ? `0 0 15px ${getRarityColor(equippedWeapon.rarity || 'common')}50` : 'none'
+                    }}>
                       {equippedWeapon ? (
-                        <div className="text-center">
-                          <p className="text-lg font-bold mb-1" style={{color: getRarityColor(equippedWeapon.rarity || 'common')}}>{equippedWeapon.name}</p>
-                          <p className="text-sm" style={{color: '#FF6B6B'}}>+{equippedWeapon.attack} ATK</p>
+                        <div>
+                          <p className="text-xl font-bold text-center mb-1" style={{color: getRarityColor(equippedWeapon.rarity || 'common')}}>{equippedWeapon.name}</p>
                           {equippedWeapon.rarity && (
-                            <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedWeapon.rarity)}}>
+                            <p className="text-xs italic text-center mb-2" style={{color: getRarityColor(equippedWeapon.rarity)}}>
                               {GAME_CONSTANTS.RARITY_TIERS[equippedWeapon.rarity].name}
                             </p>
+                          )}
+                          <p className="text-base text-center mb-3" style={{color: '#68D391'}}>+{equippedWeapon.attack} ATK</p>
+                          {equippedWeapon.affixes && Object.keys(equippedWeapon.affixes).length > 0 && (
+                            <>
+                              <div className="border-t mx-6 mb-3" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                              <div className="space-y-1">
+                                {equippedWeapon.affixes.flatDamage && (
+                                  <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Attack Damage</p>
+                                )}
+                                {equippedWeapon.affixes.percentDamage && (
+                                  <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(equippedWeapon.affixes.percentDamage)}% Bonus Damage</p>
+                                )}
+                                {equippedWeapon.affixes.critChance && (
+                                  <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(equippedWeapon.affixes.critChance)}% Critical Hit Chance</p>
+                                )}
+                                {equippedWeapon.affixes.critMultiplier && (
+                                  <p className="text-xs" style={{color: '#FFD700'}}>+{equippedWeapon.affixes.critMultiplier.toFixed(1)}x Critical Hit Damage</p>
+                                )}
+                                {equippedWeapon.affixes.poisonChance && (
+                                  <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison Chance</p>
+                                )}
+                                {equippedWeapon.affixes.poisonDamage && (
+                                  <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(equippedWeapon.affixes.poisonDamage)} Poison Damage per Turn</p>
+                                )}
+                              </div>
+                            </>
                           )}
                         </div>
                       ) : (
@@ -5459,7 +5824,7 @@ setMiniBossCount(0);
                     
                     <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
                       <p className="text-sm" style={{color: COLORS.silver}}>
-                        Total Attack: <span className="font-bold text-lg" style={{color: '#FF6B6B'}}>{getBaseAttack()}</span>
+                        Total Attack: <span className="font-bold text-lg" style={{color: '#68D391'}}>{getBaseAttack()}</span>
                       </p>
                     </div>
                   </div>
@@ -5471,15 +5836,37 @@ setMiniBossCount(0);
                       <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Weapons found in battle or unequipped</p>
                       
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {weaponInventory.map((wpn) => (
-                          <div key={wpn.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                            <div>
-                              <p className="text-sm font-bold" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
-                              <p className="text-xs" style={{color: '#FF6B6B'}}>+{wpn.attack} ATK</p>
+                        {weaponInventory
+                          .sort((a, b) => {
+                            const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+                            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+                          })
+                          .map((wpn) => (
+                          <div key={wpn.id} className="rounded p-3 border-2 flex justify-between items-center" style={{
+                            backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                            borderColor: getRarityColor(wpn.rarity || 'common'),
+                            boxShadow: `0 0 10px ${getRarityColor(wpn.rarity || 'common')}40`
+                          }}>
+                            <div className="flex-1">
+                              <p className="text-base font-bold text-center mb-1" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
                               {wpn.rarity && (
-                                <p className="text-xs italic" style={{color: getRarityColor(wpn.rarity)}}>
+                                <p className="text-xs italic text-center mb-1" style={{color: getRarityColor(wpn.rarity)}}>
                                   {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
                                 </p>
+                              )}
+                              <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{wpn.attack} ATK</p>
+                              {wpn.affixes && Object.keys(wpn.affixes).length > 0 && (
+                                <>
+                                  <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                                  <div className="space-y-0.5">
+                                    {wpn.affixes.flatDamage && <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(wpn.affixes.flatDamage)} Attack Damage</p>}
+                                    {wpn.affixes.percentDamage && <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(wpn.affixes.percentDamage)}% Bonus Damage</p>}
+                                    {wpn.affixes.critChance && <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(wpn.affixes.critChance)}% Critical Hit Chance</p>}
+                                    {wpn.affixes.critMultiplier && <p className="text-xs" style={{color: '#FFD700'}}>+{wpn.affixes.critMultiplier.toFixed(1)}x Critical Hit Damage</p>}
+                                    {wpn.affixes.poisonChance && <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(wpn.affixes.poisonChance)}% Poison Chance</p>}
+                                    {wpn.affixes.poisonDamage && <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(wpn.affixes.poisonDamage)} Poison Damage per Turn</p>}
+                                  </div>
+                                </>
                               )}
                             </div>
                             <button
@@ -5524,54 +5911,110 @@ setMiniBossCount(0);
                     
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       {/* Helmet */}
-                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Helmet</p>
+                      <div className="rounded p-3 border-2" style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                        borderColor: equippedArmor.helmet ? getRarityColor(equippedArmor.helmet.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
+                        boxShadow: equippedArmor.helmet ? `0 0 8px ${getRarityColor(equippedArmor.helmet.rarity || 'common')}40` : 'none'
+                      }}>
+                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Helmet</p>
                         {equippedArmor.helmet ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.helmet.rarity || 'common')}}>{equippedArmor.helmet.name}</p>
-                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} DEF</p>
+                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.helmet.rarity || 'common')}}>{equippedArmor.helmet.name}</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} DEF</p>
+                            {equippedArmor.helmet.affixes && Object.keys(equippedArmor.helmet.affixes).length > 0 && (
+                              <>
+                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                                <div className="space-y-0.5">
+                                  {equippedArmor.helmet.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.helmet.affixes.flatArmor)} Armor</p>}
+                                  {equippedArmor.helmet.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.helmet.affixes.percentDR)}% Damage Reduction</p>}
+                                  {equippedArmor.helmet.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.helmet.affixes.flatHP)} Maximum Health</p>}
+                                </div>
+                              </>
+                            )}
                           </div>
                         ) : (
-                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
                         )}
                       </div>
                       
                       {/* Chest */}
-                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Chest</p>
+                      <div className="rounded p-3 border-2" style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                        borderColor: equippedArmor.chest ? getRarityColor(equippedArmor.chest.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
+                        boxShadow: equippedArmor.chest ? `0 0 8px ${getRarityColor(equippedArmor.chest.rarity || 'common')}40` : 'none'
+                      }}>
+                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Chest</p>
                         {equippedArmor.chest ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.chest.rarity || 'common')}}>{equippedArmor.chest.name}</p>
-                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} DEF</p>
+                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.chest.rarity || 'common')}}>{equippedArmor.chest.name}</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} DEF</p>
+                            {equippedArmor.chest.affixes && Object.keys(equippedArmor.chest.affixes).length > 0 && (
+                              <>
+                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                                <div className="space-y-0.5">
+                                  {equippedArmor.chest.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.chest.affixes.flatArmor)} Armor</p>}
+                                  {equippedArmor.chest.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.chest.affixes.percentDR)}% Damage Reduction</p>}
+                                  {equippedArmor.chest.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.chest.affixes.flatHP)} Maximum Health</p>}
+                                </div>
+                              </>
+                            )}
                           </div>
                         ) : (
-                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
                         )}
                       </div>
                       
                       {/* Gloves */}
-                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Gloves</p>
+                      <div className="rounded p-3 border-2" style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                        borderColor: equippedArmor.gloves ? getRarityColor(equippedArmor.gloves.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
+                        boxShadow: equippedArmor.gloves ? `0 0 8px ${getRarityColor(equippedArmor.gloves.rarity || 'common')}40` : 'none'
+                      }}>
+                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Gloves</p>
                         {equippedArmor.gloves ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.gloves.rarity || 'common')}}>{equippedArmor.gloves.name}</p>
-                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} DEF</p>
+                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.gloves.rarity || 'common')}}>{equippedArmor.gloves.name}</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} DEF</p>
+                            {equippedArmor.gloves.affixes && Object.keys(equippedArmor.gloves.affixes).length > 0 && (
+                              <>
+                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                                <div className="space-y-0.5">
+                                  {equippedArmor.gloves.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.gloves.affixes.flatArmor)} Armor</p>}
+                                  {equippedArmor.gloves.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.gloves.affixes.percentDR)}% Damage Reduction</p>}
+                                  {equippedArmor.gloves.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.gloves.affixes.flatHP)} Maximum Health</p>}
+                                </div>
+                              </>
+                            )}
                           </div>
                         ) : (
-                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
                         )}
                       </div>
                       
                       {/* Boots */}
-                      <div className="rounded p-2 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                        <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Boots</p>
+                      <div className="rounded p-3 border-2" style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                        borderColor: equippedArmor.boots ? getRarityColor(equippedArmor.boots.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
+                        boxShadow: equippedArmor.boots ? `0 0 8px ${getRarityColor(equippedArmor.boots.rarity || 'common')}40` : 'none'
+                      }}>
+                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Boots</p>
                         {equippedArmor.boots ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.boots.rarity || 'common')}}>{equippedArmor.boots.name}</p>
-                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} DEF</p>
+                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.boots.rarity || 'common')}}>{equippedArmor.boots.name}</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} DEF</p>
+                            {equippedArmor.boots.affixes && Object.keys(equippedArmor.boots.affixes).length > 0 && (
+                              <>
+                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                                <div className="space-y-0.5">
+                                  {equippedArmor.boots.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.boots.affixes.flatArmor)} Armor</p>}
+                                  {equippedArmor.boots.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.boots.affixes.percentDR)}% Damage Reduction</p>}
+                                  {equippedArmor.boots.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.boots.affixes.flatHP)} Maximum Health</p>}
+                                </div>
+                              </>
+                            )}
                           </div>
                         ) : (
-                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
                         )}
                       </div>
                     </div>
@@ -5594,15 +6037,34 @@ setMiniBossCount(0);
                           armorInventory[slot].length > 0 ? (
                             <div key={slot}>
                               <p className="text-xs uppercase mb-2 font-bold" style={{color: COLORS.silver}}>{slot}s</p>
-                              {armorInventory[slot].map((piece, idx) => (
-                                <div key={piece.id} className="rounded p-2 mb-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                                  <div>
-                                    <p className="text-sm font-bold" style={{color: getRarityColor(piece.rarity || 'common')}}>{piece.name}</p>
-                                    <p className="text-xs" style={{color: '#68D391'}}>+{piece.defense} DEF</p>
+                              {armorInventory[slot]
+                                .sort((a, b) => {
+                                  const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+                                  return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+                                })
+                                .map((piece, idx) => (
+                                <div key={piece.id} className="rounded p-3 mb-2 border-2 flex justify-between items-center" style={{
+                                  backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                                  borderColor: getRarityColor(piece.rarity || 'common'),
+                                  boxShadow: `0 0 10px ${getRarityColor(piece.rarity || 'common')}40`
+                                }}>
+                                  <div className="flex-1">
+                                    <p className="text-base font-bold text-center mb-1" style={{color: getRarityColor(piece.rarity || 'common')}}>{piece.name}</p>
                                     {piece.rarity && (
-                                      <p className="text-xs italic" style={{color: getRarityColor(piece.rarity)}}>
+                                      <p className="text-xs italic text-center mb-1" style={{color: getRarityColor(piece.rarity)}}>
                                         {GAME_CONSTANTS.RARITY_TIERS[piece.rarity].name}
                                       </p>
+                                    )}
+                                    <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{piece.defense} DEF</p>
+                                    {piece.affixes && Object.keys(piece.affixes).length > 0 && (
+                                      <>
+                                        <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
+                                        <div className="space-y-0.5">
+                                          {piece.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(piece.affixes.flatArmor)} Armor</p>}
+                                          {piece.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(piece.affixes.percentDR)}% Damage Reduction</p>}
+                                          {piece.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(piece.affixes.flatHP)} Maximum Health</p>}
+                                        </div>
+                                      </>
                                     )}
                                   </div>
                                   <button
@@ -5711,7 +6173,12 @@ setMiniBossCount(0);
                       <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum health</p>
                       
                       <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {pendantInventory.map((pend) => (
+                        {pendantInventory
+                          .sort((a, b) => {
+                            const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+                            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+                          })
+                          .map((pend) => (
                           <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
@@ -5759,7 +6226,12 @@ setMiniBossCount(0);
                       <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum stamina</p>
                       
                       <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {ringInventory.map((rng) => (
+                        {ringInventory
+                          .sort((a, b) => {
+                            const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+                            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
+                          })
+                          .map((rng) => (
                           <div key={rng.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(rng.rarity || 'common')}}>{rng.name}</p>
@@ -7006,16 +7478,34 @@ setMiniBossCount(0);
         <button 
           onClick={() => { 
             if (newPlanItem.title) { 
+              // Add to weekly plan
               setWeeklyPlan(prev => ({ 
                 ...prev, 
                 [selectedDay]: [...prev[selectedDay], {
                   ...newPlanItem, 
-                  completed: false
+                  completed: false,
+                  id: Date.now() + Math.random() // Unique ID
                 }] 
               })); 
+              
+              // Auto-import to quest tab if it's today
+              const today = new Date();
+              const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+              if (selectedDay === todayDayName) {
+                setTasks(prevTasks => [...prevTasks, {
+                  title: newPlanItem.title,
+                  priority: newPlanItem.priority || 'routine',
+                  id: Date.now() + Math.random(),
+                  done: false,
+                  overdue: false
+                }]);
+                addLog(`Added "${newPlanItem.title}" to ${selectedDay} and imported to today's tasks`);
+              } else {
+                addLog(`Added "${newPlanItem.title}" to ${selectedDay}`);
+              }
+              
               setNewPlanItem({ title: '', priority: 'routine' }); 
               setShowPlanModal(false); 
-              addLog(`Added "${newPlanItem.title}" to ${selectedDay}`); 
             } 
           }}
           disabled={!newPlanItem.title} 
@@ -7824,12 +8314,12 @@ setMiniBossCount(0);
               className="rounded-lg p-4 border-2 shadow-2xl max-w-sm"
               style={{
                 background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95))',
-                borderColor: GAME_CONSTANTS.RARITY_COLORS[showAchievementNotification.rarity],
-                boxShadow: `0 0 30px ${GAME_CONSTANTS.RARITY_COLORS[showAchievementNotification.rarity]}80`
+                borderColor: GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity].color,
+                boxShadow: `0 0 30px ${GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity].color}80`
               }}
             >
               <div className="mb-2">
-                <p className="text-xs uppercase font-bold mb-1" style={{color: GAME_CONSTANTS.RARITY_COLORS[showAchievementNotification.rarity]}}>
+                <p className="text-xs uppercase font-bold mb-1" style={{color: GAME_CONSTANTS.RARITY_TIERS[showAchievementNotification.rarity].color}}>
                   {showAchievementNotification.rarity} ACHIEVEMENT UNLOCKED
                 </p>
                 <h3 className="font-bold text-xl mb-1" style={{color: COLORS.gold}}>
