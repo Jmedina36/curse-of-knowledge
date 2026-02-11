@@ -98,6 +98,105 @@ const GAME_CONSTANTS = {
     elite: 6,
     gauntlet: 8
   },
+  
+  // NEW COMBAT SYSTEMS - Engineered Balance
+  ARMOR_K_CONSTANT: 60, // Diminishing returns formula constant
+  
+  SCALING_CONFIG: {
+    normal: {
+      hpBase: 60,
+      hpGrowth: 1.25,        // 25% per day exponential
+      damageBase: 16,
+      damageGrowth: 1.20,
+      defenseBase: 3,
+      defenseGrowth: 1.15,
+      attackSpeed: 1.0
+    },
+    elite: {
+      hpBase: 140,
+      hpGrowth: 1.18,
+      damageBase: 16,
+      damageGrowth: 1.18,
+      defenseBase: 6,
+      defenseGrowth: 1.12,
+      attackSpeed: 1.0
+    },
+    boss: {
+      hpBase: 200,
+      hpGrowth: 1.12,
+      damageBase: 20,
+      damageGrowth: 1.15,
+      defenseBase: 8,
+      defenseGrowth: 1.10,
+      attackSpeed: 1.0
+    }
+  },
+  
+  CRIT_SYSTEM: {
+    baseCritChance: 10,      // 10% base crit chance
+    baseCritMultiplier: 2.0   // 2x damage on crit
+  },
+  
+  RARITY_TIERS: {
+    common: { color: '#9E9E9E', dropRate: 50, name: 'Common' },
+    uncommon: { color: '#4CAF50', dropRate: 30, name: 'Uncommon' },
+    rare: { color: '#2196F3', dropRate: 15, name: 'Rare' },
+    epic: { color: '#9C27B0', dropRate: 4, name: 'Epic' },
+    legendary: { color: '#FF9800', dropRate: 1, name: 'Legendary' }
+  },
+  
+  GEAR_BUDGET: {
+    common: { totalBudget: 10, affixCount: 1, affixPowerRange: [8, 12] },
+    uncommon: { totalBudget: 25, affixCount: 2, affixPowerRange: [10, 15] },
+    rare: { totalBudget: 50, affixCount: 3, affixPowerRange: [14, 20] },
+    epic: { totalBudget: 90, affixCount: 4, affixPowerRange: [20, 28] },
+    legendary: { totalBudget: 150, affixCount: 5, affixPowerRange: [25, 35] }
+  },
+  
+  AFFIX_COSTS: {
+    weapon: {
+      flatDamage: 1,           // 1 budget = +1 damage
+      percentDamage: 3,        // 1 budget = +0.33% damage
+      critChance: 5,           // 1 budget = +0.2% crit
+      critMultiplier: 10,      // 1 budget = +0.1x crit damage
+      poisonChance: 2,         // 1 budget = +0.5% poison chance
+      poisonDamage: 1.5        // 1 budget = +0.66 poison damage/turn
+    },
+    armor: {
+      flatArmor: 1,            // 1 budget = +1 armor
+      percentDR: 8,            // 1 budget = +0.125% DR
+      flatHP: 2                // 1 budget = +0.5 HP
+    }
+  },
+  
+  CURRENCY_REWARDS: {
+    normal: { min: 20, max: 35 },
+    elite: { min: 40, max: 70 },
+    boss: { min: 80, max: 120 }
+  },
+  
+  SHOP_CONFIG: {
+    refreshInterval: 2,       // Shop opens every 2 days
+    itemCount: 3,            // 3 items per shop
+    costs: {
+      common: 50,
+      uncommon: 100,
+      rare: 200,
+      epic: 400,
+      legendary: 800
+    }
+  },
+  
+  CRAFTING_COSTS: {
+    common: 25,
+    uncommon: 50,
+    rare: 100,
+    epic: 200,
+    legendary: 500
+  },
+  
+  PITY_TIMER_THRESHOLD: 10,  // Guaranteed upgrade after 10 fights
+  
   BOSS_ATTACK_DELAY: 1000,
   LOG_MAX_ENTRIES: 8,
   SKIP_PENALTIES: [
@@ -191,8 +290,8 @@ const GAME_CONSTANTS = {
   },
   
   WEAPON_STAT_RANGES: {
-    min: 2,
-    max: 10
+    min: 4,
+    max: 12
   },
   
   WEAPON_NAMES: [
@@ -527,6 +626,11 @@ const FantasyStudyQuest = () => {
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
   const [essence, setEssence] = useState(0); // Crafting currency from combat
+  const [currency, setCurrency] = useState(0); // Gold for shop purchases
+  const [pityCounter, setPityCounter] = useState(0); // Fights without upgrade (pity timer)
+  const [shopInventory, setShopInventory] = useState([]); // Current shop items
+  const [showShop, setShowShop] = useState(false); // Shop modal visibility
+  const [daysSinceShop, setDaysSinceShop] = useState(0); // Track shop refresh
   const [gauntletMilestone, setGauntletMilestone] = useState(1000); // Next XP threshold for Gauntlet
   const [gauntletUnlocked, setGauntletUnlocked] = useState(false); // Is Gauntlet currently available
   const [timeUntilMidnight, setTimeUntilMidnight] = useState(''); // Countdown to day reset
@@ -597,6 +701,58 @@ const FantasyStudyQuest = () => {
     
     return baseDefense + armorDefense;
   }, [hero, equippedArmor]);
+  
+  // Rarity rolling system
+  const rollRarity = useCallback((enemyType = 'normal') => {
+    const roll = Math.random() * 100;
+    
+    // Elite and boss enemies have better drop rates
+    const rates = enemyType === 'boss' ? {
+      common: 0,
+      uncommon: 20,
+      rare: 40,
+      epic: 30,
+      legendary: 10
+    } : enemyType === 'elite' ? {
+      common: 30,
+      uncommon: 35,
+      rare: 25,
+      epic: 8,
+      legendary: 2
+    } : {
+      common: 50,
+      uncommon: 30,
+      rare: 15,
+      epic: 4,
+      legendary: 1
+    };
+    
+    let cumulative = 0;
+    for (const [rarity, chance] of Object.entries(rates)) {
+      cumulative += chance;
+      if (roll < cumulative) {
+        return rarity;
+      }
+    }
+    return 'common';
+  }, []);
+  
+  // Get rarity color
+  const getRarityColor = useCallback((rarity) => {
+    return GAME_CONSTANTS.RARITY_TIERS[rarity]?.color || '#9E9E9E';
+  }, []);
+  
+  // Scale stats by rarity (multipliers)
+  const getRarityMultiplier = useCallback((rarity) => {
+    const multipliers = {
+      common: 1.0,
+      uncommon: 1.3,
+      rare: 1.6,
+      epic: 2.0,
+      legendary: 2.5
+    };
+    return multipliers[rarity] || 1.0;
+  }, []);
   
   const [tasks, setTasks] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -1701,9 +1857,9 @@ setTimeout(() => {
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
   
-  const baseHp = 60;
-  const dayScaling = 8;
-  const enemyHp = baseHp + (currentDay * dayScaling);
+  // Exponential scaling from SCALING_CONFIG
+  const config = GAME_CONSTANTS.SCALING_CONFIG.normal;
+  const enemyHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
   
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
@@ -1758,14 +1914,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     const bossNumber = miniBossCount + 1;
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
-    const dayScaling = Math.floor(Math.sqrt(currentDay) * 50);
-    const levelScaling = level * 30; // Reduced from 40 to 30
-    const baseHp = GAME_CONSTANTS.MINI_BOSS_BASE + dayScaling + levelScaling;
     
-    // Cap elite boss HP
-    const cappedBaseHp = Math.min(baseHp, 800);
+    // Exponential scaling from SCALING_CONFIG
+    const config = GAME_CONSTANTS.SCALING_CONFIG.elite;
+    const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
     
-    const scaledHp = Math.floor(cappedBaseHp * (1 + bossNumber * 0.2));
+    const scaledHp = Math.floor(baseHp * (1 + bossNumber * 0.2));
     const bossHealth = Math.floor(scaledHp * (2 - completionRate));
     
     setCurrentAnimation('screen-shake');
@@ -1887,15 +2041,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       return;
     }
     
-    const dayScaling = Math.floor(Math.sqrt(currentDay) * 100);
-    const levelScaling = level * 50; // Reduced from 75 to 50
-    const baseHp = GAME_CONSTANTS.FINAL_BOSS_BASE + dayScaling + levelScaling;
-    
-    // Cap boss HP to prevent infinite scaling becoming grindy
-    const cappedBaseHp = Math.min(baseHp, 2000);
+    // Exponential scaling from SCALING_CONFIG
+    const config = GAME_CONSTANTS.SCALING_CONFIG.boss;
+    const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
     
     const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
-    const bossHealth = Math.floor(cappedBaseHp * (1.5 - completionRate * 0.5));
+    const bossHealth = Math.floor(baseHp * (1.5 - completionRate * 0.5));
     
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
@@ -2044,10 +2195,23 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     
+    // Calculate base damage
     const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
-    const damage = Math.max(1, rawDamage - enemyDef);
+    
+    // Crit system
+    const critRoll = Math.random() * 100;
+    const critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance; // Can be modified by gear later
+    const isCrit = critRoll < critChance;
+    const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
+    
+    // Apply crit and enemy defense
+    const damage = Math.max(1, (rawDamage * critMultiplier) - enemyDef);
     let finalDamage = damage;
     let bonusMessages = [];
+    
+    if (isCrit) {
+      bonusMessages.push(`💥 CRITICAL HIT! (${critMultiplier}x damage)`);
+    }
     
     if (bossDebuffs.poisonTurns > 0) {
       const poisonBonus = Math.floor(finalDamage * bossDebuffs.poisonedVulnerability);
@@ -2265,58 +2429,82 @@ if (battleType === 'elite') {
             lootMessages.push('Stamina Potion');
             addLog('The hero discovered a Stamina Potion in the aftermath!');
           } else if (lootRoll < 0.50) {
-            // 20% Weapon
+            // 20% Weapon with rarity
+            const rarity = rollRarity('normal');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-            const attack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const attack = Math.floor(baseAttack * multiplier);
+            
             const names = GAME_CONSTANTS.WEAPON_NAMES;
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newWeapon = { name, attack, id: Date.now() };
+            const newWeapon = { name, attack, rarity, id: Date.now() };
             setWeaponInventory(prev => [...prev, newWeapon]);
             
-            lootMessages.push(`${name} (+${attack} ATK)`);
-            addLog(`Weapon found: ${name} (+${attack} ATK)`);
+            lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
+            addLog(`Weapon found: ${rarityName} ${name} (+${attack} ATK)`);
           } else if (lootRoll < 0.70) {
-            // 20% Armor
+            // 20% Armor with rarity
+            const rarity = rollRarity('normal');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const slots = ['helmet', 'chest', 'gloves', 'boots'];
             const slot = slots[Math.floor(Math.random() * slots.length)];
             const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-            const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const defense = Math.floor(baseDefense * multiplier);
+            
             const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newArmor = { name, defense, id: Date.now() };
+            const newArmor = { name, defense, rarity, id: Date.now() };
             setArmorInventory(prev => ({
               ...prev,
               [slot]: [...prev[slot], newArmor]
             }));
             
-            lootMessages.push(`${name} (+${defense} DEF)`);
-            addLog(`Armor found: ${name} (+${defense} DEF)`);
+            lootMessages.push(`${rarityName} ${name} (+${defense} DEF)`);
+            addLog(`Armor found: ${rarityName} ${name} (+${defense} DEF)`);
           } else if (lootRoll < 0.80) {
-            // 10% Pendant
+            // 10% Pendant with rarity
+            const rarity = rollRarity('normal');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
-            const hp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const hp = Math.floor(baseHp * multiplier);
+            
             const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newPendant = { name, hp, id: Date.now() };
+            const newPendant = { name, hp, rarity, id: Date.now() };
             setPendantInventory(prev => [...prev, newPendant]);
             
-            lootMessages.push(`${name} (+${hp} HP)`);
-            addLog(`Pendant found: ${name} (+${hp} HP)`);
+            lootMessages.push(`${rarityName} ${name} (+${hp} HP)`);
+            addLog(`Pendant found: ${rarityName} ${name} (+${hp} HP)`);
           } else if (lootRoll < 0.90) {
-            // 10% Ring
+            // 10% Ring with rarity
+            const rarity = rollRarity('normal');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
-            const stamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const stamina = Math.floor(baseStamina * multiplier);
+            
             const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newRing = { name, stamina, id: Date.now() };
+            const newRing = { name, stamina, rarity, id: Date.now() };
             setRingInventory(prev => [...prev, newRing]);
             
-            lootMessages.push(`${name} (+${stamina} STA)`);
-            addLog(`Ring found: ${name} (+${stamina} STA)`);
+            lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
+            addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
           }
           // 10% chance of no loot
         } else {
@@ -2333,58 +2521,82 @@ if (battleType === 'elite') {
             lootMessages.push(`Stamina Potion${luckyCharmActive ? ' x2' : ''}`);
             addLog(`The hero secured a rare Stamina Potion${luckyCharmActive ? ' - fortune favors the prepared!' : ' from the defeated foe!'}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-            // Generate random weapon
+            // Generate random weapon with better rarity for elites
+            const rarity = rollRarity('elite');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-            const attack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const attack = Math.floor(baseAttack * multiplier);
+            
             const names = GAME_CONSTANTS.WEAPON_NAMES;
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newWeapon = { name, attack, id: Date.now() };
+            const newWeapon = { name, attack, rarity, id: Date.now() };
             setWeaponInventory(prev => [...prev, newWeapon]);
             
-            lootMessages.push(`${name} (+${attack} ATK)`);
-            addLog(`Weapon found: ${name} (+${attack} ATK)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
+            addLog(`Weapon found: ${rarityName} ${name} (+${attack} ATK)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
-            // Generate random armor piece
+            // Generate random armor piece with better rarity for elites
+            const rarity = rollRarity('elite');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const slots = ['helmet', 'chest', 'gloves', 'boots'];
             const slot = slots[Math.floor(Math.random() * slots.length)];
             const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-            const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const defense = Math.floor(baseDefense * multiplier);
+            
             const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newArmor = { name, defense, id: Date.now() };
+            const newArmor = { name, defense, rarity, id: Date.now() };
             setArmorInventory(prev => ({
               ...prev,
               [slot]: [...prev[slot], newArmor]
             }));
             
-            lootMessages.push(`${name} (+${defense} DEF)`);
-            addLog(`Armor found: ${name} (+${defense} DEF)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${defense} DEF)`);
+            addLog(`Armor found: ${rarityName} ${name} (+${defense} DEF)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
-            // Generate random pendant
+            // Generate random pendant with elite rarity
+            const rarity = rollRarity('elite');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
-            const hp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const hp = Math.floor(baseHp * multiplier);
+            
             const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newPendant = { name, hp, id: Date.now() };
+            const newPendant = { name, hp, rarity, id: Date.now() };
             setPendantInventory(prev => [...prev, newPendant]);
             
-            lootMessages.push(`${name} (+${hp} HP)`);
-            addLog(`Pendant found: ${name} (+${hp} HP)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${hp} HP)`);
+            addLog(`Pendant found: ${rarityName} ${name} (+${hp} HP)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else {
-            // Generate random ring
+            // Generate random ring with elite rarity
+            const rarity = rollRarity('elite');
+            const multiplier = getRarityMultiplier(rarity);
+            
             const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
-            const stamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const stamina = Math.floor(baseStamina * multiplier);
+            
             const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
             const name = names[Math.floor(Math.random() * names.length)];
+            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
-            const newRing = { name, stamina, id: Date.now() };
+            const newRing = { name, stamina, rarity, id: Date.now() };
             setRingInventory(prev => [...prev, newRing]);
             
-            lootMessages.push(`${name} (+${stamina} STA)`);
-            addLog(`Ring found: ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
+            addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           }
           
           if (luckyCharmActive) {
@@ -2428,10 +2640,12 @@ if (battleType === 'regular' || battleType === 'wave') {
   attackScaling = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING : GAME_CONSTANTS.MINI_BOSS_ATK_SCALING;
 }
 
-let bossDamage = Math.max(1, Math.floor(
-  (baseAttack + (currentDay * attackScaling)) - 
-  (getBaseDefense() + (armorPolishActive ? 5 : 0))
-));
+// Diminishing returns armor formula: damage * (K / (K + armor))
+const rawEnemyDamage = baseAttack + (currentDay * attackScaling);
+const playerArmor = getBaseDefense() + (armorPolishActive ? 5 : 0);
+const K = GAME_CONSTANTS.ARMOR_K_CONSTANT; // 60
+const damageReduction = K / (K + playerArmor);
+let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
 
 // Curse level increases enemy damage
 if (curseLevel === 2) {
@@ -2717,8 +2931,21 @@ if (enragedTurns > 0) {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     
-    const rawDamage = (getBaseAttack() + Math.floor(Math.random() * 10)) * special.damageMultiplier;
+    // Calculate base damage with special multiplier
+    const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    
+    // Crit system (specials can crit too!)
+    const critRoll = Math.random() * 100;
+    const critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    const isCrit = critRoll < critChance;
+    const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
+    
+    const rawDamage = (baseDamage * critMultiplier) * special.damageMultiplier;
     let damage = Math.max(1, Math.floor(rawDamage - enemyDef));
+    
+    if (isCrit) {
+      addLog(`💥 CRITICAL ${special.name.toUpperCase()}!`);
+    }
     
     const wasPoisoned = bossDebuffs.poisonTurns > 0;
     if (wasPoisoned && bossDebuffs.poisonedVulnerability > 0) {
@@ -2881,58 +3108,82 @@ if (enragedTurns > 0) {
       lootMessages.push(`💎 Stamina Potion${luckyCharmActive ? ' x2' : ''}`);
       addLog(`💎 Looted: Stamina Potion${luckyCharmActive ? ' x2 (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-      // Generate random weapon
+      // Generate random weapon with boss-tier rarity
+      const rarity = rollRarity('boss');
+      const multiplier = getRarityMultiplier(rarity);
+      
       const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-      const attack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const attack = Math.floor(baseAttack * multiplier);
+      
       const names = GAME_CONSTANTS.WEAPON_NAMES;
       const name = names[Math.floor(Math.random() * names.length)];
+      const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newWeapon = { name, attack, id: Date.now() };
+      const newWeapon = { name, attack, rarity, id: Date.now() };
       setWeaponInventory(prev => [...prev, newWeapon]);
       
-      lootMessages.push(`${name} (+${attack} ATK)`);
-      addLog(`💎 Looted: ${name} (+${attack} ATK)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${attack} ATK)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
-      // Generate random armor piece
+      // Generate random armor piece with boss-tier rarity
+      const rarity = rollRarity('boss');
+      const multiplier = getRarityMultiplier(rarity);
+      
       const slots = ['helmet', 'chest', 'gloves', 'boots'];
       const slot = slots[Math.floor(Math.random() * slots.length)];
       const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-      const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const defense = Math.floor(baseDefense * multiplier);
+      
       const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
       const name = names[Math.floor(Math.random() * names.length)];
+      const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newArmor = { name, defense, id: Date.now() };
+      const newArmor = { name, defense, rarity, id: Date.now() };
       setArmorInventory(prev => ({
         ...prev,
         [slot]: [...prev[slot], newArmor]
       }));
       
-      lootMessages.push(`${name} (+${defense} DEF)`);
-      addLog(`💎 Looted: ${name} (+${defense} DEF)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${defense} DEF)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${defense} DEF)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
-      // Generate random pendant
+      // Generate random pendant with boss-tier rarity
+      const rarity = rollRarity('boss');
+      const multiplier = getRarityMultiplier(rarity);
+      
       const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
-      const hp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const hp = Math.floor(baseHp * multiplier);
+      
       const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
       const name = names[Math.floor(Math.random() * names.length)];
+      const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newPendant = { name, hp, id: Date.now() };
+      const newPendant = { name, hp, rarity, id: Date.now() };
       setPendantInventory(prev => [...prev, newPendant]);
       
-      lootMessages.push(`${name} (+${hp} HP)`);
-      addLog(`💎 Looted: ${name} (+${hp} HP)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${hp} HP)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${hp} HP)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else {
-      // Generate random ring
+      // Generate random ring with boss-tier rarity
+      const rarity = rollRarity('boss');
+      const multiplier = getRarityMultiplier(rarity);
+      
       const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
-      const stamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const stamina = Math.floor(baseStamina * multiplier);
+      
       const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
       const name = names[Math.floor(Math.random() * names.length)];
+      const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
-      const newRing = { name, stamina, id: Date.now() };
+      const newRing = { name, stamina, rarity, id: Date.now() };
       setRingInventory(prev => [...prev, newRing]);
       
-      lootMessages.push(`${name} (+${stamina} STA)`);
-      addLog(`💎 Looted: ${name} (+${stamina} STA)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     }
     
     if (luckyCharmActive) {
@@ -2979,10 +3230,12 @@ if (battleType === 'regular' || battleType === 'wave') {
   attackScaling = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING : GAME_CONSTANTS.MINI_BOSS_ATK_SCALING;
 }
 
-let bossDamage = Math.max(1, Math.floor(
-  (baseAttack + (currentDay * attackScaling)) - 
-  (getBaseDefense() + (armorPolishActive ? 5 : 0))
-));
+// Diminishing returns armor formula: damage * (K / (K + armor))
+const rawEnemyDamage = baseAttack + (currentDay * attackScaling);
+const playerArmor = getBaseDefense() + (armorPolishActive ? 5 : 0);
+const K = GAME_CONSTANTS.ARMOR_K_CONSTANT; // 60
+const damageReduction = K / (K + playerArmor);
+let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
 
 // Curse level increases enemy damage
 if (curseLevel === 2) {
@@ -5191,8 +5444,13 @@ setMiniBossCount(0);
                     <div className="rounded p-3 border mb-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                       {equippedWeapon ? (
                         <div className="text-center">
-                          <p className="text-lg font-bold mb-1" style={{color: '#F5F5DC'}}>{equippedWeapon.name}</p>
+                          <p className="text-lg font-bold mb-1" style={{color: getRarityColor(equippedWeapon.rarity || 'common')}}>{equippedWeapon.name}</p>
                           <p className="text-sm" style={{color: '#FF6B6B'}}>+{equippedWeapon.attack} ATK</p>
+                          {equippedWeapon.rarity && (
+                            <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedWeapon.rarity)}}>
+                              {GAME_CONSTANTS.RARITY_TIERS[equippedWeapon.rarity].name}
+                            </p>
+                          )}
                         </div>
                       ) : (
                         <p className="text-sm italic text-center" style={{color: '#95A5A6'}}>No weapon equipped</p>
@@ -5216,8 +5474,13 @@ setMiniBossCount(0);
                         {weaponInventory.map((wpn) => (
                           <div key={wpn.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
-                              <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{wpn.name}</p>
+                              <p className="text-sm font-bold" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
                               <p className="text-xs" style={{color: '#FF6B6B'}}>+{wpn.attack} ATK</p>
+                              {wpn.rarity && (
+                                <p className="text-xs italic" style={{color: getRarityColor(wpn.rarity)}}>
+                                  {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
+                                </p>
+                              )}
                             </div>
                             <button
                               onClick={() => {
@@ -5265,7 +5528,7 @@ setMiniBossCount(0);
                         <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Helmet</p>
                         {equippedArmor.helmet ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.helmet.name}</p>
+                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.helmet.rarity || 'common')}}>{equippedArmor.helmet.name}</p>
                             <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} DEF</p>
                           </div>
                         ) : (
@@ -5278,7 +5541,7 @@ setMiniBossCount(0);
                         <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Chest</p>
                         {equippedArmor.chest ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.chest.name}</p>
+                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.chest.rarity || 'common')}}>{equippedArmor.chest.name}</p>
                             <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} DEF</p>
                           </div>
                         ) : (
@@ -5291,7 +5554,7 @@ setMiniBossCount(0);
                         <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Gloves</p>
                         {equippedArmor.gloves ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.gloves.name}</p>
+                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.gloves.rarity || 'common')}}>{equippedArmor.gloves.name}</p>
                             <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} DEF</p>
                           </div>
                         ) : (
@@ -5304,7 +5567,7 @@ setMiniBossCount(0);
                         <p className="text-xs uppercase mb-1" style={{color: COLORS.silver}}>Boots</p>
                         {equippedArmor.boots ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedArmor.boots.name}</p>
+                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedArmor.boots.rarity || 'common')}}>{equippedArmor.boots.name}</p>
                             <p className="text-xs" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} DEF</p>
                           </div>
                         ) : (
@@ -5334,8 +5597,13 @@ setMiniBossCount(0);
                               {armorInventory[slot].map((piece, idx) => (
                                 <div key={piece.id} className="rounded p-2 mb-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                                   <div>
-                                    <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{piece.name}</p>
+                                    <p className="text-sm font-bold" style={{color: getRarityColor(piece.rarity || 'common')}}>{piece.name}</p>
                                     <p className="text-xs" style={{color: '#68D391'}}>+{piece.defense} DEF</p>
+                                    {piece.rarity && (
+                                      <p className="text-xs italic" style={{color: getRarityColor(piece.rarity)}}>
+                                        {GAME_CONSTANTS.RARITY_TIERS[piece.rarity].name}
+                                      </p>
+                                    )}
                                   </div>
                                   <button
                                     onClick={() => {
@@ -5395,8 +5663,13 @@ setMiniBossCount(0);
                         <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Pendant</p>
                         {equippedPendant ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedPendant.name}</p>
+                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedPendant.rarity || 'common')}}>{equippedPendant.name}</p>
                             <p className="text-xs" style={{color: '#FF6B6B'}}>+{equippedPendant.hp} HP</p>
+                            {equippedPendant.rarity && (
+                              <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedPendant.rarity)}}>
+                                {GAME_CONSTANTS.RARITY_TIERS[equippedPendant.rarity].name}
+                              </p>
+                            )}
                           </div>
                         ) : (
                           <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
@@ -5408,8 +5681,13 @@ setMiniBossCount(0);
                         <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Ring</p>
                         {equippedRing ? (
                           <div>
-                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedRing.name}</p>
+                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedRing.rarity || 'common')}}>{equippedRing.name}</p>
                             <p className="text-xs" style={{color: '#4FC3F7'}}>+{equippedRing.stamina} STA</p>
+                            {equippedRing.rarity && (
+                              <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedRing.rarity)}}>
+                                {GAME_CONSTANTS.RARITY_TIERS[equippedRing.rarity].name}
+                              </p>
+                            )}
                           </div>
                         ) : (
                           <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
@@ -5436,8 +5714,13 @@ setMiniBossCount(0);
                         {pendantInventory.map((pend) => (
                           <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
-                              <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{pend.name}</p>
+                              <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
                               <p className="text-xs" style={{color: '#FF6B6B'}}>+{pend.hp} HP</p>
+                              {pend.rarity && (
+                                <p className="text-xs italic" style={{color: getRarityColor(pend.rarity)}}>
+                                  {GAME_CONSTANTS.RARITY_TIERS[pend.rarity].name}
+                                </p>
+                              )}
                             </div>
                             <button
                               onClick={() => {
@@ -5479,8 +5762,13 @@ setMiniBossCount(0);
                         {ringInventory.map((rng) => (
                           <div key={rng.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
-                              <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{rng.name}</p>
+                              <p className="text-sm font-bold" style={{color: getRarityColor(rng.rarity || 'common')}}>{rng.name}</p>
                               <p className="text-xs" style={{color: '#4FC3F7'}}>+{rng.stamina} STA</p>
+                              {rng.rarity && (
+                                <p className="text-xs italic" style={{color: getRarityColor(rng.rarity)}}>
+                                  {GAME_CONSTANTS.RARITY_TIERS[rng.rarity].name}
+                                </p>
+                              )}
                             </div>
                             <button
                               onClick={() => {
