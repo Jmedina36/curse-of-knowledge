@@ -60,10 +60,12 @@ const GAME_CONSTANTS = {
     ARMOR: 0.80
   },
   MINI_BOSS_LOOT_RATES: {
-    HEALTH_POTION: 0.25,
-    STAMINA_POTION: 0.50,
-    WEAPON: 0.75,
-    ARMOR: 1.00
+    HEALTH_POTION: 0.15,
+    STAMINA_POTION: 0.30,
+    WEAPON: 0.50,
+    ARMOR: 0.70,
+    PENDANT: 0.85,
+    RING: 1.00
   },
   XP_REWARDS: {
     easy: 10,
@@ -83,14 +85,19 @@ const GAME_CONSTANTS = {
     { name: 'Doomday', subtitle: 'Day of Reckoning', theme: 'Almost there... or almost consumed?' },
     { name: 'Endday', subtitle: 'Day of Liberation', theme: 'Today you break free or die trying.' }
   ],
-  MINI_BOSS_BASE: 150,
-  MINI_BOSS_DAY_SCALING: 50,
-  MINI_BOSS_ATK_BASE: 15,
-  MINI_BOSS_ATK_SCALING: 3.06,
-  FINAL_BOSS_BASE: 500,
-  FINAL_BOSS_DAY_SCALING: 100,
-  BOSS_ATTACK_BASE: 18.36,
-  BOSS_ATTACK_DAY_SCALING: 4.59,
+  MINI_BOSS_BASE: 140,
+  MINI_BOSS_DAY_SCALING: 12,
+  MINI_BOSS_ATK_BASE: 16,
+  MINI_BOSS_ATK_SCALING: 2.5,
+  FINAL_BOSS_BASE: 200,
+  FINAL_BOSS_DAY_SCALING: 16,
+  BOSS_ATTACK_BASE: 20,
+  BOSS_ATTACK_DAY_SCALING: 3,
+  ENEMY_DEFENSE: {
+    regular: 3,
+    elite: 6,
+    gauntlet: 8
+  },
   BOSS_ATTACK_DELAY: 1000,
   LOG_MAX_ENTRIES: 8,
   SKIP_PENALTIES: [
@@ -131,38 +138,56 @@ const GAME_CONSTANTS = {
     boots: ['Worn Boots', 'Leather Sandals', 'Simple Greaves', 'Patched Shoes', 'Tattered Footwraps', 'Cloth Slippers', 'Frayed Sabatons']
   },
   
+  ACCESSORY_STAT_RANGES: {
+    pendant: { min: 5, max: 25 },
+    ring: { min: 5, max: 25 }
+  },
+  
+  ACCESSORY_NAMES: {
+    pendant: ['Worn Amulet', 'Tarnished Locket', 'Simple Charm', 'Cracked Pendant', 'Faded Medallion', 'Rusty Chain', 'Chipped Stone', 'Dulled Jewel', 'Scratched Token'],
+    ring: ['Bent Ring', 'Tarnished Band', 'Simple Loop', 'Worn Circle', 'Faded Ring', 'Scratched Band', 'Chipped Hoop', 'Dulled Ring', 'Rusty Circle']
+  },
+  
   STARTING_EQUIPMENT: {
     Knight: {
-      helmet: { name: 'Iron Cap', defense: 2 },
+      helmet: { name: 'Iron Cap', defense: 1 },
       chest: { name: 'Chainmail Vest', defense: 2 },
       gloves: { name: 'Leather Grips', defense: 1 },
-      boots: { name: 'Steel-toed Boots', defense: 2 }
+      boots: { name: 'Steel-toed Boots', defense: 1 },
+      pendant: null,
+      ring: null
     },
     Crusader: {
       helmet: { name: 'Holy Circlet', defense: 1 },
       chest: { name: 'Blessed Tunic', defense: 2 },
       gloves: { name: 'Prayer Wraps', defense: 1 },
-      boots: { name: 'Temple Sandals', defense: 1 }
+      boots: { name: 'Temple Sandals', defense: 1 },
+      pendant: null,
+      ring: null
     },
     Assassin: {
       helmet: { name: 'Shadow Cowl', defense: 1 },
       chest: { name: 'Dark Leather', defense: 2 },
       gloves: { name: 'Fingerless Gloves', defense: 1 },
-      boots: { name: 'Soft Boots', defense: 1 }
+      boots: { name: 'Soft Boots', defense: 1 },
+      pendant: { name: 'Lucky Charm', hp: 10 },
+      ring: null
     },
     Wizard: {
       helmet: { name: 'Apprentice Hat', defense: 1 },
       chest: { name: "Scholar's Robe", defense: 2 },
       gloves: { name: 'Silk Wraps', defense: 1 },
-      boots: { name: 'Cloth Slippers', defense: 1 }
+      boots: { name: 'Cloth Slippers', defense: 1 },
+      pendant: null,
+      ring: { name: 'Focusing Band', stamina: 10 }
     }
   },
   
   BASE_DEFENSE_BY_CLASS: {
-    Knight: 8,
-    Crusader: 6,
-    Assassin: 4,
-    Wizard: 3
+    Knight: 5,
+    Crusader: 4,
+    Assassin: 3,
+    Wizard: 2
   },
   
   WEAPON_STAT_RANGES: {
@@ -184,10 +209,10 @@ const GAME_CONSTANTS = {
   },
   
   BASE_ATTACK_BY_CLASS: {
-    Knight: 8,
-    Crusader: 6,
-    Assassin: 7,
-    Wizard: 5
+    Knight: 12,
+    Crusader: 10,
+    Assassin: 11,
+    Wizard: 9
   },
   
   ENEMY_DIALOGUE: {
@@ -507,14 +532,6 @@ const FantasyStudyQuest = () => {
   const [timeUntilMidnight, setTimeUntilMidnight] = useState(''); // Countdown to day reset
   const [isDayActive, setIsDayActive] = useState(false); // Is current game day active (vs dormant)
   
-  const getMaxHp = useCallback(() => {
-    return GAME_CONSTANTS.MAX_HP;
-  }, []);
-  
-  const getMaxStamina = useCallback(() => {
-    return GAME_CONSTANTS.MAX_STAMINA;
-  }, []);
-  
   const [healthPots, setHealthPots] = useState(0);
   const [staminaPots, setStaminaPots] = useState(0);
   const [cleansePots, setCleansePots] = useState(0);
@@ -538,6 +555,22 @@ const FantasyStudyQuest = () => {
     gloves: [],
     boots: []
   });
+  
+  // Accessory equipment system
+  const [equippedPendant, setEquippedPendant] = useState(null);
+  const [equippedRing, setEquippedRing] = useState(null);
+  const [pendantInventory, setPendantInventory] = useState([]);
+  const [ringInventory, setRingInventory] = useState([]);
+  
+  const getMaxHp = useCallback(() => {
+    const pendantBonus = equippedPendant ? equippedPendant.hp : 0;
+    return GAME_CONSTANTS.MAX_HP + pendantBonus;
+  }, [equippedPendant]);
+  
+  const getMaxStamina = useCallback(() => {
+    const ringBonus = equippedRing ? equippedRing.stamina : 0;
+    return GAME_CONSTANTS.MAX_STAMINA + ringBonus;
+  }, [equippedRing]);
   
   const getBaseAttack = useCallback(() => {
     if (!hero || !hero.class || !hero.class.name) return 10;
@@ -926,6 +959,10 @@ const getDateKey = useCallback((date) => {
         if (data.weaponInventory) setWeaponInventory(data.weaponInventory);
         if (data.equippedArmor) setEquippedArmor(data.equippedArmor);
         if (data.armorInventory) setArmorInventory(data.armorInventory);
+        if (data.equippedPendant) setEquippedPendant(data.equippedPendant);
+        if (data.equippedRing) setEquippedRing(data.equippedRing);
+        if (data.pendantInventory) setPendantInventory(data.pendantInventory);
+        if (data.ringInventory) setRingInventory(data.ringInventory);
         if (data.tasks) setTasks(data.tasks);
         if (data.flashcardDecks) setFlashcardDecks(data.flashcardDecks);
         if (data.graveyard) setGraveyard(data.graveyard);
@@ -995,6 +1032,14 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
             gloves: startingGear.gloves,
             boots: startingGear.boots
           });
+          
+          // Initialize accessories
+          if (startingGear.pendant) {
+            setEquippedPendant(startingGear.pendant);
+          }
+          if (startingGear.ring) {
+            setEquippedRing(startingGear.ring);
+          }
         }
       }
     }
@@ -1004,14 +1049,16 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     if (hero) {
      const saveData = {
   hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots,
-  weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
+  weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, 
+  equippedPendant, equippedRing, pendantInventory, ringInventory,
+  tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
+ }, [hero, currentDay, hp, stamina, xp, essence, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -1654,10 +1701,9 @@ setTimeout(() => {
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
   
-  const baseHp = 50;
-  const dayScaling = 25;
-  const levelScaling = 15; // Scales with player level
-  const enemyHp = baseHp + (currentDay * dayScaling) + (level * levelScaling);
+  const baseHp = 60;
+  const dayScaling = 8;
+  const enemyHp = baseHp + (currentDay * dayScaling);
   
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
@@ -1990,7 +2036,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
     
-    const damage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
+    // Get enemy defense based on battle type
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    } else if (battleType === 'final' || isFinalBoss) {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    }
+    
+    const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
+    const damage = Math.max(1, rawDamage - enemyDef);
     let finalDamage = damage;
     let bonusMessages = [];
     
@@ -2196,18 +2251,74 @@ if (battleType === 'elite') {
       const lootMessages = [];
       
       if (!isFinalBoss) {
-        // Regular/wave enemies: potions only
+        // Regular/wave enemies: potions, weapons, armor, and accessories
         if (battleType === 'regular' || battleType === 'wave') {
           const lootRoll = Math.random();
-          if (lootRoll < 0.2) {
+          if (lootRoll < 0.12) {
+            // 12% Health Potion
             setHealthPots(h => h + 1);
             lootMessages.push('Health Potion');
             addLog('The hero found a Health Potion among the remains!');
-          } else if (lootRoll < 0.55) {
+          } else if (lootRoll < 0.30) {
+            // 18% Stamina Potion
             setStaminaPots(s => s + 1);
             lootMessages.push('Stamina Potion');
             addLog('The hero discovered a Stamina Potion in the aftermath!');
+          } else if (lootRoll < 0.50) {
+            // 20% Weapon
+            const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+            const attack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.WEAPON_NAMES;
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newWeapon = { name, attack, id: Date.now() };
+            setWeaponInventory(prev => [...prev, newWeapon]);
+            
+            lootMessages.push(`${name} (+${attack} ATK)`);
+            addLog(`Weapon found: ${name} (+${attack} ATK)`);
+          } else if (lootRoll < 0.70) {
+            // 20% Armor
+            const slots = ['helmet', 'chest', 'gloves', 'boots'];
+            const slot = slots[Math.floor(Math.random() * slots.length)];
+            const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+            const defense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newArmor = { name, defense, id: Date.now() };
+            setArmorInventory(prev => ({
+              ...prev,
+              [slot]: [...prev[slot], newArmor]
+            }));
+            
+            lootMessages.push(`${name} (+${defense} DEF)`);
+            addLog(`Armor found: ${name} (+${defense} DEF)`);
+          } else if (lootRoll < 0.80) {
+            // 10% Pendant
+            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+            const hp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newPendant = { name, hp, id: Date.now() };
+            setPendantInventory(prev => [...prev, newPendant]);
+            
+            lootMessages.push(`${name} (+${hp} HP)`);
+            addLog(`Pendant found: ${name} (+${hp} HP)`);
+          } else if (lootRoll < 0.90) {
+            // 10% Ring
+            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+            const stamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newRing = { name, stamina, id: Date.now() };
+            setRingInventory(prev => [...prev, newRing]);
+            
+            lootMessages.push(`${name} (+${stamina} STA)`);
+            addLog(`Ring found: ${name} (+${stamina} STA)`);
           }
+          // 10% chance of no loot
         } else {
           // Elite bosses: weapon/armor upgrades
           const lootRoll = Math.random();
@@ -2233,7 +2344,7 @@ if (battleType === 'elite') {
             
             lootMessages.push(`${name} (+${attack} ATK)`);
             addLog(`Weapon found: ${name} (+${attack} ATK)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
-          } else {
+          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
             // Generate random armor piece
             const slots = ['helmet', 'chest', 'gloves', 'boots'];
             const slot = slots[Math.floor(Math.random() * slots.length)];
@@ -2250,6 +2361,30 @@ if (battleType === 'elite') {
             
             lootMessages.push(`${name} (+${defense} DEF)`);
             addLog(`Armor found: ${name} (+${defense} DEF)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
+            // Generate random pendant
+            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+            const hp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newPendant = { name, hp, id: Date.now() };
+            setPendantInventory(prev => [...prev, newPendant]);
+            
+            lootMessages.push(`${name} (+${hp} HP)`);
+            addLog(`Pendant found: ${name} (+${hp} HP)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+          } else {
+            // Generate random ring
+            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+            const stamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+            const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+            const name = names[Math.floor(Math.random() * names.length)];
+            
+            const newRing = { name, stamina, id: Date.now() };
+            setRingInventory(prev => [...prev, newRing]);
+            
+            lootMessages.push(`${name} (+${stamina} STA)`);
+            addLog(`Ring found: ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           }
           
           if (luckyCharmActive) {
@@ -2282,22 +2417,19 @@ if (battleType === 'elite') {
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
       
-      // Regular enemies hit softer
+      // Enemy attack damage
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
-  baseAttack = 25;
-  attackScaling = 2;
+  baseAttack = 10;
+  attackScaling = 1.5;
 } else {
-  // Elite and Final bosses use square root scaling with cap
-  const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
-  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
-  // Cap boss base attack at 50 to prevent one-shotting
-  baseAttack = Math.min(baseAttack, 50);
-  attackScaling = 0; // No linear scaling, already handled above
+  // Elite and Final bosses use constants
+  baseAttack = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_BASE : GAME_CONSTANTS.MINI_BOSS_ATK_BASE;
+  attackScaling = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING : GAME_CONSTANTS.MINI_BOSS_ATK_SCALING;
 }
 
 let bossDamage = Math.max(1, Math.floor(
-  baseAttack - 
+  (baseAttack + (currentDay * attackScaling)) - 
   (getBaseDefense() + (armorPolishActive ? 5 : 0))
 ));
 
@@ -2577,7 +2709,16 @@ if (enragedTurns > 0) {
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
     
-    let damage = Math.floor((getBaseAttack() + Math.floor(Math.random() * 10)) * special.damageMultiplier);
+    // Get enemy defense based on battle type
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    } else if (battleType === 'final' || isFinalBoss) {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    }
+    
+    const rawDamage = (getBaseAttack() + Math.floor(Math.random() * 10)) * special.damageMultiplier;
+    let damage = Math.max(1, Math.floor(rawDamage - enemyDef));
     
     const wasPoisoned = bossDebuffs.poisonTurns > 0;
     if (wasPoisoned && bossDebuffs.poisonedVulnerability > 0) {
@@ -2749,9 +2890,9 @@ if (enragedTurns > 0) {
       const newWeapon = { name, attack, id: Date.now() };
       setWeaponInventory(prev => [...prev, newWeapon]);
       
-      lootMessages.push(`⚔️ ${name} (+${attack} ATK)`);
+      lootMessages.push(`${name} (+${attack} ATK)`);
       addLog(`💎 Looted: ${name} (+${attack} ATK)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
-    } else {
+    } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
       // Generate random armor piece
       const slots = ['helmet', 'chest', 'gloves', 'boots'];
       const slot = slots[Math.floor(Math.random() * slots.length)];
@@ -2766,8 +2907,32 @@ if (enragedTurns > 0) {
         [slot]: [...prev[slot], newArmor]
       }));
       
-      lootMessages.push(`🛡️ ${name} (+${defense} DEF)`);
+      lootMessages.push(`${name} (+${defense} DEF)`);
       addLog(`💎 Looted: ${name} (+${defense} DEF)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+    } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
+      // Generate random pendant
+      const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+      const hp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+      const name = names[Math.floor(Math.random() * names.length)];
+      
+      const newPendant = { name, hp, id: Date.now() };
+      setPendantInventory(prev => [...prev, newPendant]);
+      
+      lootMessages.push(`${name} (+${hp} HP)`);
+      addLog(`💎 Looted: ${name} (+${hp} HP)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+    } else {
+      // Generate random ring
+      const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+      const stamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+      const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+      const name = names[Math.floor(Math.random() * names.length)];
+      
+      const newRing = { name, stamina, id: Date.now() };
+      setRingInventory(prev => [...prev, newRing]);
+      
+      lootMessages.push(`${name} (+${stamina} STA)`);
+      addLog(`💎 Looted: ${name} (+${stamina} STA)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     }
     
     if (luckyCharmActive) {
@@ -2803,22 +2968,19 @@ if (enragedTurns > 0) {
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
         
-        // Regular enemies hit softer
+        // Enemy attack damage
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
-  baseAttack = 25;
-  attackScaling = 2;
+  baseAttack = 10;
+  attackScaling = 1.5;
 } else {
-  // Elite and Final bosses use square root scaling with cap
-  const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
-  baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
-  // Cap boss base attack at 50 to prevent one-shotting
-  baseAttack = Math.min(baseAttack, 50);
-  attackScaling = 0; // No linear scaling, already handled above
+  // Elite and Final bosses use constants
+  baseAttack = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_BASE : GAME_CONSTANTS.MINI_BOSS_ATK_BASE;
+  attackScaling = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING : GAME_CONSTANTS.MINI_BOSS_ATK_SCALING;
 }
 
 let bossDamage = Math.max(1, Math.floor(
-  baseAttack - 
+  (baseAttack + (currentDay * attackScaling)) - 
   (getBaseDefense() + (armorPolishActive ? 5 : 0))
 ));
 
@@ -4862,7 +5024,7 @@ setMiniBossCount(0);
                 </div>
                 
                 {/* Tabs */}
-                <div className="grid grid-cols-3 gap-2 mb-6">
+                <div className="grid grid-cols-4 gap-2 mb-6">
                   <button
                     onClick={() => setSuppliesTab('potions')}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
@@ -4878,8 +5040,8 @@ setMiniBossCount(0);
                     onClick={() => setSuppliesTab('weapons')}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
-                      backgroundColor: suppliesTab === 'weapons' ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
-                      borderColor: suppliesTab === 'weapons' ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
+                      backgroundColor: suppliesTab === 'weapons' ? 'rgba(192, 192, 192, 0.8)' : 'rgba(192, 192, 192, 0.3)',
+                      borderColor: suppliesTab === 'weapons' ? '#C0C0C0' : 'rgba(192, 192, 192, 0.5)',
                       color: '#F5F5DC'
                     }}
                   >
@@ -4895,6 +5057,17 @@ setMiniBossCount(0);
                     }}
                   >
                     Armor
+                  </button>
+                  <button
+                    onClick={() => setSuppliesTab('gear')}
+                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    style={{
+                      backgroundColor: suppliesTab === 'gear' ? 'rgba(75, 0, 130, 0.8)' : 'rgba(75, 0, 130, 0.3)',
+                      borderColor: suppliesTab === 'gear' ? '#4B0082' : 'rgba(75, 0, 130, 0.5)',
+                      color: '#F5F5DC'
+                    }}
+                  >
+                    Gear
                   </button>
                 </div>
                 
@@ -5080,7 +5253,7 @@ setMiniBossCount(0);
                     </div>
                   )}
                     </>
-                  ) : (
+                  ) : suppliesTab === 'armor' ? (
                     <>
                   {/* Equipment Section */}
                   <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(184, 134, 11, 0.2)', borderColor: 'rgba(184, 134, 11, 0.5)'}}>
@@ -5210,18 +5383,143 @@ setMiniBossCount(0);
                     </div>
                   )}
                     </>
+                  ) : (
+                    <>
+                  {/* Gear Section - Pendant and Ring */}
+                  <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(75, 0, 130, 0.2)', borderColor: 'rgba(75, 0, 130, 0.5)'}}>
+                    <h3 className="font-bold text-lg mb-3 text-center" style={{color: '#9370DB'}}>EQUIPPED GEAR</h3>
+                    
+                    <div className="space-y-3 mb-4">
+                      {/* Pendant */}
+                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                        <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Pendant</p>
+                        {equippedPendant ? (
+                          <div>
+                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedPendant.name}</p>
+                            <p className="text-xs" style={{color: '#FF6B6B'}}>+{equippedPendant.hp} HP</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                        )}
+                      </div>
+                      
+                      {/* Ring */}
+                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                        <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Ring</p>
+                        {equippedRing ? (
+                          <div>
+                            <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{equippedRing.name}</p>
+                            <p className="text-xs" style={{color: '#4FC3F7'}}>+{equippedRing.stamina} STA</p>
+                          </div>
+                        ) : (
+                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
+                      <p className="text-sm" style={{color: COLORS.silver}}>
+                        Max HP: <span className="font-bold text-lg" style={{color: '#FF6B6B'}}>{getMaxHp()}</span>
+                        {' | '}
+                        Max STA: <span className="font-bold text-lg" style={{color: '#4FC3F7'}}>{getMaxStamina()}</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Collected Pendants */}
+                  {pendantInventory.length > 0 && (
+                    <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
+                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#FF6B6B'}}>PENDANTS</h3>
+                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum health</p>
+                      
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {pendantInventory.map((pend) => (
+                          <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                            <div>
+                              <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{pend.name}</p>
+                              <p className="text-xs" style={{color: '#FF6B6B'}}>+{pend.hp} HP</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const oldPendant = equippedPendant;
+                                setEquippedPendant(pend);
+                                setPendantInventory(prev => [
+                                  ...prev.filter(p => p.id !== pend.id),
+                                  ...(oldPendant ? [oldPendant] : [])
+                                ]);
+                                addLog(`Equipped: ${pend.name} (+${pend.hp} HP)`);
+                                if (oldPendant) {
+                                  addLog(`Unequipped: ${oldPendant.name}`);
+                                }
+                              }}
+                              className="px-3 py-1 rounded text-xs border transition-all"
+                              style={{
+                                backgroundColor: COLORS.crimson.base,
+                                borderColor: COLORS.crimson.border,
+                                color: '#F5F5DC'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.hover}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.base}
+                            >
+                              Equip
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Collected Rings */}
+                  {ringInventory.length > 0 && (
+                    <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(0, 150, 255, 0.2)', borderColor: 'rgba(0, 150, 255, 0.5)'}}>
+                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#4FC3F7'}}>RINGS</h3>
+                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum stamina</p>
+                      
+                      <div className="space-y-2 max-h-40 overflow-y-auto">
+                        {ringInventory.map((rng) => (
+                          <div key={rng.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                            <div>
+                              <p className="text-sm font-bold" style={{color: '#F5F5DC'}}>{rng.name}</p>
+                              <p className="text-xs" style={{color: '#4FC3F7'}}>+{rng.stamina} STA</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                const oldRing = equippedRing;
+                                setEquippedRing(rng);
+                                setRingInventory(prev => [
+                                  ...prev.filter(r => r.id !== rng.id),
+                                  ...(oldRing ? [oldRing] : [])
+                                ]);
+                                addLog(`Equipped: ${rng.name} (+${rng.stamina} STA)`);
+                                if (oldRing) {
+                                  addLog(`Unequipped: ${oldRing.name}`);
+                                }
+                              }}
+                              className="px-3 py-1 rounded text-xs border transition-all"
+                              style={{
+                                backgroundColor: 'rgba(0, 150, 255, 0.6)',
+                                borderColor: 'rgba(0, 150, 255, 0.8)',
+                                color: '#F5F5DC'
+                              }}
+                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 150, 255, 0.8)'}
+                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 150, 255, 0.6)'}
+                            >
+                              Equip
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {pendantInventory.length === 0 && ringInventory.length === 0 && (
+                    <div className="rounded-lg p-6 border-2 text-center" style={{backgroundColor: 'rgba(75, 0, 130, 0.1)', borderColor: 'rgba(75, 0, 130, 0.3)'}}>
+                      <p className="text-sm italic" style={{color: '#95A5A6'}}>No accessories collected yet. Defeat enemies to find pendants and rings.</p>
+                    </div>
+                  )}
+                    </>
                   )}
                 </div>
-                
-                <button 
-                  onClick={() => setShowInventoryModal(false)} 
-                  className="w-full mt-6 py-2 rounded-lg transition-all border-2"
-                  style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
-                >
-                  Close
-                </button>
               </div>
             </div>
           )}
@@ -5341,15 +5639,6 @@ setMiniBossCount(0);
                   </button>
                 </div>
                 
-                <button 
-                  onClick={() => setShowCraftingModal(false)} 
-                  className="w-full mt-6 py-2 rounded-lg transition-all border-2"
-                  style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
-                >
-                  Close
-                </button>
               </div>
             </div>
           )}
