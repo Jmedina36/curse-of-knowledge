@@ -2420,7 +2420,7 @@ if (battleType === 'elite') {
       // Enemy attack damage
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
-  baseAttack = 10;
+  baseAttack = 25;
   attackScaling = 1.5;
 } else {
   // Elite and Final bosses use constants
