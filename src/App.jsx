@@ -49,8 +49,10 @@ const GAME_CONSTANTS = {
   PLAYER_HP_PER_DAY: 8,
   PLAYER_SP_PER_DAY: 8,
   PLAYER_ATK_PER_DAY: 2,
-  HEALTH_POTION_HEAL: 30,
-  STAMINA_POTION_RESTORE: 50,
+  HEALTH_POTION_HEAL_PERCENT: 30, // 30% of max HP
+  HEALTH_POTION_MIN: 30, // Minimum heal amount
+  STAMINA_POTION_RESTORE_PERCENT: 50, // 50% of max stamina
+  STAMINA_POTION_MIN: 50, // Minimum restore amount
   STAMINA_PER_TASK: 20,
   CLEANSE_POTION_COST: 100,
   LOOT_RATES: {
@@ -627,6 +629,19 @@ const FantasyStudyQuest = () => {
   const [level, setLevel] = useState(1);
   const [gold, setGold] = useState(0); // Currency from combat
   const [currency, setCurrency] = useState(0); // Gold for shop purchases
+  const [merchantTab, setMerchantTab] = useState('buy'); // 'buy' or 'sell'
+  const [marketModifiers, setMarketModifiers] = useState({
+    weapon: 1.0,
+    armor: 1.0,
+    pendant: 1.0,
+    ring: 1.0,
+    healthPotion: 1.0,
+    staminaPotion: 1.0,
+    cleansePotion: 1.0,
+    weaponOil: 1.0,
+    armorPolish: 1.0,
+    luckyCharm: 1.0
+  }); // Dynamic market prices (1.0 = normal, 1.5 = 50% bonus, etc.)
   const [pityCounter, setPityCounter] = useState(0); // Fights without upgrade (pity timer)
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
   const [showShop, setShowShop] = useState(false); // Shop modal visibility
@@ -1538,7 +1553,6 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setPomodoroTimer(t => {
         if (t <= 1) {
           // Timer finished
-          setPomodoroRunning(false);
           
           // Play sound and show notification
           if (Notification.permission === "granted") {
@@ -1549,16 +1563,18 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           }
           
           if (!isBreak) {
-            // Work session done - start break
+            // Work session done - start break automatically
             setPomodorosCompleted(p => p + 1);
-            addLog(`Pomodoro session #${pomodorosCompleted + 1} completed!`);
+            addLog(`Pomodoro session #${pomodorosCompleted + 1} completed! Starting break...`);
             setIsBreak(true);
             setPomodoroTimer(5 * 60); // 5 minute break
+            // Keep running so break auto-starts
           } else {
-            // Break done - start work session
+            // Break done - stop and wait for user to resume
             addLog(`The break ends. Ready for another pomodoro?`);
             setIsBreak(false);
             setPomodoroTimer(25 * 60); // 25 minute work session
+            setPomodoroRunning(false); // Stop here so user can choose to continue
           }
           
           return 0;
@@ -1569,6 +1585,13 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   }
   return () => clearInterval(interval);
 }, [pomodoroRunning, pomodoroTimer, isBreak, pomodorosCompleted, addLog]);
+
+  // Update market prices when merchant opens or daily
+  useEffect(() => {
+    if (showCraftingModal) {
+      updateMarketPrices();
+    }
+  }, [showCraftingModal, currentDay]);
   
   useEffect(() => {
     // Exponential XP curve: Level 1→2 = 100 XP, Level 2→3 = 130 XP, Level 3→4 = 169 XP, etc.
@@ -1806,8 +1829,121 @@ if (tasks.length === 0) {
     return "What do you seek, traveler?";
   };
 
+  // Calculate sell price for equipment
+  const calculateSellPrice = (item, itemType) => {
+    // Base prices by rarity
+    const basePrices = {
+      common: 10,
+      uncommon: 25,
+      rare: 50,
+      epic: 100,
+      legendary: 250
+    };
+    
+    const basePrice = basePrices[item.rarity || 'common'];
+    
+    // Affix multiplier (each affix adds value)
+    let affixMultiplier = 1.0;
+    if (item.affixes) {
+      const affixCount = Object.keys(item.affixes).length;
+      affixMultiplier = 1.0 + (affixCount * 0.15); // +15% per affix
+    }
+    
+    // Market modifier (dynamic prices)
+    const marketMod = marketModifiers[itemType] || 1.0;
+    
+    const finalPrice = Math.floor(basePrice * affixMultiplier * marketMod);
+    return finalPrice;
+  };
+
+  // Update market modifiers (called daily or when entering merchant)
+  const updateMarketPrices = () => {
+    const newModifiers = {};
+    const types = ['weapon', 'armor', 'pendant', 'ring', 'healthPotion', 'staminaPotion', 'cleansePotion', 'weaponOil', 'armorPolish', 'luckyCharm'];
+    
+    types.forEach(type => {
+      // Random fluctuation between 0.7x and 1.3x
+      const fluctuation = 0.7 + (Math.random() * 0.6);
+      newModifiers[type] = Math.round(fluctuation * 100) / 100;
+    });
+    
+    console.log('Market prices updated:', newModifiers);
+    setMarketModifiers(newModifiers);
+  };
+
+  // Get current price for a potion/item
+  const getCurrentPrice = (itemType, basePrice) => {
+    const marketMod = marketModifiers[itemType] || 1.0;
+    return Math.floor(basePrice * marketMod);
+  };
+
+  // Get dynamic price for potions
+  const getPotionPrice = (itemType, basePrice) => {
+    const marketMod = marketModifiers[itemType] || 1.0;
+    return Math.floor(basePrice * marketMod);
+  };
+
+  // Sell equipment function
+  const sellEquipment = (item, itemType, inventorySetter) => {
+    const sellPrice = calculateSellPrice(item, itemType);
+    
+    setGold(g => g + sellPrice);
+    
+    // Remove from inventory
+    if (itemType === 'weapon') {
+      setWeaponInventory(prev => prev.filter(w => w.id !== item.id));
+    } else if (itemType === 'armor') {
+      const slot = item.slot;
+      setArmorInventory(prev => ({
+        ...prev,
+        [slot]: prev[slot].filter(a => a.id !== item.id)
+      }));
+    } else if (itemType === 'pendant') {
+      setPendantInventory(prev => prev.filter(p => p.id !== item.id));
+    } else if (itemType === 'ring') {
+      setRingInventory(prev => prev.filter(r => r.id !== item.id));
+    }
+    
+    const marketBonus = marketModifiers[itemType] > 1.0 ? ' (Market Bonus!)' : '';
+    addLog(`Sold ${item.name} for ${sellPrice} Gold${marketBonus}`);
+  };
+
+  // Sell potions function
+  const sellPotion = (potionType) => {
+    const basePrices = {
+      healthPotion: 25,
+      staminaPotion: 20,
+      cleansePotion: 50
+    };
+    
+    const basePrice = basePrices[potionType];
+    // Sell price is 70% of current market buy price
+    const marketMod = marketModifiers[potionType] || 1.0;
+    const sellPrice = Math.floor(basePrice * marketMod * 0.7);
+    
+    setGold(g => g + sellPrice);
+    
+    // Remove from inventory
+    if (potionType === 'healthPotion') {
+      setHealthPots(h => h - 1);
+    } else if (potionType === 'staminaPotion') {
+      setStaminaPots(s => s - 1);
+    } else if (potionType === 'cleansePotion') {
+      setCleansePots(c => c - 1);
+    }
+    
+    const potionNames = {
+      healthPotion: 'Health Potion',
+      staminaPotion: 'Stamina Potion',
+      cleansePotion: 'Cleanse Potion'
+    };
+    
+    const marketBonus = marketModifiers[potionType] > 1.0 ? ' (High Demand!)' : '';
+    addLog(`Sold ${potionNames[potionType]} for ${sellPrice} Gold${marketBonus}`);
+  };
+
   const craftItem = (itemType) => {
-    const craftingRecipes = {
+    const basePrices = {
       healthPotion: { cost: 25, name: 'Health Potion', emoji: '💊' },
       staminaPotion: { cost: 20, name: 'Stamina Potion', emoji: '⚡' },
       cleansePotion: { cost: 50, name: 'Cleanse Potion', emoji: '🧪' },
@@ -1816,14 +1952,18 @@ if (tasks.length === 0) {
       luckyCharm: { cost: 80, name: 'Lucky Charm', emoji: '🍀' }
     };
     
-    const recipe = craftingRecipes[itemType];
+    const recipe = basePrices[itemType];
     
-    if (gold < recipe.cost) {
-      addLog(`The hero needs ${recipe.cost} Gold to craft ${recipe.name} (have ${gold})`);
+    // Apply market modifier to potions
+    const marketMod = marketModifiers[itemType] || 1.0;
+    const finalCost = Math.floor(recipe.cost * marketMod);
+    
+    if (gold < finalCost) {
+      addLog(`The hero needs ${finalCost} Gold to craft ${recipe.name} (have ${gold})`);
       return;
     }
     
-    setGold(e => e - recipe.cost);
+    setGold(e => e - finalCost);
     
     switch(itemType) {
       case 'healthPotion':
@@ -1846,7 +1986,8 @@ if (tasks.length === 0) {
         break;
     }
     
-    addLog(`The hero forged: ${recipe.emoji} ${recipe.name} (-${recipe.cost} Gold)`);
+    const dealText = marketMod < 0.9 ? ' (SALE!)' : marketMod > 1.1 ? ' (High Demand)' : '';
+    addLog(`The hero forged: ${recipe.emoji} ${recipe.name} (-${finalCost} Gold${dealText})`);
   };
   
   const startTask = (id) => {
@@ -2113,8 +2254,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   }
   if (healthPots > 0 && hp < getMaxHp()) {
     setHealthPots(h => h - 1);
-    setHp(h => Math.min(getMaxHp(), h + 50));
-    addLog('💊 Used Health Potion! +50 HP');
+    const maxHp = getMaxHp();
+    const healAmount = Math.max(
+      GAME_CONSTANTS.HEALTH_POTION_MIN,
+      Math.floor(maxHp * (GAME_CONSTANTS.HEALTH_POTION_HEAL_PERCENT / 100))
+    );
+    setHp(h => Math.min(maxHp, h + healAmount));
+    addLog(`💊 Used Health Potion! +${healAmount} HP`);
   }
 };
   const useStamina = () => {
@@ -5046,27 +5192,103 @@ setMiniBossCount(0);
               {plannerSubTab === 'weekly' && (
               
               <div className="grid gap-4">
-                {Object.keys(weeklyPlan).map(day => (
-                  <div key={day} className="rounded-lg p-6 border-2" style={{backgroundColor: 'rgba(15, 23, 42, 0.8)', borderColor: 'rgba(30, 41, 59, 0.8)'}}>
-                    <div className="flex justify-between items-center mb-4">
+                {Object.keys(weeklyPlan).map((day, dayIndex) => {
+                  const dayTheme = GAME_CONSTANTS.DAY_NAMES[dayIndex] || { name: day, subtitle: '', theme: '' };
+                  const today = new Date();
+                  const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+                  const isToday = day === todayDayName;
+                  
+                  return (
+                  <div 
+                    key={day} 
+                    className="rounded-lg p-6 border-2 relative overflow-hidden" 
+                    style={{
+                      background: isToday 
+                        ? 'linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(60, 10, 10, 0.6) 50%, rgba(20, 0, 10, 0.8) 100%)'
+                        : 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%)',
+                      borderColor: isToday ? '#D4AF37' : 'rgba(100, 116, 139, 0.5)',
+                      boxShadow: isToday 
+                        ? '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)' 
+                        : '0 4px 6px rgba(0, 0, 0, 0.3)'
+                    }}
+                  >
+                    {/* Day header with medieval styling */}
+                    <div className="flex justify-between items-center mb-4 relative z-10">
                       <div className="flex-1 text-center">
-                        <h3 className="text-xl font-bold uppercase mb-1" style={{color: '#D4AF37'}}>{day}</h3>
+                        <div className="mb-2">
+                          <h3 className="text-2xl font-bold uppercase mb-1" style={{
+                            color: isToday ? '#D4AF37' : '#C0C0C0',
+                            fontFamily: 'Cinzel, serif',
+                            letterSpacing: '0.15em',
+                            textShadow: isToday ? '0 0 15px rgba(212, 175, 55, 0.5)' : 'none'
+                          }}>
+                            {day}
+                          </h3>
+                          {dayTheme.theme && (
+                            <p className="text-xs italic mt-1" style={{color: isToday ? '#DAA520' : '#9CA3AF'}}>
+                              "{dayTheme.theme}"
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                          <div style={{width: '60px', height: '1px', background: `linear-gradient(to right, transparent, ${isToday ? 'rgba(212, 175, 55, 0.5)' : 'rgba(156, 163, 175, 0.3)'})`}}></div>
+                          <span style={{color: isToday ? '#D4AF37' : '#9CA3AF', fontSize: '8px'}}>◆</span>
+                          <div style={{width: '60px', height: '1px', background: `linear-gradient(to left, transparent, ${isToday ? 'rgba(212, 175, 55, 0.5)' : 'rgba(156, 163, 175, 0.3)'})`}}></div>
+                        </div>
+                        
                         <p className="text-xs mb-2">
-  {(() => {
-    const today = new Date();
-    const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
-    if (day === todayDayName) {
-      return <span className="font-bold" style={{color: '#D4AF37'}}>Today</span>;
-    } else {
-      return <span style={{color: '#9CA3AF'}}>{getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>;
-    }
-  })()}
-</p>
+                          {isToday ? (
+                            <span className="font-bold px-3 py-1 rounded-lg" style={{
+                              color: '#1C1C1C',
+                              background: 'linear-gradient(to right, #D4AF37, #DAA520)',
+                              boxShadow: '0 2px 8px rgba(212, 175, 55, 0.4)'
+                            }}>
+                              TODAY
+                            </span>
+                          ) : (
+                            <span style={{color: '#9CA3AF'}}>
+                              {getNextDayOfWeek(day).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </span>
+                          )}
+                        </p>
+                        
                         {weeklyPlan[day].length === 0 && (
-                          <p className="text-sm italic" style={{color: '#9CA3AF'}}>NO TASKS PLANNED</p>
+                          <div className="mt-4 p-3 rounded-lg border border-dashed" style={{
+                            borderColor: 'rgba(156, 163, 175, 0.3)',
+                            backgroundColor: 'rgba(0, 0, 0, 0.2)'
+                          }}>
+                            <p className="text-sm italic" style={{color: '#9CA3AF'}}>
+                              No battles planned... yet.
+                            </p>
+                          </div>
                         )}
                       </div>
-                      <button onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 border-2" style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)'}>
+                      
+                      <button 
+                        onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} 
+                        className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 border-2 ml-4" 
+                        style={{
+                          background: isToday 
+                            ? 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(107, 15, 26, 0.8))' 
+                            : 'linear-gradient(to bottom, rgba(120, 53, 15, 0.6), rgba(92, 40, 11, 0.6))',
+                          borderColor: isToday ? '#D4AF37' : '#92400E',
+                          color: '#F5F5DC',
+                          boxShadow: isToday ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
+                        }} 
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = isToday 
+                            ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.9), rgba(139, 0, 0, 0.9))' 
+                            : 'linear-gradient(to bottom, rgba(120, 53, 15, 0.8), rgba(92, 40, 11, 0.8))';
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                        }} 
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = isToday 
+                            ? 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(107, 15, 26, 0.8))' 
+                            : 'linear-gradient(to bottom, rgba(120, 53, 15, 0.6), rgba(92, 40, 11, 0.6))';
+                          e.currentTarget.style.transform = 'translateY(0)';
+                        }}
+                      >
                         <Plus size={16}/> ADD TASK
                       </button>
                     </div>
@@ -5166,7 +5388,8 @@ setMiniBossCount(0);
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
               )}
               
@@ -5729,7 +5952,7 @@ setMiniBossCount(0);
               <div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" style={{background: 'linear-gradient(to bottom, rgba(40, 30, 10, 0.95), rgba(30, 20, 0, 0.95), rgba(20, 10, 0, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
                 <button 
                   onClick={() => setShowInventoryModal(false)} 
-                  className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+                  className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
                   style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     borderColor: 'rgba(212, 175, 55, 0.4)',
@@ -5843,7 +6066,7 @@ setMiniBossCount(0);
                     <div className="flex justify-between items-center mb-2">
                       <div>
                         <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Stamina Potion</p>
-                        <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>Restores 50 SP</p>
+                        <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>Restores 50% SP</p>
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
                       </div>
                       <div className="text-right">
@@ -5851,9 +6074,14 @@ setMiniBossCount(0);
                         <button 
                           onClick={() => { 
                             if (staminaPots > 0 && stamina < getMaxStamina()) { 
-                              setStaminaPots(s => s - 1); 
-                              setStamina(s => Math.min(getMaxStamina(), s + GAME_CONSTANTS.STAMINA_POTION_RESTORE)); 
-                              addLog(`Used Stamina Potion! +${GAME_CONSTANTS.STAMINA_POTION_RESTORE} SP`); 
+                              setStaminaPots(s => s - 1);
+                              const maxStamina = getMaxStamina();
+                              const restoreAmount = Math.max(
+                                GAME_CONSTANTS.STAMINA_POTION_MIN,
+                                Math.floor(maxStamina * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))
+                              );
+                              setStamina(s => Math.min(maxStamina, s + restoreAmount)); 
+                              addLog(`Used Stamina Potion! +${restoreAmount} SP`); 
                             } 
                           }} 
                           disabled={staminaPots === 0 || stamina >= getMaxStamina()}
@@ -6434,7 +6662,7 @@ setMiniBossCount(0);
               <div className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative" style={{background: 'linear-gradient(to bottom, rgba(40, 10, 60, 0.95), rgba(30, 0, 40, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
                 <button 
                   onClick={() => setShowCraftingModal(false)} 
-                  className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
+                  className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
                   style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     borderColor: 'rgba(212, 175, 55, 0.4)',
@@ -6469,6 +6697,72 @@ setMiniBossCount(0);
                   <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{getMerchantDialogue()}"</p>
                 </div>
                 
+                {/* Main Tabs: Potions / Equipment */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <button
+                    onClick={() => {
+                      if (merchantTab === 'buy' || merchantTab === 'sellPotions') {
+                        setMerchantTab('buy'); // Stay in potions section
+                      } else {
+                        setMerchantTab('buy'); // Enter potions section
+                      }
+                    }}
+                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    style={{
+                      backgroundColor: (merchantTab === 'buy' || merchantTab === 'sellPotions') ? 'rgba(168, 85, 247, 0.8)' : 'rgba(168, 85, 247, 0.3)',
+                      borderColor: (merchantTab === 'buy' || merchantTab === 'sellPotions') ? '#A855F7' : 'rgba(168, 85, 247, 0.5)',
+                      color: '#F5F5DC'
+                    }}
+                  >
+                    Potions
+                  </button>
+                  <button
+                    onClick={() => setMerchantTab('sellEquipment')}
+                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    style={{
+                      backgroundColor: merchantTab === 'sellEquipment' ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
+                      borderColor: merchantTab === 'sellEquipment' ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
+                      color: '#F5F5DC'
+                    }}
+                  >
+                    Equipment
+                  </button>
+                </div>
+                
+                {/* Potions Sub-tabs (Buy/Sell) - Appear below when Potions is selected */}
+                {(merchantTab === 'buy' || merchantTab === 'sellPotions') && (
+                  <div className="rounded-lg p-2 mb-6 border" style={{
+                    background: 'rgba(168, 85, 247, 0.15)',
+                    borderColor: 'rgba(168, 85, 247, 0.3)'
+                  }}>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setMerchantTab('buy')}
+                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        style={{
+                          backgroundColor: merchantTab === 'buy' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          borderColor: merchantTab === 'buy' ? '#D4AF37' : 'rgba(184, 134, 11, 0.3)',
+                          color: '#F5F5DC'
+                        }}
+                      >
+                        Buy
+                      </button>
+                      <button
+                        onClick={() => setMerchantTab('sellPotions')}
+                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        style={{
+                          backgroundColor: merchantTab === 'sellPotions' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          borderColor: merchantTab === 'sellPotions' ? '#22C55E' : 'rgba(34, 197, 94, 0.3)',
+                          color: '#F5F5DC'
+                        }}
+                      >
+                        Sell
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
+                
                 <div className="rounded-lg p-4 mb-6 border-2" style={{
                   background: 'rgba(184, 134, 11, 0.2)',
                   borderColor: 'rgba(212, 175, 55, 0.4)'
@@ -6477,90 +6771,660 @@ setMiniBossCount(0);
                     <span style={{color: COLORS.silver}}>Current Gold:</span> 
                     <span className="font-bold text-2xl ml-2" style={{color: '#D4AF37'}}>{gold}</span>
                   </p>
+                  <button
+                    onClick={updateMarketPrices}
+                    className="mt-2 w-full py-1 rounded text-xs transition-all border"
+                    style={{
+                      background: 'rgba(212, 175, 55, 0.2)',
+                      borderColor: 'rgba(212, 175, 55, 0.4)',
+                      color: COLORS.silver
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.3)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)'}
+                  >
+                    Refresh Market Prices (Test)
+                  </button>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
+                {/* Buy Potions Tab */}
+                {merchantTab === 'buy' && (
+                <div>
+                  {/* Potion Market Status */}
+                  <div className="rounded-lg p-3 mb-4 border" style={{
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    borderColor: 'rgba(212, 175, 55, 0.3)'
+                  }}>
+                    <p className="text-xs font-bold mb-2 text-center" style={{color: '#D4AF37'}}>TODAY'S MARKET RATES</p>
+                    <div className="flex justify-center gap-4 text-xs">
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Health</p>
+                        <p className="font-bold" style={{color: marketModifiers.healthPotion < 0.9 ? '#68D391' : marketModifiers.healthPotion > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.healthPotion < 0.9 ? 'SALE' : marketModifiers.healthPotion > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Stamina</p>
+                        <p className="font-bold" style={{color: marketModifiers.staminaPotion < 0.9 ? '#68D391' : marketModifiers.staminaPotion > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.staminaPotion < 0.9 ? 'SALE' : marketModifiers.staminaPotion > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Cleanse</p>
+                        <p className="font-bold" style={{color: marketModifiers.cleansePotion < 0.9 ? '#68D391' : marketModifiers.cleansePotion > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.cleansePotion < 0.9 ? 'SALE' : marketModifiers.cleansePotion > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-center mt-2" style={{color: '#9CA3AF'}}>Prices refresh daily</p>
+                  </div>
+                  
+                <div className="grid grid-cols-3 gap-2">
+                  {(() => {
+                    const healthPrice = getPotionPrice('healthPotion', 25);
+                    const staminaPrice = getPotionPrice('staminaPotion', 20);
+                    const cleansePrice = getPotionPrice('cleansePotion', 50);
+                    const weaponOilPrice = getPotionPrice('weaponOil', 40);
+                    const armorPolishPrice = getPotionPrice('armorPolish', 40);
+                    const luckyCharmPrice = getPotionPrice('luckyCharm', 80);
+                    
+                    return (<>
                   <button 
                     onClick={() => craftItem('healthPotion')} 
-                    disabled={gold < 25}
-                    className="p-4 rounded-lg border-2 transition-all cursor-pointer" style={{backgroundColor: gold >= 25 ? 'rgba(139, 0, 0, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: gold >= 25 ? 'rgba(139, 0, 0, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: gold >= 25 ? 1 : 0.5, cursor: gold >= 25 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 25) e.currentTarget.style.backgroundColor = 'rgba(165, 42, 42, 0.5)'}} onMouseLeave={(e) => {if (gold >= 25) e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.3)'}}
+                    disabled={gold < healthPrice}
+                    className="p-2 rounded-lg border-2 transition-all cursor-pointer relative overflow-hidden" 
+                    style={{
+                      background: gold >= healthPrice 
+                        ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(153, 27, 27, 0.5) 50%, rgba(127, 29, 29, 0.6) 100%)' 
+                        : 'rgba(44, 62, 80, 0.3)', 
+                      borderColor: gold >= healthPrice ? 'rgba(220, 38, 38, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: gold >= healthPrice ? 1 : 0.5, 
+                      cursor: gold >= healthPrice ? 'pointer' : 'not-allowed',
+                      boxShadow: gold >= healthPrice ? '0 0 15px rgba(220, 38, 38, 0.3)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (gold >= healthPrice) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.5) 0%, rgba(185, 28, 28, 0.6) 50%, rgba(153, 27, 27, 0.7) 100%)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (gold >= healthPrice) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(153, 27, 27, 0.5) 50%, rgba(127, 29, 29, 0.6) 100%)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="mb-2">
-                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Health Potion</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>25 Gold</p>
-                      <p className="text-sm mb-2" style={{color: '#FF6B6B'}}>Restores 30 HP</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Crimson elixir. Mends wounds, not souls."</p>
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Health Potion</p>
+                      <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
+                        {healthPrice}g
+                        {marketModifiers.healthPotion < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
+                        {marketModifiers.healthPotion > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
+                      </p>
+                      <p className="text-xs mb-1" style={{color: '#FF6B6B'}}>30% HP</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Crimson elixir"</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('staminaPotion')} 
-                    disabled={gold < 20}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: gold >= 20 ? 'rgba(30, 58, 95, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: gold >= 20 ? 'rgba(30, 58, 95, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: gold >= 20 ? 1 : 0.5, cursor: gold >= 20 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 20) e.currentTarget.style.backgroundColor = 'rgba(43, 80, 130, 0.5)'}} onMouseLeave={(e) => {if (gold >= 20) e.currentTarget.style.backgroundColor = 'rgba(30, 58, 95, 0.3)'}}
+                    disabled={gold < staminaPrice}
+                    className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
+                    style={{
+                      background: gold >= staminaPrice 
+                        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 64, 175, 0.5) 50%, rgba(29, 78, 216, 0.6) 100%)' 
+                        : 'rgba(44, 62, 80, 0.3)', 
+                      borderColor: gold >= staminaPrice ? 'rgba(59, 130, 246, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: gold >= staminaPrice ? 1 : 0.5, 
+                      cursor: gold >= staminaPrice ? 'pointer' : 'not-allowed',
+                      boxShadow: gold >= staminaPrice ? '0 0 15px rgba(59, 130, 246, 0.3)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (gold >= staminaPrice) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(96, 165, 250, 0.5) 0%, rgba(59, 130, 246, 0.6) 50%, rgba(37, 99, 235, 0.7) 100%)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (gold >= staminaPrice) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 64, 175, 0.5) 50%, rgba(29, 78, 216, 0.6) 100%)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="mb-2">
-                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Stamina Potion</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>20 Gold</p>
-                      <p className="text-sm mb-2" style={{color: '#6BB6FF'}}>Restores 50 SP</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Stamina Potion</p>
+                      <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
+                        {staminaPrice}g
+                        {marketModifiers.staminaPotion < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
+                        {marketModifiers.staminaPotion > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
+                      </p>
+                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>50% SP</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Azure draught"</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('cleansePotion')} 
-                    disabled={gold < 50}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: gold >= 50 ? 'rgba(107, 44, 145, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: gold >= 50 ? 'rgba(107, 44, 145, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: gold >= 50 ? 1 : 0.5, cursor: gold >= 50 ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 50) e.currentTarget.style.backgroundColor = 'rgba(138, 59, 181, 0.5)'}} onMouseLeave={(e) => {if (gold >= 50) e.currentTarget.style.backgroundColor = 'rgba(107, 44, 145, 0.3)'}}
+                    disabled={gold < cleansePrice}
+                    className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
+                    style={{
+                      background: gold >= cleansePrice 
+                        ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.5) 50%, rgba(107, 33, 168, 0.6) 100%)' 
+                        : 'rgba(44, 62, 80, 0.3)', 
+                      borderColor: gold >= cleansePrice ? 'rgba(168, 85, 247, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: gold >= cleansePrice ? 1 : 0.5, 
+                      cursor: gold >= cleansePrice ? 'pointer' : 'not-allowed',
+                      boxShadow: gold >= cleansePrice ? '0 0 20px rgba(168, 85, 247, 0.3)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (gold >= cleansePrice) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(192, 132, 252, 0.5) 0%, rgba(147, 51, 234, 0.6) 50%, rgba(126, 34, 206, 0.7) 100%)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (gold >= cleansePrice) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.5) 50%, rgba(107, 33, 168, 0.6) 100%)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="mb-2">
-                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>50 Gold</p>
-                      <p className="text-sm mb-2" style={{color: '#B794F4'}}>Removes curse</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the curse's hold."</p>
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
+                      <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
+                        {cleansePrice}g
+                        {marketModifiers.cleansePotion < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
+                        {marketModifiers.cleansePotion > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
+                      </p>
+                      <p className="text-xs mb-1" style={{color: '#B794F4'}}>Removes curse</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Purifying brew"</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('weaponOil')} 
-                    disabled={gold < 40 || weaponOilActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (gold >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (gold >= 40 && !weaponOilActive) ? 'rgba(184, 134, 11, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (gold >= 40 && !weaponOilActive) ? 1 : 0.5, cursor: (gold >= 40 && !weaponOilActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(218, 165, 32, 0.5)'}} onMouseLeave={(e) => {if (gold >= 40 && !weaponOilActive) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.3)'}}
+                    disabled={gold < weaponOilPrice || weaponOilActive}
+                    className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
+                    style={{
+                      background: (gold >= weaponOilPrice && !weaponOilActive) 
+                        ? 'linear-gradient(135deg, rgba(234, 179, 8, 0.4) 0%, rgba(202, 138, 4, 0.5) 50%, rgba(161, 98, 7, 0.6) 100%)' 
+                        : 'rgba(44, 62, 80, 0.3)', 
+                      borderColor: (gold >= weaponOilPrice && !weaponOilActive) ? 'rgba(234, 179, 8, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: (gold >= weaponOilPrice && !weaponOilActive) ? 1 : 0.5, 
+                      cursor: (gold >= weaponOilPrice && !weaponOilActive) ? 'pointer' : 'not-allowed',
+                      boxShadow: (gold >= weaponOilPrice && !weaponOilActive) ? '0 0 15px rgba(234, 179, 8, 0.3)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (gold >= weaponOilPrice && !weaponOilActive) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(250, 204, 21, 0.5) 0%, rgba(234, 179, 8, 0.6) 50%, rgba(202, 138, 4, 0.7) 100%)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (gold >= weaponOilPrice && !weaponOilActive) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.4) 0%, rgba(202, 138, 4, 0.5) 50%, rgba(161, 98, 7, 0.6) 100%)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="mb-2">
-                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Weapon Oil</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Gold</p>
-                      <p className="text-sm mb-1" style={{color: '#DAA520'}}>+5 weapon until dawn</p>
-                      {weaponOilActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>Active</p>}
-                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Darkened oil. Edges sharpen, strikes deepen."</p>
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Weapon Oil</p>
+                      <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
+                        {weaponOilPrice}g
+                        {marketModifiers.weaponOil < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
+                        {marketModifiers.weaponOil > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
+                      </p>
+                      <p className="text-xs mb-1" style={{color: '#DAA520'}}>+5 wpn{weaponOilActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Darkened oil"</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('armorPolish')} 
-                    disabled={gold < 40 || armorPolishActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (gold >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (gold >= 40 && !armorPolishActive) ? 'rgba(0, 77, 77, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (gold >= 40 && !armorPolishActive) ? 1 : 0.5, cursor: (gold >= 40 && !armorPolishActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 102, 102, 0.5)'}} onMouseLeave={(e) => {if (gold >= 40 && !armorPolishActive) e.currentTarget.style.backgroundColor = 'rgba(0, 77, 77, 0.3)'}}
+                    disabled={gold < armorPolishPrice || armorPolishActive}
+                    className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
+                    style={{
+                      background: (gold >= armorPolishPrice && !armorPolishActive) 
+                        ? 'linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(13, 148, 136, 0.5) 50%, rgba(15, 118, 110, 0.6) 100%)' 
+                        : 'rgba(44, 62, 80, 0.3)', 
+                      borderColor: (gold >= armorPolishPrice && !armorPolishActive) ? 'rgba(20, 184, 166, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: (gold >= armorPolishPrice && !armorPolishActive) ? 1 : 0.5, 
+                      cursor: (gold >= armorPolishPrice && !armorPolishActive) ? 'pointer' : 'not-allowed',
+                      boxShadow: (gold >= armorPolishPrice && !armorPolishActive) ? '0 0 15px rgba(20, 184, 166, 0.3)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (gold >= armorPolishPrice && !armorPolishActive) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(45, 212, 191, 0.5) 0%, rgba(20, 184, 166, 0.6) 50%, rgba(13, 148, 136, 0.7) 100%)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (gold >= armorPolishPrice && !armorPolishActive) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(13, 148, 136, 0.5) 50%, rgba(15, 118, 110, 0.6) 100%)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="mb-2">
-                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Armor Polish</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>40 Gold</p>
-                      <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>+5 armor until dawn</p>
-                      {armorPolishActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>Active</p>}
-                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Protective salve. Steel hardens, flesh endures."</p>
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Armor Polish</p>
+                      <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
+                        {armorPolishPrice}g
+                        {marketModifiers.armorPolish < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
+                        {marketModifiers.armorPolish > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
+                      </p>
+                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>+5 arm{armorPolishActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Protective salve"</p>
                     </div>
                   </button>
                   
                   <button 
                     onClick={() => craftItem('luckyCharm')} 
-                    disabled={gold < 80 || luckyCharmActive}
-                    className="p-4 rounded-lg border-2 transition-all" style={{backgroundColor: (gold >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.3)' : 'rgba(44, 62, 80, 0.3)', borderColor: (gold >= 80 && !luckyCharmActive) ? 'rgba(47, 82, 51, 0.6)' : 'rgba(149, 165, 166, 0.3)', opacity: (gold >= 80 && !luckyCharmActive) ? 1 : 0.5, cursor: (gold >= 80 && !luckyCharmActive) ? 'pointer' : 'not-allowed'}} onMouseEnter={(e) => {if (gold >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 66, 0.5)'}} onMouseLeave={(e) => {if (gold >= 80 && !luckyCharmActive) e.currentTarget.style.backgroundColor = 'rgba(47, 82, 51, 0.3)'}}
+                    disabled={gold < luckyCharmPrice || luckyCharmActive}
+                    className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
+                    style={{
+                      background: (gold >= luckyCharmPrice && !luckyCharmActive) 
+                        ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.4) 0%, rgba(22, 163, 74, 0.5) 50%, rgba(21, 128, 61, 0.6) 100%)' 
+                        : 'rgba(44, 62, 80, 0.3)', 
+                      borderColor: (gold >= luckyCharmPrice && !luckyCharmActive) ? 'rgba(34, 197, 94, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: (gold >= luckyCharmPrice && !luckyCharmActive) ? 1 : 0.5, 
+                      cursor: (gold >= luckyCharmPrice && !luckyCharmActive) ? 'pointer' : 'not-allowed',
+                      boxShadow: (gold >= luckyCharmPrice && !luckyCharmActive) ? '0 0 15px rgba(34, 197, 94, 0.3)' : 'none'
+                    }} 
+                    onMouseEnter={(e) => {
+                      if (gold >= luckyCharmPrice && !luckyCharmActive) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74, 222, 128, 0.5) 0%, rgba(34, 197, 94, 0.6) 50%, rgba(22, 163, 74, 0.7) 100%)';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }
+                    }} 
+                    onMouseLeave={(e) => {
+                      if (gold >= luckyCharmPrice && !luckyCharmActive) {
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.4) 0%, rgba(22, 163, 74, 0.5) 50%, rgba(21, 128, 61, 0.6) 100%)';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }
+                    }}
                   >
-                    <div className="mb-2">
-                      <p className="font-bold text-lg mb-2" style={{color: '#F5F5DC'}}>Lucky Charm</p>
-                      <p className="text-sm font-bold mb-2" style={{color: '#D4AF37'}}>80 Gold</p>
-                      <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
-                      {luckyCharmActive && <p className="text-xs mb-2" style={{color: '#90EE90'}}>✓ Active</p>}
-                      <p className="text-xs italic" style={{color: COLORS.silver}}>"Blessed talisman. Fortune favors the bold."</p>
+                    <div>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Lucky Charm</p>
+                      <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
+                        {luckyCharmPrice}g
+                        {marketModifiers.luckyCharm < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
+                        {marketModifiers.luckyCharm > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
+                      </p>
+                      <p className="text-xs mb-1" style={{color: '#68D391'}}>2x loot{luckyCharmActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Blessed talisman"</p>
                     </div>
                   </button>
+                  </>);
+                  })()}
                 </div>
+                </div>
+                )}
+                
+                {/* Sell Equipment Tab */}
+                {/* Sell Potions Tab */}
+                {merchantTab === 'sellPotions' && (
+                <div>
+                  {/* Market Status Indicator for Potions */}
+                  <div className="rounded-lg p-3 mb-4 border" style={{
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    borderColor: 'rgba(212, 175, 55, 0.3)'
+                  }}>
+                    <p className="text-xs font-bold mb-2 text-center" style={{color: '#D4AF37'}}>TODAY'S MARKET RATES</p>
+                    <div className="flex justify-center gap-4 text-xs">
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Health</p>
+                        <p className="font-bold" style={{color: marketModifiers.healthPotion >= 1.1 ? '#68D391' : marketModifiers.healthPotion <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
+                        </p>
+                        <p className="text-xs" style={{color: marketModifiers.healthPotion >= 1.1 ? '#68D391' : marketModifiers.healthPotion <= 0.9 ? '#FF6B6B' : '#9CA3AF'}}>
+                          {marketModifiers.healthPotion >= 1.1 ? 'HIGH' : marketModifiers.healthPotion <= 0.9 ? 'LOW' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Stamina</p>
+                        <p className="font-bold" style={{color: marketModifiers.staminaPotion >= 1.1 ? '#68D391' : marketModifiers.staminaPotion <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
+                        </p>
+                        <p className="text-xs" style={{color: marketModifiers.staminaPotion >= 1.1 ? '#68D391' : marketModifiers.staminaPotion <= 0.9 ? '#FF6B6B' : '#9CA3AF'}}>
+                          {marketModifiers.staminaPotion >= 1.1 ? 'HIGH' : marketModifiers.staminaPotion <= 0.9 ? 'LOW' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Cleanse</p>
+                        <p className="font-bold" style={{color: marketModifiers.cleansePotion >= 1.1 ? '#68D391' : marketModifiers.cleansePotion <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
+                        </p>
+                        <p className="text-xs" style={{color: marketModifiers.cleansePotion >= 1.1 ? '#68D391' : marketModifiers.cleansePotion <= 0.9 ? '#FF6B6B' : '#9CA3AF'}}>
+                          {marketModifiers.cleansePotion >= 1.1 ? 'HIGH' : marketModifiers.cleansePotion <= 0.9 ? 'LOW' : 'NORMAL'}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-center mt-2" style={{color: '#9CA3AF'}}>Prices refresh daily</p>
+                  </div>
+                  
+                  {/* Potions */}
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {(healthPots > 0 || staminaPots > 0 || cleansePots > 0) ? (
+                      <div>
+                        <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>POTIONS</h3>
+                        <div className="space-y-2">
+                          {healthPots > 0 && (
+                            <div className="rounded-lg p-3 border flex justify-between items-center" style={{
+                              background: 'rgba(0, 0, 0, 0.3)',
+                              borderColor: 'rgba(220, 38, 38, 0.6)'
+                            }}>
+                              <div className="flex-1">
+                                <p className="text-sm font-bold" style={{color: '#FF6B6B'}}>Health Potion</p>
+                                <p className="text-xs" style={{color: '#F5F5DC'}}>Quantity: {healthPots}</p>
+                              </div>
+                              <button
+                                onClick={() => sellPotion('healthPotion')}
+                                className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                style={{
+                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                  borderColor: '#D4AF37',
+                                  color: '#F5F5DC'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                              >
+                                Sell: {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
+                              </button>
+                            </div>
+                          )}
+                          
+                          {staminaPots > 0 && (
+                            <div className="rounded-lg p-3 border flex justify-between items-center" style={{
+                              background: 'rgba(0, 0, 0, 0.3)',
+                              borderColor: 'rgba(59, 130, 246, 0.6)'
+                            }}>
+                              <div className="flex-1">
+                                <p className="text-sm font-bold" style={{color: '#6BB6FF'}}>Stamina Potion</p>
+                                <p className="text-xs" style={{color: '#F5F5DC'}}>Quantity: {staminaPots}</p>
+                              </div>
+                              <button
+                                onClick={() => sellPotion('staminaPotion')}
+                                className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                style={{
+                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                  borderColor: '#D4AF37',
+                                  color: '#F5F5DC'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                              >
+                                Sell: {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
+                              </button>
+                            </div>
+                          )}
+                          
+                          {cleansePots > 0 && (
+                            <div className="rounded-lg p-3 border flex justify-between items-center" style={{
+                              background: 'rgba(0, 0, 0, 0.3)',
+                              borderColor: 'rgba(168, 85, 247, 0.6)'
+                            }}>
+                              <div className="flex-1">
+                                <p className="text-sm font-bold" style={{color: '#B794F4'}}>Cleanse Potion</p>
+                                <p className="text-xs" style={{color: '#F5F5DC'}}>Quantity: {cleansePots}</p>
+                              </div>
+                              <button
+                                onClick={() => sellPotion('cleansePotion')}
+                                className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                style={{
+                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                  borderColor: '#D4AF37',
+                                  color: '#F5F5DC'
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                              >
+                                Sell: {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="rounded-lg p-8 border-2 text-center" style={{
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        borderColor: 'rgba(212, 175, 55, 0.3)'
+                      }}>
+                        <p className="text-sm italic" style={{color: '#9CA3AF'}}>
+                          No potions to sell. Purchase potions or defeat enemies to gather them.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                )}
+                
+                {/* Sell Equipment Tab */}
+                {merchantTab === 'sellEquipment' && (
+                <div>
+                  {/* Market Status Indicator */}
+                  <div className="rounded-lg p-4 mb-4 border-2" style={{
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    borderColor: 'rgba(212, 175, 55, 0.3)'
+                  }}>
+                    <p className="text-xs font-bold mb-2 text-center" style={{color: '#D4AF37'}}>TODAY'S MARKET RATES</p>
+                    <div className="grid grid-cols-4 gap-2 text-xs">
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Weapons</p>
+                        <p className="font-bold" style={{color: marketModifiers.weapon >= 1.1 ? '#68D391' : marketModifiers.weapon <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.round((marketModifiers.weapon - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.weapon - 1) * 100)}%
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Armor</p>
+                        <p className="font-bold" style={{color: marketModifiers.armor >= 1.1 ? '#68D391' : marketModifiers.armor <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.round((marketModifiers.armor - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.armor - 1) * 100)}%
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Pendants</p>
+                        <p className="font-bold" style={{color: marketModifiers.pendant >= 1.1 ? '#68D391' : marketModifiers.pendant <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.round((marketModifiers.pendant - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.pendant - 1) * 100)}%
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Rings</p>
+                        <p className="font-bold" style={{color: marketModifiers.ring >= 1.1 ? '#68D391' : marketModifiers.ring <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {Math.round((marketModifiers.ring - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.ring - 1) * 100)}%
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-center mt-2" style={{color: '#9CA3AF'}}>Prices refresh daily</p>
+                  </div>
+                  
+                  {/* Sellable Equipment Lists */}
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {/* Weapons */}
+                    {weaponInventory.length > 0 && (
+                      <div>
+                        <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>WEAPONS</h3>
+                        <div className="space-y-2">
+                          {weaponInventory.map(wpn => {
+                            const sellPrice = calculateSellPrice(wpn, 'weapon');
+                            return (
+                              <div key={wpn.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                                background: 'rgba(0, 0, 0, 0.3)',
+                                borderColor: getRarityColor(wpn.rarity || 'common')
+                              }}>
+                                <div className="flex-1">
+                                  <p className="text-sm font-bold" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
+                                  <p className="text-xs" style={{color: '#F5F5DC'}}>+{wpn.attack} ATK</p>
+                                  {wpn.rarity && (
+                                    <p className="text-xs italic" style={{color: getRarityColor(wpn.rarity)}}>
+                                      {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => sellEquipment(wpn, 'weapon')}
+                                  className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                  style={{
+                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                    borderColor: '#D4AF37',
+                                    color: '#F5F5DC'
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                >
+                                  Sell: {sellPrice} Gold
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Armor - loop through each slot */}
+                    {(armorInventory.helmet.length > 0 || armorInventory.chest.length > 0 || armorInventory.gloves.length > 0 || armorInventory.boots.length > 0) && (
+                      <div>
+                        <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>ARMOR</h3>
+                        <div className="space-y-2">
+                          {Object.entries(armorInventory).map(([slot, items]) => 
+                            items.map(arm => {
+                              const sellPrice = calculateSellPrice(arm, 'armor');
+                              return (
+                                <div key={arm.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                                  background: 'rgba(0, 0, 0, 0.3)',
+                                  borderColor: getRarityColor(arm.rarity || 'common')
+                                }}>
+                                  <div className="flex-1">
+                                    <p className="text-sm font-bold" style={{color: getRarityColor(arm.rarity || 'common')}}>{arm.name}</p>
+                                    <p className="text-xs" style={{color: '#F5F5DC'}}>+{arm.defense} DEF • {slot.charAt(0).toUpperCase() + slot.slice(1)}</p>
+                                    {arm.rarity && (
+                                      <p className="text-xs italic" style={{color: getRarityColor(arm.rarity)}}>
+                                        {GAME_CONSTANTS.RARITY_TIERS[arm.rarity].name}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <button
+                                    onClick={() => sellEquipment(arm, 'armor')}
+                                    className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                    style={{
+                                      background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                      borderColor: '#D4AF37',
+                                      color: '#F5F5DC'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                  >
+                                    Sell: {sellPrice} Gold
+                                  </button>
+                                </div>
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Pendants */}
+                    {pendantInventory.length > 0 && (
+                      <div>
+                        <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>PENDANTS</h3>
+                        <div className="space-y-2">
+                          {pendantInventory.map(pnd => {
+                            const sellPrice = calculateSellPrice(pnd, 'pendant');
+                            return (
+                              <div key={pnd.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                                background: 'rgba(0, 0, 0, 0.3)',
+                                borderColor: getRarityColor(pnd.rarity || 'common')
+                              }}>
+                                <div className="flex-1">
+                                  <p className="text-sm font-bold" style={{color: getRarityColor(pnd.rarity || 'common')}}>{pnd.name}</p>
+                                  <p className="text-xs" style={{color: '#FF6B6B'}}>+{pnd.hp} HP</p>
+                                  {pnd.rarity && (
+                                    <p className="text-xs italic" style={{color: getRarityColor(pnd.rarity)}}>
+                                      {GAME_CONSTANTS.RARITY_TIERS[pnd.rarity].name}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => sellEquipment(pnd, 'pendant')}
+                                  className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                  style={{
+                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                    borderColor: '#D4AF37',
+                                    color: '#F5F5DC'
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                >
+                                  Sell: {sellPrice} Gold
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Rings */}
+                    {ringInventory.length > 0 && (
+                      <div>
+                        <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>RINGS</h3>
+                        <div className="space-y-2">
+                          {ringInventory.map(rng => {
+                            const sellPrice = calculateSellPrice(rng, 'ring');
+                            return (
+                              <div key={rng.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                                background: 'rgba(0, 0, 0, 0.3)',
+                                borderColor: getRarityColor(rng.rarity || 'common')
+                              }}>
+                                <div className="flex-1">
+                                  <p className="text-sm font-bold" style={{color: getRarityColor(rng.rarity || 'common')}}>{rng.name}</p>
+                                  <p className="text-xs" style={{color: '#4FC3F7'}}>+{rng.stamina} STA</p>
+                                  {rng.rarity && (
+                                    <p className="text-xs italic" style={{color: getRarityColor(rng.rarity)}}>
+                                      {GAME_CONSTANTS.RARITY_TIERS[rng.rarity].name}
+                                    </p>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => sellEquipment(rng, 'ring')}
+                                  className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                                  style={{
+                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
+                                    borderColor: '#D4AF37',
+                                    color: '#F5F5DC'
+                                  }}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                >
+                                  Sell: {sellPrice} Gold
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Empty State */}
+                    {weaponInventory.length === 0 && 
+                     armorInventory.helmet.length === 0 && 
+                     armorInventory.chest.length === 0 && 
+                     armorInventory.gloves.length === 0 && 
+                     armorInventory.boots.length === 0 && 
+                     pendantInventory.length === 0 && 
+                     ringInventory.length === 0 && (
+                      <div className="rounded-lg p-8 border-2 text-center" style={{
+                        background: 'rgba(0, 0, 0, 0.3)',
+                        borderColor: 'rgba(212, 175, 55, 0.3)'
+                      }}>
+                        <p className="text-sm italic" style={{color: '#9CA3AF'}}>
+                          No equipment to sell. Defeat enemies to gather loot.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                )}
                 
               </div>
             </div>
@@ -6941,14 +7805,13 @@ setMiniBossCount(0);
           <X size={20}/>
         </button>
         <div className="text-center">
-          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
+          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em', fontFamily: 'Cinzel, serif'}}>{flashcardDecks[selectedDeck].name}</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
             <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
           <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Each card brings you closer to mastery..."</p>
-          <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Cards remaining: {studyQueue.length} | Total studied: {flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</p>
         </div>
       </div>
       
@@ -7068,6 +7931,14 @@ setMiniBossCount(0);
           </button>
         </div>
       )}
+      
+      {/* Cards Remaining Stats at Bottom */}
+      <div className="mt-6 text-center">
+        <p className="text-xs" style={{color: '#95A5A6'}}>
+          Cards Remaining: <span className="font-bold" style={{color: '#D4AF37'}}>{studyQueue.length}</span> | 
+          Total Studied: <span className="font-bold" style={{color: '#68D391'}}>{flashcardDecks[selectedDeck].cards.length - studyQueue.length + 1}</span>
+        </p>
+      </div>
     </div>
   </div>
 )}
@@ -7114,14 +7985,13 @@ setMiniBossCount(0);
               <X size={20}/>
             </button>
             <div className="text-center">
-              <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>{flashcardDecks[selectedDeck].name}</h2>
+              <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em', fontFamily: 'Cinzel, serif'}}>{flashcardDecks[selectedDeck].name}</h2>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
                 <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
                 <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
               </div>
               <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Test your knowledge in the crucible of trial..."</p>
-              <p className="text-xs mt-1" style={{color: '#95A5A6'}}>Question {currentQuizIndex + 1} of {quizQuestions.length} | Score: {quizScore}/{quizQuestions.length}</p>
             </div>
           </div>
           
@@ -7165,6 +8035,14 @@ setMiniBossCount(0);
                 background: 'linear-gradient(to right, #8B0000, #DC143C)'
               }}
             />
+          </div>
+          
+          {/* Quiz Stats at Bottom */}
+          <div className="mb-6 text-center">
+            <p className="text-xs" style={{color: '#95A5A6'}}>
+              Question: <span className="font-bold" style={{color: '#D4AF37'}}>{currentQuizIndex + 1}</span>/{quizQuestions.length} | 
+              Score: <span className="font-bold" style={{color: '#68D391'}}>{quizScore}</span>/{quizQuestions.length}
+            </p>
           </div>
           
           {selectedAnswer && (
@@ -7382,17 +8260,13 @@ setMiniBossCount(0);
           <X size={20}/>
         </button>
         <div className="text-center">
-          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>MATCH GAME</h2>
+          <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em', fontFamily: 'Cinzel, serif'}}>{flashcardDecks[selectedDeck].name}</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
             <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
-          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck].name}"</p>
-          <p className="text-xs mt-1" style={{color: '#95A5A6'}}>
-            Matched: {matchedPairs.length}/{matchCards.length / 2} pairs
-            {matchStartTime && ` | Time: ${Math.floor((Date.now() - matchStartTime) / 1000)}s`}
-          </p>
+          <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Match the pairs before time slips away..."</p>
         </div>
       </div>
       
@@ -7507,6 +8381,16 @@ setMiniBossCount(0);
               </button>
             );
           })}
+        </div>
+      )}
+      
+      {/* Match Stats at Bottom */}
+      {matchedPairs.length < matchCards.length / 2 && (
+        <div className="mt-6 text-center">
+          <p className="text-xs" style={{color: '#95A5A6'}}>
+            Matched: <span className="font-bold" style={{color: '#D4AF37'}}>{matchedPairs.length}</span>/{matchCards.length / 2} pairs
+            {matchStartTime && <span> | Time: <span className="font-bold" style={{color: '#68D391'}}>{Math.floor((Date.now() - matchStartTime) / 1000)}s</span></span>}
+          </p>
         </div>
       )}
     </div>
@@ -8347,9 +9231,14 @@ setMiniBossCount(0);
                             <button 
                               onClick={() => { 
                                 if (staminaPots > 0) {
-                                  setStamina(Math.min(stamina + 50, getMaxStamina())); 
+                                  const maxStamina = getMaxStamina();
+                                  const restoreAmount = Math.max(
+                                    GAME_CONSTANTS.STAMINA_POTION_MIN,
+                                    Math.floor(maxStamina * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))
+                                  );
+                                  setStamina(Math.min(stamina + restoreAmount, maxStamina)); 
                                   setStaminaPots(staminaPots - 1); 
-                                  addLog('💙 Used Stamina Potion (+50 SP)');
+                                  addLog(`💙 Used Stamina Potion (+${restoreAmount} SP)`);
                                 }
                               }}
                               disabled={staminaPots === 0}
@@ -8538,10 +9427,14 @@ setMiniBossCount(0);
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-2" style={{
             color: '#D4AF37',
-            letterSpacing: '0.1em'
+            letterSpacing: '0.1em',
+            fontFamily: 'Cinzel, serif'
           }}>
             {isBreak ? 'RESPITE' : 'DEEP FOCUS'}
           </h2>
+          <p className="text-sm italic mb-4" style={{color: COLORS.silver}}>
+            {isBreak ? '"Rest now, warrior. The battle awaits."' : '"Through focus, victory is forged."'}
+          </p>
           <div className="flex items-center justify-center gap-2 mb-4">
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
             <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
@@ -8674,7 +9567,7 @@ setMiniBossCount(0);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v3.9.0 - Wave Battles & Planner Sync Fix</p>
+          <p className="text-xs text-gray-600">v4.3.0 - Complete Merchant Economy</p>
         </div>
       </div>
       )}
