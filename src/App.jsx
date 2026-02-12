@@ -1,4 +1,4 @@
-// FANTASY STUDY QUEST - v4.5.0 Economy Overhaul
+// FANTASY STUDY QUEST - v4.6.0 State Machine & UX Polish
 // Last updated: 2026-02-12
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -41,8 +41,6 @@ const COLORS = {
 };
 
 const GAME_CONSTANTS = {
-  LATE_START_PENALTY: 15,
-  LATE_START_HOUR: 8,
   MAX_HP: 100,
   MAX_STAMINA: 100,
   BASE_ATTACK: 25,
@@ -239,7 +237,6 @@ const GAME_CONSTANTS = {
     important: 1.25,
     routine: 1.0
   },
-  EARLY_BIRD_BONUS: 20,
   DEEP_WORK_BONUS: 30,
   PERFECT_DAY_BONUS: 50,
   SPECIAL_ATTACKS: {
@@ -1033,6 +1030,7 @@ const [customClass, setCustomClass] = useState(null);
   const [curseLevel, setCurseLevel] = useState(0); // 0 = none, 1-3 = curse levels
 const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
 const [lastRealDay, setLastRealDay] = useState(null);
+const [debugWarningState, setDebugWarningState] = useState(null); // null = auto, or 'locked', 'unlocked', 'evening', 'finalhour'
   
   const [studyStats, setStudyStats] = useState({
     totalMinutesToday: 0,
@@ -1042,7 +1040,6 @@ const [lastRealDay, setLastRealDay] = useState(null);
     currentStreak: 0,
     tasksCompletedToday: 0,
     deepWorkSessions: 0,
-    earlyBirdDays: 0,
     perfectDays: 0,
     weeklyHistory: []
   });
@@ -1465,9 +1462,9 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
             
             // Apply curse penalties
             const cursePenalties = [
-              { hp: 20, msg: '🌑 CURSED. The curse takes root... -20 HP' },
-              { hp: 40, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -40 HP' },
-              { hp: 60, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -60 HP' }
+              { hp: 10, msg: '🌑 CURSED. The curse takes root... -10 HP' },
+              { hp: 20, msg: '🌑🌑 DEEPLY CURSED. The curse tightens its grip... -20 HP' },
+              { hp: 40, msg: '☠️ CONDEMNED. One more failure... and the abyss claims you. -40 HP' }
             ];
             
             const penalty = cursePenalties[newCurseLevel - 1];
@@ -1773,20 +1770,7 @@ if (tasks.length === 0) {
       }
     }
     
-    let earlyBirdBonus = false;
-    if (currentHour < GAME_CONSTANTS.LATE_START_HOUR) {
-      setXp(x => x + GAME_CONSTANTS.EARLY_BIRD_BONUS);
-      setStudyStats(prev => ({ ...prev, earlyBirdDays: prev.earlyBirdDays + 1 }));
-      addLog(`Dawn breaks early as the hero begins the day. +${GAME_CONSTANTS.EARLY_BIRD_BONUS} XP`);
-      earlyBirdBonus = true;
-    }
-    
-    if (currentHour >= GAME_CONSTANTS.LATE_START_HOUR && !earlyBirdBonus) {
-      setHp(h => Math.max(0, h - GAME_CONSTANTS.LATE_START_PENALTY));
-      addLog(`A late start! -${GAME_CONSTANTS.LATE_START_PENALTY} HP`);
-    } else if (!earlyBirdBonus) {
-      addLog("The day's trials await...");
-    }
+    addLog("The day's trials await...");
     
     setHasStarted(true);
     setIsDayActive(true);
@@ -1882,7 +1866,7 @@ if (tasks.length === 0) {
   const getMerchantDialogue = () => {
     // Curse-based dialogue (highest priority)
     if (curseLevel === 3) {
-      return "The curse nearly consumes you. One more failure... act quickly.";
+      return "CONDEMNED. One more death and the abyss claims your soul forever.";
     }
     if (curseLevel === 2) {
       return "The darkness tightens its grip. You'll need more than supplies soon.";
@@ -2271,11 +2255,11 @@ let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * priorit
 
 // Apply curse debuff based on level
 if (curseLevel === 1) {
-  xpMultiplier *= 0.5; // 50% XP
+  xpMultiplier *= 0.75; // 75% XP (was 50%)
 } else if (curseLevel === 2) {
-  xpMultiplier *= 0.25; // 25% XP
+  xpMultiplier *= 0.5; // 50% XP (was 25%)
 } else if (curseLevel === 3) {
-  xpMultiplier *= 0.1; // 10% XP
+  xpMultiplier *= 0.25; // 25% XP (was 10%)
 }
 
 // Apply overdue penalty
@@ -2540,9 +2524,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
  const useCleanse = () => {
   if (cleansePots > 0 && curseLevel > 0) {
     setCleansePots(c => c - 1);
-    const removedLevel = curseLevel;
-    setCurseLevel(0);
-    addLog(`The hero used a Cleanse Potion! ${removedLevel === 3 ? 'CONDEMNATION' : removedLevel === 2 ? 'DEEP CURSE' : 'CURSE'} removed!`);
+    const oldLevel = curseLevel;
+    const newLevel = curseLevel - 1;
+    setCurseLevel(newLevel);
+    
+    const curseNames = ['CURSED', 'DEEPLY CURSED', 'CONDEMNED'];
+    if (newLevel === 0) {
+      addLog(`💜 Cleanse Potion used! ${curseNames[oldLevel - 1]} removed! You are purified.`);
+    } else {
+      addLog(`💜 Cleanse Potion used! ${curseNames[oldLevel - 1]} reduced to ${curseNames[newLevel - 1]}.`);
+    }
   }
 };
   
@@ -4019,64 +4010,91 @@ if (enragedTurns > 0) {
   const die = () => {
     if (hp === GAME_CONSTANTS.MAX_HP && currentDay === 1 && level === 1) return;
     
-    const completedTasks = tasks.filter(t => t.done).length;
-    const totalTasks = tasks.length;
-    
     setBattling(false);
     setShowBoss(false);
     setBattleMode(false);
     setRecklessStacks(0);
     
-   setGraveyard(prev => [...prev, { 
-  ...hero, 
-  day: currentDay, 
-  lvl: level,
-  xp: xp,
-  tasks: completedTasks, 
-  total: totalTasks,
-  skipCount: skipCount
-}]);
+    // Add curse level instead of permadeath
+    const newCurseLevel = curseLevel + 1;
     
-    addLog('💀 You have fallen...');
-    
-    const newHero = makeName();
-    setHero(newHero);
-    setCanCustomize(true);
-    setCurrentDay(1);
-    setHp(GAME_CONSTANTS.MAX_HP);
-    setStamina(GAME_CONSTANTS.MAX_STAMINA);
-    setXp(0);
-    setLevel(1);
-    setHealthPots(0);
-    setStaminaPots(0);
-    setCleansePots(0);
-    setWeapon(0);
-    setArmor(0);
-    
-    setStudyStats(prev => ({
-      totalMinutesToday: 0,
-      totalMinutesWeek: 0,
-      sessionsToday: 0,
-      longestStreak: prev.longestStreak,
-      currentStreak: 0,
-      tasksCompletedToday: 0,
-      deepWorkSessions: 0,
-      earlyBirdDays: prev.earlyBirdDays,
-      perfectDays: prev.perfectDays,
-      weeklyHistory: []
-    }));
-    
-   setTasks([]);
-setActiveTask(null);
-setTimer(0);
-setRunning(false);
-setHasStarted(false);
-setSkipCount(0);
-setConsecutiveDays(0);
-setLastPlayedDate(null);
-setMiniBossCount(0);
-    
-    setTimeout(() => setActiveTab('grave'), 1000);
+    if (newCurseLevel >= 4) {
+      // 4th curse level = actual permadeath
+      const completedTasks = tasks.filter(t => t.done).length;
+      const totalTasks = tasks.length;
+      
+      setGraveyard(prev => [...prev, { 
+        ...hero, 
+        day: currentDay, 
+        lvl: level,
+        xp: xp,
+        tasks: completedTasks, 
+        total: totalTasks,
+        skipCount: skipCount
+      }]);
+      
+      addLog('☠️ FOUR CURSES. The abyss claims your soul...');
+      
+      const newHero = makeName();
+      setHero(newHero);
+      setCanCustomize(true);
+      setCurrentDay(1);
+      setHp(GAME_CONSTANTS.MAX_HP);
+      setStamina(GAME_CONSTANTS.MAX_STAMINA);
+      setXp(0);
+      setLevel(1);
+      setHealthPots(0);
+      setStaminaPots(0);
+      setCleansePots(0);
+      setWeapon(0);
+      setArmor(0);
+      setCurseLevel(0);
+      setEquippedWeapon(null);
+      setWeaponInventory([]);
+      setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
+      setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
+      setEquippedPendant(null);
+      setPendantInventory([]);
+      setEquippedRing(null);
+      setRingInventory([]);
+      
+      setStudyStats(prev => ({
+        totalMinutesToday: 0,
+        totalMinutesWeek: 0,
+        sessionsToday: 0,
+        longestStreak: prev.longestStreak,
+        currentStreak: 0,
+        tasksCompletedToday: 0,
+        deepWorkSessions: 0,
+        perfectDays: prev.perfectDays,
+        weeklyHistory: []
+      }));
+      
+      setTasks([]);
+      setActiveTask(null);
+      setTimer(0);
+      setRunning(false);
+      setHasStarted(false);
+      setSkipCount(0);
+      setConsecutiveDays(0);
+      setLastPlayedDate(null);
+      setMiniBossCount(0);
+      
+      setTimeout(() => setActiveTab('grave'), 1000);
+    } else {
+      // Add curse and respawn
+      setCurseLevel(newCurseLevel);
+      setHp(getMaxHp());
+      setStamina(getMaxStamina());
+      
+      const curseNames = ['CURSED', 'DEEPLY CURSED', 'CONDEMNED'];
+      addLog(`💀 You have fallen... The abyss marks you.`);
+      addLog(`🌑 ${curseNames[newCurseLevel - 1]}! (Curse Level ${newCurseLevel}/3)`);
+      
+      if (newCurseLevel === 3) {
+        addLog('⚠️ WARNING: One more death and your soul is forfeit.');
+      }
+    }
   };
 
 
@@ -4456,7 +4474,43 @@ setMiniBossCount(0);
                   }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>+Random Weapon</button>
                 </div>
               </div>
-
+              
+              {/* Warning Box State Testing */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>WARNING BOX STATE</h4>
+                <div className="flex justify-center gap-2">
+                  <button 
+                    onClick={() => {
+                      const states = [null, 'locked', 'unlocked', 'evening', 'finalhour'];
+                      const currentIndex = states.indexOf(debugWarningState);
+                      const nextIndex = (currentIndex + 1) % states.length;
+                      setDebugWarningState(states[nextIndex]);
+                      const stateName = states[nextIndex] || 'AUTO';
+                      addLog(`Debug: Warning state → ${stateName}`);
+                    }} 
+                    className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-xs transition-all border border-gray-600" 
+                    style={{color: '#F5F5DC'}}
+                  >
+                    Cycle: {debugWarningState ? debugWarningState.toUpperCase() : 'AUTO'}
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (debugWarningState === 'evening') {
+                        setDebugWarningState('finalhour');
+                        addLog('Debug: Warning state → FINALHOUR');
+                      } else {
+                        setDebugWarningState('evening');
+                        addLog('Debug: Warning state → EVENING');
+                      }
+                    }} 
+                    className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" 
+                    style={{color: '#F5F5DC'}}
+                  >
+                    Test Urgency
+                  </button>
+                </div>
+              </div>
+              
               {/* Loot Testing */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LOOT TESTING</h4>
@@ -4785,7 +4839,7 @@ setMiniBossCount(0);
                     setCurseLevel(0);
                     setEliteBossDefeatedToday(false);
                     setIsDayActive(false);
-                    setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, earlyBirdDays: 0, perfectDays: 0, weeklyHistory: [] });
+                    setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, perfectDays: 0, weeklyHistory: [] });
                     
                     // Reset flashcard system
                     setFlashcardDecks([]);
@@ -4901,6 +4955,32 @@ setMiniBossCount(0);
                         </div>
                       </div>
                     </div>
+                    
+                    {/* Curse Status - Collapsed View */}
+                    {curseLevel > 0 && (
+                      <div 
+                        className={`rounded-lg p-2 mb-3 border ${curseLevel === 3 ? 'animate-pulse' : ''}`}
+                        style={{
+                          backgroundColor: 'rgba(107, 44, 145, 0.3)',
+                          borderColor: curseLevel === 3 ? 'rgba(220, 38, 38, 0.6)' : 'rgba(138, 59, 181, 0.5)',
+                          boxShadow: curseLevel === 3 ? '0 0 15px rgba(220, 38, 38, 0.3)' : '0 0 10px rgba(138, 59, 181, 0.2)'
+                        }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span style={{fontSize: '1rem'}}>
+                              {curseLevel === 1 ? '🌑' : curseLevel === 2 ? '🌑🌑' : '☠️'}
+                            </span>
+                            <p className="text-xs font-bold uppercase" style={{color: curseLevel === 3 ? '#FF6B6B' : '#B794F4'}}>
+                              {curseLevel === 1 ? 'CURSED' : curseLevel === 2 ? 'DEEPLY CURSED' : 'CONDEMNED'}
+                            </p>
+                          </div>
+                          <p className="text-xs" style={{color: '#B794F4'}}>
+                            {curseLevel}/3
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     
                     {/* Expand Button - Centered */}
                     <div className="flex justify-center">
@@ -5058,6 +5138,40 @@ setMiniBossCount(0);
                   </div>
                 </div>
                 
+                {/* Curse Status Display */}
+                {curseLevel > 0 && (
+                  <div 
+                    className={`rounded-lg p-3 mb-4 border-2 ${curseLevel === 3 ? 'animate-pulse' : ''}`}
+                    style={{
+                      backgroundColor: 'rgba(107, 44, 145, 0.3)',
+                      borderColor: curseLevel === 3 ? 'rgba(220, 38, 38, 0.8)' : 'rgba(138, 59, 181, 0.6)',
+                      boxShadow: curseLevel === 3 ? '0 0 20px rgba(220, 38, 38, 0.4)' : '0 0 15px rgba(138, 59, 181, 0.3)'
+                    }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span style={{fontSize: '1.5rem'}}>
+                          {curseLevel === 1 ? '🌑' : curseLevel === 2 ? '🌑🌑' : '☠️'}
+                        </span>
+                        <div>
+                          <p className="font-bold text-sm uppercase" style={{color: curseLevel === 3 ? '#FF6B6B' : '#B794F4'}}>
+                            {curseLevel === 1 ? 'CURSED' : curseLevel === 2 ? 'DEEPLY CURSED' : 'CONDEMNED'}
+                          </p>
+                          <p className="text-xs" style={{color: '#F5F5DC', opacity: 0.8}}>
+                            Level {curseLevel}/3
+                            {curseLevel === 3 && ' - One more death...'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xs" style={{color: '#B794F4'}}>
+                          {curseLevel === 1 ? '75% XP' : curseLevel === 2 ? '50% XP' : '25% XP'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Customize button */}
                 {canCustomize && (
                   <div className="mb-3">
@@ -5158,8 +5272,7 @@ setMiniBossCount(0);
                   </h2>
                   <p className="text-base text-gray-300 mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric' })}</p>
                   <p className="text-sm italic mb-4" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
-                  <p className="text-sm text-gray-400 italic mb-4">"{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"</p>
-                  <p className="mb-4 text-sm text-gray-400">Start before {GAME_CONSTANTS.LATE_START_HOUR} AM or lose {GAME_CONSTANTS.LATE_START_PENALTY} HP</p>
+                  <p className="text-sm text-gray-400 italic mb-6">"{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"</p>
                   <button 
                     onClick={start} 
                     className="px-8 py-3 rounded-lg font-bold text-xl transition-all shadow-lg" 
@@ -5188,8 +5301,10 @@ setMiniBossCount(0);
                         <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                       </div>
                     </div>
-                    <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
+                    {tasks.length > 0 && (
                     
+                      <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
+                    )}
                     <div className="flex gap-3 justify-center mb-6">
                       <button 
                         onClick={() => setShowImportModal(true)} 
@@ -5228,8 +5343,8 @@ setMiniBossCount(0);
                     </div>
                     
                     {tasks.length === 0 ? (
-                      <div className="text-center py-12">
-                        <p className="text-lg italic" style={{color: '#F5F5DC'}}>NO TRIALS YET. ACCEPT YOUR FIRST TRIAL TO BEGIN.</p>
+                      <div className="text-center py-8">
+                        <p className="text-base font-semibold tracking-wide" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>Your journey begins here.</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
@@ -5350,6 +5465,85 @@ setMiniBossCount(0);
                     )}
                   </div>
                   
+                  {/* Elite Boss Warning - State Machine with Emotional Feedback */}
+                  {isDayActive && !eliteBossDefeatedToday && (() => {
+                    const currentHour = new Date().getHours();
+                    const hasEnoughXP = xp >= 200;
+                    
+                    let state;
+                    
+                    // Use debug state if set, otherwise calculate normally
+                    if (debugWarningState) {
+                      state = debugWarningState;
+                    } else {
+                      if (!hasEnoughXP) {
+                        state = 'locked'; // Progress phase
+                      } else if (currentHour < 18) {
+                        state = 'unlocked'; // Confrontation available
+                      } else if (currentHour >= 18 && currentHour < 22) {
+                        state = 'evening'; // Temporal urgency begins
+                      } else {
+                        state = 'finalhour'; // Critical window
+                      }
+                    }
+                    
+                    const stateConfig = {
+                      locked: {
+                        bg: 'rgba(0, 0, 0, 0.5)',
+                        border: 'rgba(212, 175, 55, 0.4)',
+                        shadow: 'none',
+                        textColor: '#D4AF37',
+                        animate: false,
+                        message: "Progress to unlock today's challenge."
+                      },
+                      unlocked: {
+                        bg: 'rgba(0, 0, 0, 0.5)',
+                        border: 'rgba(184, 134, 11, 0.5)',
+                        shadow: '0 0 8px rgba(184, 134, 11, 0.2)',
+                        textColor: '#DAA520',
+                        animate: false,
+                        message: 'The darkness awaits.'
+                      },
+                      evening: {
+                        bg: 'rgba(0, 0, 0, 0.5)',
+                        border: 'rgba(212, 175, 55, 0.6)',
+                        shadow: '0 0 10px rgba(212, 175, 55, 0.15)',
+                        textColor: '#EF4444',
+                        animate: false,
+                        message: 'Midnight approaches. The curse stirs.'
+                      },
+                      finalhour: {
+                        bg: 'rgba(139, 0, 0, 0.3)',
+                        border: 'rgba(220, 38, 38, 0.8)',
+                        shadow: '0 0 20px rgba(220, 38, 38, 0.4)',
+                        textColor: '#FF6B6B',
+                        animate: true,
+                        message: 'Final hour. Defeat the Darkness.'
+                      }
+                    };
+                    
+                    const config = stateConfig[state];
+                    
+                    if (!config) return null;
+                    
+                    return (
+                      <div 
+                        className={`rounded-lg p-4 mb-4 border-2 ${config.animate ? 'animate-pulse' : ''}`}
+                        style={{
+                          backgroundColor: config.bg,
+                          borderColor: config.border,
+                          boxShadow: config.shadow
+                        }}
+                      >
+                        <div className="text-center">
+                          <p className="font-bold text-sm" style={{color: config.textColor}}>
+                            {config.message}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                  
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
                     <button 
   onClick={miniBoss} 
@@ -5455,11 +5649,15 @@ setMiniBossCount(0);
                     className="rounded-lg p-6 border-2 relative overflow-hidden" 
                     style={{
                       background: isToday 
-                        ? 'linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(60, 10, 10, 0.6) 50%, rgba(20, 0, 10, 0.8) 100%)'
+                        ? (weeklyPlan[day].length > 0 
+                          ? 'linear-gradient(135deg, rgba(100, 0, 0, 0.25) 0%, rgba(50, 10, 10, 0.5) 50%, rgba(20, 0, 10, 0.7) 100%)'
+                          : 'linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(60, 10, 10, 0.6) 50%, rgba(20, 0, 10, 0.8) 100%)')
                         : 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%)',
                       borderColor: isToday ? '#D4AF37' : 'rgba(100, 116, 139, 0.5)',
                       boxShadow: isToday 
-                        ? '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)' 
+                        ? (weeklyPlan[day].length > 0
+                          ? '0 4px 8px rgba(0, 0, 0, 0.4)'
+                          : '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)')
                         : '0 4px 6px rgba(0, 0, 0, 0.3)'
                     }}
                   >
@@ -6380,7 +6578,7 @@ setMiniBossCount(0);
                     <div className="flex justify-between items-center mb-2">
                       <div>
                         <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
-                        <p className="text-sm mb-1" style={{color: '#B794F4'}}>Removes curse</p>
+                        <p className="text-sm mb-1" style={{color: '#B794F4'}}>Removes 1 curse level</p>
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the hold."</p>
                       </div>
                       <div className="text-right">
@@ -7372,7 +7570,7 @@ setMiniBossCount(0);
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {cleansePrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#B794F4'}}>Removes curse</p>
+                      <p className="text-xs mb-1" style={{color: '#B794F4'}}>Removes 1 curse level</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Purifying brew"</p>
                     </div>
                   </button>
@@ -10110,7 +10308,7 @@ setMiniBossCount(0);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.5.0 - Economy Overhaul</p>
+          <p className="text-xs text-gray-600">v4.6.0 - State Machine & UX Polish</p>
         </div>
       </div>
       )}
