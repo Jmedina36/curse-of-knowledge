@@ -1,4 +1,4 @@
-// FANTASY STUDY QUEST - v4.4.0 Equipment Shop System
+// FANTASY STUDY QUEST - v4.5.0 Economy Overhaul
 // Last updated: 2026-02-12
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -172,6 +172,29 @@ const GAME_CONSTANTS = {
     }
   },
   
+  ECONOMY_CONFIG: {
+    // Combat gold scaling: base + (day * dayScale)
+    combatGoldBase: 4,
+    combatGoldDayScale: 2,
+    eliteMultiplier: 1.5,
+    bossMultiplier: 3.0,
+    
+    // Daily quest completion reward: 20 + (day * 8)
+    dailyBaseGold: 20,
+    dailyDayScale: 8,
+    dailyStreakBonus: 5, // per consecutive day, max 7
+    
+    // Sell value percentages (of base shop price, before market modifiers)
+    sellValuePercent: {
+      common: 0.25,
+      uncommon: 0.30,
+      rare: 0.35,
+      epic: 0.35,
+      legendary: 0.20
+    }
+  },
+  
+  // Legacy - kept for compatibility, but not used
   CURRENCY_REWARDS: {
     normal: { min: 20, max: 35 },
     elite: { min: 40, max: 70 },
@@ -630,6 +653,7 @@ const FantasyStudyQuest = () => {
   const [level, setLevel] = useState(1);
   const [gold, setGold] = useState(0); // Currency from combat
   const [currency, setCurrency] = useState(0); // Gold for shop purchases
+  const [dailyQuestCompleted, setDailyQuestCompleted] = useState(false); // Track if today's quests are done
   const [merchantTab, setMerchantTab] = useState('buy'); // 'buy' or 'sell'
   const [marketModifiers, setMarketModifiers] = useState({
     weapon: 1.0,
@@ -1262,6 +1286,7 @@ const getDateKey = useCallback((date) => {
         if (data.lastMarketUpdateDay !== undefined) setLastMarketUpdateDay(data.lastMarketUpdateDay);
         if (data.shopInventory) setShopInventory(data.shopInventory);
         if (data.daysSinceShop !== undefined) setDaysSinceShop(data.daysSinceShop);
+        if (data.dailyQuestCompleted !== undefined) setDailyQuestCompleted(data.dailyQuestCompleted);
         if (data.level !== undefined) setLevel(data.level);
         if (data.healthPots !== undefined) setHealthPots(data.healthPots);
         if (data.staminaPots !== undefined) setStaminaPots(data.staminaPots);
@@ -1367,11 +1392,11 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
-  isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop
+  isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted]);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -1601,6 +1626,35 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     }
   }, [currentDay]);
   
+  // Check for daily quest completion and award bonus
+  useEffect(() => {
+    if (currentDay > 0 && tasks.length > 0 && !dailyQuestCompleted) {
+      const allTasksDone = tasks.every(t => t.done);
+      
+      if (allTasksDone) {
+        const config = GAME_CONSTANTS.ECONOMY_CONFIG;
+        const baseReward = config.dailyBaseGold + (currentDay * config.dailyDayScale);
+        const streakBonus = Math.min(consecutiveDays, 7) * config.dailyStreakBonus;
+        const totalReward = baseReward + streakBonus;
+        
+        setGold(g => g + totalReward);
+        setDailyQuestCompleted(true);
+        
+        if (streakBonus > 0) {
+          addLog(`Daily quests complete! Earned ${totalReward} Gold (${baseReward} base + ${streakBonus} streak bonus)`);
+        } else {
+          addLog(`Daily quests complete! Earned ${totalReward} Gold`);
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tasks, currentDay, dailyQuestCompleted, consecutiveDays]);
+  
+  // Reset daily quest flag when day changes
+  useEffect(() => {
+    setDailyQuestCompleted(false);
+  }, [currentDay]);
+  
   // Refresh shop inventory on merchant open if it's a refresh day
   useEffect(() => {
     if (showCraftingModal && currentDay > 0) {
@@ -1616,7 +1670,8 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         setDaysSinceShop(currentDay);
       }
     }
-  }, [showCraftingModal, currentDay, daysSinceShop, shopInventory.length, generateShopInventory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCraftingModal, currentDay, daysSinceShop, shopInventory.length]);
   
   useEffect(() => {
     // Exponential XP curve: Level 1→2 = 100 XP, Level 2→3 = 130 XP, Level 3→4 = 169 XP, etc.
@@ -1855,30 +1910,45 @@ if (tasks.length === 0) {
   };
 
   // Calculate sell price for equipment
+  // Calculate combat gold based on day and enemy type
+  const calculateCombatGold = useCallback((enemyType) => {
+    const config = GAME_CONSTANTS.ECONOMY_CONFIG;
+    const baseGold = config.combatGoldBase + (currentDay * config.combatGoldDayScale);
+    
+    if (enemyType === 'boss' || enemyType === 'final') {
+      return Math.floor(baseGold * config.bossMultiplier);
+    } else if (enemyType === 'elite') {
+      return Math.floor(baseGold * config.eliteMultiplier);
+    } else if (enemyType === 'wave') {
+      return Math.floor(baseGold * 0.8); // Wave enemies slightly less
+    } else {
+      return baseGold; // Normal enemies
+    }
+  }, [currentDay]);
+
   const calculateSellPrice = (item, itemType) => {
-    // Base prices by rarity
-    const basePrices = {
-      common: 10,
-      uncommon: 25,
-      rare: 50,
-      epic: 100,
-      legendary: 250
-    };
+    // Use shop base prices for consistency
+    const shopBasePrice = GAME_CONSTANTS.SHOP_CONFIG.costs[item.rarity || 'common'];
     
-    const basePrice = basePrices[item.rarity || 'common'];
+    // Apply sell value percentage based on rarity
+    const sellPercent = GAME_CONSTANTS.ECONOMY_CONFIG.sellValuePercent[item.rarity || 'common'];
+    let sellValue = Math.floor(shopBasePrice * sellPercent);
     
-    // Affix multiplier (each affix adds value)
-    let affixMultiplier = 1.0;
+    // Affix multiplier (each affix adds modest value)
     if (item.affixes) {
       const affixCount = Object.keys(item.affixes).length;
-      affixMultiplier = 1.0 + (affixCount * 0.15); // +15% per affix
+      sellValue = Math.floor(sellValue * (1.0 + affixCount * 0.1)); // +10% per affix
     }
     
-    // Market modifier (dynamic prices)
+    // Market modifier slightly affects sell price (but never exceeds buy price)
     const marketMod = marketModifiers[itemType] || 1.0;
+    const marketAdjusted = Math.floor(sellValue * marketMod);
     
-    const finalPrice = Math.floor(basePrice * affixMultiplier * marketMod);
-    return finalPrice;
+    // Hard cap: never sell for more than 50% of current market buy price
+    const currentBuyPrice = Math.floor(shopBasePrice * marketMod);
+    const maxSellPrice = Math.floor(currentBuyPrice * 0.5);
+    
+    return Math.min(marketAdjusted, maxSellPrice);
   };
 
   // Update market modifiers (called daily or when entering merchant)
@@ -2011,8 +2081,8 @@ if (tasks.length === 0) {
     }
     
     setShopInventory(items);
-    addLog('The merchant has refreshed their wares...');
-  }, [currentDay, getRarityMultiplier, generateAffixes, addLog]);
+    // Don't log here - causes circular dependency
+  }, [currentDay, getRarityMultiplier, generateAffixes]);
 
   // Get current price for a potion/item
   const getCurrentPrice = (itemType, basePrice) => {
@@ -3285,7 +3355,7 @@ if (enragedTurns > 0) {
               
               setTimeout(() => {
                 const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-                const goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
+                const goldGain = calculateCombatGold(isFinalBoss ? 'final' : (battleType === 'elite' ? 'elite' : 'normal'));
                 setXp(x => x + xpGain);
                 setGold(e => e + goldGain);
                 addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
@@ -3567,7 +3637,7 @@ if (enragedTurns > 0) {
       setRecklessStacks(0);
       
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
-      const goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : (battleType === 'wave' ? 8 : 10));
+      const goldGain = calculateCombatGold(isFinalBoss ? 'final' : (battleType === 'elite' ? 'elite' : (battleType === 'wave' ? 'wave' : 'normal')));
       setXp(x => x + xpGain);
       setGold(e => e + goldGain);
       
@@ -5578,11 +5648,33 @@ setMiniBossCount(0);
               {plannerSubTab === 'calendar' && (
               <div>
               <div className="flex justify-between items-center mb-6">
-                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-4 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
+                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
+                  background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))',
+                  borderColor: 'rgba(100, 116, 139, 0.6)',
+                  color: '#F5F5DC',
+                  cursor: 'pointer'
+                }} onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(71, 85, 105, 0.8), rgba(51, 65, 85, 0.9))';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }} onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}>
                   ← PREV
                 </button>
                 <h3 className="text-2xl font-bold uppercase tracking-wider" style={{color: '#F5F5DC'}}>{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }).toUpperCase()} {currentYear}</h3>
-                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-4 py-2 rounded-lg transition-all border-2" style={{backgroundColor: 'rgba(30, 41, 59, 0.6)', borderColor: 'rgba(51, 65, 85, 0.8)', color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.6)'}>
+                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
+                  background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))',
+                  borderColor: 'rgba(100, 116, 139, 0.6)',
+                  color: '#F5F5DC',
+                  cursor: 'pointer'
+                }} onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(71, 85, 105, 0.8), rgba(51, 65, 85, 0.9))';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }} onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}>
                   NEXT →
                 </button>
               </div>
@@ -6436,14 +6528,21 @@ setMiniBossCount(0);
                                   addLog(`Unequipped: ${oldWeapon.name}`);
                                 }
                               }}
-                              className="px-3 py-1 rounded text-xs border transition-all"
+                              className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
                               style={{
-                                backgroundColor: COLORS.crimson.base,
-                                borderColor: COLORS.crimson.border,
-                                color: '#F5F5DC'
+                                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
+                                borderColor: '#3B82F6',
+                                color: '#F5F5DC',
+                                cursor: 'pointer'
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.hover}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.base}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                              }}
                             >
                               Equip
                             </button>
@@ -6643,14 +6742,21 @@ setMiniBossCount(0);
                                         addLog(`Unequipped: ${oldPiece.name}`);
                                       }
                                     }}
-                                    className="px-3 py-1 rounded text-xs border transition-all"
+                                    className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
                                     style={{
-                                      backgroundColor: COLORS.emerald.base,
-                                      borderColor: COLORS.emerald.border,
-                                      color: '#F5F5DC'
+                                      background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
+                                      borderColor: '#3B82F6',
+                                      color: '#F5F5DC',
+                                      cursor: 'pointer'
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.hover}
-                                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.base}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
+                                      e.currentTarget.style.transform = 'translateY(-1px)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
+                                      e.currentTarget.style.transform = 'translateY(0)';
+                                    }}
                                   >
                                     Equip
                                   </button>
@@ -6680,7 +6786,7 @@ setMiniBossCount(0);
                         {equippedPendant ? (
                           <div>
                             <p className="text-sm font-bold" style={{color: getRarityColor(equippedPendant.rarity || 'common')}}>{equippedPendant.name}</p>
-                            <p className="text-xs" style={{color: '#FF6B6B'}}>+{equippedPendant.hp} HP</p>
+                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedPendant.hp} HP</p>
                             {equippedPendant.rarity && (
                               <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedPendant.rarity)}}>
                                 {GAME_CONSTANTS.RARITY_TIERS[equippedPendant.rarity].name}
@@ -6736,7 +6842,7 @@ setMiniBossCount(0);
                           <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
-                              <p className="text-xs" style={{color: '#FF6B6B'}}>+{pend.hp} HP</p>
+                              <p className="text-xs" style={{color: '#68D391'}}>+{pend.hp} HP</p>
                               {pend.rarity && (
                                 <p className="text-xs italic" style={{color: getRarityColor(pend.rarity)}}>
                                   {GAME_CONSTANTS.RARITY_TIERS[pend.rarity].name}
@@ -6756,14 +6862,21 @@ setMiniBossCount(0);
                                   addLog(`Unequipped: ${oldPendant.name}`);
                                 }
                               }}
-                              className="px-3 py-1 rounded text-xs border transition-all"
+                              className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
                               style={{
-                                backgroundColor: COLORS.crimson.base,
-                                borderColor: COLORS.crimson.border,
-                                color: '#F5F5DC'
+                                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
+                                borderColor: '#3B82F6',
+                                color: '#F5F5DC',
+                                cursor: 'pointer'
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.hover}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.crimson.base}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                              }}
                             >
                               Equip
                             </button>
@@ -6809,14 +6922,21 @@ setMiniBossCount(0);
                                   addLog(`Unequipped: ${oldRing.name}`);
                                 }
                               }}
-                              className="px-3 py-1 rounded text-xs border transition-all"
+                              className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
                               style={{
-                                backgroundColor: 'rgba(0, 150, 255, 0.6)',
-                                borderColor: 'rgba(0, 150, 255, 0.8)',
-                                color: '#F5F5DC'
+                                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
+                                borderColor: '#3B82F6',
+                                color: '#F5F5DC',
+                                cursor: 'pointer'
                               }}
-                              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 150, 255, 0.8)'}
-                              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(0, 150, 255, 0.6)'}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                              }}
                             >
                               Equip
                             </button>
@@ -6888,11 +7008,30 @@ setMiniBossCount(0);
                         setMerchantTab('buy'); // Enter potions section
                       }
                     }}
-                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    className="py-3 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
-                      backgroundColor: (merchantTab === 'buy' || merchantTab === 'sellPotions') ? 'rgba(168, 85, 247, 0.8)' : 'rgba(168, 85, 247, 0.3)',
-                      borderColor: (merchantTab === 'buy' || merchantTab === 'sellPotions') ? '#A855F7' : 'rgba(168, 85, 247, 0.5)',
-                      color: '#F5F5DC'
+                      background: (merchantTab === 'buy' || merchantTab === 'sellPotions') 
+                        ? 'linear-gradient(to bottom, rgba(168, 85, 247, 0.7), rgba(126, 34, 206, 0.8))' 
+                        : 'linear-gradient(to bottom, rgba(80, 40, 120, 0.3), rgba(60, 30, 90, 0.4))',
+                      borderColor: (merchantTab === 'buy' || merchantTab === 'sellPotions') ? '#A855F7' : 'rgba(168, 85, 247, 0.4)',
+                      color: '#F5F5DC',
+                      boxShadow: (merchantTab === 'buy' || merchantTab === 'sellPotions') ? '0 0 15px rgba(168, 85, 247, 0.3)' : 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (merchantTab === 'buy' || merchantTab === 'sellPotions') {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(192, 132, 252, 0.8), rgba(147, 51, 234, 0.9))';
+                      } else {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(100, 50, 150, 0.4), rgba(80, 40, 120, 0.5))';
+                      }
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (merchantTab === 'buy' || merchantTab === 'sellPotions') {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(168, 85, 247, 0.7), rgba(126, 34, 206, 0.8))';
+                      } else {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(80, 40, 120, 0.3), rgba(60, 30, 90, 0.4))';
+                      }
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     Potions
@@ -6905,11 +7044,30 @@ setMiniBossCount(0);
                         setMerchantTab('buyEquipment'); // Enter equipment section
                       }
                     }}
-                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                    className="py-3 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
-                      backgroundColor: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
-                      borderColor: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
-                      color: '#F5F5DC'
+                      background: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') 
+                        ? 'linear-gradient(to bottom, rgba(220, 38, 38, 0.7), rgba(153, 27, 27, 0.8))' 
+                        : 'linear-gradient(to bottom, rgba(100, 20, 20, 0.3), rgba(80, 15, 15, 0.4))',
+                      borderColor: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') ? '#DC2626' : 'rgba(220, 38, 38, 0.4)',
+                      color: '#F5F5DC',
+                      boxShadow: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') ? '0 0 15px rgba(220, 38, 38, 0.3)' : 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(239, 68, 68, 0.8), rgba(185, 28, 28, 0.9))';
+                      } else {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(120, 25, 25, 0.4), rgba(100, 20, 20, 0.5))';
+                      }
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      if (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(220, 38, 38, 0.7), rgba(153, 27, 27, 0.8))';
+                      } else {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(100, 20, 20, 0.3), rgba(80, 15, 15, 0.4))';
+                      }
+                      e.currentTarget.style.transform = 'translateY(0)';
                     }}
                   >
                     Equipment
@@ -6925,22 +7083,60 @@ setMiniBossCount(0);
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => setMerchantTab('buy')}
-                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        className="py-2 rounded-lg font-bold text-sm transition-all border-2"
                         style={{
-                          backgroundColor: merchantTab === 'buy' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          background: merchantTab === 'buy' 
+                            ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))' 
+                            : 'rgba(0, 0, 0, 0.3)',
                           borderColor: merchantTab === 'buy' ? '#D4AF37' : 'rgba(184, 134, 11, 0.3)',
-                          color: '#F5F5DC'
+                          color: '#F5F5DC',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (merchantTab === 'buy') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.9), rgba(184, 134, 11, 0.9))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(40, 40, 40, 0.4)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (merchantTab === 'buy') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
                         Buy
                       </button>
                       <button
                         onClick={() => setMerchantTab('sellPotions')}
-                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        className="py-2 rounded-lg font-bold text-sm transition-all border-2"
                         style={{
-                          backgroundColor: merchantTab === 'sellPotions' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          background: merchantTab === 'sellPotions' 
+                            ? 'linear-gradient(to bottom, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.8))' 
+                            : 'rgba(0, 0, 0, 0.3)',
                           borderColor: merchantTab === 'sellPotions' ? '#22C55E' : 'rgba(34, 197, 94, 0.3)',
-                          color: '#F5F5DC'
+                          color: '#F5F5DC',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (merchantTab === 'sellPotions') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(74, 222, 128, 0.9), rgba(34, 197, 94, 0.9))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(40, 40, 40, 0.4)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (merchantTab === 'sellPotions') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.8))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
                         Sell
@@ -6958,22 +7154,60 @@ setMiniBossCount(0);
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => setMerchantTab('buyEquipment')}
-                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        className="py-2 rounded-lg font-bold text-sm transition-all border-2"
                         style={{
-                          backgroundColor: merchantTab === 'buyEquipment' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          background: merchantTab === 'buyEquipment' 
+                            ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))' 
+                            : 'rgba(0, 0, 0, 0.3)',
                           borderColor: merchantTab === 'buyEquipment' ? '#D4AF37' : 'rgba(184, 134, 11, 0.3)',
-                          color: '#F5F5DC'
+                          color: '#F5F5DC',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (merchantTab === 'buyEquipment') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.9), rgba(184, 134, 11, 0.9))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(40, 40, 40, 0.4)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (merchantTab === 'buyEquipment') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
                         Buy
                       </button>
                       <button
                         onClick={() => setMerchantTab('sellEquipment')}
-                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        className="py-2 rounded-lg font-bold text-sm transition-all border-2"
                         style={{
-                          backgroundColor: merchantTab === 'sellEquipment' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          background: merchantTab === 'sellEquipment' 
+                            ? 'linear-gradient(to bottom, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.8))' 
+                            : 'rgba(0, 0, 0, 0.3)',
                           borderColor: merchantTab === 'sellEquipment' ? '#22C55E' : 'rgba(34, 197, 94, 0.3)',
-                          color: '#F5F5DC'
+                          color: '#F5F5DC',
+                          cursor: 'pointer'
+                        }}
+                        onMouseEnter={(e) => {
+                          if (merchantTab === 'sellEquipment') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(74, 222, 128, 0.9), rgba(34, 197, 94, 0.9))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(40, 40, 40, 0.4)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(-1px)';
+                        }}
+                        onMouseLeave={(e) => {
+                          if (merchantTab === 'sellEquipment') {
+                            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(34, 197, 94, 0.8), rgba(22, 163, 74, 0.8))';
+                          } else {
+                            e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)';
+                          }
+                          e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
                         Sell
@@ -7066,7 +7300,7 @@ setMiniBossCount(0);
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {healthPrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#FF6B6B'}}>30% HP</p>
+                      <p className="text-xs mb-1" style={{color: '#FF6B6B'}}>30% Health</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Crimson elixir"</p>
                     </div>
                   </button>
@@ -7102,7 +7336,7 @@ setMiniBossCount(0);
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {staminaPrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>50% SP</p>
+                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>50% Stamina</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Azure draught"</p>
                     </div>
                   </button>
@@ -7174,7 +7408,7 @@ setMiniBossCount(0);
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {weaponOilPrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#DAA520'}}>+5 wpn{weaponOilActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs mb-1" style={{color: '#DAA520'}}>+5 Weapon{weaponOilActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Darkened oil"</p>
                     </div>
                   </button>
@@ -7210,7 +7444,7 @@ setMiniBossCount(0);
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {armorPolishPrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>+5 arm{armorPolishActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>+5 Armor{armorPolishActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Protective salve"</p>
                     </div>
                   </button>
@@ -7447,13 +7681,13 @@ setMiniBossCount(0);
                                   {GAME_CONSTANTS.RARITY_TIERS[item.rarity].name} {item.type === 'armor' ? item.slot : item.type}
                                 </p>
                                 {item.type === 'weapon' && (
-                                  <p className="text-xs" style={{color: '#FF6B6B'}}>+{item.attack} ATK</p>
+                                  <p className="text-xs" style={{color: '#68D391'}}>+{item.attack} ATK</p>
                                 )}
                                 {item.type === 'armor' && (
                                   <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.defense} DEF</p>
                                 )}
                                 {item.type === 'pendant' && (
-                                  <p className="text-xs" style={{color: '#FF6B6B'}}>+{item.hp} HP</p>
+                                  <p className="text-xs" style={{color: '#68D391'}}>+{item.hp} HP</p>
                                 )}
                                 {item.type === 'ring' && (
                                   <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.stamina} STA</p>
@@ -7646,7 +7880,7 @@ setMiniBossCount(0);
                               }}>
                                 <div className="flex-1">
                                   <p className="text-sm font-bold" style={{color: getRarityColor(pnd.rarity || 'common')}}>{pnd.name}</p>
-                                  <p className="text-xs" style={{color: '#FF6B6B'}}>+{pnd.hp} HP</p>
+                                  <p className="text-xs" style={{color: '#68D391'}}>+{pnd.hp} HP</p>
                                   {pnd.rarity && (
                                     <p className="text-xs italic" style={{color: getRarityColor(pnd.rarity)}}>
                                       {GAME_CONSTANTS.RARITY_TIERS[pnd.rarity].name}
@@ -9876,7 +10110,7 @@ setMiniBossCount(0);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.4.0 - Equipment Shop System</p>
+          <p className="text-xs text-gray-600">v4.5.0 - Economy Overhaul</p>
         </div>
       </div>
       )}
