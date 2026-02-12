@@ -1,15 +1,16 @@
-// FANTASY STUDY QUEST - v3.9.0 BUG FIX EDITION
-// PART 1 OF 3 - Copy this first
-// Last updated: 2026-02-11
-// FIXES: Wave battles, planner sync, inventory sorting, delete button
+// FANTASY STUDY QUEST - v4.4.0 Equipment Shop System
+// Last updated: 2026-02-12
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target } from 'lucide-react';
 
-// Import Cinzel font from Google Fonts
-const style = document.createElement('style');
-style.textContent = "@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap');";
-document.head.appendChild(style);
+// Import Cinzel font from Google Fonts (with duplicate prevention)
+if (!document.querySelector('style[data-font="cinzel"]')) {
+  const style = document.createElement('style');
+  style.setAttribute('data-font', 'cinzel');
+  style.textContent = "@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap');";
+  document.head.appendChild(style);
+}
 
 // Medieval Heraldry Color Scheme
 const COLORS = {
@@ -179,7 +180,7 @@ const GAME_CONSTANTS = {
   
   SHOP_CONFIG: {
     refreshInterval: 2,       // Shop opens every 2 days
-    itemCount: 3,            // 3 items per shop
+    itemCount: 6,            // 6 items per shop
     costs: {
       common: 50,
       uncommon: 100,
@@ -642,6 +643,7 @@ const FantasyStudyQuest = () => {
     armorPolish: 1.0,
     luckyCharm: 1.0
   }); // Dynamic market prices (1.0 = normal, 1.5 = 50% bonus, etc.)
+  const [lastMarketUpdateDay, setLastMarketUpdateDay] = useState(0); // Track last day market was updated
   const [pityCounter, setPityCounter] = useState(0); // Fights without upgrade (pity timer)
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
   const [showShop, setShowShop] = useState(false); // Shop modal visibility
@@ -1256,6 +1258,10 @@ const getDateKey = useCallback((date) => {
         if (data.gauntletMilestone !== undefined) setGauntletMilestone(data.gauntletMilestone);
         if (data.gauntletUnlocked !== undefined) setGauntletUnlocked(data.gauntletUnlocked);
         if (data.isDayActive !== undefined) setIsDayActive(data.isDayActive);
+        if (data.marketModifiers) setMarketModifiers(data.marketModifiers);
+        if (data.lastMarketUpdateDay !== undefined) setLastMarketUpdateDay(data.lastMarketUpdateDay);
+        if (data.shopInventory) setShopInventory(data.shopInventory);
+        if (data.daysSinceShop !== undefined) setDaysSinceShop(data.daysSinceShop);
         if (data.level !== undefined) setLevel(data.level);
         if (data.healthPots !== undefined) setHealthPots(data.healthPots);
         if (data.staminaPots !== undefined) setStaminaPots(data.staminaPots);
@@ -1361,11 +1367,11 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
-  isDayActive
+  isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop]);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -1586,12 +1592,31 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   return () => clearInterval(interval);
 }, [pomodoroRunning, pomodoroTimer, isBreak, pomodorosCompleted, addLog]);
 
-  // Update market prices when merchant opens or daily
+  // Update market prices daily (not when merchant opens)
   useEffect(() => {
-    if (showCraftingModal) {
+    if (currentDay > lastMarketUpdateDay) {
       updateMarketPrices();
+      setLastMarketUpdateDay(currentDay);
+      addLog('Market prices have shifted overnight...');
     }
-  }, [showCraftingModal, currentDay]);
+  }, [currentDay]);
+  
+  // Refresh shop inventory on merchant open if it's a refresh day
+  useEffect(() => {
+    if (showCraftingModal && currentDay > 0) {
+      // Calculate if we're on a refresh day (1, 3, 5, 7...)
+      const shouldHaveShop = currentDay % GAME_CONSTANTS.SHOP_CONFIG.refreshInterval === 1;
+      
+      if (shouldHaveShop && daysSinceShop !== currentDay) {
+        generateShopInventory();
+        setDaysSinceShop(currentDay);
+      } else if (!shouldHaveShop && shopInventory.length === 0 && daysSinceShop === 0) {
+        // First time opening, generate initial shop
+        generateShopInventory();
+        setDaysSinceShop(currentDay);
+      }
+    }
+  }, [showCraftingModal, currentDay, daysSinceShop, shopInventory.length, generateShopInventory]);
   
   useEffect(() => {
     // Exponential XP curve: Level 1→2 = 100 XP, Level 2→3 = 130 XP, Level 3→4 = 169 XP, etc.
@@ -1871,6 +1896,124 @@ if (tasks.length === 0) {
     setMarketModifiers(newModifiers);
   };
 
+  // Generate shop inventory based on current day
+  const generateShopInventory = useCallback(() => {
+    const items = [];
+    const itemCount = 6; // 6 items per shop
+    
+    // Determine available rarities based on current day
+    const availableRarities = [];
+    if (currentDay >= 1) {
+      availableRarities.push({ rarity: 'common', weight: 40 });
+      availableRarities.push({ rarity: 'uncommon', weight: 30 });
+    }
+    if (currentDay >= 3) {
+      availableRarities.push({ rarity: 'rare', weight: 20 });
+    }
+    if (currentDay >= 5) {
+      availableRarities.push({ rarity: 'epic', weight: 8 });
+    }
+    if (currentDay >= 7) {
+      availableRarities.push({ rarity: 'legendary', weight: 2 });
+    }
+    
+    // Generate items
+    for (let i = 0; i < itemCount; i++) {
+      // Roll rarity based on weighted distribution
+      const totalWeight = availableRarities.reduce((sum, r) => sum + r.weight, 0);
+      let roll = Math.random() * totalWeight;
+      let selectedRarity = 'common';
+      
+      for (const { rarity, weight } of availableRarities) {
+        roll -= weight;
+        if (roll <= 0) {
+          selectedRarity = rarity;
+          break;
+        }
+      }
+      
+      const multiplier = getRarityMultiplier(selectedRarity);
+      
+      // Randomly select item type (weapon, armor, pendant, ring)
+      const typeRoll = Math.random();
+      let item;
+      
+      if (typeRoll < 0.35) {
+        // Weapon
+        const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+        const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        const attack = Math.floor(baseAttack * multiplier);
+        const names = GAME_CONSTANTS.WEAPON_NAMES;
+        const name = names[Math.floor(Math.random() * names.length)];
+        const affixes = generateAffixes(selectedRarity, 'weapon');
+        
+        item = {
+          id: `shop-${Date.now()}-${i}`,
+          type: 'weapon',
+          name,
+          attack,
+          rarity: selectedRarity,
+          affixes
+        };
+      } else if (typeRoll < 0.70) {
+        // Armor
+        const slots = ['helmet', 'chest', 'gloves', 'boots'];
+        const slot = slots[Math.floor(Math.random() * slots.length)];
+        const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+        const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        const defense = Math.floor(baseDefense * multiplier);
+        const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+        const name = names[Math.floor(Math.random() * names.length)];
+        const affixes = generateAffixes(selectedRarity, 'armor');
+        
+        item = {
+          id: `shop-${Date.now()}-${i}`,
+          type: 'armor',
+          slot,
+          name,
+          defense,
+          rarity: selectedRarity,
+          affixes
+        };
+      } else if (typeRoll < 0.85) {
+        // Pendant
+        const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+        const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        const hp = Math.floor(baseHp * multiplier);
+        const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+        const name = names[Math.floor(Math.random() * names.length)];
+        
+        item = {
+          id: `shop-${Date.now()}-${i}`,
+          type: 'pendant',
+          name,
+          hp,
+          rarity: selectedRarity
+        };
+      } else {
+        // Ring
+        const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+        const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        const stamina = Math.floor(baseStamina * multiplier);
+        const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+        const name = names[Math.floor(Math.random() * names.length)];
+        
+        item = {
+          id: `shop-${Date.now()}-${i}`,
+          type: 'ring',
+          name,
+          stamina,
+          rarity: selectedRarity
+        };
+      }
+      
+      items.push(item);
+    }
+    
+    setShopInventory(items);
+    addLog('The merchant has refreshed their wares...');
+  }, [currentDay, getRarityMultiplier, generateAffixes, addLog]);
+
   // Get current price for a potion/item
   const getCurrentPrice = (itemType, basePrice) => {
     const marketMod = marketModifiers[itemType] || 1.0;
@@ -1988,6 +2131,44 @@ if (tasks.length === 0) {
     
     const dealText = marketMod < 0.9 ? ' (SALE!)' : marketMod > 1.1 ? ' (High Demand)' : '';
     addLog(`The hero forged: ${recipe.emoji} ${recipe.name} (-${finalCost} Gold${dealText})`);
+  };
+
+  // Purchase item from shop
+  const purchaseShopItem = (item) => {
+    // Calculate price with market modifier
+    const basePrice = GAME_CONSTANTS.SHOP_CONFIG.costs[item.rarity];
+    const itemType = item.type === 'armor' ? 'armor' : item.type; // armor slot types all use 'armor' modifier
+    const marketMod = marketModifiers[itemType] || 1.0;
+    const finalPrice = Math.floor(basePrice * marketMod);
+    
+    if (gold < finalPrice) {
+      addLog(`Not enough gold. Need ${finalPrice}g (have ${gold}g)`);
+      return;
+    }
+    
+    // Deduct gold
+    setGold(g => g - finalPrice);
+    
+    // Add item to inventory
+    if (item.type === 'weapon') {
+      setWeaponInventory(prev => [...prev, { ...item, id: Date.now() }]);
+      addLog(`Purchased: ${item.name} (+${item.attack} ATK) for ${finalPrice}g`);
+    } else if (item.type === 'armor') {
+      setArmorInventory(prev => ({
+        ...prev,
+        [item.slot]: [...prev[item.slot], { ...item, id: Date.now() }]
+      }));
+      addLog(`Purchased: ${item.name} (+${item.defense} DEF) for ${finalPrice}g`);
+    } else if (item.type === 'pendant') {
+      setPendantInventory(prev => [...prev, { ...item, id: Date.now() }]);
+      addLog(`Purchased: ${item.name} (+${item.hp} HP) for ${finalPrice}g`);
+    } else if (item.type === 'ring') {
+      setRingInventory(prev => [...prev, { ...item, id: Date.now() }]);
+      addLog(`Purchased: ${item.name} (+${item.stamina} STA) for ${finalPrice}g`);
+    }
+    
+    // Remove from shop inventory
+    setShopInventory(prev => prev.filter(i => i.id !== item.id));
   };
   
   const startTask = (id) => {
@@ -6717,11 +6898,17 @@ setMiniBossCount(0);
                     Potions
                   </button>
                   <button
-                    onClick={() => setMerchantTab('sellEquipment')}
+                    onClick={() => {
+                      if (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') {
+                        setMerchantTab('buyEquipment'); // Stay in equipment section
+                      } else {
+                        setMerchantTab('buyEquipment'); // Enter equipment section
+                      }
+                    }}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
-                      backgroundColor: merchantTab === 'sellEquipment' ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
-                      borderColor: merchantTab === 'sellEquipment' ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
+                      backgroundColor: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
+                      borderColor: (merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
                       color: '#F5F5DC'
                     }}
                   >
@@ -6762,6 +6949,39 @@ setMiniBossCount(0);
                   </div>
                 )}
                 
+                {/* Equipment Sub-tabs (Buy/Sell) - Appear below when Equipment is selected */}
+                {(merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment') && (
+                  <div className="rounded-lg p-2 mb-6 border" style={{
+                    background: 'rgba(139, 0, 0, 0.15)',
+                    borderColor: 'rgba(139, 0, 0, 0.3)'
+                  }}>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setMerchantTab('buyEquipment')}
+                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        style={{
+                          backgroundColor: merchantTab === 'buyEquipment' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          borderColor: merchantTab === 'buyEquipment' ? '#D4AF37' : 'rgba(184, 134, 11, 0.3)',
+                          color: '#F5F5DC'
+                        }}
+                      >
+                        Buy
+                      </button>
+                      <button
+                        onClick={() => setMerchantTab('sellEquipment')}
+                        className="py-2 rounded-lg font-bold text-sm transition-all border"
+                        style={{
+                          backgroundColor: merchantTab === 'sellEquipment' ? 'rgba(34, 197, 94, 0.8)' : 'rgba(0, 0, 0, 0.2)',
+                          borderColor: merchantTab === 'sellEquipment' ? '#22C55E' : 'rgba(34, 197, 94, 0.3)',
+                          color: '#F5F5DC'
+                        }}
+                      >
+                        Sell
+                      </button>
+                    </div>
+                  </div>
+                )}
+                
                 
                 <div className="rounded-lg p-4 mb-6 border-2" style={{
                   background: 'rgba(184, 134, 11, 0.2)',
@@ -6771,19 +6991,6 @@ setMiniBossCount(0);
                     <span style={{color: COLORS.silver}}>Current Gold:</span> 
                     <span className="font-bold text-2xl ml-2" style={{color: '#D4AF37'}}>{gold}</span>
                   </p>
-                  <button
-                    onClick={updateMarketPrices}
-                    className="mt-2 w-full py-1 rounded text-xs transition-all border"
-                    style={{
-                      background: 'rgba(212, 175, 55, 0.2)',
-                      borderColor: 'rgba(212, 175, 55, 0.4)',
-                      color: COLORS.silver
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.3)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(212, 175, 55, 0.2)'}
-                  >
-                    Refresh Market Prices (Test)
-                  </button>
                 </div>
                 
                 {/* Buy Potions Tab */}
@@ -6858,8 +7065,6 @@ setMiniBossCount(0);
                       <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Health Potion</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {healthPrice}g
-                        {marketModifiers.healthPotion < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
-                        {marketModifiers.healthPotion > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
                       </p>
                       <p className="text-xs mb-1" style={{color: '#FF6B6B'}}>30% HP</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Crimson elixir"</p>
@@ -6896,8 +7101,6 @@ setMiniBossCount(0);
                       <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Stamina Potion</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {staminaPrice}g
-                        {marketModifiers.staminaPotion < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
-                        {marketModifiers.staminaPotion > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
                       </p>
                       <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>50% SP</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Azure draught"</p>
@@ -6934,8 +7137,6 @@ setMiniBossCount(0);
                       <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {cleansePrice}g
-                        {marketModifiers.cleansePotion < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
-                        {marketModifiers.cleansePotion > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
                       </p>
                       <p className="text-xs mb-1" style={{color: '#B794F4'}}>Removes curse</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Purifying brew"</p>
@@ -6972,8 +7173,6 @@ setMiniBossCount(0);
                       <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Weapon Oil</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {weaponOilPrice}g
-                        {marketModifiers.weaponOil < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
-                        {marketModifiers.weaponOil > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
                       </p>
                       <p className="text-xs mb-1" style={{color: '#DAA520'}}>+5 wpn{weaponOilActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Darkened oil"</p>
@@ -7010,8 +7209,6 @@ setMiniBossCount(0);
                       <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Armor Polish</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {armorPolishPrice}g
-                        {marketModifiers.armorPolish < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
-                        {marketModifiers.armorPolish > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
                       </p>
                       <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>+5 arm{armorPolishActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Protective salve"</p>
@@ -7048,8 +7245,6 @@ setMiniBossCount(0);
                       <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Lucky Charm</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {luckyCharmPrice}g
-                        {marketModifiers.luckyCharm < 0.9 && <span className="text-xs ml-1" style={{color: '#68D391'}}>SALE</span>}
-                        {marketModifiers.luckyCharm > 1.1 && <span className="text-xs ml-1" style={{color: '#FF6B6B'}}>HIGH</span>}
                       </p>
                       <p className="text-xs mb-1" style={{color: '#68D391'}}>2x loot{luckyCharmActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
                       <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Blessed talisman"</p>
@@ -7074,29 +7269,20 @@ setMiniBossCount(0);
                     <div className="flex justify-center gap-4 text-xs">
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Health</p>
-                        <p className="font-bold" style={{color: marketModifiers.healthPotion >= 1.1 ? '#68D391' : marketModifiers.healthPotion <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
-                        </p>
-                        <p className="text-xs" style={{color: marketModifiers.healthPotion >= 1.1 ? '#68D391' : marketModifiers.healthPotion <= 0.9 ? '#FF6B6B' : '#9CA3AF'}}>
-                          {marketModifiers.healthPotion >= 1.1 ? 'HIGH' : marketModifiers.healthPotion <= 0.9 ? 'LOW' : 'NORMAL'}
+                        <p className="font-bold" style={{color: marketModifiers.healthPotion < 0.9 ? '#68D391' : marketModifiers.healthPotion > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.healthPotion < 0.9 ? 'SALE' : marketModifiers.healthPotion > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Stamina</p>
-                        <p className="font-bold" style={{color: marketModifiers.staminaPotion >= 1.1 ? '#68D391' : marketModifiers.staminaPotion <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
-                        </p>
-                        <p className="text-xs" style={{color: marketModifiers.staminaPotion >= 1.1 ? '#68D391' : marketModifiers.staminaPotion <= 0.9 ? '#FF6B6B' : '#9CA3AF'}}>
-                          {marketModifiers.staminaPotion >= 1.1 ? 'HIGH' : marketModifiers.staminaPotion <= 0.9 ? 'LOW' : 'NORMAL'}
+                        <p className="font-bold" style={{color: marketModifiers.staminaPotion < 0.9 ? '#68D391' : marketModifiers.staminaPotion > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.staminaPotion < 0.9 ? 'SALE' : marketModifiers.staminaPotion > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Cleanse</p>
-                        <p className="font-bold" style={{color: marketModifiers.cleansePotion >= 1.1 ? '#68D391' : marketModifiers.cleansePotion <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
-                        </p>
-                        <p className="text-xs" style={{color: marketModifiers.cleansePotion >= 1.1 ? '#68D391' : marketModifiers.cleansePotion <= 0.9 ? '#FF6B6B' : '#9CA3AF'}}>
-                          {marketModifiers.cleansePotion >= 1.1 ? 'HIGH' : marketModifiers.cleansePotion <= 0.9 ? 'LOW' : 'NORMAL'}
+                        <p className="font-bold" style={{color: marketModifiers.cleansePotion < 0.9 ? '#68D391' : marketModifiers.cleansePotion > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.cleansePotion < 0.9 ? 'SALE' : marketModifiers.cleansePotion > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                     </div>
@@ -7199,6 +7385,129 @@ setMiniBossCount(0);
                 </div>
                 )}
                 
+                {/* Buy Equipment Tab */}
+                {merchantTab === 'buyEquipment' && (
+                <div>
+                  {/* Market Status Indicator */}
+                  <div className="rounded-lg p-3 mb-4 border" style={{
+                    background: 'rgba(0, 0, 0, 0.3)',
+                    borderColor: 'rgba(212, 175, 55, 0.3)'
+                  }}>
+                    <p className="text-xs font-bold mb-2 text-center" style={{color: '#D4AF37'}}>TODAY'S MARKET RATES</p>
+                    <div className="grid grid-cols-4 gap-2 text-xs">
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Weapons</p>
+                        <p className="font-bold" style={{color: marketModifiers.weapon < 0.9 ? '#68D391' : marketModifiers.weapon > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.weapon < 0.9 ? 'SALE' : marketModifiers.weapon > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Armor</p>
+                        <p className="font-bold" style={{color: marketModifiers.armor < 0.9 ? '#68D391' : marketModifiers.armor > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.armor < 0.9 ? 'SALE' : marketModifiers.armor > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Pendants</p>
+                        <p className="font-bold" style={{color: marketModifiers.pendant < 0.9 ? '#68D391' : marketModifiers.pendant > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.pendant < 0.9 ? 'SALE' : marketModifiers.pendant > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p style={{color: COLORS.silver}}>Rings</p>
+                        <p className="font-bold" style={{color: marketModifiers.ring < 0.9 ? '#68D391' : marketModifiers.ring > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.ring < 0.9 ? 'SALE' : marketModifiers.ring > 1.1 ? 'HIGH' : 'NORMAL'}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-xs italic text-center mt-2" style={{color: '#9CA3AF'}}>Prices refresh every 2 days</p>
+                  </div>
+                  
+                  {/* Shop Items */}
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {shopInventory.length > 0 ? (
+                      shopInventory.map(item => {
+                        const basePrice = GAME_CONSTANTS.SHOP_CONFIG.costs[item.rarity];
+                        const itemType = item.type === 'armor' ? 'armor' : item.type;
+                        const marketMod = marketModifiers[itemType] || 1.0;
+                        const finalPrice = Math.floor(basePrice * marketMod);
+                        const canAfford = gold >= finalPrice;
+                        
+                        return (
+                          <div key={item.id} className="rounded-lg p-3 border-2 transition-all" style={{
+                            background: 'rgba(0, 0, 0, 0.4)',
+                            borderColor: getRarityColor(item.rarity)
+                          }}>
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="flex-1">
+                                <p className="text-sm font-bold mb-1" style={{color: getRarityColor(item.rarity)}}>
+                                  {item.name}
+                                </p>
+                                <p className="text-xs mb-1" style={{color: COLORS.silver}}>
+                                  {GAME_CONSTANTS.RARITY_TIERS[item.rarity].name} {item.type === 'armor' ? item.slot : item.type}
+                                </p>
+                                {item.type === 'weapon' && (
+                                  <p className="text-xs" style={{color: '#FF6B6B'}}>+{item.attack} ATK</p>
+                                )}
+                                {item.type === 'armor' && (
+                                  <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.defense} DEF</p>
+                                )}
+                                {item.type === 'pendant' && (
+                                  <p className="text-xs" style={{color: '#FF6B6B'}}>+{item.hp} HP</p>
+                                )}
+                                {item.type === 'ring' && (
+                                  <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.stamina} STA</p>
+                                )}
+                                {item.affixes && Object.keys(item.affixes).length > 0 && (
+                                  <div className="mt-1">
+                                    {Object.entries(item.affixes).map(([affix, value]) => (
+                                      <p key={affix} className="text-xs" style={{color: '#D4AF37'}}>
+                                        +{Math.round(value * 10) / 10} {affix.replace(/([A-Z])/g, ' $1').toLowerCase()}
+                                      </p>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              <button
+                                onClick={() => purchaseShopItem(item)}
+                                disabled={!canAfford}
+                                className="px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ml-3"
+                                style={{
+                                  background: canAfford ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))' : 'rgba(60, 60, 60, 0.5)',
+                                  borderColor: canAfford ? '#D4AF37' : '#555',
+                                  color: canAfford ? '#F5F5DC' : '#888',
+                                  cursor: canAfford ? 'pointer' : 'not-allowed',
+                                  opacity: canAfford ? 1 : 0.5
+                                }}
+                                onMouseEnter={(e) => {
+                                  if (canAfford) {
+                                    e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.9), rgba(184, 134, 11, 0.9))';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                  }
+                                }}
+                                onMouseLeave={(e) => {
+                                  if (canAfford) {
+                                    e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                  }
+                                }}
+                              >
+                                {finalPrice}g
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8">
+                        <p style={{color: COLORS.silver}}>The merchant's shelves are empty.</p>
+                        <p className="text-xs mt-2" style={{color: '#9CA3AF'}}>Check back in {2 - (currentDay % 2)} day(s)</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                )}
+                
                 {/* Sell Equipment Tab */}
                 {merchantTab === 'sellEquipment' && (
                 <div>
@@ -7211,26 +7520,26 @@ setMiniBossCount(0);
                     <div className="grid grid-cols-4 gap-2 text-xs">
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Weapons</p>
-                        <p className="font-bold" style={{color: marketModifiers.weapon >= 1.1 ? '#68D391' : marketModifiers.weapon <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.round((marketModifiers.weapon - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.weapon - 1) * 100)}%
+                        <p className="font-bold" style={{color: marketModifiers.weapon < 0.9 ? '#68D391' : marketModifiers.weapon > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.weapon < 0.9 ? 'SALE' : marketModifiers.weapon > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Armor</p>
-                        <p className="font-bold" style={{color: marketModifiers.armor >= 1.1 ? '#68D391' : marketModifiers.armor <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.round((marketModifiers.armor - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.armor - 1) * 100)}%
+                        <p className="font-bold" style={{color: marketModifiers.armor < 0.9 ? '#68D391' : marketModifiers.armor > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.armor < 0.9 ? 'SALE' : marketModifiers.armor > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Pendants</p>
-                        <p className="font-bold" style={{color: marketModifiers.pendant >= 1.1 ? '#68D391' : marketModifiers.pendant <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.round((marketModifiers.pendant - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.pendant - 1) * 100)}%
+                        <p className="font-bold" style={{color: marketModifiers.pendant < 0.9 ? '#68D391' : marketModifiers.pendant > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.pendant < 0.9 ? 'SALE' : marketModifiers.pendant > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                       <div className="text-center">
                         <p style={{color: COLORS.silver}}>Rings</p>
-                        <p className="font-bold" style={{color: marketModifiers.ring >= 1.1 ? '#68D391' : marketModifiers.ring <= 0.9 ? '#FF6B6B' : '#F5F5DC'}}>
-                          {Math.round((marketModifiers.ring - 1) * 100) > 0 ? '+' : ''}{Math.round((marketModifiers.ring - 1) * 100)}%
+                        <p className="font-bold" style={{color: marketModifiers.ring < 0.9 ? '#68D391' : marketModifiers.ring > 1.1 ? '#FF6B6B' : '#F5F5DC'}}>
+                          {marketModifiers.ring < 0.9 ? 'SALE' : marketModifiers.ring > 1.1 ? 'HIGH' : 'NORMAL'}
                         </p>
                       </div>
                     </div>
@@ -9567,7 +9876,7 @@ setMiniBossCount(0);
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.3.0 - Complete Merchant Economy</p>
+          <p className="text-xs text-gray-600">v4.4.0 - Equipment Shop System</p>
         </div>
       </div>
       )}
