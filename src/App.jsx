@@ -1,5 +1,5 @@
-// FANTASY STUDY QUEST - v4.6.4
-// Last updated: 2026-02-12
+// FANTASY STUDY QUEST - v4.12.0
+// Tactical Skills layer added - All 4 classes have utility skills with synergies
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
@@ -12,32 +12,75 @@ if (!document.querySelector('style[data-font="cinzel"]')) {
   document.head.appendChild(style);
 }
 
-// Medieval Heraldry Color Scheme
+// Refined Medieval Color Scheme - Reduced Visual Noise
 const COLORS = {
-  // Primary Actions (Attack, Combat)
-  crimson: { base: '#8B0000', hover: '#A52A2A', border: '#D4AF37' },
-  ruby: { base: '#9B1B30', hover: '#B8293E', border: '#DAA520' },
+  // Primary Actions (Attack, Combat) - Deeper, less saturated
+  crimson: { base: '#6B1318', hover: '#8B1A28', border: '#9B8B7E' },
+  ruby: { base: '#7A1520', hover: '#9B1B30', border: '#9B8B7E' },
   
   // Secondary Actions (Heal, Support)
-  emerald: { base: '#2F5233', hover: '#3D6B45', border: '#C0C0C0' },
-  sapphire: { base: '#1E3A5F', hover: '#2B5082', border: '#C0C0C0' },
-  amber: { base: '#B8860B', hover: '#DAA520', border: '#CD7F32' },
+  emerald: { base: '#2F5233', hover: '#3D6B45', border: '#9B8B7E' },
+  sapphire: { base: '#1E3A5F', hover: '#2B5082', border: '#9B8B7E' },
+  amber: { base: '#8B6914', hover: '#B8860B', border: '#9B8B7E' },
   
   // Special/Elite Actions
-  amethyst: { base: '#6B2C91', hover: '#8A3BB5', border: '#C0C0C0' },
-  teal: { base: '#004D4D', hover: '#006666', border: '#D4AF37' },
-  obsidian: { base: '#1C1C1C', hover: '#2D2D2D', border: '#D4AF37' },
+  amethyst: { base: '#5A2472', hover: '#6B2C91', border: '#9B8B7E' },
+  teal: { base: '#004D4D', hover: '#006666', border: '#9B8B7E' },
+  obsidian: { base: '#1C1C1C', hover: '#2D2D2D', border: '#9B8B7E' },
   
-  // Danger/Warning
-  burgundy: { base: '#6B0F1A', hover: '#8B1A28', border: '#CD853F' },
-  darkOrange: { base: '#CC5500', hover: '#E66D00', border: '#DAA520' },
+  // Danger/Warning - More muted
+  burgundy: { base: '#5A0E15', hover: '#6B0F1A', border: '#9B8B7E' },
+  darkOrange: { base: '#A64400', hover: '#CC5500', border: '#9B8B7E' },
   
-  // Utility
-  slate: { base: '#2C3E50', hover: '#34495E', border: '#95A5A6' },
+  // Utility - Neutral palette
+  slate: { base: '#2C3E50', hover: '#34495E', border: '#9B8B7E' },
   cream: '#F5F5DC',
-  gold: '#D4AF37',
-  silver: '#C0C0C0',
-  bronze: '#CD7F32'
+  gold: '#C9A961',        // Less saturated gold
+  silver: '#9B8B7E',      // Warmer silver
+  bronze: '#8B7355',      // Muted bronze
+  
+  // Background tones
+  bg: {
+    primary: '#0A0A0A',     // Deep black
+    secondary: '#1A1612',   // Warm dark brown
+    tertiary: '#252118',    // Lighter warm brown
+    paper: '#2A241C'        // Parchment-like
+  }
+};
+
+// Refined Visual Styles - Reduced Noise
+const VISUAL_STYLES = {
+  // Subtle shadows instead of heavy glows
+  shadow: {
+    subtle: '0 2px 8px rgba(0, 0, 0, 0.3)',
+    medium: '0 4px 12px rgba(0, 0, 0, 0.4)',
+    elevated: '0 8px 24px rgba(0, 0, 0, 0.5)',
+    // Only use glow for truly special items
+    glow: (color, intensity = 0.15) => `0 0 12px ${color}${Math.floor(intensity * 255).toString(16).padStart(2, '0')}`
+  },
+  
+  // Modal backgrounds - warm, neutral
+  modal: {
+    default: 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))',
+    dark: 'linear-gradient(to bottom, rgba(26, 22, 18, 0.97), rgba(15, 13, 10, 0.97))',
+    paper: 'linear-gradient(to bottom, rgba(50, 44, 36, 0.95), rgba(42, 36, 28, 0.95))'
+  },
+  
+  // Card/container backgrounds
+  card: {
+    default: 'rgba(37, 33, 24, 0.6)',
+    elevated: 'rgba(42, 36, 28, 0.8)',
+    subtle: 'rgba(26, 22, 18, 0.4)'
+  },
+  
+  // Decorative dividers - more subtle
+  divider: {
+    gold: (width = '80px') => ({
+      left: { width, height: '1px', background: `linear-gradient(to right, transparent, rgba(201, 169, 97, 0.3))` },
+      right: { width, height: '1px', background: `linear-gradient(to left, transparent, rgba(201, 169, 97, 0.3))` },
+      diamond: { color: 'rgba(201, 169, 97, 0.4)', fontSize: '8px' }
+    })
+  }
 };
 
 const GAME_CONSTANTS = {
@@ -68,11 +111,11 @@ const GAME_CONSTANTS = {
     RING: 1.00
   },
   XP_REWARDS: {
-    easy: 10,
-    medium: 25,
-    hard: 50,
-    miniBoss: 50,
-    finalBoss: 100
+    easy: 5,           // Regular combat (was 10)
+    medium: 12,        // Medium combat (was 25)
+    hard: 25,          // Hard combat (was 50)
+    miniBoss: 30,      // Elite boss (was 50)
+    finalBoss: 60      // Gauntlet (was 100)
   },
   XP_PER_LEVEL: 100,
   XP_MULTIPLIERS: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
@@ -237,12 +280,96 @@ const GAME_CONSTANTS = {
     routine: 1.0
   },
   DEEP_WORK_BONUS: 30,
-  PERFECT_DAY_BONUS: 50,
+  PERFECT_DAY_BONUS: 25,
+  
+  // Charge System - builds with normal attacks
+  CHARGE_SYSTEM: {
+    maxCharges: 3,
+    chargePerAttack: 1,
+    chargeBonus: 0.25 // +25% damage at max charges
+  },
+  
   SPECIAL_ATTACKS: {
-    Knight: { name: 'Crushing Blow', cost: 30, hpCost: 15, damageMultiplier: 4.0, effect: 'Massive damage but costs 15 HP' },
-    Wizard: { name: 'Arcane Blast', cost: 40, damageMultiplier: 3.0, effect: 'Boss stunned - no counter-attack this turn' },
-    Assassin: { name: "Venom's Ruin", cost: 30, damageMultiplier: 1.6, effect: 'Boss takes 10 damage per turn. Poisoned enemies take +25% damage from all attacks' },
-    Crusader: { name: 'Divine Smite', cost: 30, damageMultiplier: 3.0, effect: 'Heals you for 30 HP' }
+    Knight: { 
+      name: 'Blood Oath', 
+      cost: 25, 
+      hpCostPercent: 0.10, // 10% of current HP
+      hpCostEscalation: 0.05, // +5% per consecutive use
+      damageMultiplier: 3.5, 
+      effect: 'For 2 turns: +20% damage dealt, -20% damage taken. HP cost escalates with each use.',
+      buffTurns: 2,
+      buffDamage: 0.20,
+      buffReduction: 0.20
+    },
+    Wizard: { 
+      name: 'Temporal Rift', 
+      cost: 35, 
+      damageMultiplier: 2.8, 
+      effect: 'Boss skips counter-attack. Restore 15 stamina next turn. Next attack deals +25% damage. Reduces AOE damage by 50%.',
+      staminaRegen: 15,
+      nextAttackBonus: 0.25,
+      aoeReduction: 0.50
+    },
+    Assassin: { 
+      name: 'Shadow Venom', 
+      cost: 30, 
+      damageMultiplier: 1.8, 
+      effect: 'Apply poison (5 dmg/turn for 5 turns). Each poison tick restores 5 stamina. Reapplying detonates poison for burst. Max 2 stacks.',
+      poisonDamage: 5,
+      poisonTurns: 5,
+      staminaPerTick: 5,
+      maxStacks: 2
+    },
+    Crusader: { 
+      name: 'Judgment of Light', 
+      cost: 30, 
+      damageMultiplier: 2.8, 
+      effect: 'Deal damage and heal 15 HP. Gain Sanctified (2 turns): Heal 5 HP when boss attacks. +10% crit chance.',
+      healAmount: 15,
+      sanctifiedTurns: 2,
+      sanctifiedHeal: 5,
+      sanctifiedCrit: 10
+    }
+  },
+  
+  TACTICAL_SKILLS: {
+    Knight: {
+      name: 'Rallying Roar',
+      cost: 20,
+      duration: 2,
+      effect: 'For 2 turns: +20% Attack, +10% Defense. Synergy: Reduces Blood Oath HP cost by 5% if active.',
+      attackBonus: 0.20,
+      defenseBonus: 0.10,
+      bloodOathReduction: 0.05
+    },
+    Wizard: {
+      name: 'Ethereal Barrier',
+      cost: 25,
+      duration: 2,
+      effect: 'For 2 turns: 30% damage reduction, reflect 10% damage. Synergy: +15% Temporal Rift damage if active.',
+      damageReduction: 0.30,
+      damageReflect: 0.10,
+      riftBonus: 0.15
+    },
+    Assassin: {
+      name: 'Mark for Death',
+      cost: 20,
+      duration: 2,
+      effect: 'For 2 turns: Enemy loses 20% Defense, poison damage +50%, +10% crit. Synergy: Extends active poison by 2 turns.',
+      defenseReduction: 0.20,
+      poisonBonus: 0.50,
+      critBonus: 10,
+      poisonExtension: 2
+    },
+    Crusader: {
+      name: 'Bastion of Faith',
+      cost: 20,
+      duration: 2,
+      effect: 'For 2 turns: Heal 4 HP/turn, reduce crit damage by 50%. Synergy: +10 HP to Judgment of Light if active.',
+      healPerTurn: 4,
+      critReduction: 0.50,
+      judgmentBonus: 10
+    }
   },
   
   ARMOR_STAT_RANGES: {
@@ -668,7 +795,7 @@ const FantasyStudyQuest = () => {
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
   const [showShop, setShowShop] = useState(false); // Shop modal visibility
   const [daysSinceShop, setDaysSinceShop] = useState(0); // Track shop refresh
-  const [gauntletMilestone, setGauntletMilestone] = useState(1000); // Next XP threshold for Gauntlet
+  const [gauntletMilestone, setGauntletMilestone] = useState(1500); // Next XP threshold for Gauntlet (increased from 1000)
   const [gauntletUnlocked, setGauntletUnlocked] = useState(false); // Is Gauntlet currently available
   const [timeUntilMidnight, setTimeUntilMidnight] = useState(''); // Countdown to day reset
   const [isDayActive, setIsDayActive] = useState(false); // Is current game day active (vs dormant)
@@ -980,6 +1107,27 @@ const [waveGoldTotal, setWaveGoldTotal] = useState(0);
     stunned: false
   });
   const [recklessStacks, setRecklessStacks] = useState(0);
+  
+  // New special attack mechanics
+  const [chargeStacks, setChargeStacks] = useState(0); // 0-3 charges for all classes
+  const [knightBloodOathTurns, setKnightBloodOathTurns] = useState(0); // Buff duration
+  const [knightConsecutiveUses, setKnightConsecutiveUses] = useState(0); // HP cost escalation
+  const [wizardTemporalBuff, setWizardTemporalBuff] = useState(false); // Next attack bonus
+  const [wizardStaminaRegen, setWizardStaminaRegen] = useState(false); // Regen flag
+  const [wizardTemporalCooldown, setWizardTemporalCooldown] = useState(false); // Can't use twice in a row
+  const [assassinPoisonStacks, setAssassinPoisonStacks] = useState(0); // 0-2 stacks
+  const [crusaderSanctified, setCrusaderSanctified] = useState(0); // Sanctified turns remaining
+  const [crusaderJudgmentCooldown, setCrusaderJudgmentCooldown] = useState(false); // Can't spam Judgment
+  
+  // Tactical skills state
+  const [knightRallyingRoar, setKnightRallyingRoar] = useState(0); // Turns remaining
+  const [knightRallyingRoarCooldown, setKnightRallyingRoarCooldown] = useState(false);
+  const [wizardEtherealBarrier, setWizardEtherealBarrier] = useState(0); // Turns remaining
+  const [wizardEtherealBarrierCooldown, setWizardEtherealBarrierCooldown] = useState(false);
+  const [assassinMarkForDeath, setAssassinMarkForDeath] = useState(0); // Turns remaining
+  const [assassinMarkForDeathCooldown, setAssassinMarkForDeathCooldown] = useState(false);
+  const [crusaderBastionOfFaith, setCrusaderBastionOfFaith] = useState(0); // Turns remaining
+  const [crusaderBastionOfFaithCooldown, setCrusaderBastionOfFaithCooldown] = useState(false);
   
   // Phase 3 Gauntlet mechanics
   const [inPhase3, setInPhase3] = useState(false);
@@ -2310,8 +2458,8 @@ if (tasks.length === 0) {
   const complete = useCallback((id) => {
   const task = tasks.find(t => t.id === id);
   if (task && !task.done) {
-    // Base XP for completing a task
-    const baseXp = 25;
+    // Base XP for completing a task (reduced for better pacing)
+    const baseXp = 12;
     
    // Apply priority multiplier
 const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
@@ -2532,6 +2680,9 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
   setVictoryLoot([]); // Clear previous loot
   
+  // Reset charges at start of each battle
+  setChargeStacks(0);
+  
   // Set meta dialogue for regular enemies
   const dialoguePool = isWave ? GAME_CONSTANTS.ENEMY_DIALOGUE.WAVE : GAME_CONSTANTS.ENEMY_DIALOGUE.REGULAR;
   const randomDialogue = dialoguePool[Math.floor(Math.random() * dialoguePool.length)];
@@ -2593,6 +2744,9 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
     setVictoryLoot([]); // Clear previous loot
+    
+    // Reset charges at start of each battle
+    setChargeStacks(0);
     
     // Reset taunt state
     setIsTauntAvailable(false);
@@ -2669,7 +2823,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 };
   
   const miniBoss = () => {
-    const eliteXpRequired = 200;
+    const eliteXpRequired = 150;
     
     if (xp < eliteXpRequired) {
       addLog(`The hero needs ${eliteXpRequired} XP to face the darkness! (${xp}/${eliteXpRequired})`);
@@ -2722,6 +2876,9 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(true);
     setCanFlee(false);
     setVictoryLoot([]); // Clear previous loot
+    
+    // Reset charges at start of each battle
+    setChargeStacks(0);
     
     // Reset taunt state
     setIsTauntAvailable(false);
@@ -2797,6 +2954,40 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const attack = () => {
     if (!battling || bossHp <= 0) return;
     
+    // Wizard Temporal Rift - restore stamina at start of next turn
+    if (wizardStaminaRegen && hero?.class?.name === 'Wizard') {
+      const restored = Math.min(GAME_CONSTANTS.SPECIAL_ATTACKS.Wizard.staminaRegen, getMaxStamina() - stamina);
+      if (restored > 0) {
+        setStamina(s => Math.min(getMaxStamina(), s + restored));
+        addLog(`✨ Temporal energy restored: +${restored} stamina`);
+      }
+      setWizardStaminaRegen(false);
+    }
+    
+    // Clear Wizard cooldown when using normal attack
+    if (wizardTemporalCooldown && hero?.class?.name === 'Wizard') {
+      setWizardTemporalCooldown(false);
+    }
+    
+    // Clear Crusader cooldown when using normal attack
+    if (crusaderJudgmentCooldown && hero?.class?.name === 'Crusader') {
+      setCrusaderJudgmentCooldown(false);
+    }
+    
+    // Clear tactical skill cooldowns when using normal attack
+    if (knightRallyingRoarCooldown && hero?.class?.name === 'Knight') {
+      setKnightRallyingRoarCooldown(false);
+    }
+    if (wizardEtherealBarrierCooldown && hero?.class?.name === 'Wizard') {
+      setWizardEtherealBarrierCooldown(false);
+    }
+    if (assassinMarkForDeathCooldown && hero?.class?.name === 'Assassin') {
+      setAssassinMarkForDeathCooldown(false);
+    }
+    if (crusaderBastionOfFaithCooldown && hero?.class?.name === 'Crusader') {
+      setCrusaderBastionOfFaithCooldown(false);
+    }
+    
     // Auto-target shadow adds first in Phase 2 and Phase 3
     if ((inPhase2 || inPhase3) && shadowAdds.length > 0) {
       const targetAdd = shadowAdds[0];
@@ -2854,12 +3045,30 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     
+    // Assassin Mark for Death: Reduce enemy defense by 20%
+    if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
+      enemyDef = Math.floor(enemyDef * (1 - GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.defenseReduction));
+    }
+    
     // Calculate base damage
     const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
     
     // Crit system with weapon affixes
     let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
     let critMultiplier = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
+    
+    // Crusader Sanctified: +10% crit chance
+    if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+      critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
+    }
+    
+    // Assassin Mark for Death: +10% crit chance
+    if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
+      critChance += GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.critBonus;
+    }
+    if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+      critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
+    }
     
     // Add weapon affixes to crit
     if (equippedWeapon && equippedWeapon.affixes) {
@@ -2921,8 +3130,38 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       bonusMessages.push(`🔥 +${enragedBonus} from ENRAGED!`);
     }
     
+    // Apply Wizard's Temporal Rift bonus (+25% damage on next attack)
+    if (wizardTemporalBuff && hero?.class?.name === 'Wizard') {
+      const temporalBonus = Math.floor(finalDamage * 0.25);
+      finalDamage += temporalBonus;
+      bonusMessages.push(`✨ +${temporalBonus} from Temporal Rift`);
+      setWizardTemporalBuff(false);
+    }
+    
+    // Apply Knight's Blood Oath damage bonus
+    if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
+      const bloodOathBonus = Math.floor(finalDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffDamage);
+      finalDamage += bloodOathBonus;
+      bonusMessages.push(`⚔️ +${bloodOathBonus} from Blood Oath`);
+    }
+    
+    // Apply Knight's Rallying Roar damage bonus
+    if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
+      const rallyBonus = Math.floor(finalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Knight.attackBonus);
+      finalDamage += rallyBonus;
+      bonusMessages.push(`⚔️ +${rallyBonus} from Rallying Roar`);
+    }
+    
     const newBossHp = Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
+    
+    // Build charges for special attacks
+    if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+      setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
+      if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+        addLog(`⚡ SPECIAL CHARGED! (Next special deals +25% damage)`);
+      }
+    }
     
     // Update dialogue based on HP phase
     const hpPercent = newBossHp / bossMax;
@@ -3040,10 +3279,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     xpGain = GAME_CONSTANTS.XP_REWARDS.miniBoss;
     goldGain = 50; // Elite boss
   } else if (battleType === 'wave') {
-    xpGain = 30; // Wave enemy XP (buffed)
+    xpGain = 15; // Wave enemy XP (reduced from 30)
     goldGain = 12; // Wave enemies drop more
   } else {
-    xpGain = 25; // Regular enemy XP
+    xpGain = 10; // Regular enemy XP (reduced from 25)
     goldGain = 10; // Regular enemies
   }
   
@@ -3089,8 +3328,8 @@ if (battleType === 'elite') {
   
   // Wave complete bonus
   if (battleType === 'wave') {
-    setXp(x => x + 40);
-    addLog(`The wave is vanquished! +40 bonus XP`);
+    setXp(x => x + 20);
+    addLog(`The wave is vanquished! +20 bonus XP`);
   }
   
   setBattling(false);
@@ -3393,6 +3632,32 @@ if (enragedTurns > 0) {
     return; // Skip damage entirely
   }
 }
+
+// Knight Blood Oath: Reduce incoming damage by 20%
+if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffReduction);
+  bossDamage = Math.max(1, bossDamage - reduction);
+}
+
+// Knight Rallying Roar: +10% Defense (reduce incoming damage)
+if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus);
+  bossDamage = Math.max(1, bossDamage - reduction);
+}
+
+// Wizard Ethereal Barrier: 30% damage reduction + 10% reflection
+if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
+  const originalDamage = bossDamage;
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReduction);
+  bossDamage = Math.max(1, bossDamage - reduction);
+  
+  // Reflect 10% of original damage back to boss
+  const reflectDamage = Math.floor(originalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReflect);
+  if (reflectDamage > 0) {
+    setBossHp(h => Math.max(0, h - reflectDamage));
+    addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
+  }
+}
       
       setPlayerFlash(true);
       setTimeout(() => setPlayerFlash(false), 200);
@@ -3404,9 +3669,18 @@ if (enragedTurns > 0) {
           addLog(`The hero dodged! AOE DODGED!`);
           setDodgeReady(false);
         } else {
-          // AOE hits for 35 damage
-          const aoeDamage = 35;
-          addLog(`💥 DEVASTATING AOE SLAM! -${aoeDamage} HP`);
+          // AOE hits - check for Wizard's Temporal Rift reduction
+          let aoeDamage = 35;
+          
+          // Wizard's Temporal Rift reduces AOE damage by 50%
+          if (bossDebuffs.stunned && hero?.class?.name === 'Wizard') {
+            aoeDamage = Math.floor(aoeDamage * 0.5);
+            addLog(`✨ Temporal Rift reduces AOE damage!`);
+            addLog(`💥 AOE SLAM! -${aoeDamage} HP (reduced from 35)`);
+          } else {
+            addLog(`💥 DEVASTATING AOE SLAM! -${aoeDamage} HP`);
+          }
+          
           setHp(currentHp => {
             const newHp = Math.max(0, currentHp - aoeDamage);
             if (newHp <= 0) {
@@ -3436,6 +3710,20 @@ if (enragedTurns > 0) {
       });
       addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
       
+      // Crusader Sanctified: Heal when boss attacks
+      if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+        const sanctifiedHeal = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedHeal;
+        setHp(h => Math.min(getMaxHp(), h + sanctifiedHeal));
+        addLog(`✨ Sanctified: +${sanctifiedHeal} HP`);
+      }
+      
+      // Crusader Bastion of Faith: Heal per turn
+      if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
+        const bastionHeal = GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.healPerTurn;
+        setHp(h => Math.min(getMaxHp(), h + bastionHeal));
+        addLog(`✙ Bastion of Faith: +${bastionHeal} HP`);
+      }
+      
       // Taunt trigger: 25% chance after taking damage
       if (!isTauntAvailable && bossDamage > 0 && Math.random() < 0.25) {
         setIsTauntAvailable(true);
@@ -3456,15 +3744,81 @@ if (enragedTurns > 0) {
         });
       }
       
+      // Decrement Crusader Sanctified turns
+      if (crusaderSanctified > 0) {
+        setCrusaderSanctified(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) {
+            addLog(`✨ Sanctified fades...`);
+          }
+          return newTurns;
+        });
+      }
+      
+      // Decrement Knight Blood Oath turns
+      if (knightBloodOathTurns > 0) {
+        setKnightBloodOathTurns(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) {
+            addLog(`⚔️ Blood Oath fades...`);
+            setKnightConsecutiveUses(0); // Reset escalation when buff expires
+          }
+          return newTurns;
+        });
+      }
+      
+      // Decrement tactical skill turns
+      if (knightRallyingRoar > 0) {
+        setKnightRallyingRoar(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`⚔️ Rallying Roar fades...`);
+          return newTurns;
+        });
+      }
+      if (wizardEtherealBarrier > 0) {
+        setWizardEtherealBarrier(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✨ Ethereal Barrier fades...`);
+          return newTurns;
+        });
+      }
+      if (assassinMarkForDeath > 0) {
+        setAssassinMarkForDeath(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`☠️ Mark for Death fades...`);
+          return newTurns;
+        });
+      }
+      if (crusaderBastionOfFaith > 0) {
+        setCrusaderBastionOfFaith(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✙ Bastion of Faith fades...`);
+          return newTurns;
+        });
+      }
+      
       setTimeout(() => {
         if (!battling) return;
         
         if (bossDebuffs.poisonTurns > 0) {
-          const poisonDmg = bossDebuffs.poisonDamage;
+          let poisonDmg = bossDebuffs.poisonDamage;
+          
+          // Assassin Mark for Death: +50% poison damage
+          if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
+            poisonDmg = Math.floor(poisonDmg * (1 + GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.poisonBonus));
+          }
+          
           setBossHp(h => {
             const newHp = Math.max(0, h - poisonDmg);
             if (newHp > 0) {
-              addLog(`Poison coursing through veins deals ${poisonDmg} damage! (${bossDebuffs.poisonTurns - 1} turns left)`);
+              // Assassin gains stamina from poison ticks
+              if (hero?.class?.name === 'Assassin') {
+                const staminaGain = GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.staminaPerTick;
+                setStamina(s => Math.min(getMaxStamina(), s + staminaGain));
+                addLog(`☠️ Poison deals ${poisonDmg} damage! +${staminaGain} stamina (${bossDebuffs.poisonTurns - 1} turns left)`);
+              } else {
+                addLog(`Poison coursing through veins deals ${poisonDmg} damage! (${bossDebuffs.poisonTurns - 1} turns left)`);
+              }
             } else {
               addLog(`Poison coursing through veins deals ${poisonDmg} damage!`);
               addLog(`💀 Boss succumbed to poison!`);
@@ -3510,6 +3864,11 @@ if (enragedTurns > 0) {
             poisonTurns: prev.poisonTurns - 1,
             poisonedVulnerability: prev.poisonTurns > 1 ? 0.15 : 0
           }));
+          
+          // Reset Assassin poison stacks when poison expires
+          if (bossDebuffs.poisonTurns - 1 === 0) {
+            setAssassinPoisonStacks(0);
+          }
         }
         
         
@@ -3600,25 +3959,34 @@ if (enragedTurns > 0) {
       return;
     }
     
-    let hpCost = special.hpCost || 0;
-    if (special.hpCost && hero.class.name === 'Knight') {
-      hpCost = special.hpCost + (recklessStacks * 10);
+    let hpCost = 0;
+    if (hero.class.name === 'Knight') {
+      // NEW: Blood Oath - percentage-based HP cost with escalation
+      let basePercent = GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.hpCostPercent;
+      const escalation = GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.hpCostEscalation;
+      
+      // Synergy: Rallying Roar reduces HP cost by 5%
+      if (knightRallyingRoar > 0) {
+        basePercent -= GAME_CONSTANTS.TACTICAL_SKILLS.Knight.bloodOathReduction;
+        addLog(`⚔️ Rallying Roar synergy: HP cost reduced by 5%!`);
+      }
+      
+      const totalPercent = basePercent + (knightConsecutiveUses * escalation);
+      hpCost = Math.floor(hp * totalPercent);
+      
       if (hp <= hpCost) {
-        addLog(`Reckless Strike requires more than ${hpCost} HP! (Current: ${hp} HP)`);
+        addLog(`⚔️ Blood Oath requires more than ${hpCost} HP! (${Math.floor(totalPercent * 100)}% of current HP)`);
         return;
       }
     }
     
     setStamina(s => s - special.cost);
     
-    if (hpCost > 0) {
+    if (hpCost > 0 && hero.class.name === 'Knight') {
       setHp(h => Math.max(1, h - hpCost));
-      if (recklessStacks === 0) {
-        addLog(`The hero sacrifices ${hpCost} HP for massive power!`);
-      } else {
-        addLog(`Berserker rage! Lost ${hpCost} HP! (Escalating: ${recklessStacks + 1}x)`);
-      }
-      setRecklessStacks(s => s + 1);
+      const percentUsed = Math.floor((basePercent + (knightConsecutiveUses * escalation)) * 100);
+      addLog(`⚔️ Blood Oath! Sacrificed ${hpCost} HP (${percentUsed}% of current HP)`);
+      setKnightConsecutiveUses(u => u + 1);
     }
     
     setCurrentAnimation('battle-shake');
@@ -3637,12 +4005,28 @@ if (enragedTurns > 0) {
     
     // Crit system (specials can crit too!)
     const critRoll = Math.random() * 100;
-    const critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    
+    // Crusader Sanctified: +10% crit chance
+    if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+      critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
+    }
+    
     const isCrit = critRoll < critChance;
     const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
     
     const rawDamage = (baseDamage * critMultiplier) * special.damageMultiplier;
     let damage = Math.max(1, Math.floor(rawDamage - enemyDef));
+    
+    // Apply charge bonus if at max charges
+    if (chargeStacks === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+      const chargeBonus = Math.floor(damage * GAME_CONSTANTS.CHARGE_SYSTEM.chargeBonus);
+      damage += chargeBonus;
+      addLog(`⚡ CHARGED SPECIAL! +${chargeBonus} damage (+25%)`);
+      setChargeStacks(0); // Consume charges
+    } else {
+      setChargeStacks(0); // Still consume any partial charges
+    }
     
     if (isCrit) {
       addLog(`💥 CRITICAL ${special.name.toUpperCase()}!`);
@@ -3652,6 +4036,13 @@ if (enragedTurns > 0) {
     if (wasPoisoned && bossDebuffs.poisonedVulnerability > 0) {
       const bonusDamage = Math.floor(damage * bossDebuffs.poisonedVulnerability);
       damage += bonusDamage;
+    }
+    
+    // Wizard Ethereal Barrier synergy: +15% damage to Temporal Rift
+    if (wizardEtherealBarrier > 0 && hero.class.name === 'Wizard') {
+      const barrierBonus = Math.floor(damage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.riftBonus);
+      damage += barrierBonus;
+      addLog(`✨ Ethereal Barrier synergy: +${barrierBonus} damage (+15%)`);
     }
     
     // AOE Warning - Boss vulnerable but will counter-attack (special attacks too)
@@ -3666,21 +4057,100 @@ if (enragedTurns > 0) {
     let skipCounterAttack = false;
     
     if (hero.class.name === 'Knight') {
-      effectMessage = '⚔️ DEVASTATING BLOW!';
+      // NEW: Blood Oath buff (2 turns: +20% damage, -20% incoming)
+      setKnightBloodOathTurns(GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffTurns);
+      effectMessage = `⚔️ BLOOD OATH! Empowered for ${GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffTurns} turns`;
     } else if (hero.class.name === 'Wizard') {
+      // Check cooldown - can't use twice in a row
+      if (wizardTemporalCooldown) {
+        addLog(`✨ Temporal Rift is still recovering! Use a normal attack first.`);
+        return;
+      }
+      
+      // NEW: Temporal Rift mechanics
       setBossDebuffs(prev => ({ ...prev, stunned: true }));
-      // During AOE warning, boss WILL counter-attack even if stunned (too focused on AOE)
+      
+      // Set next-turn buffs
+      setWizardTemporalBuff(true); // Next attack deals +25% damage
+      setWizardStaminaRegen(true); // Restore 15 stamina next turn
+      setWizardTemporalCooldown(true); // Can't use again until after next attack
+      
+      // During AOE warning, boss WILL counter-attack but damage is reduced
       skipCounterAttack = !aoeWarning;
-      effectMessage = '✨ Boss stunned!';
+      
       if (aoeWarning) {
-        addLog('Warning: But boss is too focused on AOE to be stopped!');
+        effectMessage = '✨ TEMPORAL RIFT! Time slows - AOE reduced!';
+        addLog('✨ AOE damage reduced by 50%!');
+      } else {
+        effectMessage = '✨ TEMPORAL RIFT! Boss frozen in time!';
       }
     } else if (hero.class.name === 'Assassin') {
-      setBossDebuffs(prev => ({ ...prev, poisonTurns: 5, poisonDamage: 5, poisonedVulnerability: 0.15 }));
-      effectMessage = "☠️ Boss poisoned! Takes +15% damage from all attacks!";
+      // NEW: Shadow Venom mechanics
+      const existingTurns = bossDebuffs.poisonTurns || 0;
+      const existingDamage = bossDebuffs.poisonDamage || 0;
+      
+      if (existingTurns > 0) {
+        // DETONATE existing poison for burst damage
+        const burstDamage = existingTurns * existingDamage * 2;
+        setBossHp(h => Math.max(0, h - burstDamage));
+        addLog(`💀 POISON DETONATION! ${burstDamage} burst damage (${existingTurns} turns × ${existingDamage} dmg × 2)`);
+        
+        // Reapply with increased stacks
+        if (assassinPoisonStacks < GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.maxStacks) {
+          const newStacks = assassinPoisonStacks + 1;
+          setAssassinPoisonStacks(newStacks);
+          const newPoisonDmg = GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.poisonDamage * newStacks;
+          setBossDebuffs(prev => ({
+            ...prev,
+            poisonTurns: GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.poisonTurns,
+            poisonDamage: newPoisonDmg,
+            poisonedVulnerability: 0.15
+          }));
+          effectMessage = `☠️ SHADOW VENOM! Detonated + Reapplied (Stack ${newStacks}/${GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.maxStacks})`;
+        } else {
+          // Max stacks - just reapply
+          setBossDebuffs(prev => ({
+            ...prev,
+            poisonTurns: GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.poisonTurns,
+            poisonDamage: existingDamage,
+            poisonedVulnerability: 0.15
+          }));
+          effectMessage = `☠️ SHADOW VENOM! Detonated + Refreshed (Max Stacks)`;
+        }
+      } else {
+        // Initial poison application
+        setAssassinPoisonStacks(1);
+        setBossDebuffs(prev => ({
+          ...prev,
+          poisonTurns: GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.poisonTurns,
+          poisonDamage: GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.poisonDamage,
+          poisonedVulnerability: 0.15
+        }));
+        effectMessage = `☠️ SHADOW VENOM! Boss poisoned (${GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.poisonDamage} dmg/turn, 5 turns)`;
+      }
     } else if (hero.class.name === 'Crusader') {
-      setHp(h => Math.min(getMaxHp(), h + 20));
-      effectMessage = '✨ Healed for 20 HP!';
+      // Check cooldown - can't use twice in a row
+      if (crusaderJudgmentCooldown) {
+        addLog(`✨ Judgment of Light is still recovering! Use a normal attack first.`);
+        return;
+      }
+      
+      // NEW: Judgment of Light mechanics
+      let healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
+      
+      // Synergy: Bastion of Faith increases Judgment heal by +10 HP
+      if (crusaderBastionOfFaith > 0) {
+        healAmount += GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.judgmentBonus;
+        addLog(`✙ Bastion of Faith synergy: +10 HP to healing!`);
+      }
+      
+      setHp(h => Math.min(getMaxHp(), h + healAmount));
+      
+      // Apply Sanctified buff (2 turns)
+      setCrusaderSanctified(GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedTurns);
+      setCrusaderJudgmentCooldown(true); // Can't use again until after next attack
+      
+      effectMessage = `✨ JUDGMENT OF LIGHT! +${healAmount} HP, Sanctified (2 turns)`;
     }
     
     const newBossHp = Math.max(0, bossHp - damage);
@@ -3994,6 +4464,32 @@ if (enragedTurns > 0) {
     return; // Skip damage entirely
   }
 }
+
+// Knight Blood Oath: Reduce incoming damage by 20%
+if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffReduction);
+  bossDamage = Math.max(1, bossDamage - reduction);
+}
+
+// Knight Rallying Roar: +10% Defense (reduce incoming damage)
+if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus);
+  bossDamage = Math.max(1, bossDamage - reduction);
+}
+
+// Wizard Ethereal Barrier: 30% damage reduction + 10% reflection
+if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
+  const originalDamage = bossDamage;
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReduction);
+  bossDamage = Math.max(1, bossDamage - reduction);
+  
+  // Reflect 10% of original damage back to boss
+  const reflectDamage = Math.floor(originalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReflect);
+  if (reflectDamage > 0) {
+    setBossHp(h => Math.max(0, h - reflectDamage));
+    addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
+  }
+}
         
         setPlayerFlash(true);
         setTimeout(() => setPlayerFlash(false), 200);
@@ -4031,15 +4527,81 @@ if (enragedTurns > 0) {
           });
         }
         
+        // Decrement Crusader Sanctified turns
+        if (crusaderSanctified > 0) {
+          setCrusaderSanctified(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) {
+              addLog(`✨ Sanctified fades...`);
+            }
+            return newTurns;
+          });
+        }
+        
+        // Decrement Knight Blood Oath turns
+        if (knightBloodOathTurns > 0) {
+          setKnightBloodOathTurns(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) {
+              addLog(`⚔️ Blood Oath fades...`);
+              setKnightConsecutiveUses(0); // Reset escalation
+            }
+            return newTurns;
+          });
+        }
+        
+        // Decrement tactical skill turns
+        if (knightRallyingRoar > 0) {
+          setKnightRallyingRoar(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) addLog(`⚔️ Rallying Roar fades...`);
+            return newTurns;
+          });
+        }
+        if (wizardEtherealBarrier > 0) {
+          setWizardEtherealBarrier(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) addLog(`✨ Ethereal Barrier fades...`);
+            return newTurns;
+          });
+        }
+        if (assassinMarkForDeath > 0) {
+          setAssassinMarkForDeath(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) addLog(`☠️ Mark for Death fades...`);
+            return newTurns;
+          });
+        }
+        if (crusaderBastionOfFaith > 0) {
+          setCrusaderBastionOfFaith(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) addLog(`✙ Bastion of Faith fades...`);
+            return newTurns;
+          });
+        }
+        
         setTimeout(() => {
           if (!battling) return;
           
           if (bossDebuffs.poisonTurns > 0) {
-            const poisonDmg = bossDebuffs.poisonDamage;
+            let poisonDmg = bossDebuffs.poisonDamage;
+            
+            // Assassin Mark for Death: +50% poison damage
+            if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
+              poisonDmg = Math.floor(poisonDmg * (1 + GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.poisonBonus));
+            }
+            
             setBossHp(h => {
               const newHp = Math.max(0, h - poisonDmg);
               if (newHp > 0) {
-                addLog(`Poison coursing through veins deals ${poisonDmg} damage! (${bossDebuffs.poisonTurns - 1} turns left)`);
+                // Assassin gains stamina from poison ticks
+                if (hero?.class?.name === 'Assassin') {
+                  const staminaGain = GAME_CONSTANTS.SPECIAL_ATTACKS.Assassin.staminaPerTick;
+                  setStamina(s => Math.min(getMaxStamina(), s + staminaGain));
+                  addLog(`☠️ Poison deals ${poisonDmg} damage! +${staminaGain} stamina (${bossDebuffs.poisonTurns - 1} turns left)`);
+                } else {
+                  addLog(`Poison coursing through veins deals ${poisonDmg} damage! (${bossDebuffs.poisonTurns - 1} turns left)`);
+                }
               } else {
                 addLog(`Poison coursing through veins deals ${poisonDmg} damage!`);
                 addLog(`💀 Boss succumbed to poison!`);
@@ -4084,11 +4646,79 @@ if (enragedTurns > 0) {
               poisonTurns: prev.poisonTurns - 1,
               poisonedVulnerability: prev.poisonTurns > 1 ? 0.15 : 0
             }));
+            
+            // Reset Assassin poison stacks when poison expires
+            if (bossDebuffs.poisonTurns - 1 === 0) {
+              setAssassinPoisonStacks(0);
+            }
           }
         }, 200);
       }, GAME_CONSTANTS.BOSS_ATTACK_DELAY);
     } else {
+      // Counter-attack skipped (Wizard Temporal Rift)
       setBossDebuffs(prev => ({ ...prev, stunned: false }));
+    }
+  };
+  
+  const useTacticalSkill = () => {
+    if (!battling || bossHp <= 0 || !hero || !hero.class) return;
+    
+    const skill = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name];
+    if (!skill) return;
+    
+    // Check cooldown
+    if (hero.class.name === 'Knight' && knightRallyingRoarCooldown) {
+      addLog(`⚔️ Rallying Roar is still recovering! Use an attack first.`);
+      return;
+    }
+    if (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) {
+      addLog(`✨ Ethereal Barrier is still recovering! Use an attack first.`);
+      return;
+    }
+    if (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) {
+      addLog(`☠️ Mark for Death is still recovering! Use an attack first.`);
+      return;
+    }
+    if (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown) {
+      addLog(`✙ Bastion of Faith is still recovering! Use an attack first.`);
+      return;
+    }
+    
+    // Check stamina
+    if (stamina < skill.cost) {
+      addLog(`The hero needs ${skill.cost} stamina! (Have ${stamina})`);
+      return;
+    }
+    
+    setStamina(s => s - skill.cost);
+    
+    // Apply class-specific effects
+    if (hero.class.name === 'Knight') {
+      setKnightRallyingRoar(skill.duration);
+      setKnightRallyingRoarCooldown(true);
+      addLog(`⚔️ RALLYING ROAR! +20% ATK, +10% DEF for ${skill.duration} turns`);
+    } else if (hero.class.name === 'Wizard') {
+      setWizardEtherealBarrier(skill.duration);
+      setWizardEtherealBarrierCooldown(true);
+      addLog(`✨ ETHEREAL BARRIER! 30% DR, 10% reflect for ${skill.duration} turns`);
+    } else if (hero.class.name === 'Assassin') {
+      setAssassinMarkForDeath(skill.duration);
+      setAssassinMarkForDeathCooldown(true);
+      
+      // Synergy: Extend poison if already applied
+      if (bossDebuffs.poisonTurns > 0) {
+        setBossDebuffs(prev => ({
+          ...prev,
+          poisonTurns: prev.poisonTurns + skill.poisonExtension
+        }));
+        addLog(`☠️ MARK FOR DEATH! Poison extended by ${skill.poisonExtension} turns! -20% DEF, +50% poison dmg, +10% crit for ${skill.duration} turns`);
+      } else {
+        addLog(`☠️ MARK FOR DEATH! -20% DEF, +50% poison dmg, +10% crit for ${skill.duration} turns`);
+      }
+    } else if (hero.class.name === 'Crusader') {
+      setCrusaderBastionOfFaith(skill.duration);
+      setCrusaderBastionOfFaithCooldown(true);
+      addLog(`✙ BASTION OF FAITH! 4 HP/turn, 50% crit reduction for ${skill.duration} turns`);
     }
   };
   
@@ -4227,10 +4857,10 @@ if (enragedTurns > 0) {
     if (isFinalBoss && bossHp <= 0) {
       // Gauntlet defeated - lock until next milestone
       setGauntletUnlocked(false);
-      setGauntletMilestone(m => m + 1000);
+      setGauntletMilestone(m => m + 1500);
       updateAchievementStat('gauntlet_completed');
       updateAchievementStat('battles_won');
-      addLog(`The Gauntlet has fallen! Next trial at ${gauntletMilestone + 1000} XP.`);
+      addLog(`The Gauntlet has fallen! Next trial at ${gauntletMilestone + 1500} XP.`);
       
       // Close battle but keep all progress
       setShowBoss(false);
@@ -4244,6 +4874,11 @@ if (enragedTurns > 0) {
       // Elite boss defeated - just close screen (day advances at midnight)
       updateAchievementStat('elite_bosses_defeated');
       updateAchievementStat('battles_won');
+      
+      // Ensure elite boss defeated flag is set (in case of React batching issues)
+      if (battleType === 'elite') {
+        setEliteBossDefeatedToday(true);
+      }
       
       const totalTasks = tasks.length;
       const completedTasks = tasks.filter(t => t.done).length;
@@ -4288,7 +4923,7 @@ if (enragedTurns > 0) {
   return (
   <div className={`min-h-screen text-white relative overflow-hidden ${currentAnimation || ''} ${
     curseLevel === 3 ? 'border-8 border-red-600 animate-pulse' : ''
-  }`} style={{ fontFamily: "'Cinzel', serif", background: 'linear-gradient(to bottom, #1a0a0a, #0d0505)' }}>
+  }`} style={{ fontFamily: "'Cinzel', serif", background: 'linear-gradient(to bottom, #0F0D0A, #1A1612)' }}>
       <style>{globalStyles}</style>
       
       {/* Auto-save indicator */}
@@ -4442,7 +5077,7 @@ if (enragedTurns > 0) {
       <div className="absolute inset-0 bg-gradient-to-b from-red-950 via-black to-purple-950 opacity-60"></div>
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-black to-black opacity-80"></div>
       <div className="absolute inset-0" style={{
-        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(75, 0, 130, 0.1) 0%, transparent 50%)',
+        backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(89, 69, 52, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(75, 60, 45, 0.08) 0%, transparent 50%)',
         animation: 'pulse-glow 8s ease-in-out infinite'
       }}></div>
       
@@ -4863,9 +5498,9 @@ if (enragedTurns > 0) {
                     addLog('Debug: Face the Darkness reset - can fight elite boss again today'); 
                   }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs transition-all border border-cyan-600" style={{color: '#F5F5DC'}}>Reset Face Darkness</button>
                   <button onClick={() => { 
-                    setGauntletMilestone(1000);
+                    setGauntletMilestone(1500);
                     setGauntletUnlocked(false);
-                    addLog('Debug: Gauntlet reset - next unlock at 1000 XP'); 
+                    addLog('Debug: Gauntlet reset - next unlock at 1500 XP'); 
                   }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Reset Gauntlet</button>
                 </div>
               </div>
@@ -5068,7 +5703,7 @@ if (enragedTurns > 0) {
                             className="h-1.5 rounded-full transition-all" 
                             style={{
                               width: `${(hp / getMaxHp()) * 100}%`,
-                              background: hp <= 10 ? 'linear-gradient(to right, #7F1D1D, #DC2626)' : 'linear-gradient(to right, #7F1D1D, #EF4444)'
+                              background: hp <= 10 ? 'linear-gradient(to right, #5A0E15, #8B1A28)' : 'linear-gradient(to right, #6B1318, #9B1B30)'
                             }}
                           />
                         </div>
@@ -5281,7 +5916,7 @@ if (enragedTurns > 0) {
                     style={{
                       backgroundColor: 'rgba(107, 44, 145, 0.3)',
                       borderColor: curseLevel === 3 ? 'rgba(220, 38, 38, 0.8)' : 'rgba(138, 59, 181, 0.6)',
-                      boxShadow: curseLevel === 3 ? '0 0 20px rgba(220, 38, 38, 0.4)' : '0 0 15px rgba(138, 59, 181, 0.3)'
+                      boxShadow: curseLevel === 3 ? VISUAL_STYLES.shadow.glow('#DC2626', 0.2) : VISUAL_STYLES.shadow.glow('#8A3BB5', 0.15)
                     }}
                   >
                     <div className="flex items-center justify-between">
@@ -5400,7 +6035,7 @@ if (enragedTurns > 0) {
               )}
             </div>
               {!hasStarted ? (
-                <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.gold, background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}}>
+                <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.silver, background: VISUAL_STYLES.modal.default, boxShadow: VISUAL_STYLES.shadow.elevated}}>
                   
                   {/* Date Section */}
                   <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.gold}}>
@@ -5430,11 +6065,11 @@ if (enragedTurns > 0) {
                   <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
                     {/* Section header with decorative divider */}
                     <div className="text-center mb-4">
-                      <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
+                      <h2 className="text-4xl font-bold mb-4" style={{color: COLORS.gold, letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
                       <div className="flex items-center justify-center gap-2">
-                        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                        <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-                        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                        <div style={VISUAL_STYLES.divider.gold('80px').left}></div>
+                        <span style={VISUAL_STYLES.divider.gold().diamond}>◆</span>
+                        <div style={VISUAL_STYLES.divider.gold('80px').right}></div>
                       </div>
                     </div>
                     {tasks.length > 0 && (
@@ -5717,8 +6352,8 @@ if (enragedTurns > 0) {
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
                     <button 
   onClick={miniBoss} 
-  disabled={!isDayActive || eliteBossDefeatedToday || xp < 200} 
-  className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 200) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 200) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 200) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
+  disabled={!isDayActive || eliteBossDefeatedToday || xp < 150} 
+  className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
   <div className="text-center">
     <div className="mb-2">FACE THE DARKNESS</div>
@@ -5727,8 +6362,8 @@ if (enragedTurns > 0) {
     ) : eliteBossDefeatedToday ? (
       <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>✓ Today's trial complete</div>
     ) : (
-      <div className="text-xs font-normal uppercase" style={{color: xp >= 200 ? '#4ADE80' : '#FBBF24'}}>
-        {xp >= 200 ? `Ready • 200 XP` : `${200 - xp} XP needed`}
+      <div className="text-xs font-normal uppercase" style={{color: xp >= 150 ? '#4ADE80' : '#FBBF24'}}>
+        {xp >= 150 ? `Ready • 150 XP` : `${150 - xp} XP needed`}
       </div>
     )}
   </div>
@@ -6633,7 +7268,7 @@ if (enragedTurns > 0) {
 
           {showInventoryModal && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowInventoryModal(false)}>
-              <div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" style={{background: 'linear-gradient(to bottom, rgba(40, 30, 10, 0.95), rgba(30, 20, 0, 0.95), rgba(20, 10, 0, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+              <div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
                 <button 
                   onClick={() => setShowInventoryModal(false)} 
                   className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
@@ -6787,7 +7422,7 @@ if (enragedTurns > 0) {
                   </div>
                   
                   {/* Cleanse Potions */}
-                  <div className={`rounded-lg p-4 border-2 ${curseLevel > 0 ? 'animate-pulse' : ''}`} style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', borderColor: curseLevel > 0 ? 'rgba(138, 59, 181, 0.8)' : 'rgba(107, 44, 145, 0.5)', boxShadow: curseLevel > 0 ? '0 0 20px rgba(138, 59, 181, 0.4)' : 'none'}}>
+                  <div className={`rounded-lg p-4 border-2 ${curseLevel > 0 ? 'animate-pulse' : ''}`} style={{backgroundColor: 'rgba(107, 44, 145, 0.15)', borderColor: curseLevel > 0 ? 'rgba(138, 59, 181, 0.6)' : 'rgba(107, 44, 145, 0.4)', boxShadow: curseLevel > 0 ? VISUAL_STYLES.shadow.glow('#8A3BB5', 0.15) : 'none'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
                         <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
@@ -7371,7 +8006,7 @@ if (enragedTurns > 0) {
 
           {showCraftingModal && (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
-              <div className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative" style={{background: 'linear-gradient(to bottom, rgba(40, 10, 60, 0.95), rgba(30, 0, 40, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+              <div className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative" style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
                 <button 
                   onClick={() => setShowCraftingModal(false)} 
                   className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
@@ -7691,7 +8326,7 @@ if (enragedTurns > 0) {
                       borderColor: gold >= healthPrice ? 'rgba(220, 38, 38, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: gold >= healthPrice ? 1 : 0.5, 
                       cursor: gold >= healthPrice ? 'pointer' : 'not-allowed',
-                      boxShadow: gold >= healthPrice ? '0 0 15px rgba(220, 38, 38, 0.3)' : 'none'
+                      boxShadow: gold >= healthPrice ? VISUAL_STYLES.shadow.subtle : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= healthPrice) {
@@ -7727,7 +8362,7 @@ if (enragedTurns > 0) {
                       borderColor: gold >= staminaPrice ? 'rgba(59, 130, 246, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: gold >= staminaPrice ? 1 : 0.5, 
                       cursor: gold >= staminaPrice ? 'pointer' : 'not-allowed',
-                      boxShadow: gold >= staminaPrice ? '0 0 15px rgba(59, 130, 246, 0.3)' : 'none'
+                      boxShadow: gold >= staminaPrice ? VISUAL_STYLES.shadow.subtle : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= staminaPrice) {
@@ -8389,7 +9024,7 @@ if (enragedTurns > 0) {
 
           {showCustomizeModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCustomizeModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(50, 10, 50, 0.95), rgba(60, 0, 20, 0.95), rgba(20, 0, 30, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: VISUAL_STYLES.modal.dark, borderColor: COLORS.burgundy.base, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowCustomizeModal(false)} 
@@ -9901,11 +10536,11 @@ if (enragedTurns > 0) {
 )}
 
           {showBoss && (
-            <div className="fixed inset-0 flex items-start justify-center p-4 z-50 overflow-y-auto" style={{background: 'radial-gradient(ellipse at center, rgba(139, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.95) 70%)'}}>
+            <div className="fixed inset-0 flex items-start justify-center p-4 z-50 overflow-y-auto" style={{background: 'radial-gradient(ellipse at center, rgba(90, 14, 21, 0.3) 0%, rgba(0, 0, 0, 0.95) 70%)'}}>
               <div className={`rounded-2xl p-8 max-w-3xl w-full relative boss-enter my-8 ${bossFlash ? 'damage-flash-boss' : ''}`} style={{
-                background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.98), rgba(30, 0, 0, 0.98))',
-                border: '3px solid rgba(139, 0, 0, 0.8)',
-                boxShadow: '0 0 50px rgba(139, 0, 0, 0.5), inset 0 0 30px rgba(0, 0, 0, 0.5)'
+                background: 'linear-gradient(to bottom, rgba(42, 36, 28, 0.98), rgba(26, 22, 18, 0.98))',
+                border: '2px solid rgba(155, 139, 126, 0.5)',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.4)'
               }}>
                 {/* Header Section */}
                 <div className="text-center mb-6">
@@ -10038,6 +10673,26 @@ if (enragedTurns > 0) {
                     </div>
                   </div>
                   
+                  {/* Charge Stacks Only */}
+                  {chargeStacks > 0 && (
+                    <div className="rounded-lg p-2 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(212, 175, 55, 0.3)'}}>
+                      <div className="flex items-center justify-center gap-1">
+                        <span className="text-xs" style={{color: COLORS.gold}}>CHARGES:</span>
+                        {[1, 2, 3].map(i => (
+                          <div 
+                            key={i}
+                            className={`w-2 h-2 rounded-full transition-all`}
+                            style={{
+                              backgroundColor: i <= chargeStacks ? COLORS.gold : '#4B5563',
+                              boxShadow: i <= chargeStacks ? `0 0 6px ${COLORS.gold}` : 'none'
+                            }}
+                          />
+                        ))}
+                        {chargeStacks === 3 && <span className="text-xs font-bold ml-1" style={{color: COLORS.gold}}>⚡ READY</span>}
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Player Dialogue */}
                   {showTauntBoxes && (
                     <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(59, 130, 246, 0.5)'}}>
@@ -10119,7 +10774,7 @@ if (enragedTurns > 0) {
                       {/* Fight Submenu */}
                       {battleMenu === 'fight' && (
                         <>
-                          <div className="grid grid-cols-2 gap-3 mb-4">
+                          <div className="grid grid-cols-3 gap-3 mb-4">
                             <button 
                               onClick={attack}
                               className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
@@ -10136,17 +10791,78 @@ if (enragedTurns > 0) {
                             {hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (
                               <button 
                                 onClick={specialAttack}
-                                disabled={stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost)}
+                                disabled={
+                                  stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || 
+                                  (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) ||
+                                  (hero.class.name === 'Wizard' && wizardTemporalCooldown) ||
+                                  (hero.class.name === 'Crusader' && crusaderJudgmentCooldown)
+                                }
                                 className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
-                                  background: stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.8), rgba(8, 77, 94, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost ? 'rgba(13, 116, 142, 0.6)' : 'rgba(128, 128, 128, 0.3)',
+                                  background: (stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
+                                              !(hero.class.name === 'Wizard' && wizardTemporalCooldown) && 
+                                              !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown)) 
+                                              ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.8), rgba(8, 77, 94, 0.8))' : 'rgba(44, 62, 80, 0.6)',
+                                  borderColor: (stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
+                                               !(hero.class.name === 'Wizard' && wizardTemporalCooldown) && 
+                                               !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown)) 
+                                               ? 'rgba(13, 116, 142, 0.6)' : 'rgba(128, 128, 128, 0.3)',
                                   color: '#F5F5DC'
                                 }}
                                 title={GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].effect}
                               >
                                 <div className="text-sm uppercase">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
-                                <div className="text-xs mt-1 opacity-75">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`}</div>
+                                <div className="text-xs mt-1 opacity-75">
+                                  {hero.class.name === 'Wizard' && wizardTemporalCooldown ? (
+                                    <span className="text-yellow-400">⏳ On Cooldown</span>
+                                  ) : hero.class.name === 'Crusader' && crusaderJudgmentCooldown ? (
+                                    <span className="text-yellow-400">⏳ On Cooldown</span>
+                                  ) : (
+                                    <>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`}</>
+                                  )}
+                                </div>
+                              </button>
+                            )}
+                            
+                            {hero && hero.class && GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name] && (
+                              <button 
+                                onClick={useTacticalSkill}
+                                disabled={
+                                  stamina < GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost ||
+                                  (hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                  (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                  (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                  (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)
+                                }
+                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                  background: (stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
+                                              !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                                (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                                (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                                (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
+                                              ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(120, 87, 7, 0.8))' : 'rgba(44, 62, 80, 0.6)',
+                                  borderColor: (stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
+                                               !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                                 (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                                 (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                                 (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
+                                               ? 'rgba(184, 134, 11, 0.6)' : 'rgba(128, 128, 128, 0.3)',
+                                  color: '#F5F5DC'
+                                }}
+                                title={GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].effect}
+                              >
+                                <div className="text-sm uppercase">{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].name}</div>
+                                <div className="text-xs mt-1 opacity-75">
+                                  {((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                    (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                    (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                    (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)) ? (
+                                    <span className="text-yellow-400">⏳ On Cooldown</span>
+                                  ) : (
+                                    <>{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost} SP</>
+                                  )}
+                                </div>
                               </button>
                             )}
                           </div>
@@ -10522,7 +11238,7 @@ if (enragedTurns > 0) {
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.6.4 - Full Recovery ✨</p>
+          <p className="text-xs text-gray-600">v4.8.0 - Wizard Revamp</p>
         </div>
       </div>
       )}
