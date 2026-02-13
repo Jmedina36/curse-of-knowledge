@@ -1,8 +1,8 @@
-// FANTASY STUDY QUEST - v4.6.0 State Machine & UX Polish
-// Last updated: 2026-02-12 okay
+// FANTASY STUDY QUEST - v4.6.4
+// Last updated: 2026-02-12
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
 
 // Import Cinzel font from Google Fonts (with duplicate prevention)
 if (!document.querySelector('style[data-font="cinzel"]')) {
@@ -53,7 +53,6 @@ const GAME_CONSTANTS = {
   STAMINA_POTION_RESTORE_PERCENT: 50, // 50% of max stamina
   STAMINA_POTION_MIN: 50, // Minimum restore amount
   STAMINA_PER_TASK: 20,
-  CLEANSE_POTION_COST: 100,
   LOOT_RATES: {
     HEALTH_POTION: 0.25,
     STAMINA_POTION: 0.50,
@@ -1029,8 +1028,16 @@ const [customClass, setCustomClass] = useState(null);
   const [lastPlayedDate, setLastPlayedDate] = useState(null);
   const [curseLevel, setCurseLevel] = useState(0); // 0 = none, 1-3 = curse levels
 const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
+const [cleansePotionPurchasedToday, setCleansePotionPurchasedToday] = useState(false);
 const [lastRealDay, setLastRealDay] = useState(null);
 const [debugWarningState, setDebugWarningState] = useState(null); // null = auto, or 'locked', 'unlocked', 'evening', 'finalhour'
+  
+  // QoL state variables
+  const [showSavedIndicator, setShowSavedIndicator] = useState(false);
+  const [hideCompletedTasks, setHideCompletedTasks] = useState(false);
+  const [draggedTask, setDraggedTask] = useState(null);
+  const [draggedPlanTask, setDraggedPlanTask] = useState(null);
+  const [hidePlannerCompleted, setHidePlannerCompleted] = useState(false);
   
   const [studyStats, setStudyStats] = useState({
     totalMinutesToday: 0,
@@ -1392,8 +1399,25 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
+      
+      // Show auto-save indicator
+      setShowSavedIndicator(true);
+      setTimeout(() => setShowSavedIndicator(false), 1500);
     }
  }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted]);
+  
+  // ESC key to close modals
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setShowModal(false);
+        setShowPlanModal(false);
+        setShowCalendarModal(false);
+      }
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
   
   // Check if XP crosses Gauntlet milestone
   useEffect(() => {
@@ -1480,6 +1504,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           
           // Reset daily elite boss flag for new day
           setEliteBossDefeatedToday(false);
+          setCleansePotionPurchasedToday(false);
           
           // Advance day
           setCurrentDay(nextDay);
@@ -1822,6 +1847,38 @@ if (tasks.length === 0) {
   }
 };
 
+  const addPlanTask = () => {
+    if (newPlanItem.title) {
+      // Add to weekly plan
+      setWeeklyPlan(prev => ({ 
+        ...prev, 
+        [selectedDay]: [...prev[selectedDay], {
+          ...newPlanItem, 
+          completed: false
+        }] 
+      })); 
+      
+      // Auto-import to quest tab if it's today
+      const today = new Date();
+      const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
+      if (selectedDay === todayDayName) {
+        setTasks(prevTasks => [...prevTasks, {
+          title: newPlanItem.title,
+          priority: newPlanItem.priority || 'routine',
+          id: Date.now() + Math.random(),
+          done: false,
+          overdue: false
+        }]);
+        addLog(`Added "${newPlanItem.title}" to ${selectedDay} and imported to today's tasks`);
+      } else {
+        addLog(`Added "${newPlanItem.title}" to ${selectedDay}`);
+      }
+      
+      setNewPlanItem({ title: '', priority: 'routine' }); 
+      setShowPlanModal(false);
+    }
+  };
+
   const importFromPlanner = (dayName) => {
     const plannedTasks = weeklyPlan[dayName] || [];
     
@@ -2143,10 +2200,10 @@ if (tasks.length === 0) {
     const basePrices = {
       healthPotion: { cost: 25, name: 'Health Potion', emoji: '💊' },
       staminaPotion: { cost: 20, name: 'Stamina Potion', emoji: '⚡' },
-      cleansePotion: { cost: 50, name: 'Cleanse Potion', emoji: '🧪' },
-      weaponOil: { cost: 40, name: 'Weapon Oil', emoji: '⚔️' },
-      armorPolish: { cost: 40, name: 'Armor Polish', emoji: '🛡️' },
-      luckyCharm: { cost: 80, name: 'Lucky Charm', emoji: '🍀' }
+      cleansePotion: { cost: 250, name: 'Cleanse Potion', emoji: '🧪' },
+      weaponOil: { cost: 40, name: 'Fury Elixir', emoji: '⚔️' },
+      armorPolish: { cost: 40, name: 'Ironbark Tonic', emoji: '🛡️' },
+      luckyCharm: { cost: 80, name: 'Fortune Philter', emoji: '🍀' }
     };
     
     const recipe = basePrices[itemType];
@@ -2157,6 +2214,12 @@ if (tasks.length === 0) {
     
     if (gold < finalCost) {
       addLog(`The hero needs ${finalCost} Gold to craft ${recipe.name} (have ${gold})`);
+      return;
+    }
+    
+    // Check Cleanse Potion daily limit
+    if (itemType === 'cleansePotion' && cleansePotionPurchasedToday) {
+      addLog('The merchant shakes his head: "Only one Cleanse Potion per day, friend."');
       return;
     }
     
@@ -2171,6 +2234,7 @@ if (tasks.length === 0) {
         break;
       case 'cleansePotion':
         setCleansePots(c => c + 1);
+        setCleansePotionPurchasedToday(true);
         break;
       case 'weaponOil':
         setWeaponOilActive(true);
@@ -2365,7 +2429,7 @@ setTimeout(() => {
   const waveRoll = Math.random();
   if (waveRoll < 0.2) {
     // Wave attack: 2-4 enemies
-    const numEnemies = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4
+    const numEnemies = Math.floor(Math.random() * 2) + 2; // 2 or 3
     setWaveCount(numEnemies);
     addLog(`Wave incoming! ${numEnemies} enemies detected!`);
     setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
@@ -2378,6 +2442,73 @@ setTimeout(() => {
 
 }, [tasks, currentDay, addLog, consecutiveDays, skipCount, curseLevel, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask]);
   
+  // Drag-and-drop handlers for daily quest tasks
+  const handleDragStart = (e, task) => {
+    setDraggedTask(task);
+    e.currentTarget.style.opacity = '0.4';
+  };
+  
+  const handleDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1';
+    setDraggedTask(null);
+  };
+  
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.currentTarget.style.cursor = 'move';
+  };
+  
+  const handleDrop = (e, targetTask) => {
+    e.preventDefault();
+    
+    if (!draggedTask || draggedTask.id === targetTask.id) return;
+    
+    const currentTasks = [...tasks];
+    const draggedIndex = currentTasks.findIndex(t => t.id === draggedTask.id);
+    const targetIndex = currentTasks.findIndex(t => t.id === targetTask.id);
+    
+    // Remove dragged task and insert at target position
+    currentTasks.splice(draggedIndex, 1);
+    currentTasks.splice(targetIndex, 0, draggedTask);
+    
+    setTasks(currentTasks);
+  };
+  
+  // Drag-and-drop handlers for weekly planner
+  const handlePlanDragStart = (e, task) => {
+    setDraggedPlanTask(task);
+    e.currentTarget.style.opacity = '0.4';
+  };
+  
+  const handlePlanDragEnd = (e) => {
+    e.currentTarget.style.opacity = '1';
+    setDraggedPlanTask(null);
+  };
+  
+  const handlePlanDragOver = (e) => {
+    e.preventDefault();
+    e.currentTarget.style.cursor = 'move';
+  };
+  
+  const handlePlanDrop = (e, targetTask, day) => {
+    e.preventDefault();
+    
+    if (!draggedPlanTask || draggedPlanTask.title === targetTask.title || draggedPlanTask.day !== day) return;
+    
+    const currentDayTasks = [...weeklyPlan[day]];
+    const draggedIndex = currentDayTasks.findIndex(t => t.title === draggedPlanTask.title);
+    const targetIndex = currentDayTasks.findIndex(t => t.title === targetTask.title);
+    
+    // Remove dragged task and insert at target position
+    currentDayTasks.splice(draggedIndex, 1);
+    currentDayTasks.splice(targetIndex, 0, draggedPlanTask);
+    
+    setWeeklyPlan(prev => ({
+      ...prev,
+      [day]: currentDayTasks
+    }));
+  };
+
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
   
@@ -2536,14 +2667,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
   }
 };
-  
-  const craftCleanse = () => {
-    if (xp >= GAME_CONSTANTS.CLEANSE_POTION_COST) {
-      setXp(x => x - GAME_CONSTANTS.CLEANSE_POTION_COST);
-      setCleansePots(c => c + 1);
-      addLog(`The hero crafted a Cleanse Potion! -${GAME_CONSTANTS.CLEANSE_POTION_COST} XP`);
-    }
-  };
   
   const miniBoss = () => {
     const eliteXpRequired = 200;
@@ -2917,8 +3040,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     xpGain = GAME_CONSTANTS.XP_REWARDS.miniBoss;
     goldGain = 50; // Elite boss
   } else if (battleType === 'wave') {
-    xpGain = 25; // Regular enemy XP
-    goldGain = 8; // Wave enemies drop less
+    xpGain = 30; // Wave enemy XP (buffed)
+    goldGain = 12; // Wave enemies drop more
   } else {
     xpGain = 25; // Regular enemy XP
     goldGain = 10; // Regular enemies
@@ -2966,8 +3089,8 @@ if (battleType === 'elite') {
   
   // Wave complete bonus
   if (battleType === 'wave') {
-    setXp(x => x + 25);
-    addLog(`The wave is vanquished! +25 bonus XP`);
+    setXp(x => x + 40);
+    addLog(`The wave is vanquished! +40 bonus XP`);
   }
   
   setBattling(false);
@@ -2978,14 +3101,18 @@ if (battleType === 'elite') {
       if (!isFinalBoss) {
         // Regular/wave enemies: potions, weapons, armor, and accessories
         if (battleType === 'regular' || battleType === 'wave') {
+          const isWave = battleType === 'wave';
+          const healthPotRate = isWave ? 0.22 : 0.18; // 22% wave, 18% regular
+          const staminaPotRate = isWave ? 0.52 : 0.43; // 52% wave cumulative, 43% regular cumulative
+          
           const lootRoll = Math.random();
-          if (lootRoll < 0.12) {
-            // 12% Health Potion
+          if (lootRoll < healthPotRate) {
+            // Health Potion
             setHealthPots(h => h + 1);
             lootMessages.push('Health Potion');
             addLog('The hero found a Health Potion among the remains!');
-          } else if (lootRoll < 0.30) {
-            // 18% Stamina Potion
+          } else if (lootRoll < staminaPotRate) {
+            // Stamina Potion
             setStaminaPots(s => s + 1);
             lootMessages.push('Stamina Potion');
             addLog('The hero discovered a Stamina Potion in the aftermath!');
@@ -3170,9 +3297,7 @@ if (battleType === 'elite') {
           }
         }
         
-        lootMessages.push('Fully Healed');
-        setHp(getMaxHp());
-        addLog('The hero\'s wounds close as vitality returns!');
+        // Auto-heal removed - player must manage HP between battles
       }
       
       // Add gold gain to loot display
@@ -3770,9 +3895,7 @@ if (enragedTurns > 0) {
     }
   }
         
-        lootMessages.push('Fully Healed');
-        setHp(getMaxHp());
-        addLog('The hero\'s wounds close as vitality returns!');
+        // Auto-heal removed - player must manage HP between battles
       }
       
       // Add gold gain to loot display
@@ -4167,6 +4290,19 @@ if (enragedTurns > 0) {
     curseLevel === 3 ? 'border-8 border-red-600 animate-pulse' : ''
   }`} style={{ fontFamily: "'Cinzel', serif", background: 'linear-gradient(to bottom, #1a0a0a, #0d0505)' }}>
       <style>{globalStyles}</style>
+      
+      {/* Auto-save indicator */}
+      {showSavedIndicator && (
+        <div className="fixed top-4 right-4 z-50 px-4 py-2 rounded-lg" style={{
+          backgroundColor: 'rgba(34, 197, 94, 0.9)',
+          color: '#F5F5DC',
+          boxShadow: '0 4px 12px rgba(34, 197, 94, 0.3)',
+          animation: 'fadeIn 0.2s ease-in'
+        }}>
+          <span style={{fontSize: '14px', fontWeight: 'bold'}}>✓ Saved</span>
+        </div>
+      )}
+      
       {victoryFlash && (
         <div className="fixed inset-0 pointer-events-none z-50 victory-flash"></div>
       )}
@@ -4421,7 +4557,7 @@ if (enragedTurns > 0) {
               <div className="bg-black bg-opacity-40 rounded-lg p-3 mb-4 border border-gray-800">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-center">
                   <div><span className="text-gray-400">Day:</span> <span className="text-white font-bold">{currentDay}</span></div>
-                  <div><span className="text-gray-400">HP:</span> <span className="text-red-400 font-bold">{hp}/{getMaxHp()}</span></div>
+                  <div><span className="text-gray-400">HP:</span> <span className="font-bold" style={{color: COLORS.cream}}>{hp}/{getMaxHp()}</span></div>
                   <div><span className="text-gray-400">SP:</span> <span className="text-blue-400 font-bold">{stamina}/{getMaxStamina()}</span></div>
                   <div><span className="text-gray-400">Level:</span> <span className="text-yellow-400 font-bold">{level}</span></div>
                   <div><span className="text-gray-400">XP:</span> <span className="text-yellow-400 font-bold">{xp}</span></div>
@@ -5326,14 +5462,14 @@ if (enragedTurns > 0) {
                       <button 
                         onClick={() => setShowModal(true)} 
                         className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" 
-                        style={{backgroundColor: 'rgba(139, 0, 0, 0.6)', borderColor: '#8B0000', color: '#F5F5DC'}} 
+                        style={{backgroundColor: COLORS.amber.base, borderColor: COLORS.amber.border, color: '#1C1C1C'}} 
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.8)';
+                          e.currentTarget.style.backgroundColor = 'rgba(234, 179, 8, 0.9)';
                           e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.4)';
+                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(234, 179, 8, 0.4)';
                         }} 
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.6)';
+                          e.currentTarget.style.backgroundColor = COLORS.amber.base;
                           e.currentTarget.style.transform = 'translateY(0)';
                           e.currentTarget.style.boxShadow = '';
                         }}
@@ -5364,14 +5500,16 @@ if (enragedTurns > 0) {
     if (a.priority !== 'important' && b.priority === 'important') return 1;
   }
   return 0;
-}).map(t => (
+})
+.filter(task => !hideCompletedTasks || !task.done)
+.map(t => (
   <div key={t.id} className={`rounded-lg p-4 border-2 ${
     t.done 
       ? 'opacity-60' 
       : t.overdue
         ? 'bg-red-900/20 border-red-600 opacity-80'
       : t.priority === 'important'
-        ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500'
+        ? `bg-gradient-to-r from-yellow-900/30 to-gray-800`
         : 'bg-gradient-to-r from-blue-900/30 to-gray-800 border-blue-500'
   }`}
   style={{
@@ -5384,10 +5522,10 @@ if (enragedTurns > 0) {
           : undefined,
     borderColor: t.done 
       ? 'rgba(34, 197, 94, 0.6)' 
-      : t.overdue 
-        ? undefined 
-        : t.priority === 'important' 
-          ? undefined 
+      : t.overdue
+        ? undefined
+        : t.priority === 'important'
+          ? COLORS.gold
           : undefined,
     position: 'relative',
     overflow: 'hidden',
@@ -5395,11 +5533,17 @@ if (enragedTurns > 0) {
       ? 'pulse-red-border 2s ease-in-out infinite' 
       : undefined,
     boxShadow: t.priority === 'important' && !t.done && !t.overdue
-      ? '0 0 20px rgba(234, 179, 8, 0.6)'
+      ? `0 0 20px ${COLORS.gold}99`
       : t.done
         ? '0 1px 3px rgba(0, 0, 0, 0.1)'
         : '0 2px 4px rgba(0, 0, 0, 0.2)'
-  }}>
+  }}
+  draggable={!t.done}
+  onDragStart={(e) => handleDragStart(e, t)}
+  onDragEnd={handleDragEnd}
+  onDragOver={handleDragOver}
+  onDrop={(e) => handleDrop(e, t)}
+  >
     {/* OVERDUE watermark - centered from left edge to Focus button */}
     {t.overdue && !t.done && (
       <div className="absolute left-0 inset-y-0 flex items-center pointer-events-none" style={{zIndex: 0, right: '180px', justifyContent: 'center'}}>
@@ -5425,11 +5569,16 @@ if (enragedTurns > 0) {
       </div>
     )}
     <div className="flex items-center gap-3" style={{position: 'relative', zIndex: 1}}>
+      {!t.done && (
+        <div style={{opacity: 0.3, cursor: 'grab'}} onMouseEnter={(e) => e.currentTarget.style.opacity = 0.7} onMouseLeave={(e) => e.currentTarget.style.opacity = 0.3}>
+          <GripVertical size={20} style={{color: '#C0C0C0'}}/>
+        </div>
+      )}
       <div className="flex-1">
         <p className={t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300 font-medium text-lg' : 'text-white font-medium text-lg'}>
           {t.title}
         </p>
-        <p className="text-sm text-gray-400 mt-1">
+        <p className="text-sm mt-1" style={{color: t.priority === 'important' ? COLORS.gold : '#9CA3AF'}}>
           {t.priority === 'important' ? 'IMPORTANT • 1.25x XP' : 'ROUTINE • 1.0x XP'}
         </p>
       </div>
@@ -5461,6 +5610,27 @@ if (enragedTurns > 0) {
     </div>
   </div>
 ))}   
+                      </div>
+                    )}
+                    
+                    {/* Hide completed tasks toggle - at bottom */}
+                    {tasks.length > 0 && tasks.some(t => t.done) && (
+                      <div className="flex items-center justify-center gap-2 py-3 mt-4">
+                        <input 
+                          type="checkbox" 
+                          id="hideCompleted"
+                          checked={hideCompletedTasks}
+                          onChange={(e) => setHideCompletedTasks(e.target.checked)}
+                          className="w-4 h-4 cursor-pointer"
+                          style={{accentColor: '#D4AF37'}}
+                        />
+                        <label 
+                          htmlFor="hideCompleted" 
+                          className="text-sm cursor-pointer"
+                          style={{color: '#C0C0C0'}}
+                        >
+                          Hide completed tasks
+                        </label>
                       </div>
                     )}
                   </div>
@@ -5635,7 +5805,7 @@ if (enragedTurns > 0) {
               
               {/* Weekly Plan Content */}
               {plannerSubTab === 'weekly' && (
-              
+              <>
               <div className="grid gap-4">
                 {Object.keys(weeklyPlan).map((day, dayIndex) => {
                   const dayTheme = GAME_CONSTANTS.DAY_NAMES[dayIndex] || { name: day, subtitle: '', theme: '' };
@@ -5745,10 +5915,19 @@ if (enragedTurns > 0) {
                     {weeklyPlan[day].length > 0 && (
                       <div className="space-y-2">
                       {[...weeklyPlan[day]].sort((a, b) => {
-  if (a.priority === 'important' && b.priority !== 'important') return -1;
-  if (a.priority !== 'important' && b.priority === 'important') return 1;
+  // Incomplete tasks first, completed tasks last
+  if (!a.completed && b.completed) return -1;
+  if (a.completed && !b.completed) return 1;
+  
+  // Among incomplete: sort by priority
+  if (!a.completed && !b.completed) {
+    if (a.priority === 'important' && b.priority !== 'important') return -1;
+    if (a.priority !== 'important' && b.priority === 'important') return 1;
+  }
   return 0;
-}).map((item) => {
+})
+.filter(item => !hidePlannerCompleted || !item.completed)
+.map((item) => {
   const idx = weeklyPlan[day].indexOf(item);
   return (
     <div 
@@ -5757,7 +5936,7 @@ if (enragedTurns > 0) {
         item.completed 
           ? 'opacity-60' 
           : item.priority === 'important'
-            ? 'bg-gradient-to-r from-yellow-900/30 to-gray-800 border-yellow-500'
+            ? `bg-gradient-to-r from-yellow-900/30 to-gray-800`
             : 'bg-gradient-to-r from-blue-900/30 to-gray-800 border-blue-500'
       }`}
       style={{
@@ -5766,15 +5945,22 @@ if (enragedTurns > 0) {
           : undefined,
         borderColor: item.completed 
           ? 'rgba(34, 197, 94, 0.6)' 
-          : undefined,
+          : item.priority === 'important'
+            ? COLORS.gold
+            : undefined,
         position: 'relative',
         overflow: 'hidden',
         boxShadow: item.priority === 'important' && !item.completed
-          ? '0 0 20px rgba(234, 179, 8, 0.6)'
+          ? `0 0 20px ${COLORS.gold}99`
           : item.completed
             ? '0 1px 3px rgba(0, 0, 0, 0.1)'
             : '0 2px 4px rgba(0, 0, 0, 0.2)'
       }}
+      draggable={!item.completed}
+      onDragStart={(e) => handlePlanDragStart(e, {...item, day})}
+      onDragEnd={handlePlanDragEnd}
+      onDragOver={handlePlanDragOver}
+      onDrop={(e) => handlePlanDrop(e, item, day)}
     >
       {/* COMPLETED watermark - centered horizontally */}
       {item.completed && (
@@ -5789,11 +5975,16 @@ if (enragedTurns > 0) {
         </div>
       )}
       <div className="flex items-center gap-3" style={{position: 'relative', zIndex: 1}}>
+        {!item.completed && (
+          <div style={{opacity: 0.3, cursor: 'grab'}} onMouseEnter={(e) => e.currentTarget.style.opacity = 0.7} onMouseLeave={(e) => e.currentTarget.style.opacity = 0.3}>
+            <GripVertical size={20} style={{color: '#C0C0C0'}}/>
+          </div>
+        )}
         <div className="flex-1">
           <p className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
             {item.title}
             {item.priority === 'important' && (
-              <span className="text-xs text-yellow-400 ml-2">• IMPORTANT</span>
+              <span className="text-xs ml-2" style={{color: COLORS.gold}}>• IMPORTANT</span>
             )}
           </p>
         </div>
@@ -5840,6 +6031,28 @@ if (enragedTurns > 0) {
                   );
                 })}
               </div>
+              
+              {/* Hide completed tasks toggle - global for all days */}
+              {Object.values(weeklyPlan).some(dayTasks => dayTasks.some(t => t.completed)) && (
+                <div className="flex items-center justify-center gap-2 py-3 mt-4">
+                  <input 
+                    type="checkbox" 
+                    id="hidePlannerCompleted"
+                    checked={hidePlannerCompleted}
+                    onChange={(e) => setHidePlannerCompleted(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                    style={{accentColor: '#D4AF37'}}
+                  />
+                  <label 
+                    htmlFor="hidePlannerCompleted" 
+                    className="text-sm cursor-pointer"
+                    style={{color: '#C0C0C0'}}
+                  >
+                    Hide completed tasks
+                  </label>
+                </div>
+              )}
+              </>
               )}
               
               {/* Calendar Content */}
@@ -6293,7 +6506,7 @@ if (enragedTurns > 0) {
                             </p>
                             
                             {/* Progress bar for incremental achievements */}
-                            {achievement.progress && !isUnlocked && (
+                            {!isUnlocked && (
                               <div className="mb-2">
                                 <div className="h-1.5 rounded-full overflow-hidden" style={{
                                   background: 'rgba(0, 0, 0, 0.6)',
@@ -6607,7 +6820,7 @@ if (enragedTurns > 0) {
                   {luckyCharmActive && (
                     <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(47, 82, 51, 0.2)', borderColor: 'rgba(47, 82, 51, 0.5)'}}>
                       <div>
-                        <p className="font-bold text-lg mb-1" style={{color: '#F5F5DC'}}>Lucky Charm</p>
+                        <p className="font-bold text-lg mb-1" style={{color: '#F5F5DC'}}>Fortune Philter</p>
                         <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Fortune favors the bold."</p>
                         <p className="text-xs mt-2" style={{color: '#68D391'}}>Active</p>
@@ -7541,25 +7754,25 @@ if (enragedTurns > 0) {
                   
                   <button 
                     onClick={() => craftItem('cleansePotion')} 
-                    disabled={gold < cleansePrice}
+                    disabled={gold < cleansePrice || cleansePotionPurchasedToday}
                     className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
                     style={{
-                      background: gold >= cleansePrice 
+                      background: (gold >= cleansePrice && !cleansePotionPurchasedToday) 
                         ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.5) 50%, rgba(107, 33, 168, 0.6) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: gold >= cleansePrice ? 'rgba(168, 85, 247, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
-                      opacity: gold >= cleansePrice ? 1 : 0.5, 
-                      cursor: gold >= cleansePrice ? 'pointer' : 'not-allowed',
-                      boxShadow: gold >= cleansePrice ? '0 0 20px rgba(168, 85, 247, 0.3)' : 'none'
+                      borderColor: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 'rgba(168, 85, 247, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      opacity: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 1 : 0.5, 
+                      cursor: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 'pointer' : 'not-allowed',
+                      boxShadow: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? '0 0 20px rgba(168, 85, 247, 0.3)' : 'none'
                     }} 
                     onMouseEnter={(e) => {
-                      if (gold >= cleansePrice) {
+                      if (gold >= cleansePrice && !cleansePotionPurchasedToday) {
                         e.currentTarget.style.background = 'linear-gradient(135deg, rgba(192, 132, 252, 0.5) 0%, rgba(147, 51, 234, 0.6) 50%, rgba(126, 34, 206, 0.7) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
-                      if (gold >= cleansePrice) {
+                      if (gold >= cleansePrice && !cleansePotionPurchasedToday) {
                         e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.5) 50%, rgba(107, 33, 168, 0.6) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
@@ -7571,7 +7784,10 @@ if (enragedTurns > 0) {
                         {cleansePrice}g
                       </p>
                       <p className="text-xs mb-1" style={{color: '#B794F4'}}>Removes 1 curse level</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Purifying brew"</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>{cleansePotionPurchasedToday ? "Sold out today" : "Purifying brew"}</p>
+                      {cleansePotionPurchasedToday && (
+                        <p className="text-xs mt-1" style={{color: '#EF4444'}}>Daily limit reached</p>
+                      )}
                     </div>
                   </button>
                   
@@ -7602,12 +7818,12 @@ if (enragedTurns > 0) {
                     }}
                   >
                     <div>
-                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Weapon Oil</p>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Fury Elixir</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {weaponOilPrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#DAA520'}}>+5 Weapon{weaponOilActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Darkened oil"</p>
+                      <p className="text-xs mb-1" style={{color: '#DAA520'}}>+5 Attack{weaponOilActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Rage incarnate"</p>
                     </div>
                   </button>
                   
@@ -7638,12 +7854,12 @@ if (enragedTurns > 0) {
                     }}
                   >
                     <div>
-                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Armor Polish</p>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Ironbark Tonic</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {armorPolishPrice}g
                       </p>
-                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>+5 Armor{armorPolishActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Protective salve"</p>
+                      <p className="text-xs mb-1" style={{color: '#6BB6FF'}}>+5 Defense{armorPolishActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Stone-hard skin"</p>
                     </div>
                   </button>
                   
@@ -7674,12 +7890,12 @@ if (enragedTurns > 0) {
                     }}
                   >
                     <div>
-                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Lucky Charm</p>
+                      <p className="font-bold text-sm mb-1" style={{color: '#F5F5DC'}}>Fortune Philter</p>
                       <p className="text-xs font-bold mb-1" style={{color: '#D4AF37'}}>
                         {luckyCharmPrice}g
                       </p>
                       <p className="text-xs mb-1" style={{color: '#68D391'}}>2x loot{luckyCharmActive && <span className="ml-1" style={{color: '#90EE90'}}>✓</span>}</p>
-                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Blessed talisman"</p>
+                      <p className="text-xs italic" style={{color: COLORS.silver, fontSize: '10px'}}>"Liquid luck"</p>
                     </div>
                   </button>
                   </>);
@@ -8211,6 +8427,9 @@ if (enragedTurns > 0) {
           placeholder="Enter your hero's name" 
           value={customName}
           onChange={e => setCustomName(e.target.value)}
+          spellCheck="true"
+          autoCorrect="on"
+          autoCapitalize="words"
           className="w-full p-3 rounded-lg border focus:outline-none" 
           style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(212, 175, 55, 0.3)', fontFamily: 'Cinzel, serif'}}
           onFocus={e => e.target.style.borderColor = COLORS.gold}
@@ -8333,6 +8552,9 @@ if (enragedTurns > 0) {
         placeholder="Deck name (e.g., Spanish Vocabulary)" 
         value={newDeck.name} 
         onChange={e => setNewDeck({name: e.target.value})} 
+        spellCheck="true"
+        autoCorrect="on"
+        autoCapitalize="words"
         className="w-full p-3 rounded-lg mb-4 border focus:outline-none" 
         style={{
           background: 'rgba(0, 0, 0, 0.4)',
@@ -9177,6 +9399,14 @@ if (enragedTurns > 0) {
         placeholder="Name your trial" 
         value={newTask.title} 
         onChange={e => setNewTask({...newTask, title: e.target.value})} 
+        spellCheck="true"
+        autoCorrect="on"
+        autoCapitalize="sentences"
+        onKeyDown={e => {
+          if (e.key === 'Enter' && newTask.title) {
+            addTask();
+          }
+        }}
         className="w-full p-3 rounded-lg mb-4 border focus:outline-none" 
         style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(220, 20, 60, 0.3)', fontFamily: 'Cinzel, serif'}}
         onFocus={e => e.target.style.borderColor = '#DC143C'}
@@ -9389,6 +9619,14 @@ if (enragedTurns > 0) {
         placeholder="What do you need to do?" 
         value={newPlanItem.title} 
         onChange={e => setNewPlanItem({...newPlanItem, title: e.target.value})} 
+        spellCheck="true"
+        autoCorrect="on"
+        autoCapitalize="sentences"
+        onKeyDown={e => {
+          if (e.key === 'Enter' && newPlanItem.title) {
+            addPlanTask();
+          }
+        }}
         className="w-full p-3 rounded-lg mb-4 border focus:outline-none" 
         style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(96, 165, 250, 0.3)', fontFamily: 'Cinzel, serif'}}
         onFocus={e => e.target.style.borderColor = '#60A5FA'}
@@ -9431,37 +9669,7 @@ if (enragedTurns > 0) {
       
       <div className="flex gap-2">
         <button 
-          onClick={() => { 
-            if (newPlanItem.title) { 
-              // Add to weekly plan
-              setWeeklyPlan(prev => ({ 
-                ...prev, 
-                [selectedDay]: [...prev[selectedDay], {
-                  ...newPlanItem, 
-                  completed: false
-                }] 
-              })); 
-              
-              // Auto-import to quest tab if it's today
-              const today = new Date();
-              const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
-              if (selectedDay === todayDayName) {
-                setTasks(prevTasks => [...prevTasks, {
-                  title: newPlanItem.title,
-                  priority: newPlanItem.priority || 'routine',
-                  id: Date.now() + Math.random(),
-                  done: false,
-                  overdue: false
-                }]);
-                addLog(`Added "${newPlanItem.title}" to ${selectedDay} and imported to today's tasks`);
-              } else {
-                addLog(`Added "${newPlanItem.title}" to ${selectedDay}`);
-              }
-              
-              setNewPlanItem({ title: '', priority: 'routine' }); 
-              setShowPlanModal(false); 
-            } 
-          }}
+          onClick={addPlanTask}
           disabled={!newPlanItem.title} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{
@@ -9546,6 +9754,9 @@ if (enragedTurns > 0) {
             placeholder="e.g., Math, Physics, Chemistry..." 
             value={newFocus} 
             onChange={e => setNewFocus(e.target.value)} 
+            spellCheck="true"
+            autoCorrect="on"
+            autoCapitalize="words"
             onKeyPress={e => {
               if (e.key === 'Enter' && newFocus.trim()) {
                 setCalendarFocus(prev => ({...prev, [selectedDate]: newFocus.trim()}));
@@ -9620,6 +9831,9 @@ if (enragedTurns > 0) {
             placeholder="e.g., Midterm Exam, Office Hours..." 
             value={newEvent} 
             onChange={e => setNewEvent(e.target.value)} 
+            spellCheck="true"
+            autoCorrect="on"
+            autoCapitalize="words"
             onKeyPress={e => {
               if (e.key === 'Enter' && newEvent.trim()) {
                 setCalendarEvents(prev => ({
@@ -10308,7 +10522,7 @@ if (enragedTurns > 0) {
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.6.0 - State Machine & UX Polish</p>
+          <p className="text-xs text-gray-600">v4.6.4 - Full Recovery ✨</p>
         </div>
       </div>
       )}
