@@ -1,5 +1,5 @@
-// FANTASY STUDY QUEST - v4.13.0
-// Modal system polish - Consistent color semantics, ritual chamber aesthetics, compacted battle box
+// FANTASY STUDY QUEST - v4.14.0
+// Crusader Martyr Tank Rework - Absorbed Pain mechanic, healing lockout, sustain-focused gameplay
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
@@ -323,13 +323,12 @@ const GAME_CONSTANTS = {
     Crusader: { 
       name: 'Judgment of Light', 
       cost: 30, 
-      damageMultiplier: 2.6, 
-      effect: 'Deal damage and heal 20 HP. Holy Empowerment (3 turns): +25% damage, +15% crit, heal 5 HP per attack.',
-      healAmount: 20,
-      empowermentTurns: 3,
-      empowermentDamage: 0.25,
-      empowermentCrit: 15,
-      empowermentHeal: 5
+      damageMultiplier: 2.2, 
+      effect: 'Consumes ALL Absorbed Pain. Base: 2.2x damage. Pain Bonus: +0.8 dmg per pain. Healing: 40% of pain consumed. With 0 pain: 10 HP base heal.',
+      baseDamageMultiplier: 2.2,
+      painToDamage: 0.8,
+      painToHealing: 0.40,
+      baseHealNoPain: 10
     }
   },
   
@@ -366,11 +365,11 @@ const GAME_CONSTANTS = {
     Crusader: {
       name: 'Bastion of Faith',
       cost: 25,
-      duration: 4,
-      effect: 'For 4 turns: +15% Damage, +20% Defense. Synergy: Doubles Holy Empowerment heal-on-hit (10 HP per attack).',
-      damageBonus: 0.15,
-      defenseBonus: 0.20,
-      empowermentHealBonus: 2.0
+      duration: 3,
+      effect: 'For 3 turns: +30% Damage Reduction. Prevented damage → Absorbed Pain (max 100). Cannot heal while active. Pain decays -10/turn after Bastion ends.',
+      damageReduction: 0.30,
+      painCap: 100,
+      painDecayPerTurn: 10
     }
   },
   
@@ -385,9 +384,9 @@ const GAME_CONSTANTS = {
     Crusader: {
       name: 'Smite',
       cost: 15,
-      damageMultiplier: 1.7,
-      healAmount: 10,
-      effect: 'Holy strike that heals. Cannot be used twice in a row.',
+      damageMultiplier: 1.6,
+      healAmount: 8,
+      effect: 'Holy strike that heals 8 HP. BLOCKED while Bastion of Faith is active. Cannot be used twice in a row.',
       cooldown: true
     }
   },
@@ -1215,6 +1214,7 @@ const [waveGoldTotal, setWaveGoldTotal] = useState(0);
   const [crusaderHolyEmpowerment, setCrusaderHolyEmpowerment] = useState(0); // Holy Empowerment turns remaining
   const [crusaderJudgmentCooldown, setCrusaderJudgmentCooldown] = useState(false); // Can't spam Judgment
   const [crusaderSmiteCooldown, setCrusaderSmiteCooldown] = useState(false); // Can't spam Smite
+  const [crusaderAbsorbedPain, setCrusaderAbsorbedPain] = useState(0); // Stored pain from Bastion damage reduction
   
   // Tactical skills state
   const [knightRallyingRoar, setKnightRallyingRoar] = useState(0); // Turns remaining
@@ -3801,10 +3801,21 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
   }
 }
 
-// Crusader Bastion of Faith: +20% defense
+// NEW: Crusader Bastion of Faith - damage reduction + pain storage
 if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
+  const originalDamage = bossDamage;
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageReduction);
+  const damageBlocked = reduction;
   bossDamage = Math.max(1, bossDamage - reduction);
+  
+  // Store prevented damage as pain (capped at 100)
+  setCrusaderAbsorbedPain(prev => {
+    const newPain = Math.min(prev + damageBlocked, GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap);
+    if (damageBlocked > 0) {
+      addLog(`✙ Bastion absorbed ${damageBlocked} damage! (Pain: ${newPain}/${GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap})`);
+    }
+    return newPain;
+  });
 }
       
       setPlayerFlash(true);
@@ -3926,8 +3937,18 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       if (crusaderBastionOfFaith > 0) {
         setCrusaderBastionOfFaith(prev => {
           const newTurns = prev - 1;
-          if (newTurns === 0) addLog(`✙ Bastion of Faith fades...`);
+          if (newTurns === 0) addLog(`✙ Bastion of Faith fades... Pain will decay -10/turn.`);
           return newTurns;
+        });
+      } else if (crusaderAbsorbedPain > 0 && hero?.class?.name === 'Crusader') {
+        // Pain decay: -10 per turn after Bastion ends
+        setCrusaderAbsorbedPain(prev => {
+          const decayAmount = GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painDecayPerTurn;
+          const newPain = Math.max(0, prev - decayAmount);
+          if (prev > 0) {
+            addLog(`✙ Absorbed Pain decays: ${prev} → ${newPain} (-${decayAmount})`);
+          }
+          return newPain;
         });
       }
       
@@ -4271,16 +4292,31 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         return;
       }
       
-      // NEW: Judgment of Light mechanics
-      const healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
+      // NEW: Martyr Tank Judgment of Light - Consumes Absorbed Pain
+      const painConsumed = crusaderAbsorbedPain;
+      const special = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader;
+      
+      // Add bonus damage from pain (0.8 dmg per 1 pain)
+      if (painConsumed > 0) {
+        const painBonusDamage = Math.floor(painConsumed * special.painToDamage);
+        damage += painBonusDamage;
+        addLog(`✙ Absorbed Pain unleashed! +${painBonusDamage} damage from ${painConsumed} pain!`);
+      }
+      
+      // Healing: 40% of pain consumed (or 10 HP base if 0 pain)
+      const healAmount = painConsumed > 0 
+        ? Math.floor(painConsumed * special.painToHealing)
+        : special.baseHealNoPain;
       
       setHp(h => Math.min(getMaxHp(), h + healAmount));
       
-      // Apply Holy Empowerment buff (3 turns)
-      setCrusaderHolyEmpowerment(GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentTurns);
-      setCrusaderJudgmentCooldown(true); // Can't use again until after next attack
+      // Consume all pain
+      setCrusaderAbsorbedPain(0);
+      setCrusaderJudgmentCooldown(true);
       
-      effectMessage = `✙ JUDGMENT OF LIGHT! +${healAmount} HP, Holy Empowerment (3 turns: +25% dmg, +15% crit, heal on hit)`;
+      effectMessage = painConsumed > 0
+        ? `✙ JUDGMENT OF LIGHT! Consumed ${painConsumed} pain → +${Math.floor(painConsumed * special.painToDamage)} dmg, +${healAmount} HP!`
+        : `✙ JUDGMENT OF LIGHT! No pain stored. +${healAmount} HP base heal.`;
     }
     
     const newBossHp = Math.max(0, bossHp - damage);
@@ -4640,10 +4676,21 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
   }
 }
 
-// Crusader Bastion of Faith: +20% defense
+// NEW: Crusader Bastion of Faith - damage reduction + pain storage
 if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
+  const originalDamage = bossDamage;
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageReduction);
+  const damageBlocked = reduction;
   bossDamage = Math.max(1, bossDamage - reduction);
+  
+  // Store prevented damage as pain (capped at 100)
+  setCrusaderAbsorbedPain(prev => {
+    const newPain = Math.min(prev + damageBlocked, GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap);
+    if (damageBlocked > 0) {
+      addLog(`✙ Bastion absorbed ${damageBlocked} damage! (Pain: ${newPain}/${GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap})`);
+    }
+    return newPain;
+  });
 }
         
         setPlayerFlash(true);
@@ -5136,6 +5183,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     const skill = GAME_CONSTANTS.BASIC_SKILLS.Crusader;
     
+    // NEW: Block healing while Bastion of Faith is active (Martyr mode)
+    if (crusaderBastionOfFaith > 0) {
+      addLog(`✙ Smite is BLOCKED while Bastion of Faith is active! (Cannot heal during martyr mode)`);
+      return;
+    }
+    
     // Check cooldown
     if (crusaderSmiteCooldown) {
       addLog(`✙ Smite is recovering! Use a different attack first.`);
@@ -5396,7 +5449,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else if (hero.class.name === 'Crusader') {
       setCrusaderBastionOfFaith(skill.duration);
       setCrusaderBastionOfFaithCooldown(true);
-      addLog(`✙ BASTION OF FAITH! +15% damage, +20% defense for ${skill.duration} turns`);
+      addLog(`✙ BASTION OF FAITH! Martyr mode: +30% DR, pain storage active, healing BLOCKED for ${skill.duration} turns`);
     }
     
     // CRITICAL: Trigger enemy counter-attack (tactical skill ends your turn)
@@ -5455,6 +5508,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           setBossHp(h => Math.max(0, h - reflectDamage));
           addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
         }
+      }
+      
+      // NEW: Crusader Bastion of Faith - damage reduction + pain storage
+      if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
+        const originalDamage = bossDamage;
+        const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageReduction);
+        const damageBlocked = reduction;
+        bossDamage = Math.max(1, bossDamage - reduction);
+        
+        // Store prevented damage as pain (capped at 100)
+        setCrusaderAbsorbedPain(prev => {
+          const newPain = Math.min(prev + damageBlocked, GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap);
+          if (damageBlocked > 0) {
+            addLog(`✙ Bastion absorbed ${damageBlocked} damage! (Pain: ${newPain}/${GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap})`);
+          }
+          return newPain;
+        });
       }
       
       setHp(currentHp => {
@@ -12203,7 +12273,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.12.0 - Knight Crushing Blow + Tactical Overhaul</p>
+          <p className="text-xs text-gray-600">v4.14.0 - Crusader Martyr Tank Rework - Absorbed Pain System</p>
         </div>
       </div>
       )}
