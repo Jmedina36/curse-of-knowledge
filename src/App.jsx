@@ -1,5 +1,5 @@
-// FANTASY STUDY QUEST - v4.12.0
-// Tactical Skills layer added - All 4 classes have utility skills with synergies
+// FANTASY STUDY QUEST - v4.13.0
+// Modal system polish - Consistent color semantics, ritual chamber aesthetics, compacted battle box
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
@@ -6461,8 +6461,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
 
           {activeTab === 'quest' && (
-            <div className="space-y-6">
-            <div className="rounded-xl p-6 max-w-2xl mx-auto relative overflow-hidden" style={{
+            <div className="space-y-4">
+            <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
               background: (() => {
                 const colorMap = {
                   red: '#3D0A0A',      // Warrior - Deep crimson red (darker, richer)
@@ -6494,15 +6494,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     <span className="text-xs font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LVL {level}</span>
                   </div>
                   
-                  <div className="relative z-10 py-2">
+                  <div className="relative z-10 py-1">
                     {/* Hero name - large and prominent in beige */}
-                    <div className="text-center mb-2">
+                    <div className="text-center mb-1">
                       <h3 className="text-3xl font-black" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>{hero.name}</h3>
                       <p className="text-sm mt-1" style={{color: COLORS.silver}}>{hero.class.name}</p>
                     </div>
                     
                     {/* HP and Stamina side-by-side */}
-                    <div className="grid grid-cols-2 gap-2 mb-4">
+                    <div className="grid grid-cols-2 gap-2 mb-3">
                       {/* HP Bar */}
                       <div className="rounded-lg p-2" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(139, 0, 0, 0.3)'}}>
                         <div className="flex justify-between items-center mb-1">
@@ -6541,7 +6541,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     {/* Curse Status - Collapsed View */}
                     {curseLevel > 0 && (
                       <div 
-                        className={`rounded-lg p-2 mb-3 border ${curseLevel === 3 ? 'animate-pulse' : ''}`}
+                        className={`rounded-lg p-2 mb-2 border ${curseLevel === 3 ? 'animate-pulse' : ''}`}
                         style={{
                           backgroundColor: 'rgba(107, 44, 145, 0.3)',
                           borderColor: curseLevel === 3 ? 'rgba(220, 38, 38, 0.6)' : 'rgba(138, 59, 181, 0.5)',
@@ -6612,8 +6612,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               
               <div className="relative z-10">
                 {/* Hero name and title */}
-                <div className="text-center mb-4 pt-8">
-                  <h2 className="text-4xl font-bold mb-2 uppercase" style={{color: '#F5F5DC', letterSpacing: '0.1em'}}>{hero.name}</h2>
+                <div className="text-center mb-3 pt-6">
+                  <h2 className="text-4xl font-bold mb-1 uppercase" style={{color: '#F5F5DC', letterSpacing: '0.1em'}}>{hero.name}</h2>
                   <p className="text-sm uppercase tracking-wide" style={{color: '#F5F5DC'}}>{hero.title} {hero.class.name}</p>
                   <div className="flex items-center justify-center gap-2 mt-2">
                     <div style={{width: '40px', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
@@ -6623,8 +6623,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 </div>
                 
                 {/* Experience bar */}
-                <div className="mb-4 rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.35)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
-                  <div className="flex justify-between text-sm mb-2" style={{color: '#D4AF37'}}>
+                <div className="mb-3 rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.35)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                  <div className="flex justify-between text-sm mb-1" style={{color: '#D4AF37'}}>
                     <span className="font-bold uppercase tracking-wide">Experience</span>
                     <span className="font-bold">{(() => {
                       let xpSpent = 0;
@@ -6636,8 +6636,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       return `${currentLevelXp} / ${xpNeeded}`;
                     })()}</span>
                   </div>
-                  <div className="rounded-full h-4 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-                    <div className="h-4 rounded-full transition-all duration-300" style={{
+                  <div className="rounded-full h-3 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                    <div className="h-3 rounded-full transition-all duration-300" style={{
                       background: (() => {
                         const gradientMap = {
                           red: 'linear-gradient(90deg, #8B0000 0%, #DC143C 100%)',           // Warrior - unchanged
@@ -6671,16 +6671,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 </div>
                 
                 {/* Combat Stats Header */}
-                <div className="flex items-center justify-center gap-3 mb-4">
+                <div className="flex items-center justify-center gap-3 mb-3">
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                   <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Combat Stats</p>
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                 </div>
                 
                 {/* Combat stats 2x2 grid */}
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   {/* HP */}
-                  <div className="rounded-lg p-3 text-center" style={{
+                  <div className="rounded-lg p-2 text-center" style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.35)',
                     border: '2px solid rgba(0, 0, 0, 0.3)',
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
@@ -6695,7 +6695,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Stamina */}
-                  <div className="rounded-lg p-3 text-center" style={{
+                  <div className="rounded-lg p-2 text-center" style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.35)',
                     border: '2px solid rgba(0, 0, 0, 0.3)',
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
@@ -6710,7 +6710,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Attack */}
-                  <div className="rounded-lg p-3 text-center" style={{
+                  <div className="rounded-lg p-2 text-center" style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.35)',
                     border: '2px solid rgba(0, 0, 0, 0.3)',
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
@@ -6723,7 +6723,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Defense */}
-                  <div className="rounded-lg p-3 text-center" style={{
+                  <div className="rounded-lg p-2 text-center" style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.35)',
                     border: '2px solid rgba(0, 0, 0, 0.3)',
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
@@ -6739,7 +6739,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {/* Curse Status Display */}
                 {curseLevel > 0 && (
                   <div 
-                    className={`rounded-lg p-3 mb-4 border-2 ${curseLevel === 3 ? 'animate-pulse' : ''}`}
+                    className={`rounded-lg p-2 mb-3 border-2 ${curseLevel === 3 ? 'animate-pulse' : ''}`}
                     style={{
                       backgroundColor: 'rgba(107, 44, 145, 0.3)',
                       borderColor: curseLevel === 3 ? 'rgba(220, 38, 38, 0.8)' : 'rgba(138, 59, 181, 0.6)',
@@ -7330,7 +7330,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   if (isToday) {
                     // TODAY: Full opacity, subtle glow, stronger border, lifted shadow
                     cardStyle = weeklyPlan[day].length > 0 
-                      ? 'linear-gradient(135deg, rgba(100, 0, 0, 0.25) 0%, rgba(50, 10, 10, 0.5) 50%, rgba(20, 0, 10, 0.7) 100%)'
+                      ? 'linear-gradient(135deg, rgba(70, 15, 15, 0.22) 0%, rgba(45, 10, 10, 0.38) 50%, rgba(28, 8, 8, 0.52) 100%)'
                       : 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))';
                     titleColor = '#D4AF37'; // Standard gold to match other tabs
                     titleShadow = '0 0 8px rgba(212, 175, 55, 0.6)'; // Sharper shadow, slightly stronger
@@ -7338,7 +7338,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     borderColor = '#D4AF37';
                     borderWidth = '2px';
                     shadowStyle = weeklyPlan[day].length > 0
-                      ? '0 8px 16px rgba(0, 0, 0, 0.5)'
+                      ? '0 8px 16px rgba(0, 0, 0, 0.5), 0 0 20px rgba(70, 15, 15, 0.15)'
                       : '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)';
                     dividerColor = 'rgba(212, 175, 55, 0.5)';
                   } else if (isFuture) {
@@ -7490,19 +7490,19 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       className={`rounded-lg p-4 transition-all duration-300 ${
         item.completed 
           ? 'opacity-60' 
-          : item.priority === 'important'
-            ? `bg-gradient-to-r from-yellow-900/30 to-gray-800`
-            : 'bg-gradient-to-r from-blue-900/30 to-gray-800 border-blue-500'
+          : ''
       }`}
       style={{
-        backgroundColor: item.completed 
+        background: item.completed 
           ? 'rgba(30, 41, 59, 0.4)' 
-          : undefined,
+          : item.priority === 'important'
+            ? 'linear-gradient(to right, rgba(184, 134, 11, 0.15), rgba(31, 41, 55, 0.6))'
+            : 'linear-gradient(to right, rgba(30, 58, 95, 0.2), rgba(31, 41, 55, 0.6))',
         borderColor: item.completed 
           ? 'rgba(34, 197, 94, 0.6)' 
           : item.priority === 'important'
             ? COLORS.gold
-            : undefined,
+            : 'rgba(59, 130, 246, 0.5)',
         borderWidth: isToday ? '2px' : '1px',
         borderStyle: 'solid',
         position: 'relative',
@@ -8489,11 +8489,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Weapons found in battle or unequipped</p>
                       
                       <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {weaponInventory
-                          .sort((a, b) => {
-                            const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
-                            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
-                          })
+                        {sortByRarity(weaponInventory)
                           .map((wpn) => (
                           <div key={wpn.id} className="rounded p-3 border-2 flex justify-between items-center" style={{
                             backgroundColor: 'rgba(0, 0, 0, 0.4)', 
@@ -8697,11 +8693,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           armorInventory[slot].length > 0 ? (
                             <div key={slot}>
                               <p className="text-xs uppercase mb-2 font-bold" style={{color: COLORS.silver}}>{slot}s</p>
-                              {armorInventory[slot]
-                                .sort((a, b) => {
-                                  const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
-                                  return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
-                                })
+                              {sortByRarity(armorInventory[slot])
                                 .map((piece, idx) => (
                                 <div key={piece.id} className="rounded p-3 mb-2 border-2 flex justify-between items-center" style={{
                                   backgroundColor: 'rgba(0, 0, 0, 0.4)', 
@@ -8840,11 +8832,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum health</p>
                       
                       <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {pendantInventory
-                          .sort((a, b) => {
-                            const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
-                            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
-                          })
+                        {sortByRarity(pendantInventory)
                           .map((pend) => (
                           <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
@@ -8900,11 +8888,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum stamina</p>
                       
                       <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {ringInventory
-                          .sort((a, b) => {
-                            const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
-                            return (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0);
-                          })
+                        {sortByRarity(ringInventory)
                           .map((rng) => (
                           <div key={rng.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
@@ -9282,22 +9266,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="p-2 rounded-lg border-2 transition-all cursor-pointer relative overflow-hidden" 
                     style={{
                       background: gold >= healthPrice 
-                        ? 'linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(153, 27, 27, 0.5) 50%, rgba(127, 29, 29, 0.6) 100%)' 
+                        ? 'linear-gradient(135deg, rgba(180, 35, 35, 0.35) 0%, rgba(130, 25, 25, 0.4) 50%, rgba(100, 22, 22, 0.45) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: gold >= healthPrice ? 'rgba(220, 38, 38, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      borderColor: gold >= healthPrice ? 'rgba(180, 35, 35, 0.6)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: gold >= healthPrice ? 1 : 0.5, 
                       cursor: gold >= healthPrice ? 'pointer' : 'not-allowed',
                       boxShadow: gold >= healthPrice ? VISUAL_STYLES.shadow.subtle : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= healthPrice) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.5) 0%, rgba(185, 28, 28, 0.6) 50%, rgba(153, 27, 27, 0.7) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(200, 40, 40, 0.4) 0%, rgba(150, 30, 30, 0.45) 50%, rgba(120, 25, 25, 0.5) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
                       if (gold >= healthPrice) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(220, 38, 38, 0.4) 0%, rgba(153, 27, 27, 0.5) 50%, rgba(127, 29, 29, 0.6) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(180, 35, 35, 0.35) 0%, rgba(130, 25, 25, 0.4) 50%, rgba(100, 22, 22, 0.45) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
                     }}
@@ -9318,22 +9302,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
                     style={{
                       background: gold >= staminaPrice 
-                        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 64, 175, 0.5) 50%, rgba(29, 78, 216, 0.6) 100%)' 
+                        ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.35) 0%, rgba(30, 64, 175, 0.4) 50%, rgba(29, 78, 216, 0.45) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: gold >= staminaPrice ? 'rgba(59, 130, 246, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      borderColor: gold >= staminaPrice ? 'rgba(59, 130, 246, 0.65)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: gold >= staminaPrice ? 1 : 0.5, 
                       cursor: gold >= staminaPrice ? 'pointer' : 'not-allowed',
                       boxShadow: gold >= staminaPrice ? VISUAL_STYLES.shadow.subtle : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= staminaPrice) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(96, 165, 250, 0.5) 0%, rgba(59, 130, 246, 0.6) 50%, rgba(37, 99, 235, 0.7) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(80, 150, 250, 0.4) 0%, rgba(59, 130, 246, 0.45) 50%, rgba(37, 99, 235, 0.5) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
                       if (gold >= staminaPrice) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.4) 0%, rgba(30, 64, 175, 0.5) 50%, rgba(29, 78, 216, 0.6) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.35) 0%, rgba(30, 64, 175, 0.4) 50%, rgba(29, 78, 216, 0.45) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
                     }}
@@ -9354,22 +9338,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
                     style={{
                       background: (gold >= cleansePrice && !cleansePotionPurchasedToday) 
-                        ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.5) 50%, rgba(107, 33, 168, 0.6) 100%)' 
+                        ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(126, 34, 206, 0.4) 50%, rgba(107, 33, 168, 0.45) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 'rgba(168, 85, 247, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      borderColor: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 'rgba(168, 85, 247, 0.65)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 1 : 0.5, 
                       cursor: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? 'pointer' : 'not-allowed',
-                      boxShadow: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? '0 0 20px rgba(168, 85, 247, 0.3)' : 'none'
+                      boxShadow: (gold >= cleansePrice && !cleansePotionPurchasedToday) ? '0 0 15px rgba(168, 85, 247, 0.2)' : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= cleansePrice && !cleansePotionPurchasedToday) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(192, 132, 252, 0.5) 0%, rgba(147, 51, 234, 0.6) 50%, rgba(126, 34, 206, 0.7) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(192, 132, 252, 0.4) 0%, rgba(147, 51, 234, 0.45) 50%, rgba(126, 34, 206, 0.5) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
                       if (gold >= cleansePrice && !cleansePotionPurchasedToday) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.5) 50%, rgba(107, 33, 168, 0.6) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(168, 85, 247, 0.35) 0%, rgba(126, 34, 206, 0.4) 50%, rgba(107, 33, 168, 0.45) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
                     }}
@@ -9393,22 +9377,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
                     style={{
                       background: (gold >= weaponOilPrice && !weaponOilActive) 
-                        ? 'linear-gradient(135deg, rgba(234, 179, 8, 0.4) 0%, rgba(202, 138, 4, 0.5) 50%, rgba(161, 98, 7, 0.6) 100%)' 
+                        ? 'linear-gradient(135deg, rgba(234, 179, 8, 0.35) 0%, rgba(202, 138, 4, 0.4) 50%, rgba(161, 98, 7, 0.45) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: (gold >= weaponOilPrice && !weaponOilActive) ? 'rgba(234, 179, 8, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      borderColor: (gold >= weaponOilPrice && !weaponOilActive) ? 'rgba(234, 179, 8, 0.65)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: (gold >= weaponOilPrice && !weaponOilActive) ? 1 : 0.5, 
                       cursor: (gold >= weaponOilPrice && !weaponOilActive) ? 'pointer' : 'not-allowed',
-                      boxShadow: (gold >= weaponOilPrice && !weaponOilActive) ? '0 0 15px rgba(234, 179, 8, 0.3)' : 'none'
+                      boxShadow: (gold >= weaponOilPrice && !weaponOilActive) ? '0 0 12px rgba(234, 179, 8, 0.2)' : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= weaponOilPrice && !weaponOilActive) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(250, 204, 21, 0.5) 0%, rgba(234, 179, 8, 0.6) 50%, rgba(202, 138, 4, 0.7) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(250, 204, 21, 0.4) 0%, rgba(234, 179, 8, 0.45) 50%, rgba(202, 138, 4, 0.5) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
                       if (gold >= weaponOilPrice && !weaponOilActive) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.4) 0%, rgba(202, 138, 4, 0.5) 50%, rgba(161, 98, 7, 0.6) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(234, 179, 8, 0.35) 0%, rgba(202, 138, 4, 0.4) 50%, rgba(161, 98, 7, 0.45) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
                     }}
@@ -9429,22 +9413,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
                     style={{
                       background: (gold >= armorPolishPrice && !armorPolishActive) 
-                        ? 'linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(13, 148, 136, 0.5) 50%, rgba(15, 118, 110, 0.6) 100%)' 
+                        ? 'linear-gradient(135deg, rgba(20, 184, 166, 0.35) 0%, rgba(13, 148, 136, 0.4) 50%, rgba(15, 118, 110, 0.45) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: (gold >= armorPolishPrice && !armorPolishActive) ? 'rgba(20, 184, 166, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      borderColor: (gold >= armorPolishPrice && !armorPolishActive) ? 'rgba(20, 184, 166, 0.65)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: (gold >= armorPolishPrice && !armorPolishActive) ? 1 : 0.5, 
                       cursor: (gold >= armorPolishPrice && !armorPolishActive) ? 'pointer' : 'not-allowed',
-                      boxShadow: (gold >= armorPolishPrice && !armorPolishActive) ? '0 0 15px rgba(20, 184, 166, 0.3)' : 'none'
+                      boxShadow: (gold >= armorPolishPrice && !armorPolishActive) ? '0 0 12px rgba(20, 184, 166, 0.2)' : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= armorPolishPrice && !armorPolishActive) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(45, 212, 191, 0.5) 0%, rgba(20, 184, 166, 0.6) 50%, rgba(13, 148, 136, 0.7) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(45, 212, 191, 0.4) 0%, rgba(20, 184, 166, 0.45) 50%, rgba(13, 148, 136, 0.5) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
                       if (gold >= armorPolishPrice && !armorPolishActive) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 184, 166, 0.4) 0%, rgba(13, 148, 136, 0.5) 50%, rgba(15, 118, 110, 0.6) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(20, 184, 166, 0.35) 0%, rgba(13, 148, 136, 0.4) 50%, rgba(15, 118, 110, 0.45) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
                     }}
@@ -9465,22 +9449,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="p-2 rounded-lg border-2 transition-all relative overflow-hidden" 
                     style={{
                       background: (gold >= luckyCharmPrice && !luckyCharmActive) 
-                        ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.4) 0%, rgba(22, 163, 74, 0.5) 50%, rgba(21, 128, 61, 0.6) 100%)' 
+                        ? 'linear-gradient(135deg, rgba(34, 197, 94, 0.35) 0%, rgba(22, 163, 74, 0.4) 50%, rgba(21, 128, 61, 0.45) 100%)' 
                         : 'rgba(44, 62, 80, 0.3)', 
-                      borderColor: (gold >= luckyCharmPrice && !luckyCharmActive) ? 'rgba(34, 197, 94, 0.8)' : 'rgba(149, 165, 166, 0.3)', 
+                      borderColor: (gold >= luckyCharmPrice && !luckyCharmActive) ? 'rgba(34, 197, 94, 0.65)' : 'rgba(149, 165, 166, 0.3)', 
                       opacity: (gold >= luckyCharmPrice && !luckyCharmActive) ? 1 : 0.5, 
                       cursor: (gold >= luckyCharmPrice && !luckyCharmActive) ? 'pointer' : 'not-allowed',
-                      boxShadow: (gold >= luckyCharmPrice && !luckyCharmActive) ? '0 0 15px rgba(34, 197, 94, 0.3)' : 'none'
+                      boxShadow: (gold >= luckyCharmPrice && !luckyCharmActive) ? '0 0 12px rgba(34, 197, 94, 0.2)' : 'none'
                     }} 
                     onMouseEnter={(e) => {
                       if (gold >= luckyCharmPrice && !luckyCharmActive) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74, 222, 128, 0.5) 0%, rgba(34, 197, 94, 0.6) 50%, rgba(22, 163, 74, 0.7) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(74, 222, 128, 0.4) 0%, rgba(34, 197, 94, 0.45) 50%, rgba(22, 163, 74, 0.5) 100%)';
                         e.currentTarget.style.transform = 'translateY(-2px)';
                       }
                     }} 
                     onMouseLeave={(e) => {
                       if (gold >= luckyCharmPrice && !luckyCharmActive) {
-                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.4) 0%, rgba(22, 163, 74, 0.5) 50%, rgba(21, 128, 61, 0.6) 100%)';
+                        e.currentTarget.style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.35) 0%, rgba(22, 163, 74, 0.4) 50%, rgba(21, 128, 61, 0.45) 100%)';
                         e.currentTarget.style.transform = 'translateY(0)';
                       }
                     }}
@@ -9552,12 +9536,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 onClick={() => sellPotion('healthPotion')}
                                 className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                 style={{
-                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                  borderColor: '#D4AF37',
+                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                  borderColor: 'rgba(212, 175, 55, 0.7)',
                                   color: '#F5F5DC'
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                               >
                                 Sell: {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
                               </button>
@@ -9577,12 +9561,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 onClick={() => sellPotion('staminaPotion')}
                                 className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                 style={{
-                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                  borderColor: '#D4AF37',
+                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                  borderColor: 'rgba(212, 175, 55, 0.7)',
                                   color: '#F5F5DC'
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                               >
                                 Sell: {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
                               </button>
@@ -9602,12 +9586,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 onClick={() => sellPotion('cleansePotion')}
                                 className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                 style={{
-                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                  borderColor: '#D4AF37',
+                                  background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                  borderColor: 'rgba(212, 175, 55, 0.7)',
                                   color: '#F5F5DC'
                                 }}
-                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                               >
                                 Sell: {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
                               </button>
@@ -9670,7 +9654,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   {/* Shop Items */}
                   <div className="space-y-3 max-h-96 overflow-y-auto">
                     {shopInventory.length > 0 ? (
-                      shopInventory.map(item => {
+                      sortByRarity(shopInventory).map(item => {
                         const basePrice = GAME_CONSTANTS.SHOP_CONFIG.costs[item.rarity];
                         const itemType = item.type === 'armor' ? 'armor' : item.type;
                         const marketMod = marketModifiers[itemType] || 1.0;
@@ -9717,21 +9701,21 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 disabled={!canAfford}
                                 className="px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ml-3"
                                 style={{
-                                  background: canAfford ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))' : 'rgba(60, 60, 60, 0.5)',
-                                  borderColor: canAfford ? '#D4AF37' : '#555',
+                                  background: canAfford ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.65))' : 'rgba(60, 60, 60, 0.5)',
+                                  borderColor: canAfford ? 'rgba(212, 175, 55, 0.7)' : '#555',
                                   color: canAfford ? '#F5F5DC' : '#888',
                                   cursor: canAfford ? 'pointer' : 'not-allowed',
                                   opacity: canAfford ? 1 : 0.5
                                 }}
                                 onMouseEnter={(e) => {
                                   if (canAfford) {
-                                    e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.9), rgba(184, 134, 11, 0.9))';
+                                    e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.7), rgba(184, 134, 11, 0.75))';
                                     e.currentTarget.style.transform = 'translateY(-1px)';
                                   }
                                 }}
                                 onMouseLeave={(e) => {
                                   if (canAfford) {
-                                    e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(139, 101, 8, 0.8))';
+                                    e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.65))';
                                     e.currentTarget.style.transform = 'translateY(0)';
                                   }
                                 }}
@@ -9797,7 +9781,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <div>
                         <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>WEAPONS</h3>
                         <div className="space-y-2">
-                          {weaponInventory.map(wpn => {
+                          {sortByRarity(weaponInventory).map(wpn => {
                             const sellPrice = calculateSellPrice(wpn, 'weapon');
                             return (
                               <div key={wpn.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
@@ -9817,12 +9801,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                   onClick={() => sellEquipment(wpn, 'weapon')}
                                   className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                   style={{
-                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                    borderColor: '#D4AF37',
+                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                    borderColor: 'rgba(212, 175, 55, 0.7)',
                                     color: '#F5F5DC'
                                   }}
-                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                                 >
                                   Sell: {sellPrice} Gold
                                 </button>
@@ -9839,7 +9823,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>ARMOR</h3>
                         <div className="space-y-2">
                           {Object.entries(armorInventory).map(([slot, items]) => 
-                            items.map(arm => {
+                            sortByRarity(items).map(arm => {
                               const sellPrice = calculateSellPrice(arm, 'armor');
                               return (
                                 <div key={arm.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
@@ -9859,12 +9843,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                     onClick={() => sellEquipment(arm, 'armor')}
                                     className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                     style={{
-                                      background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                      borderColor: '#D4AF37',
+                                      background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                      borderColor: 'rgba(212, 175, 55, 0.7)',
                                       color: '#F5F5DC'
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                                   >
                                     Sell: {sellPrice} Gold
                                   </button>
@@ -9881,7 +9865,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <div>
                         <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>PENDANTS</h3>
                         <div className="space-y-2">
-                          {pendantInventory.map(pnd => {
+                          {sortByRarity(pendantInventory).map(pnd => {
                             const sellPrice = calculateSellPrice(pnd, 'pendant');
                             return (
                               <div key={pnd.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
@@ -9901,12 +9885,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                   onClick={() => sellEquipment(pnd, 'pendant')}
                                   className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                   style={{
-                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                    borderColor: '#D4AF37',
+                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                    borderColor: 'rgba(212, 175, 55, 0.7)',
                                     color: '#F5F5DC'
                                   }}
-                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                                 >
                                   Sell: {sellPrice} Gold
                                 </button>
@@ -9922,7 +9906,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <div>
                         <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>RINGS</h3>
                         <div className="space-y-2">
-                          {ringInventory.map(rng => {
+                          {sortByRarity(ringInventory).map(rng => {
                             const sellPrice = calculateSellPrice(rng, 'ring');
                             return (
                               <div key={rng.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
@@ -9942,12 +9926,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                   onClick={() => sellEquipment(rng, 'ring')}
                                   className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                   style={{
-                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))',
-                                    borderColor: '#D4AF37',
+                                    background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
+                                    borderColor: 'rgba(212, 175, 55, 0.7)',
                                     color: '#F5F5DC'
                                   }}
-                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))'}
-                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.6), rgba(139, 101, 8, 0.6))'}
+                                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218, 165, 32, 0.6), rgba(184, 134, 11, 0.65))'}
+                                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))'}
                                 >
                                   Sell: {sellPrice} Gold
                                 </button>
@@ -10108,30 +10092,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showDeckModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowDeckModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
-      <div className="mb-6 relative">
-        <button 
-          onClick={() => setShowDeckModal(false)} 
-          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            borderColor: 'rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            e.currentTarget.style.borderColor = '#D4AF37';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
-          }}
-        >
-          <X size={20}/>
-        </button>
+      <div className="mb-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>CREATE DECK</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -10153,10 +10118,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         autoCapitalize="words"
         className="w-full p-3 rounded-lg mb-4 border focus:outline-none" 
         style={{
-          background: 'rgba(0, 0, 0, 0.4)',
+          background: 'rgba(0, 0, 0, 0.5)',
           color: '#F5F5DC',
-          borderColor: 'rgba(139, 0, 0, 0.3)'
+          borderColor: 'rgba(139, 26, 40, 0.4)',
+          boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'
         }}
+        onFocus={(e) => e.target.style.borderColor = 'rgba(139, 26, 40, 0.8)'}
+        onBlur={(e) => e.target.style.borderColor = 'rgba(139, 26, 40, 0.4)'}
         autoFocus 
       />
       
@@ -10174,14 +10142,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           disabled={!newDeck.name.trim()} 
           className="flex-1 py-2 rounded-lg transition-all border-2" 
           style={{
-            backgroundColor: !newDeck.name.trim() ? 'rgba(44, 62, 80, 0.5)' : COLORS.crimson.base,
-            borderColor: !newDeck.name.trim() ? 'rgba(149, 165, 166, 0.3)' : COLORS.crimson.border,
+            backgroundColor: !newDeck.name.trim() ? 'rgba(44, 62, 80, 0.5)' : 'rgba(139, 26, 40, 0.8)',
+            borderColor: !newDeck.name.trim() ? 'rgba(149, 165, 166, 0.3)' : 'rgba(184, 134, 11, 0.7)',
             color: '#F5F5DC',
             cursor: !newDeck.name.trim() ? 'not-allowed' : 'pointer',
             opacity: !newDeck.name.trim() ? 0.5 : 1
           }} 
-          onMouseEnter={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}} 
-          onMouseLeave={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
+          onMouseEnter={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = 'rgba(155, 27, 48, 0.9)'}} 
+          onMouseLeave={(e) => {if (newDeck.name.trim()) e.currentTarget.style.backgroundColor = 'rgba(139, 26, 40, 0.8)'}}
         >
           Create Deck
         </button>
@@ -10206,30 +10174,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showCardModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCardModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
-      <div className="mb-6 relative">
-        <button 
-          onClick={() => setShowCardModal(false)} 
-          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            borderColor: 'rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            e.currentTarget.style.borderColor = '#D4AF37';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
-          }}
-        >
-          <X size={20}/>
-        </button>
+      <div className="mb-6">
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ADD CARD</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
@@ -10249,10 +10198,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           onChange={e => setNewCard({...newCard, front: e.target.value})} 
           className="w-full p-3 rounded-lg border focus:outline-none resize-none" 
           style={{
-            background: 'rgba(0, 0, 0, 0.4)',
+            background: 'rgba(0, 0, 0, 0.5)',
             color: '#F5F5DC',
-            borderColor: 'rgba(139, 0, 0, 0.3)'
+            borderColor: 'rgba(139, 26, 40, 0.4)',
+            boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'
           }}
+          onFocus={(e) => e.target.style.borderColor = 'rgba(139, 26, 40, 0.8)'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(139, 26, 40, 0.4)'}
           rows="3"
           autoFocus 
         />
@@ -10266,10 +10218,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           onChange={e => setNewCard({...newCard, back: e.target.value})} 
           className="w-full p-3 rounded-lg border focus:outline-none resize-none" 
           style={{
-            background: 'rgba(0, 0, 0, 0.4)',
+            background: 'rgba(0, 0, 0, 0.5)',
             color: '#F5F5DC',
-            borderColor: 'rgba(139, 0, 0, 0.3)'
+            borderColor: 'rgba(139, 26, 40, 0.4)',
+            boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'
           }}
+          onFocus={(e) => e.target.style.borderColor = 'rgba(139, 26, 40, 0.8)'}
+          onBlur={(e) => e.target.style.borderColor = 'rgba(139, 26, 40, 0.4)'}
           rows="3"
         />
       </div>
@@ -10292,14 +10247,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           disabled={!newCard.front.trim() || !newCard.back.trim()} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{
-            backgroundColor: (!newCard.front.trim() || !newCard.back.trim()) ? 'rgba(44, 62, 80, 0.5)' : COLORS.crimson.base,
-            borderColor: (!newCard.front.trim() || !newCard.back.trim()) ? 'rgba(149, 165, 166, 0.3)' : COLORS.crimson.border,
+            backgroundColor: (!newCard.front.trim() || !newCard.back.trim()) ? 'rgba(44, 62, 80, 0.5)' : 'rgba(139, 26, 40, 0.8)',
+            borderColor: (!newCard.front.trim() || !newCard.back.trim()) ? 'rgba(149, 165, 166, 0.3)' : 'rgba(184, 134, 11, 0.7)',
             color: '#F5F5DC',
             cursor: (!newCard.front.trim() || !newCard.back.trim()) ? 'not-allowed' : 'pointer',
             opacity: (!newCard.front.trim() || !newCard.back.trim()) ? 0.5 : 1
           }}
-          onMouseEnter={(e) => {if (newCard.front.trim() && newCard.back.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
-          onMouseLeave={(e) => {if (newCard.front.trim() && newCard.back.trim()) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
+          onMouseEnter={(e) => {if (newCard.front.trim() && newCard.back.trim()) e.currentTarget.style.backgroundColor = 'rgba(155, 27, 48, 0.9)'}}
+          onMouseLeave={(e) => {if (newCard.front.trim() && newCard.back.trim()) e.currentTarget.style.backgroundColor = 'rgba(139, 26, 40, 0.8)'}}
         >
           Add Card
         </button>
@@ -10324,7 +10279,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showStudyModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -10505,7 +10460,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showQuizModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -10958,7 +10913,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowModal(false)} 
@@ -11018,9 +10973,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             onClick={() => setNewTask({...newTask, priority: 'important'})} 
             className="p-4 rounded-lg border-2 transition-all"
             style={{
-              backgroundColor: newTask.priority === 'important' ? 'rgba(184, 134, 11, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+              backgroundColor: newTask.priority === 'important' ? 'rgba(194, 144, 21, 0.35)' : 'rgba(0, 0, 0, 0.3)',
               borderColor: newTask.priority === 'important' ? COLORS.gold : 'rgba(128, 128, 128, 0.3)',
-              color: '#F5F5DC'
+              color: '#F5F5DC',
+              boxShadow: newTask.priority === 'important' ? 'inset 0 1px 0 rgba(212, 175, 55, 0.1)' : 'none'
             }}
           >
             <div className="font-bold mb-1">IMPORTANT</div>
@@ -11051,14 +11007,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           disabled={!newTask.title} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{
-            backgroundColor: !newTask.title ? '#2C3E50' : COLORS.crimson.base,
-            borderColor: !newTask.title ? '#95A5A6' : COLORS.crimson.border,
+            backgroundColor: !newTask.title ? '#2C3E50' : 'rgba(139, 26, 40, 0.8)',
+            borderColor: !newTask.title ? '#95A5A6' : 'rgba(184, 134, 11, 0.7)',
             color: '#F5F5DC',
             cursor: !newTask.title ? 'not-allowed' : 'pointer',
             opacity: !newTask.title ? 0.5 : 1
           }}
-          onMouseEnter={(e) => {if (newTask.title) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
-          onMouseLeave={(e) => {if (newTask.title) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
+          onMouseEnter={(e) => {if (newTask.title) e.currentTarget.style.backgroundColor = 'rgba(155, 27, 48, 0.9)'}}
+          onMouseLeave={(e) => {if (newTask.title) e.currentTarget.style.backgroundColor = 'rgba(139, 26, 40, 0.8)'}}
         >
           Accept Trial
         </button>
@@ -11078,7 +11034,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
 {showImportModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowImportModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(0, 40, 40, 0.95), rgba(0, 30, 30, 0.95), rgba(0, 20, 20, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(0, 35, 35, 0.95), rgba(0, 26, 26, 0.95), rgba(0, 18, 18, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowImportModal(false)} 
@@ -11127,12 +11083,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               className="w-full p-4 rounded-lg border-2 transition-all text-left"
               style={{
                 backgroundColor: isRealWorldToday 
-                  ? 'rgba(0, 77, 77, 0.4)' 
+                  ? 'rgba(0, 82, 82, 0.45)' 
                   : taskCount > 0 
                     ? 'rgba(0, 0, 0, 0.3)' 
                     : 'rgba(0, 0, 0, 0.3)',
                 borderColor: isRealWorldToday 
-                  ? 'rgba(93, 211, 211, 0.6)' 
+                  ? 'rgba(93, 211, 211, 0.7)' 
                   : taskCount > 0 
                     ? 'rgba(128, 128, 128, 0.3)' 
                     : 'rgba(128, 128, 128, 0.3)',
@@ -11141,12 +11097,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }}
               onMouseEnter={(e) => {
                 if (taskCount > 0 && !isRealWorldToday) {
-                  e.currentTarget.style.borderColor = 'rgba(93, 211, 211, 0.5)';
+                  e.currentTarget.style.borderColor = 'rgba(93, 211, 211, 0.6)';
+                  e.currentTarget.style.borderLeft = '3px solid rgba(93, 211, 211, 0.7)';
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 50, 50, 0.4)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (taskCount > 0 && !isRealWorldToday) {
                   e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.3)';
+                  e.currentTarget.style.borderLeft = '2px solid transparent';
+                  e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
                 }
               }}
             >
@@ -11167,9 +11127,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       <button 
         onClick={() => setShowImportModal(false)} 
         className="w-full mt-4 py-2 rounded-lg transition-all border-2"
-        style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}
-        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.hover}
-        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.slate.base}
+        style={{backgroundColor: 'rgba(30, 50, 50, 0.6)', borderColor: 'rgba(128, 128, 128, 0.4)', color: '#F5F5DC'}}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(35, 60, 60, 0.7)';
+          e.currentTarget.style.borderColor = 'rgba(93, 211, 211, 0.4)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(30, 50, 50, 0.6)';
+          e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.4)';
+        }}
       >
         Cancel
       </button>
@@ -11179,27 +11145,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
          {showPlanModal && selectedDay && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowPlanModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2" style={{background: 'linear-gradient(to bottom, rgba(10, 40, 60, 0.95), rgba(0, 30, 50, 0.95), rgba(0, 20, 40, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
-      <div className="mb-6 relative">
-        <button 
-          onClick={() => setShowPlanModal(false)} 
-          className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
-          style={{
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            borderColor: 'rgba(212, 175, 55, 0.4)',
-            color: '#D4AF37'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-            e.currentTarget.style.borderColor = '#D4AF37';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-            e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
-          }}
-        >
-          <X size={20}/>
-        </button>
+    <div className="rounded-xl p-6 max-w-md w-full border-2" style={{background: 'linear-gradient(to bottom, rgba(10, 40, 60, 0.95), rgba(5, 28, 45, 0.95), rgba(0, 18, 32, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+      <div className="mb-6">
         <div className="text-center">
           <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>PLAN FOR {selectedDay.toUpperCase()}</h3>
           <div className="flex items-center justify-center gap-2">
@@ -11238,9 +11185,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             onClick={() => setNewPlanItem({...newPlanItem, priority: 'important'})} 
             className="p-4 rounded-lg border-2 transition-all"
             style={{
-              backgroundColor: newPlanItem.priority === 'important' ? 'rgba(184, 134, 11, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-              borderColor: newPlanItem.priority === 'important' ? COLORS.gold : 'rgba(128, 128, 128, 0.3)',
-              color: '#F5F5DC'
+              backgroundColor: newPlanItem.priority === 'important' ? 'rgba(194, 144, 21, 0.35)' : 'rgba(0, 0, 0, 0.3)',
+              borderColor: newPlanItem.priority === 'important' ? 'rgba(212, 175, 55, 0.7)' : 'rgba(128, 128, 128, 0.3)',
+              color: '#F5F5DC',
+              boxShadow: newPlanItem.priority === 'important' ? 'inset 0 1px 0 rgba(212, 175, 55, 0.1)' : 'none'
             }}
           >
             <div className="font-bold">IMPORTANT</div>
@@ -11269,14 +11217,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           disabled={!newPlanItem.title} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{
-            backgroundColor: !newPlanItem.title ? '#2C3E50' : COLORS.sapphire.base,
-            borderColor: !newPlanItem.title ? '#95A5A6' : COLORS.sapphire.border,
+            backgroundColor: !newPlanItem.title ? '#2C3E50' : 'rgba(43, 80, 130, 0.8)',
+            borderColor: !newPlanItem.title ? '#95A5A6' : 'rgba(96, 165, 250, 0.7)',
             color: '#F5F5DC',
             cursor: !newPlanItem.title ? 'not-allowed' : 'pointer',
             opacity: !newPlanItem.title ? 0.5 : 1
           }}
-          onMouseEnter={(e) => {if (newPlanItem.title) e.currentTarget.style.backgroundColor = COLORS.sapphire.hover}}
-          onMouseLeave={(e) => {if (newPlanItem.title) e.currentTarget.style.backgroundColor = COLORS.sapphire.base}}
+          onMouseEnter={(e) => {if (newPlanItem.title) e.currentTarget.style.backgroundColor = 'rgba(53, 100, 160, 0.9)'}}
+          onMouseLeave={(e) => {if (newPlanItem.title) e.currentTarget.style.backgroundColor = 'rgba(43, 80, 130, 0.8)'}}
         >
           Add Task
         </button>
@@ -11298,7 +11246,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 )}
           {showCalendarModal && selectedDate && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCalendarModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(10, 40, 20, 0.95), rgba(0, 30, 10, 0.95), rgba(0, 20, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(10, 36, 18, 0.95), rgba(6, 28, 14, 0.95), rgba(3, 20, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1), inset 0 0 40px rgba(0, 0, 0, 0.15)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowCalendarModal(false)} 
@@ -11320,7 +11268,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           <X size={20}/>
         </button>
         <div className="text-center">
-          <div className="text-2xl font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>
+          <div className="text-4xl font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>
   {(() => {
     const [year, month, day] = selectedDate.split('-').map(Number);
     const date = new Date(year, month - 1, day);
@@ -11329,15 +11277,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     return (
       <>
         <div>{weekday}</div>
-        <div className="text-xl mt-1">{monthDay}</div>
+        <div className="text-2xl mt-1">{monthDay}</div>
       </>
     );
   })()}
 </div>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(104, 211, 145, 0.3))'}}></div>
-            <span style={{color: 'rgba(104, 211, 145, 0.4)', fontSize: '8px'}}>◆</span>
-            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(104, 211, 145, 0.3))'}}></div>
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(88, 180, 120, 0.3))'}}></div>
+            <span style={{color: 'rgba(88, 180, 120, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(88, 180, 120, 0.3))'}}></div>
           </div>
         </div>
       </div>
@@ -11360,15 +11308,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }
             }}
             className="flex-1 p-3 rounded-lg border focus:outline-none" 
-            style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(104, 211, 145, 0.3)', fontFamily: 'Cinzel, serif'}}
+            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#F5F5DC', borderColor: 'rgba(88, 180, 120, 0.4)', fontFamily: 'Cinzel, serif', boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'}}
             onFocus={e => {
-              e.target.style.borderColor = '#68D391';
+              e.target.style.borderColor = 'rgba(88, 180, 120, 0.8)';
               // Pre-fill with current focus if exists
               if (!newFocus && calendarFocus[selectedDate]) {
                 setNewFocus(calendarFocus[selectedDate]);
               }
             }}
-            onBlur={e => e.target.style.borderColor = 'rgba(104, 211, 145, 0.3)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(88, 180, 120, 0.4)'}
           />
           <button
             onClick={() => {
@@ -11380,14 +11328,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             disabled={!newFocus.trim()}
             className="px-4 py-2 rounded-lg transition-all border-2"
             style={{
-              backgroundColor: !newFocus.trim() ? '#2C3E50' : COLORS.emerald.base,
-              borderColor: !newFocus.trim() ? '#95A5A6' : COLORS.emerald.border,
+              backgroundColor: !newFocus.trim() ? '#2C3E50' : 'rgba(61, 107, 69, 0.85)',
+              borderColor: !newFocus.trim() ? '#95A5A6' : 'rgba(88, 180, 120, 0.7)',
               color: '#F5F5DC',
               cursor: !newFocus.trim() ? 'not-allowed' : 'pointer',
               opacity: !newFocus.trim() ? 0.5 : 1
             }}
-            onMouseEnter={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = COLORS.emerald.hover}}
-            onMouseLeave={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = COLORS.emerald.base}}
+            onMouseEnter={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = 'rgba(75, 130, 85, 0.95)'}}
+            onMouseLeave={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 69, 0.85)'}}
           >
             Save
           </button>
@@ -11414,9 +11362,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       {/* Decorative divider */}
       <div className="flex items-center justify-center gap-2 mb-4">
-        <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(104, 211, 145, 0.3))'}}></div>
-        <span style={{color: 'rgba(104, 211, 145, 0.4)', fontSize: '8px'}}>◆</span>
-        <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(104, 211, 145, 0.3))'}}></div>
+        <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(88, 180, 120, 0.3))'}}></div>
+        <span style={{color: 'rgba(88, 180, 120, 0.4)', fontSize: '8px'}}>◆</span>
+        <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(88, 180, 120, 0.3))'}}></div>
       </div>
       
       <div className="mb-4">
@@ -11440,9 +11388,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }
             }}
             className="flex-1 p-3 rounded-lg border focus:outline-none" 
-            style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', color: '#F5F5DC', borderColor: 'rgba(104, 211, 145, 0.3)', fontFamily: 'Cinzel, serif'}}
-            onFocus={e => e.target.style.borderColor = '#68D391'}
-            onBlur={e => e.target.style.borderColor = 'rgba(104, 211, 145, 0.3)'}
+            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#F5F5DC', borderColor: 'rgba(88, 180, 120, 0.4)', fontFamily: 'Cinzel, serif', boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'}}
+            onFocus={e => e.target.style.borderColor = 'rgba(88, 180, 120, 0.8)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(88, 180, 120, 0.4)'}
           />
           <button
             onClick={() => {
@@ -11457,14 +11405,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             disabled={!newEvent.trim()}
             className="px-4 py-2 rounded-lg transition-all border-2"
             style={{
-              backgroundColor: !newEvent.trim() ? '#2C3E50' : COLORS.emerald.base,
-              borderColor: !newEvent.trim() ? '#95A5A6' : COLORS.emerald.border,
+              backgroundColor: !newEvent.trim() ? '#2C3E50' : 'rgba(61, 107, 69, 0.85)',
+              borderColor: !newEvent.trim() ? '#95A5A6' : 'rgba(88, 180, 120, 0.7)',
               color: '#F5F5DC',
               cursor: !newEvent.trim() ? 'not-allowed' : 'pointer',
               opacity: !newEvent.trim() ? 0.5 : 1
             }}
-            onMouseEnter={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = COLORS.emerald.hover}}
-            onMouseLeave={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = COLORS.emerald.base}}
+            onMouseEnter={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = 'rgba(75, 130, 85, 0.95)'}}
+            onMouseLeave={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 69, 0.85)'}}
           >
             Add
           </button>
