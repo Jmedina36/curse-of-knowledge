@@ -402,24 +402,28 @@ const GAME_CONSTANTS = {
   ARMOR_NAMES: {
     helmet: {
       common: ['Worn Cap', 'Leather Hood', 'Simple Helm', 'Patched Coif', 'Tattered Cowl', 'Cloth Hat', 'Iron Helmet'],
+      uncommon: ['Quality Helm', 'Sturdy Cap', 'Reinforced Hood', 'Well-Made Coif', 'Balanced Visor', 'Strong Helmet', 'Padded Helm'],
       rare: ['Battle Helm', 'Guardian\'s Crown', 'Steel Visage', 'Warden\'s Headguard', 'Reinforced Coif', 'Knight\'s Helm', 'Sentinel\'s Visor'],
       epic: ['Dragonhelm', 'Titanforged Crown', 'Demonward Visor', 'Wyrm\'s Crest', 'Stormcrown', 'Voidgazer', 'Soulkeeper\'s Helm'],
       legendary: ['Crown of Infinity', 'Eternity\'s Watch', 'The Omniscient', 'Worldkeeper\'s Gaze', 'Heaven\'s Authority', 'Judgment\'s Visage', 'Apex Sovereign']
     },
     chest: {
       common: ['Torn Tunic', 'Worn Vest', 'Patched Mail', 'Simple Breastplate', 'Tattered Robes', 'Frayed Armor', 'Crude Cuirass'],
+      uncommon: ['Quality Vest', 'Sturdy Mail', 'Reinforced Tunic', 'Well-Made Breastplate', 'Balanced Armor', 'Strong Cuirass', 'Padded Plate'],
       rare: ['Forged Plate', 'Battle Harness', 'Guardian\'s Mail', 'Reinforced Cuirass', 'Steel Aegis', 'Knight\'s Plate', 'Warden\'s Vestments'],
       epic: ['Dragonscale Hauberk', 'Titanplate', 'Demonhide Vest', 'Soulforged Armor', 'Voidplate', 'Stormbreaker Mail', 'Wyrm\'s Protection'],
       legendary: ['Eternity\'s Embrace', 'The Unyielding', 'World\'s Bulwark', 'Heaven\'s Aegis', 'Immortal Vestment', 'Cosmos Shell', 'Invincible Plate']
     },
     gloves: {
       common: ['Torn Gloves', 'Worn Gauntlets', 'Patched Mitts', 'Simple Handguards', 'Frayed Wraps', 'Crude Grips', 'Cloth Gloves'],
+      uncommon: ['Quality Gauntlets', 'Sturdy Gloves', 'Reinforced Mitts', 'Well-Made Handguards', 'Balanced Grips', 'Strong Gauntlets', 'Padded Wraps'],
       rare: ['Steel Gauntlets', 'Battle Grips', 'Forged Fists', 'Guardian\'s Handguards', 'Reinforced Gloves', 'Knight\'s Gauntlets', 'Duelist\'s Wraps'],
       epic: ['Titan\'s Grasp', 'Dragongrip Gauntlets', 'Soulbound Fists', 'Voidgrasp', 'Stormhands', 'Demonward Grips', 'Wyrmclaw Gloves'],
       legendary: ['Heaven\'s Hands', 'Worldshaper\'s Touch', 'Eternity\'s Grasp', 'Infinity\'s Reach', 'The Unbreakable', 'Fate\'s Grip', 'Omnipotent Fists']
     },
     boots: {
       common: ['Worn Boots', 'Tattered Shoes', 'Simple Greaves', 'Patched Footwraps', 'Frayed Sabatons', 'Crude Sandals', 'Cloth Boots'],
+      uncommon: ['Quality Boots', 'Sturdy Greaves', 'Reinforced Shoes', 'Well-Made Sabatons', 'Balanced Footwear', 'Strong Boots', 'Padded Greaves'],
       rare: ['Steel Greaves', 'Battle Boots', 'Forged Sabatons', 'Guardian\'s Treads', 'Reinforced Footguards', 'Knight\'s Boots', 'Swift Treads'],
       epic: ['Titan\'s Stride', 'Dragonscale Boots', 'Soulwalker Greaves', 'Voidstep Sabatons', 'Stormstriders', 'Demonward Treads', 'Wyrmfoot Boots'],
       legendary: ['Heaven\'s Path', 'Worldwalker\'s Stride', 'Eternity\'s Journey', 'Infinity\'s Steps', 'The Unshakable', 'Fate\'s March', 'Omnipresent Treads']
@@ -434,12 +438,14 @@ const GAME_CONSTANTS = {
   ACCESSORY_NAMES: {
     pendant: {
       common: ['Cracked Pendant', 'Worn Charm', 'Simple Talisman', 'Tarnished Medallion', 'Crude Necklace', 'Faded Amulet', 'Plain Pendant'],
+      uncommon: ['Quality Pendant', 'Sturdy Charm', 'Well-Made Talisman', 'Polished Medallion', 'Balanced Necklace', 'Clear Amulet', 'Solid Pendant'],
       rare: ['Enchanted Medallion', 'Battle Charm', 'Mystic Pendant', 'Guardian\'s Talisman', 'Forged Amulet', 'Knight\'s Sigil', 'Warden\'s Necklace'],
       epic: ['Dragonheart Pendant', 'Soulstone Amulet', 'Voidkeeper Charm', 'Titan\'s Medallion', 'Stormshard Talisman', 'Demonward Sigil', 'Wyrmheart Necklace'],
       legendary: ['Eternity\'s Heart', 'The Infinite Soul', 'Heaven\'s Tear', 'World\'s Core', 'Fate\'s Promise', 'Cosmos Shard', 'The Primordial']
     },
     ring: {
       common: ['Bent Ring', 'Tarnished Band', 'Simple Loop', 'Worn Circle', 'Crude Band', 'Rusty Ring', 'Plain Loop'],
+      uncommon: ['Quality Ring', 'Sturdy Band', 'Well-Made Loop', 'Polished Circle', 'Balanced Band', 'Strong Ring', 'Solid Loop'],
       rare: ['Engraved Band', 'Battle Ring', 'Enchanted Loop', 'Warden\'s Signet', 'Forged Circle', 'Knight\'s Ring', 'Mystic Band'],
       epic: ['Dragonbone Ring', 'Soulbound Band', 'Voidcircle', 'Titan\'s Loop', 'Stormband', 'Demonward Ring', 'Wyrmscale Signet'],
       legendary: ['Eternity Band', 'The Infinite Loop', 'Heaven\'s Circle', 'Worldbinder\'s Ring', 'Fate\'s Signet', 'Cosmos Ring', 'The Eternal']
@@ -500,6 +506,13 @@ const GAME_CONSTANTS = {
       'Iron Dagger', 'Worn Knife', 'Simple Stiletto', 'Rusty Dirk', 'Crude Shiv',
       'Simple Bow', 'Worn Longbow', 'Crude Shortbow', 'Hunter\'s Bow', 'Bent Recurve',
       'Wooden Staff', 'Worn Rod', 'Simple Cane', 'Crude Scepter', 'Old Walking Stick'
+    ],
+    uncommon: [
+      'Quality Sword', 'Balanced Blade', 'Well-Made Longsword', 'Sharp Saber', 'Sturdy Greatsword',
+      'Quality Axe', 'Sharp Hatchet', 'Balanced Cleaver', 'Heavy Battleaxe', 'Keen Waraxe',
+      'Sharp Dagger', 'Quality Knife', 'Balanced Stiletto', 'Keen Dirk', 'Well-Made Shiv',
+      'Quality Bow', 'Balanced Longbow', 'Accurate Shortbow', 'Tracker\'s Bow', 'Sturdy Recurve',
+      'Quality Staff', 'Balanced Rod', 'Well-Made Cane', 'Sturdy Scepter', 'Traveler\'s Staff'
     ],
     rare: [
       'Forged Edge', 'Battle Brand', 'Tempered Longsword', 'Honed Saber', 'Masterwork Blade',
@@ -1016,6 +1029,12 @@ const FantasyStudyQuest = () => {
   // Get rarity color
   const getRarityColor = useCallback((rarity) => {
     return GAME_CONSTANTS.RARITY_TIERS[rarity]?.color || '#9E9E9E';
+  }, []);
+  
+  // Sort items by rarity (legendary > epic > rare > uncommon > common)
+  const sortByRarity = useCallback((items) => {
+    const rarityOrder = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+    return [...items].sort((a, b) => (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0));
   }, []);
   
   // Scale stats by rarity (multipliers)
@@ -2495,19 +2514,19 @@ if (tasks.length === 0) {
     
     // Add item to inventory
     if (item.type === 'weapon') {
-      setWeaponInventory(prev => [...prev, { ...item, id: Date.now() }]);
+      setWeaponInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
       addLog(`Purchased: ${item.name} (+${item.attack} Attack) for ${finalPrice}g`);
     } else if (item.type === 'armor') {
       setArmorInventory(prev => ({
         ...prev,
-        [item.slot]: [...prev[item.slot], { ...item, id: Date.now() }]
+        [item.slot]: sortByRarity([...prev[item.slot], { ...item, id: Date.now() }])
       }));
       addLog(`Purchased: ${item.name} (+${item.defense} Defense) for ${finalPrice}g`);
     } else if (item.type === 'pendant') {
-      setPendantInventory(prev => [...prev, { ...item, id: Date.now() }]);
+      setPendantInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
       addLog(`Purchased: ${item.name} (+${item.hp} Health) for ${finalPrice}g`);
     } else if (item.type === 'ring') {
-      setRingInventory(prev => [...prev, { ...item, id: Date.now() }]);
+      setRingInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
       addLog(`Purchased: ${item.name} (+${item.stamina} STA) for ${finalPrice}g`);
     }
     
@@ -2601,7 +2620,7 @@ if (task.overdue) {
       
       const affixes = generateAffixes(rarity, 'weapon');
       const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-      setWeaponInventory(prev => [...prev, newWeapon]);
+      setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
       
       addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
     } else if (roll < GAME_CONSTANTS.LOOT_RATES.ARMOR) {
@@ -2622,7 +2641,7 @@ if (task.overdue) {
       const newArmor = { name, defense, rarity, affixes, id: Date.now() };
       setArmorInventory(prev => ({
         ...prev,
-        [slot]: [...prev[slot], newArmor]
+        [slot]: sortByRarity([...prev[slot], newArmor])
       }));
       
       addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)`);
@@ -3478,7 +3497,7 @@ if (battleType === 'elite') {
             
             const affixes = generateAffixes(rarity, 'weapon');
             const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-            setWeaponInventory(prev => [...prev, newWeapon]);
+            setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
             
             lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
             addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
@@ -3501,7 +3520,7 @@ if (battleType === 'elite') {
             const newArmor = { name, defense, rarity, affixes, id: Date.now() };
             setArmorInventory(prev => ({
               ...prev,
-              [slot]: [...prev[slot], newArmor]
+              [slot]: sortByRarity([...prev[slot], newArmor])
             }));
             
             lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
@@ -3520,7 +3539,7 @@ if (battleType === 'elite') {
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
             const newPendant = { name, hp, rarity, id: Date.now() };
-            setPendantInventory(prev => [...prev, newPendant]);
+            setPendantInventory(prev => sortByRarity([...prev, newPendant]));
             
             lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
             addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
@@ -3538,7 +3557,7 @@ if (battleType === 'elite') {
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
             const newRing = { name, stamina, rarity, id: Date.now() };
-            setRingInventory(prev => [...prev, newRing]);
+            setRingInventory(prev => sortByRarity([...prev, newRing]));
             
             lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
             addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
@@ -3572,7 +3591,7 @@ if (battleType === 'elite') {
             
             const affixes = generateAffixes(rarity, 'weapon');
             const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-            setWeaponInventory(prev => [...prev, newWeapon]);
+            setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
             
             lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
             addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
@@ -3595,7 +3614,7 @@ if (battleType === 'elite') {
             const newArmor = { name, defense, rarity, affixes, id: Date.now() };
             setArmorInventory(prev => ({
               ...prev,
-              [slot]: [...prev[slot], newArmor]
+              [slot]: sortByRarity([...prev[slot], newArmor])
             }));
             
             lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
@@ -3614,7 +3633,7 @@ if (battleType === 'elite') {
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
             const newPendant = { name, hp, rarity, id: Date.now() };
-            setPendantInventory(prev => [...prev, newPendant]);
+            setPendantInventory(prev => sortByRarity([...prev, newPendant]));
             
             lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
             addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
@@ -3632,7 +3651,7 @@ if (battleType === 'elite') {
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
             const newRing = { name, stamina, rarity, id: Date.now() };
-            setRingInventory(prev => [...prev, newRing]);
+            setRingInventory(prev => sortByRarity([...prev, newRing]));
             
             lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
             addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
@@ -4408,7 +4427,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       const affixes = generateAffixes(rarity, 'weapon');
       const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-      setWeaponInventory(prev => [...prev, newWeapon]);
+      setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
       
       lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
@@ -4431,7 +4450,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const newArmor = { name, defense, rarity, affixes, id: Date.now() };
       setArmorInventory(prev => ({
         ...prev,
-        [slot]: [...prev[slot], newArmor]
+        [slot]: sortByRarity([...prev[slot], newArmor])
       }));
       
       lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
@@ -4450,7 +4469,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
       const newPendant = { name, hp, rarity, id: Date.now() };
-      setPendantInventory(prev => [...prev, newPendant]);
+      setPendantInventory(prev => sortByRarity([...prev, newPendant]));
       
       lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
@@ -4468,7 +4487,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
       const newRing = { name, stamina, rarity, id: Date.now() };
-      setRingInventory(prev => [...prev, newRing]);
+      setRingInventory(prev => sortByRarity([...prev, newRing]));
       
       lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
@@ -6604,7 +6623,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 </div>
                 
                 {/* Experience bar */}
-                <div className="mb-4 rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
+                <div className="mb-4 rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.35)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
                   <div className="flex justify-between text-sm mb-2" style={{color: '#D4AF37'}}>
                     <span className="font-bold uppercase tracking-wide">Experience</span>
                     <span className="font-bold">{(() => {
@@ -6661,7 +6680,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {/* Combat stats 2x2 grid */}
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   {/* HP */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    border: '2px solid rgba(0, 0, 0, 0.3)',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                  }}>
                     <div className="flex justify-center mb-1">
                       <HeartPulse size={20} style={{color: '#FF6B6B'}}/>
                     </div>
@@ -6672,7 +6695,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Stamina */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    border: '2px solid rgba(0, 0, 0, 0.3)',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                  }}>
                     <div className="flex justify-center mb-1">
                       <Sparkles size={20} style={{color: '#3B82F6'}}/>
                     </div>
@@ -6683,7 +6710,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Attack */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    border: '2px solid rgba(0, 0, 0, 0.3)',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                  }}>
                     <div className="flex justify-center mb-1">
                       <Swords size={20} style={{color: '#F59E0B'}}/>
                     </div>
@@ -6692,7 +6723,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Defense */}
-                  <div className="rounded-lg p-3 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', border: '2px solid rgba(0, 0, 0, 0.3)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)'}}>
+                  <div className="rounded-lg p-3 text-center" style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+                    border: '2px solid rgba(0, 0, 0, 0.3)',
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
+                  }}>
                     <div className="flex justify-center mb-1">
                       <ShieldCheck size={20} style={{color: '#F5F5DC'}}/>
                     </div>
@@ -6827,19 +6862,54 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               )}
             </div>
               {!hasStarted ? (
-                <div className="rounded-xl p-8 text-center border-2" style={{borderColor: COLORS.silver, background: VISUAL_STYLES.modal.default, boxShadow: VISUAL_STYLES.shadow.elevated}}>
+                <div className="rounded-xl p-8 text-center" style={{
+                  background: 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))',
+                  borderColor: '#D4AF37',
+                  borderWidth: '2px',
+                  borderStyle: 'solid',
+                  boxShadow: '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)'
+                }}>
+                  
+                  {/* Decorative divider above */}
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                    <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  </div>
                   
                   {/* Date Section */}
-                  <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.gold}}>
+                  <h2 className="text-3xl font-bold mb-2 uppercase" style={{
+                    color: '#D4AF37',
+                    fontFamily: 'Cinzel, serif',
+                    letterSpacing: '0.15em',
+                    textShadow: '0 0 8px rgba(212, 175, 55, 0.6)'
+                  }}>
                     {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                   </h2>
-                  <p className="text-base text-gray-300 mb-2">{new Date().toLocaleDateString('en-US', { year: 'numeric' })}</p>
-                  <p className="text-sm italic mb-4" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
-                  <p className="text-sm text-gray-400 italic mb-6">"{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"</p>
+                  <p className="text-base mb-2" style={{color: 'rgba(156, 163, 175, 0.8)'}}>
+                    {new Date().toLocaleDateString('en-US', { year: 'numeric' })}
+                  </p>
+                  
+                  {/* Decorative divider */}
+                  <div className="flex items-center justify-center gap-2 mb-4">
+                    <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                    <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  </div>
+                  
+                  <p className="text-sm italic mb-3" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
+                  <p className="text-xs italic mb-6" style={{color: '#DAA520'}}>
+                    "{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"
+                  </p>
+                  
                   <button 
                     onClick={start} 
-                    className="px-8 py-3 rounded-lg font-bold text-xl transition-all shadow-lg" 
-                    style={{backgroundColor: COLORS.gold, color: COLORS.obsidian.base}} 
+                    className="px-8 py-3 rounded-lg font-bold text-xl transition-all" 
+                    style={{
+                      backgroundColor: COLORS.gold,
+                      color: COLORS.obsidian.base,
+                      boxShadow: '0 4px 12px rgba(212, 175, 55, 0.4)'
+                    }} 
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#FFD700';
                       e.currentTarget.style.transform = 'translateY(-2px)';
@@ -6848,9 +6918,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = COLORS.gold;
                       e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = '';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 175, 55, 0.4)';
                     }}
                   >START DAY</button>
+                  
+                  {/* Decorative divider below */}
+                  <div className="flex items-center justify-center gap-2 mt-6">
+                    <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                    <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                    <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  </div>
                 </div>
               ) : (
                 <>
@@ -7240,22 +7317,63 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
                   const isToday = day === todayDayName;
                   
+                  // Determine temporal status (past, today, future)
+                  const dayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                  const todayIndex = dayOrder.indexOf(todayDayName);
+                  const thisDayIndex = dayOrder.indexOf(day);
+                  const isPast = thisDayIndex < todayIndex;
+                  const isFuture = thisDayIndex > todayIndex;
+                  
+                  // Progressive emphasis styling
+                  let cardStyle, titleColor, titleShadow, themeColor, borderColor, borderWidth, shadowStyle, dividerColor;
+                  
+                  if (isToday) {
+                    // TODAY: Full opacity, subtle glow, stronger border, lifted shadow
+                    cardStyle = weeklyPlan[day].length > 0 
+                      ? 'linear-gradient(135deg, rgba(100, 0, 0, 0.25) 0%, rgba(50, 10, 10, 0.5) 50%, rgba(20, 0, 10, 0.7) 100%)'
+                      : 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))';
+                    titleColor = '#D4AF37'; // Standard gold to match other tabs
+                    titleShadow = '0 0 8px rgba(212, 175, 55, 0.6)'; // Sharper shadow, slightly stronger
+                    themeColor = '#DAA520';
+                    borderColor = '#D4AF37';
+                    borderWidth = '2px';
+                    shadowStyle = weeklyPlan[day].length > 0
+                      ? '0 8px 16px rgba(0, 0, 0, 0.5)'
+                      : '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)';
+                    dividerColor = 'rgba(212, 175, 55, 0.5)';
+                  } else if (isFuture) {
+                    // FUTURE: 70% opacity, no glow, thinner border, muted colors
+                    cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.55) 0%, rgba(30, 41, 59, 0.42) 100%)';
+                    titleColor = 'rgba(192, 192, 192, 0.75)'; // +5% brightness for legibility
+                    titleShadow = 'none';
+                    themeColor = 'rgba(156, 163, 175, 0.6)';
+                    borderColor = 'rgba(100, 116, 139, 0.35)';
+                    borderWidth = '1px';
+                    shadowStyle = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                    dividerColor = 'rgba(156, 163, 175, 0.25)';
+                  } else {
+                    // PAST: 50% opacity, desaturated, subdued, no emphasis
+                    cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(30, 41, 59, 0.3) 100%)';
+                    titleColor = 'rgba(156, 163, 175, 0.55)'; // +5% brightness for legibility
+                    titleShadow = 'none';
+                    themeColor = 'rgba(156, 163, 175, 0.4)';
+                    borderColor = 'rgba(100, 116, 139, 0.25)';
+                    borderWidth = '1px';
+                    shadowStyle = '0 1px 2px rgba(0, 0, 0, 0.15)';
+                    dividerColor = 'rgba(156, 163, 175, 0.2)';
+                  }
+                  
                   return (
                   <div 
                     key={day} 
-                    className="rounded-lg p-6 border-2 relative overflow-hidden" 
+                    className="rounded-lg p-6 relative overflow-hidden transition-all duration-300" 
                     style={{
-                      background: isToday 
-                        ? (weeklyPlan[day].length > 0 
-                          ? 'linear-gradient(135deg, rgba(100, 0, 0, 0.25) 0%, rgba(50, 10, 10, 0.5) 50%, rgba(20, 0, 10, 0.7) 100%)'
-                          : 'linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(60, 10, 10, 0.6) 50%, rgba(20, 0, 10, 0.8) 100%)')
-                        : 'linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.6) 100%)',
-                      borderColor: isToday ? '#D4AF37' : 'rgba(100, 116, 139, 0.5)',
-                      boxShadow: isToday 
-                        ? (weeklyPlan[day].length > 0
-                          ? '0 4px 8px rgba(0, 0, 0, 0.4)'
-                          : '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)')
-                        : '0 4px 6px rgba(0, 0, 0, 0.3)'
+                      background: cardStyle,
+                      borderColor: borderColor,
+                      borderWidth: borderWidth,
+                      borderStyle: 'solid',
+                      boxShadow: shadowStyle,
+                      opacity: isPast ? 0.85 : 1
                     }}
                   >
                     {/* Day header with medieval styling */}
@@ -7263,24 +7381,24 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <div className="flex-1 text-center">
                         <div className="mb-2">
                           <h3 className="text-2xl font-bold uppercase mb-1" style={{
-                            color: isToday ? '#D4AF37' : '#C0C0C0',
+                            color: titleColor,
                             fontFamily: 'Cinzel, serif',
                             letterSpacing: '0.15em',
-                            textShadow: isToday ? '0 0 15px rgba(212, 175, 55, 0.5)' : 'none'
+                            textShadow: titleShadow
                           }}>
                             {day}
                           </h3>
                           {dayTheme.theme && (
-                            <p className="text-xs italic mt-1" style={{color: isToday ? '#DAA520' : '#9CA3AF'}}>
+                            <p className="text-xs italic mt-1" style={{color: themeColor}}>
                               "{dayTheme.theme}"
                             </p>
                           )}
                         </div>
                         
                         <div className="flex items-center justify-center gap-2 mb-2">
-                          <div style={{width: '60px', height: '1px', background: `linear-gradient(to right, transparent, ${isToday ? 'rgba(212, 175, 55, 0.5)' : 'rgba(156, 163, 175, 0.3)'})`}}></div>
-                          <span style={{color: isToday ? '#D4AF37' : '#9CA3AF', fontSize: '8px'}}>◆</span>
-                          <div style={{width: '60px', height: '1px', background: `linear-gradient(to left, transparent, ${isToday ? 'rgba(212, 175, 55, 0.5)' : 'rgba(156, 163, 175, 0.3)'})`}}></div>
+                          <div style={{width: '60px', height: '1px', background: `linear-gradient(to right, transparent, ${dividerColor})`}}></div>
+                          <span style={{color: dividerColor, fontSize: '8px'}}>◆</span>
+                          <div style={{width: '60px', height: '1px', background: `linear-gradient(to left, transparent, ${dividerColor})`}}></div>
                         </div>
                         
                         <p className="text-xs mb-2">
@@ -7301,10 +7419,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         
                         {weeklyPlan[day].length === 0 && (
                           <div className="mt-4 p-3 rounded-lg border border-dashed" style={{
-                            borderColor: 'rgba(156, 163, 175, 0.3)',
+                            borderColor: isToday ? 'rgba(212, 175, 55, 0.3)' : 'rgba(156, 163, 175, 0.2)',
                             backgroundColor: 'rgba(0, 0, 0, 0.2)'
                           }}>
-                            <p className="text-sm italic" style={{color: '#9CA3AF'}}>
+                            <p className="text-sm italic" style={{
+                              color: isToday ? 'rgba(156, 163, 175, 0.8)' : 'rgba(156, 163, 175, 0.5)'
+                            }}>
                               No battles planned... yet.
                             </p>
                           </div>
@@ -7313,25 +7433,33 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       
                       <button 
                         onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} 
-                        className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 border-2 ml-4" 
+                        className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ml-4" 
                         style={{
                           background: isToday 
-                            ? 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(107, 15, 26, 0.8))' 
-                            : 'linear-gradient(to bottom, rgba(120, 53, 15, 0.6), rgba(92, 40, 11, 0.6))',
-                          borderColor: isToday ? '#D4AF37' : '#92400E',
-                          color: '#F5F5DC',
+                            ? 'rgba(0, 0, 0, 0.5)' 
+                            : isFuture
+                              ? 'linear-gradient(to bottom, rgba(120, 53, 15, 0.7), rgba(92, 40, 11, 0.7))'
+                              : 'linear-gradient(to bottom, rgba(100, 43, 12, 0.6), rgba(76, 33, 9, 0.6))',
+                          borderColor: isToday ? '#D4AF37' : isFuture ? 'rgba(212, 175, 55, 0.6)' : 'rgba(212, 175, 55, 0.45)',
+                          borderWidth: isToday ? '2px' : '1.5px',
+                          borderStyle: 'solid',
+                          color: isToday ? '#D4AF37' : isFuture ? 'rgba(212, 175, 55, 0.85)' : 'rgba(192, 192, 192, 0.7)',
                           boxShadow: isToday ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
                         }} 
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = isToday 
-                            ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.9), rgba(139, 0, 0, 0.9))' 
-                            : 'linear-gradient(to bottom, rgba(120, 53, 15, 0.8), rgba(92, 40, 11, 0.8))';
+                            ? 'rgba(0, 0, 0, 0.7)' 
+                            : isFuture
+                              ? 'linear-gradient(to bottom, rgba(120, 53, 15, 0.85), rgba(92, 40, 11, 0.85))'
+                              : 'linear-gradient(to bottom, rgba(100, 43, 12, 0.75), rgba(76, 33, 9, 0.75))';
                           e.currentTarget.style.transform = 'translateY(-2px)';
                         }} 
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = isToday 
-                            ? 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(107, 15, 26, 0.8))' 
-                            : 'linear-gradient(to bottom, rgba(120, 53, 15, 0.6), rgba(92, 40, 11, 0.6))';
+                            ? 'rgba(0, 0, 0, 0.5)' 
+                            : isFuture
+                              ? 'linear-gradient(to bottom, rgba(120, 53, 15, 0.7), rgba(92, 40, 11, 0.7))'
+                              : 'linear-gradient(to bottom, rgba(100, 43, 12, 0.6), rgba(76, 33, 9, 0.6))';
                           e.currentTarget.style.transform = 'translateY(0)';
                         }}
                       >
@@ -7359,7 +7487,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   return (
     <div 
       key={idx} 
-      className={`rounded-lg p-4 border-2 ${
+      className={`rounded-lg p-4 transition-all duration-300 ${
         item.completed 
           ? 'opacity-60' 
           : item.priority === 'important'
@@ -7375,13 +7503,19 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           : item.priority === 'important'
             ? COLORS.gold
             : undefined,
+        borderWidth: isToday ? '2px' : '1px',
+        borderStyle: 'solid',
         position: 'relative',
         overflow: 'hidden',
-        boxShadow: item.priority === 'important' && !item.completed
+        boxShadow: item.priority === 'important' && !item.completed && isToday
           ? `0 0 20px ${COLORS.gold}99`
           : item.completed
             ? '0 1px 3px rgba(0, 0, 0, 0.1)'
-            : '0 2px 4px rgba(0, 0, 0, 0.2)'
+            : isToday 
+              ? '0 2px 4px rgba(0, 0, 0, 0.2)'
+              : '0 1px 2px rgba(0, 0, 0, 0.15)',
+        opacity: isPast ? 0.7 : 1,
+        filter: isPast ? 'saturate(0.7)' : 'none'
       }}
       draggable={!item.completed}
       onDragStart={(e) => handlePlanDragStart(e, {...item, day})}
@@ -7533,39 +7667,75 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     for (let day = 1; day <= daysInMonth; day++) {
                       const dateKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                       const isToday = isCurrentMonth && today.getDate() === day;
+                      const isPast = isCurrentMonth ? day < today.getDate() : (currentYear < today.getFullYear() || (currentYear === today.getFullYear() && currentMonth < today.getMonth()));
+                      const isFuture = isCurrentMonth ? day > today.getDate() : (currentYear > today.getFullYear() || (currentYear === today.getFullYear() && currentMonth > today.getMonth()));
                       
-                      let bgColor, borderColor;
+                      // Progressive emphasis styling
+                      let bgColor, borderColor, borderWidth, textColor, shadowStyle;
+                      
                       if (isToday) {
+                        // TODAY: Bright gold, subtle glow, sharp
                         bgColor = 'rgba(234, 179, 8, 0.4)';
-                        borderColor = 'rgba(234, 179, 8, 0.8)';
-                      } else {
+                        borderColor = '#E8C547'; // Brighter gold like day titles
+                        borderWidth = '2px';
+                        textColor = '#E8C547'; // Bright gold text
+                        shadowStyle = '0 0 12px rgba(234, 179, 8, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)';
+                      } else if (isFuture) {
+                        // FUTURE: 80-85% brightness, clear, readable
                         bgColor = 'rgba(30, 41, 59, 0.5)';
-                        borderColor = 'rgba(51, 65, 85, 0.6)';
+                        borderColor = 'rgba(100, 116, 139, 0.4)';
+                        borderWidth = '1px';
+                        textColor = 'rgba(245, 245, 220, 0.85)'; // 85% brightness
+                        shadowStyle = '0 1px 3px rgba(0, 0, 0, 0.15)';
+                      } else if (isPast) {
+                        // PAST: 60-70% brightness, muted, subdued
+                        bgColor = 'rgba(30, 41, 59, 0.3)';
+                        borderColor = 'rgba(100, 116, 139, 0.25)';
+                        borderWidth = '1px';
+                        textColor = 'rgba(156, 163, 175, 0.65)'; // 65% brightness
+                        shadowStyle = '0 1px 2px rgba(0, 0, 0, 0.1)';
+                      } else {
+                        // OTHER MONTH: Very muted
+                        bgColor = 'rgba(30, 41, 59, 0.3)';
+                        borderColor = 'rgba(51, 65, 85, 0.3)';
+                        borderWidth = '1px';
+                        textColor = 'rgba(156, 163, 175, 0.5)';
+                        shadowStyle = '0 1px 2px rgba(0, 0, 0, 0.1)';
                       }
                       
                       days.push(
                         <button 
                           key={day} 
                           onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} 
-                          className="aspect-square rounded-lg p-2 transition-all hover:scale-105 relative border-2 flex flex-col items-center justify-center"
+                          className="aspect-square rounded-lg p-2 transition-all hover:scale-105 relative flex flex-col items-center justify-center"
                           style={{
                             backgroundColor: bgColor, 
                             borderColor: borderColor,
-                            boxShadow: isToday 
-                              ? '0 4px 6px rgba(234, 179, 8, 0.3)' 
-                              : '0 1px 3px rgba(0, 0, 0, 0.15)'
+                            borderWidth: borderWidth,
+                            borderStyle: 'solid',
+                            boxShadow: shadowStyle
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.05)';
+                            if (isToday) {
+                              e.currentTarget.style.boxShadow = '0 0 16px rgba(234, 179, 8, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3)';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = shadowStyle;
+                          }}
                         >
-                          <div className="text-lg font-bold" style={{color: '#F5F5DC'}}>{day}</div>
+                          <div className="text-lg font-bold" style={{color: textColor}}>{day}</div>
                           {calendarFocus[dateKey] && (
                             <div className="text-sm mt-1 text-center truncate w-full px-1 font-bold" style={{color: '#EF4444'}}>
                               {calendarFocus[dateKey]}
                             </div>
                           )}
                           {calendarEvents[dateKey] && Array.isArray(calendarEvents[dateKey]) && calendarEvents[dateKey].length > 0 && (
-                            <div className="text-xs mt-1 text-center w-full px-1" style={{color: '#9CA3AF'}}>
+                            <div className="text-xs mt-1 text-center w-full px-1" style={{
+                              color: isToday ? 'rgba(218, 165, 32, 0.9)' : 'rgba(156, 163, 175, 0.7)'
+                            }}>
                               {calendarEvents[dateKey].length} event{calendarEvents[dateKey].length > 1 ? 's' : ''}
                             </div>
                           )}
@@ -7583,9 +7753,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           )}
 
           {activeTab === 'study' && (
-  <div className="rounded-xl p-6 border-2" style={{
-    background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(28, 28, 28, 0.6))',
-    borderColor: 'rgba(184, 134, 11, 0.6)'
+  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{
+    borderColor: 'rgba(212, 175, 55, 0.6)'
   }}>
     <div className="text-center mb-4">
       <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>KNOWLEDGE FORGE</h2>
@@ -7620,8 +7789,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     {flashcardDecks.length === 0 ? (
       <div className="text-center py-12 rounded-lg border-2" style={{
-        background: 'linear-gradient(to bottom, rgba(28, 28, 28, 0.5), rgba(0, 0, 0, 0.5))',
-        borderColor: 'rgba(139, 69, 19, 0.4)'
+        background: 'rgba(0, 0, 0, 0.5)',
+        borderColor: 'rgba(212, 175, 55, 0.6)'
       }}>
         <p className="mb-2 text-lg" style={{color: '#C0C0C0'}}>The forge stands empty...</p>
         <p className="text-sm" style={{color: '#95A5A6'}}>Create your first deck to begin forging knowledge</p>
@@ -7630,9 +7799,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       <div className="space-y-4">
         {flashcardDecks.map((deck, idx) => (
           <div key={idx} className="rounded-lg p-4 border-2" style={{
-            background: 'rgba(15, 23, 42, 0.8)',
-            borderColor: 'rgba(184, 134, 11, 0.5)',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
+            background: 'rgba(0, 0, 0, 0.55)',
+            borderColor: 'rgba(212, 175, 55, 0.6)',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(212, 175, 55, 0.03)'
           }}>
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
@@ -7680,13 +7849,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             </button>
             
             {deck.cards.length > 0 && (
-              <div className="mt-1 pt-3" style={{borderTop: '1px solid rgba(139, 69, 19, 0.3)'}}>
-                <p className="text-xs mb-2" style={{color: '#95A5A6'}}>Cards in this deck:</p>
+              <div className="mt-1 pt-3" style={{borderTop: '1px solid rgba(212, 175, 55, 0.3)'}}>
+                <p className="text-xs mb-2" style={{color: '#B8B8B8'}}>Cards in this deck:</p>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {deck.cards.map((card, cardIdx) => (
                     <div key={cardIdx} className="flex justify-between items-center text-sm rounded p-2" style={{
-                      background: 'rgba(0, 0, 0, 0.4)',
-                      border: '1px solid rgba(139, 69, 19, 0.2)'
+                      background: 'rgba(20, 20, 20, 0.6)',
+                      border: '1px solid rgba(212, 175, 55, 0.3)'
                     }}>
                       <span className="flex-1 truncate" style={{color: '#F5F5DC'}}>
                         {card.mastered && '✓ '}{card.front}
@@ -7791,16 +7960,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 )}
 
           {activeTab === 'progress' && (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: COLORS.gold}}>
+            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
               {/* Header */}
               <div className="text-center mb-6">
-                <h2 className="text-4xl font-bold mb-2" style={{color: COLORS.gold, letterSpacing: '0.15em'}}>TRIALS CONQUERED</h2>
+                <h2 className="text-4xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRIALS CONQUERED</h2>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
                   <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
                 </div>
-                <p className="text-xl" style={{color: COLORS.gold}}>{unlockedAchievements.length} / {GAME_CONSTANTS.ACHIEVEMENTS.length}</p>
+                <p className="text-xl" style={{color: '#D4AF37'}}>{unlockedAchievements.length} / {GAME_CONSTANTS.ACHIEVEMENTS.length}</p>
                 
                 {/* Progress bar */}
                 <div className="mt-4 mx-auto max-w-md">
@@ -7825,8 +7994,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     className="px-4 py-2 rounded-lg transition-all border-2 text-sm font-bold uppercase"
                     style={{
                       backgroundColor: selectedCategory === key ? 'rgba(212, 175, 55, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                      borderColor: selectedCategory === key ? COLORS.gold : 'rgba(212, 175, 55, 0.3)',
-                      color: selectedCategory === key ? COLORS.gold : COLORS.silver
+                      borderColor: selectedCategory === key ? '#D4AF37' : 'rgba(212, 175, 55, 0.3)',
+                      color: selectedCategory === key ? '#D4AF37' : COLORS.silver
                     }}
                   >
                     {cat.name}
@@ -8029,7 +8198,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               </div>
               
               {/* The Liberated Section */}
-              <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-yellow-900">
+              <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold text-yellow-400 mb-2">THE LIBERATED</h2>
                   <div className="flex items-center justify-center gap-2 mb-2">
@@ -8043,7 +8212,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               </div>
               
               {/* The Consumed Section */}
-              <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2 border-gray-800">
+              <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
                 <div className="text-center mb-6">
                   <h2 className="text-2xl font-bold text-gray-400 mb-2">THE CONSUMED</h2>
                   <div className="flex items-center justify-center gap-2 mb-2">
@@ -8143,7 +8312,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   {suppliesTab === 'potions' ? (
                     <>
                   {/* Health Potions */}
-                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
+                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(100, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
                         <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Health Potion</p>
@@ -8151,7 +8320,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Crimson elixir. Mends wounds."</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl font-bold mb-2" style={{color: '#FF6B6B'}}>{healthPots}</p>
+                        <p className="text-3xl font-bold mb-2" style={{color: '#FF6B6B', opacity: 0.9}}>{healthPots}</p>
                         <button 
                           onClick={useHealth} 
                           disabled={healthPots === 0 || hp >= getMaxHp()}
@@ -8173,7 +8342,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Stamina Potions */}
-                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(30, 58, 95, 0.2)', borderColor: 'rgba(30, 58, 95, 0.5)'}}>
+                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(30, 58, 95, 0.25)', borderColor: 'rgba(30, 58, 95, 0.5)'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
                         <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Stamina Potion</p>
@@ -8181,7 +8350,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl font-bold mb-2" style={{color: '#6BB6FF'}}>{staminaPots}</p>
+                        <p className="text-3xl font-bold mb-2" style={{color: '#6BB6FF', opacity: 0.9}}>{staminaPots}</p>
                         <button 
                           onClick={() => { 
                             if (staminaPots > 0 && stamina < getMaxStamina()) { 
@@ -8214,7 +8383,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Cleanse Potions */}
-                  <div className={`rounded-lg p-4 border-2 ${curseLevel > 0 ? 'animate-pulse' : ''}`} style={{backgroundColor: 'rgba(107, 44, 145, 0.15)', borderColor: curseLevel > 0 ? 'rgba(138, 59, 181, 0.6)' : 'rgba(107, 44, 145, 0.4)', boxShadow: curseLevel > 0 ? VISUAL_STYLES.shadow.glow('#8A3BB5', 0.15) : 'none'}}>
+                  <div className={`rounded-lg p-4 border-2 ${curseLevel > 0 ? 'animate-pulse' : ''}`} style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', borderColor: curseLevel > 0 ? 'rgba(138, 59, 181, 0.6)' : 'rgba(107, 44, 145, 0.4)', boxShadow: curseLevel > 0 ? VISUAL_STYLES.shadow.glow('#8A3BB5', 0.15) : 'none'}}>
                     <div className="flex justify-between items-center mb-2">
                       <div>
                         <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
@@ -8222,7 +8391,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the hold."</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-3xl font-bold mb-2" style={{color: '#B794F4'}}>{cleansePots}</p>
+                        <p className="text-3xl font-bold mb-2" style={{color: '#B794F4', opacity: 0.9}}>{cleansePots}</p>
                         <button 
                           onClick={useCleanse} 
                           disabled={cleansePots === 0 || curseLevel === 0}
@@ -8258,7 +8427,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   ) : suppliesTab === 'weapons' ? (
                     <>
                   {/* Weapon Section */}
-                  <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
+                  <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(100, 0, 0, 0.2)', borderColor: 'rgba(120, 0, 0, 0.5)'}}>
                     <h3 className="font-bold text-lg mb-3 text-center" style={{color: '#FF6B6B'}}>EQUIPPED WEAPON</h3>
                     
                     <div className="rounded p-4 border-2 mb-3" style={{
@@ -8619,7 +8788,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     
                     <div className="space-y-3 mb-4">
                       {/* Pendant */}
-                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', borderColor: 'rgba(192, 192, 192, 0.4)'}}>
                         <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Pendant</p>
                         {equippedPendant ? (
                           <div>
@@ -8637,7 +8806,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       </div>
                       
                       {/* Ring */}
-                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
+                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', borderColor: 'rgba(192, 192, 192, 0.4)'}}>
                         <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Ring</p>
                         {equippedRing ? (
                           <div>
@@ -8657,9 +8826,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     
                     <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
                       <p className="text-sm" style={{color: COLORS.silver}}>
-                        Max HP: <span className="font-bold text-lg" style={{color: '#FF6B6B'}}>{getMaxHp()}</span>
+                        Max HP: <span className="font-bold text-lg" style={{color: '#FF6B6B', opacity: 0.95}}>{getMaxHp()}</span>
                         {' | '}
-                        Max STA: <span className="font-bold text-lg" style={{color: '#4FC3F7'}}>{getMaxStamina()}</span>
+                        Max STA: <span className="font-bold text-lg" style={{color: '#4FC3F7', opacity: 0.95}}>{getMaxStamina()}</span>
                       </p>
                     </div>
                   </div>
@@ -9101,7 +9270,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   {(() => {
                     const healthPrice = getPotionPrice('healthPotion', 25);
                     const staminaPrice = getPotionPrice('staminaPotion', 20);
-                    const cleansePrice = getPotionPrice('cleansePotion', 50);
+                    const cleansePrice = getPotionPrice('cleansePotion', 250);
                     const weaponOilPrice = getPotionPrice('weaponOil', 40);
                     const armorPolishPrice = getPotionPrice('armorPolish', 40);
                     const luckyCharmPrice = getPotionPrice('luckyCharm', 80);
