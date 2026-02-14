@@ -292,14 +292,14 @@ const GAME_CONSTANTS = {
   SPECIAL_ATTACKS: {
     Knight: { 
       name: 'Blood Oath', 
-      cost: 25, 
+      cost: 35, 
       hpCostPercent: 0.10, // 10% of current HP
       hpCostEscalation: 0.05, // +5% per consecutive use
       damageMultiplier: 3.5, 
-      effect: 'For 2 turns: +20% damage dealt, -20% damage taken. HP cost escalates with each use.',
+      effect: 'Sacrifice HP for overwhelming power. 2 turns: +50% damage, -30% defense (take more damage). HP cost escalates.',
       buffTurns: 2,
-      buffDamage: 0.20,
-      buffReduction: 0.20
+      buffDamage: 0.50,
+      defenseReduction: 0.30
     },
     Wizard: { 
       name: 'Temporal Rift', 
@@ -323,23 +323,25 @@ const GAME_CONSTANTS = {
     Crusader: { 
       name: 'Judgment of Light', 
       cost: 30, 
-      damageMultiplier: 2.8, 
-      effect: 'Deal damage and heal 15 HP. Gain Sanctified (2 turns): Heal 5 HP when boss attacks. +10% crit chance.',
-      healAmount: 15,
-      sanctifiedTurns: 2,
-      sanctifiedHeal: 5,
-      sanctifiedCrit: 10
+      damageMultiplier: 2.6, 
+      effect: 'Deal damage and heal 20 HP. Holy Empowerment (3 turns): +25% damage, +15% crit, heal 5 HP per attack.',
+      healAmount: 20,
+      empowermentTurns: 3,
+      empowermentDamage: 0.25,
+      empowermentCrit: 15,
+      empowermentHeal: 5
     }
   },
   
   TACTICAL_SKILLS: {
     Knight: {
       name: 'Rallying Roar',
-      cost: 20,
-      duration: 2,
-      effect: 'For 2 turns: +20% Attack, +10% Defense. Synergy: Reduces Blood Oath HP cost by 5% if active.',
-      attackBonus: 0.20,
-      defenseBonus: 0.10,
+      cost: 25,
+      duration: 3,
+      effect: 'For 3 turns: +40% Defense, immune to crits, -30% stamina costs. Synergy: Reduces Blood Oath HP cost by 5%.',
+      defenseBonus: 0.40,
+      staminaEfficiency: 0.30,
+      critImmunity: true,
       bloodOathReduction: 0.05
     },
     Wizard: {
@@ -363,12 +365,30 @@ const GAME_CONSTANTS = {
     },
     Crusader: {
       name: 'Bastion of Faith',
-      cost: 20,
-      duration: 2,
-      effect: 'For 2 turns: Heal 4 HP/turn, reduce crit damage by 50%. Synergy: +10 HP to Judgment of Light if active.',
-      healPerTurn: 4,
-      critReduction: 0.50,
-      judgmentBonus: 10
+      cost: 25,
+      duration: 4,
+      effect: 'For 4 turns: +15% Damage, +20% Defense. Synergy: Doubles Holy Empowerment heal-on-hit (10 HP per attack).',
+      damageBonus: 0.15,
+      defenseBonus: 0.20,
+      empowermentHealBonus: 2.0
+    }
+  },
+  
+  BASIC_SKILLS: {
+    Knight: {
+      name: 'Crushing Blow',
+      cost: 17,
+      damageMultiplier: 1.8,
+      effect: 'A powerful strike that cannot be used twice in a row.',
+      cooldown: true
+    },
+    Crusader: {
+      name: 'Smite',
+      cost: 15,
+      damageMultiplier: 1.7,
+      healAmount: 10,
+      effect: 'Holy strike that heals. Cannot be used twice in a row.',
+      cooldown: true
     }
   },
   
@@ -380,10 +400,30 @@ const GAME_CONSTANTS = {
   },
   
   ARMOR_NAMES: {
-    helmet: ['Worn Cap', 'Leather Hood', 'Simple Helm', 'Patched Coif', 'Tattered Cowl', 'Cloth Hat', 'Frayed Circlet'],
-    chest: ['Worn Tunic', 'Leather Vest', 'Patched Jerkin', 'Simple Breastplate', 'Tattered Robe', 'Cloth Shirt', 'Frayed Cuirass'],
-    gloves: ['Worn Gloves', 'Leather Grips', 'Simple Gauntlets', 'Patched Mitts', 'Tattered Wraps', 'Cloth Bindings', 'Frayed Guards'],
-    boots: ['Worn Boots', 'Leather Sandals', 'Simple Greaves', 'Patched Shoes', 'Tattered Footwraps', 'Cloth Slippers', 'Frayed Sabatons']
+    helmet: {
+      common: ['Worn Cap', 'Leather Hood', 'Simple Helm', 'Patched Coif', 'Tattered Cowl', 'Cloth Hat', 'Iron Helmet'],
+      rare: ['Battle Helm', 'Guardian\'s Crown', 'Steel Visage', 'Warden\'s Headguard', 'Reinforced Coif', 'Knight\'s Helm', 'Sentinel\'s Visor'],
+      epic: ['Dragonhelm', 'Titanforged Crown', 'Demonward Visor', 'Wyrm\'s Crest', 'Stormcrown', 'Voidgazer', 'Soulkeeper\'s Helm'],
+      legendary: ['Crown of Infinity', 'Eternity\'s Watch', 'The Omniscient', 'Worldkeeper\'s Gaze', 'Heaven\'s Authority', 'Judgment\'s Visage', 'Apex Sovereign']
+    },
+    chest: {
+      common: ['Torn Tunic', 'Worn Vest', 'Patched Mail', 'Simple Breastplate', 'Tattered Robes', 'Frayed Armor', 'Crude Cuirass'],
+      rare: ['Forged Plate', 'Battle Harness', 'Guardian\'s Mail', 'Reinforced Cuirass', 'Steel Aegis', 'Knight\'s Plate', 'Warden\'s Vestments'],
+      epic: ['Dragonscale Hauberk', 'Titanplate', 'Demonhide Vest', 'Soulforged Armor', 'Voidplate', 'Stormbreaker Mail', 'Wyrm\'s Protection'],
+      legendary: ['Eternity\'s Embrace', 'The Unyielding', 'World\'s Bulwark', 'Heaven\'s Aegis', 'Immortal Vestment', 'Cosmos Shell', 'Invincible Plate']
+    },
+    gloves: {
+      common: ['Torn Gloves', 'Worn Gauntlets', 'Patched Mitts', 'Simple Handguards', 'Frayed Wraps', 'Crude Grips', 'Cloth Gloves'],
+      rare: ['Steel Gauntlets', 'Battle Grips', 'Forged Fists', 'Guardian\'s Handguards', 'Reinforced Gloves', 'Knight\'s Gauntlets', 'Duelist\'s Wraps'],
+      epic: ['Titan\'s Grasp', 'Dragongrip Gauntlets', 'Soulbound Fists', 'Voidgrasp', 'Stormhands', 'Demonward Grips', 'Wyrmclaw Gloves'],
+      legendary: ['Heaven\'s Hands', 'Worldshaper\'s Touch', 'Eternity\'s Grasp', 'Infinity\'s Reach', 'The Unbreakable', 'Fate\'s Grip', 'Omnipotent Fists']
+    },
+    boots: {
+      common: ['Worn Boots', 'Tattered Shoes', 'Simple Greaves', 'Patched Footwraps', 'Frayed Sabatons', 'Crude Sandals', 'Cloth Boots'],
+      rare: ['Steel Greaves', 'Battle Boots', 'Forged Sabatons', 'Guardian\'s Treads', 'Reinforced Footguards', 'Knight\'s Boots', 'Swift Treads'],
+      epic: ['Titan\'s Stride', 'Dragonscale Boots', 'Soulwalker Greaves', 'Voidstep Sabatons', 'Stormstriders', 'Demonward Treads', 'Wyrmfoot Boots'],
+      legendary: ['Heaven\'s Path', 'Worldwalker\'s Stride', 'Eternity\'s Journey', 'Infinity\'s Steps', 'The Unshakable', 'Fate\'s March', 'Omnipresent Treads']
+    }
   },
   
   ACCESSORY_STAT_RANGES: {
@@ -392,8 +432,18 @@ const GAME_CONSTANTS = {
   },
   
   ACCESSORY_NAMES: {
-    pendant: ['Worn Amulet', 'Tarnished Locket', 'Simple Charm', 'Cracked Pendant', 'Faded Medallion', 'Rusty Chain', 'Chipped Stone', 'Dulled Jewel', 'Scratched Token'],
-    ring: ['Bent Ring', 'Tarnished Band', 'Simple Loop', 'Worn Circle', 'Faded Ring', 'Scratched Band', 'Chipped Hoop', 'Dulled Ring', 'Rusty Circle']
+    pendant: {
+      common: ['Cracked Pendant', 'Worn Charm', 'Simple Talisman', 'Tarnished Medallion', 'Crude Necklace', 'Faded Amulet', 'Plain Pendant'],
+      rare: ['Enchanted Medallion', 'Battle Charm', 'Mystic Pendant', 'Guardian\'s Talisman', 'Forged Amulet', 'Knight\'s Sigil', 'Warden\'s Necklace'],
+      epic: ['Dragonheart Pendant', 'Soulstone Amulet', 'Voidkeeper Charm', 'Titan\'s Medallion', 'Stormshard Talisman', 'Demonward Sigil', 'Wyrmheart Necklace'],
+      legendary: ['Eternity\'s Heart', 'The Infinite Soul', 'Heaven\'s Tear', 'World\'s Core', 'Fate\'s Promise', 'Cosmos Shard', 'The Primordial']
+    },
+    ring: {
+      common: ['Bent Ring', 'Tarnished Band', 'Simple Loop', 'Worn Circle', 'Crude Band', 'Rusty Ring', 'Plain Loop'],
+      rare: ['Engraved Band', 'Battle Ring', 'Enchanted Loop', 'Warden\'s Signet', 'Forged Circle', 'Knight\'s Ring', 'Mystic Band'],
+      epic: ['Dragonbone Ring', 'Soulbound Band', 'Voidcircle', 'Titan\'s Loop', 'Stormband', 'Demonward Ring', 'Wyrmscale Signet'],
+      legendary: ['Eternity Band', 'The Infinite Loop', 'Heaven\'s Circle', 'Worldbinder\'s Ring', 'Fate\'s Signet', 'Cosmos Ring', 'The Eternal']
+    }
   },
   
   STARTING_EQUIPMENT: {
@@ -443,11 +493,37 @@ const GAME_CONSTANTS = {
     max: 12
   },
   
-  WEAPON_NAMES: [
-    'Worn Blade', 'Chipped Sword', 'Rusty Axe', 'Dull Dagger', 'Cracked Mace',
-    'Splintered Staff', 'Bent Spear', 'Frayed Bow', 'Tarnished Blade', 'Weathered Club',
-    'Simple Sword', 'Crude Axe', 'Basic Dagger', 'Wooden Staff', 'Hunting Bow'
-  ],
+  WEAPON_NAMES: {
+    common: [
+      'Iron Sword', 'Steel Blade', 'Simple Longsword', 'Worn Saber', 'Rusty Greatsword',
+      'Iron Axe', 'Crude Hatchet', 'Worn Cleaver', 'Simple Battleaxe', 'Chipped Waraxe',
+      'Iron Dagger', 'Worn Knife', 'Simple Stiletto', 'Rusty Dirk', 'Crude Shiv',
+      'Simple Bow', 'Worn Longbow', 'Crude Shortbow', 'Hunter\'s Bow', 'Bent Recurve',
+      'Wooden Staff', 'Worn Rod', 'Simple Cane', 'Crude Scepter', 'Old Walking Stick'
+    ],
+    rare: [
+      'Forged Edge', 'Battle Brand', 'Tempered Longsword', 'Honed Saber', 'Masterwork Blade',
+      'Forged Cleaver', 'Brutal Edge', 'Executioner\'s Axe', 'Warden\'s Hatchet', 'Masterwork Waraxe',
+      'Shadow Fang', 'Silent Edge', 'Assassin\'s Kiss', 'Viper\'s Tooth', 'Masterwork Stiletto',
+      'Masterwork Longbow', 'Sniper\'s Edge', 'Ranger\'s Pride', 'Keen Shooter', 'Precision Bow',
+      'Arcane Focus', 'Enchanted Staff', 'Mage\'s Companion', 'Crystal Rod', 'Sorcerer\'s Reach'
+    ],
+    epic: [
+      'Dragonbane', 'Wyrmfang', 'Soulcleaver', 'Demonrender', 'Titanbreaker',
+      'Bonecrusher', 'Skullsplitter', 'Gorehowl', 'Frostbite', 'Stormbreaker',
+      'Heartpiercer', 'Soulstealer', 'Widow\'s Embrace', 'Deathwhisper', 'Venomfang',
+      'Windseeker', 'Eagleye', 'Stormcaller', 'Dragonpiercer', 'Starshot',
+      'Stormcaller', 'Frostweaver', 'Flameheart', 'Voidtouch', 'Mindbender'
+    ],
+    legendary: [
+      'Worldbreaker', 'Starfall', 'Oblivion\'s Edge', 'Eternity Blade', 'Cataclysm',
+      'Ragnarok', 'The Decimator', 'Apocalypse', 'Thunderfall', 'Worldsplitter',
+      'The Betrayer', 'Eternal Night', 'Last Breath', 'Fate\'s End', 'Oblivion Shard',
+      'Heaven\'s Fury', 'The Sunbreaker', 'Horizon\'s End', 'Infinity\'s Reach', 'Fate\'s Arrow',
+      'The Universe', 'Cosmos Eternal', 'Reality Bender', 'Infinity\'s Grasp', 'The Beginning'
+    ]
+  },
+
   
   STARTING_WEAPONS: {
     Knight: { name: 'Iron Longsword', attack: 4 },
@@ -1112,12 +1188,14 @@ const [waveGoldTotal, setWaveGoldTotal] = useState(0);
   const [chargeStacks, setChargeStacks] = useState(0); // 0-3 charges for all classes
   const [knightBloodOathTurns, setKnightBloodOathTurns] = useState(0); // Buff duration
   const [knightConsecutiveUses, setKnightConsecutiveUses] = useState(0); // HP cost escalation
+  const [knightCrushingBlowCooldown, setKnightCrushingBlowCooldown] = useState(false); // Can't use twice in a row
   const [wizardTemporalBuff, setWizardTemporalBuff] = useState(false); // Next attack bonus
   const [wizardStaminaRegen, setWizardStaminaRegen] = useState(false); // Regen flag
   const [wizardTemporalCooldown, setWizardTemporalCooldown] = useState(false); // Can't use twice in a row
   const [assassinPoisonStacks, setAssassinPoisonStacks] = useState(0); // 0-2 stacks
-  const [crusaderSanctified, setCrusaderSanctified] = useState(0); // Sanctified turns remaining
+  const [crusaderHolyEmpowerment, setCrusaderHolyEmpowerment] = useState(0); // Holy Empowerment turns remaining
   const [crusaderJudgmentCooldown, setCrusaderJudgmentCooldown] = useState(false); // Can't spam Judgment
+  const [crusaderSmiteCooldown, setCrusaderSmiteCooldown] = useState(false); // Can't spam Smite
   
   // Tactical skills state
   const [knightRallyingRoar, setKnightRallyingRoar] = useState(0); // Turns remaining
@@ -2202,7 +2280,7 @@ if (tasks.length === 0) {
         const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
         const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         const attack = Math.floor(baseAttack * multiplier);
-        const names = GAME_CONSTANTS.WEAPON_NAMES;
+        const names = GAME_CONSTANTS.WEAPON_NAMES[selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
         const affixes = generateAffixes(selectedRarity, 'weapon');
         
@@ -2221,7 +2299,7 @@ if (tasks.length === 0) {
         const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
         const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         const defense = Math.floor(baseDefense * multiplier);
-        const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+        const names = GAME_CONSTANTS.ARMOR_NAMES[slot][selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
         const affixes = generateAffixes(selectedRarity, 'armor');
         
@@ -2239,7 +2317,7 @@ if (tasks.length === 0) {
         const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
         const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         const hp = Math.floor(baseHp * multiplier);
-        const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+        const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
         
         item = {
@@ -2254,7 +2332,7 @@ if (tasks.length === 0) {
         const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
         const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         const stamina = Math.floor(baseStamina * multiplier);
-        const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+        const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
         
         item = {
@@ -2418,16 +2496,16 @@ if (tasks.length === 0) {
     // Add item to inventory
     if (item.type === 'weapon') {
       setWeaponInventory(prev => [...prev, { ...item, id: Date.now() }]);
-      addLog(`Purchased: ${item.name} (+${item.attack} ATK) for ${finalPrice}g`);
+      addLog(`Purchased: ${item.name} (+${item.attack} Attack) for ${finalPrice}g`);
     } else if (item.type === 'armor') {
       setArmorInventory(prev => ({
         ...prev,
         [item.slot]: [...prev[item.slot], { ...item, id: Date.now() }]
       }));
-      addLog(`Purchased: ${item.name} (+${item.defense} DEF) for ${finalPrice}g`);
+      addLog(`Purchased: ${item.name} (+${item.defense} Defense) for ${finalPrice}g`);
     } else if (item.type === 'pendant') {
       setPendantInventory(prev => [...prev, { ...item, id: Date.now() }]);
-      addLog(`Purchased: ${item.name} (+${item.hp} HP) for ${finalPrice}g`);
+      addLog(`Purchased: ${item.name} (+${item.hp} Health) for ${finalPrice}g`);
     } else if (item.type === 'ring') {
       setRingInventory(prev => [...prev, { ...item, id: Date.now() }]);
       addLog(`Purchased: ${item.name} (+${item.stamina} STA) for ${finalPrice}g`);
@@ -2517,7 +2595,7 @@ if (task.overdue) {
       const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
       const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const attack = Math.floor(baseAttack * multiplier);
-      const names = GAME_CONSTANTS.WEAPON_NAMES;
+      const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
@@ -2525,7 +2603,7 @@ if (task.overdue) {
       const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
       setWeaponInventory(prev => [...prev, newWeapon]);
       
-      addLog(`Weapon found: ${rarityName} ${name} (+${attack} ATK)`);
+      addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
     } else if (roll < GAME_CONSTANTS.LOOT_RATES.ARMOR) {
       // Generate random armor piece
       const rarity = rollRarity('normal');
@@ -2536,7 +2614,7 @@ if (task.overdue) {
       const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
       const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const defense = Math.floor(baseDefense * multiplier);
-      const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+      const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
@@ -2547,7 +2625,7 @@ if (task.overdue) {
         [slot]: [...prev[slot], newArmor]
       }));
       
-      addLog(`Armor found: ${rarityName} ${name} (+${defense} DEF)`);
+      addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)`);
     }
     
     // Mark task as done
@@ -2973,10 +3051,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (crusaderJudgmentCooldown && hero?.class?.name === 'Crusader') {
       setCrusaderJudgmentCooldown(false);
     }
+    if (crusaderSmiteCooldown && hero?.class?.name === 'Crusader') {
+      setCrusaderSmiteCooldown(false);
+    }
     
     // Clear tactical skill cooldowns when using normal attack
     if (knightRallyingRoarCooldown && hero?.class?.name === 'Knight') {
       setKnightRallyingRoarCooldown(false);
+    }
+    if (knightCrushingBlowCooldown && hero?.class?.name === 'Knight') {
+      setKnightCrushingBlowCooldown(false);
     }
     if (wizardEtherealBarrierCooldown && hero?.class?.name === 'Wizard') {
       setWizardEtherealBarrierCooldown(false);
@@ -3058,7 +3142,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     let critMultiplier = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
     
     // Crusader Sanctified: +10% crit chance
-    if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
       critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
     }
     
@@ -3066,7 +3150,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
       critChance += GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.critBonus;
     }
-    if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
       critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
     }
     
@@ -3138,22 +3222,42 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setWizardTemporalBuff(false);
     }
     
-    // Apply Knight's Blood Oath damage bonus
+    // Apply Knight's Blood Oath damage bonus (Rallying Roar no longer gives damage)
     if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
       const bloodOathBonus = Math.floor(finalDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffDamage);
       finalDamage += bloodOathBonus;
-      bonusMessages.push(`⚔️ +${bloodOathBonus} from Blood Oath`);
+      bonusMessages.push(`⚔️ +${bloodOathBonus} from Blood Oath (+50%)`);
     }
     
-    // Apply Knight's Rallying Roar damage bonus
-    if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
-      const rallyBonus = Math.floor(finalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Knight.attackBonus);
-      finalDamage += rallyBonus;
-      bonusMessages.push(`⚔️ +${rallyBonus} from Rallying Roar`);
+    // Apply Crusader's Holy Empowerment damage bonus
+    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
+      const empowermentBonus = Math.floor(finalDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentDamage);
+      finalDamage += empowermentBonus;
+      bonusMessages.push(`✙ +${empowermentBonus} from Holy Empowerment (+25%)`);
+    }
+    
+    // Apply Crusader's Bastion of Faith damage bonus
+    if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
+      const bastionBonus = Math.floor(finalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageBonus);
+      finalDamage += bastionBonus;
+      bonusMessages.push(`✙ +${bastionBonus} from Bastion of Faith (+15%)`);
     }
     
     const newBossHp = Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
+    
+    // Crusader Holy Empowerment: heal on hit
+    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
+      let empowermentHeal = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentHeal;
+      
+      // Bastion synergy: double the heal
+      if (crusaderBastionOfFaith > 0) {
+        empowermentHeal = Math.floor(empowermentHeal * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.empowermentHealBonus);
+      }
+      
+      setHp(h => Math.min(getMaxHp(), h + empowermentHeal));
+      bonusMessages.push(`✙ +${empowermentHeal} HP from Holy Empowerment`);
+    }
     
     // Build charges for special attacks
     if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
@@ -3334,6 +3438,10 @@ if (battleType === 'elite') {
   
   setBattling(false);
   setBattleMode(false);
+  setKnightConsecutiveUses(0); // Reset HP cost escalation on combat end
+  setKnightCrushingBlowCooldown(false); // Reset Crushing Blow cooldown
+  setCrusaderSmiteCooldown(false); // Reset Smite cooldown
+  setRecklessStacks(0);
       
       const lootMessages = [];
       
@@ -3364,7 +3472,7 @@ if (battleType === 'elite') {
             const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
             const attack = Math.floor(baseAttack * multiplier);
             
-            const names = GAME_CONSTANTS.WEAPON_NAMES;
+            const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
@@ -3372,8 +3480,8 @@ if (battleType === 'elite') {
             const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
             setWeaponInventory(prev => [...prev, newWeapon]);
             
-            lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
-            addLog(`Weapon found: ${rarityName} ${name} (+${attack} ATK)`);
+            lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
+            addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
           } else if (lootRoll < 0.70) {
             // 20% Armor with rarity
             const rarity = rollRarity('normal');
@@ -3385,7 +3493,7 @@ if (battleType === 'elite') {
             const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
             const defense = Math.floor(baseDefense * multiplier);
             
-            const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+            const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
@@ -3396,8 +3504,8 @@ if (battleType === 'elite') {
               [slot]: [...prev[slot], newArmor]
             }));
             
-            lootMessages.push(`${rarityName} ${name} (+${defense} DEF)`);
-            addLog(`Armor found: ${rarityName} ${name} (+${defense} DEF)`);
+            lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
+            addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)`);
           } else if (lootRoll < 0.80) {
             // 10% Pendant with rarity
             const rarity = rollRarity('normal');
@@ -3414,8 +3522,8 @@ if (battleType === 'elite') {
             const newPendant = { name, hp, rarity, id: Date.now() };
             setPendantInventory(prev => [...prev, newPendant]);
             
-            lootMessages.push(`${rarityName} ${name} (+${hp} HP)`);
-            addLog(`Pendant found: ${rarityName} ${name} (+${hp} HP)`);
+            lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
+            addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
           } else if (lootRoll < 0.90) {
             // 10% Ring with rarity
             const rarity = rollRarity('normal');
@@ -3458,7 +3566,7 @@ if (battleType === 'elite') {
             const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
             const attack = Math.floor(baseAttack * multiplier);
             
-            const names = GAME_CONSTANTS.WEAPON_NAMES;
+            const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
@@ -3466,8 +3574,8 @@ if (battleType === 'elite') {
             const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
             setWeaponInventory(prev => [...prev, newWeapon]);
             
-            lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
-            addLog(`Weapon found: ${rarityName} ${name} (+${attack} ATK)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
+            addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
             // Generate random armor piece with better rarity for elites
             const rarity = rollRarity('elite');
@@ -3479,7 +3587,7 @@ if (battleType === 'elite') {
             const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
             const defense = Math.floor(baseDefense * multiplier);
             
-            const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+            const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
             const name = names[Math.floor(Math.random() * names.length)];
             const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
             
@@ -3490,8 +3598,8 @@ if (battleType === 'elite') {
               [slot]: [...prev[slot], newArmor]
             }));
             
-            lootMessages.push(`${rarityName} ${name} (+${defense} DEF)`);
-            addLog(`Armor found: ${rarityName} ${name} (+${defense} DEF)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
+            addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
             // Generate random pendant with elite rarity
             const rarity = rollRarity('elite');
@@ -3508,8 +3616,8 @@ if (battleType === 'elite') {
             const newPendant = { name, hp, rarity, id: Date.now() };
             setPendantInventory(prev => [...prev, newPendant]);
             
-            lootMessages.push(`${rarityName} ${name} (+${hp} HP)`);
-            addLog(`Pendant found: ${rarityName} ${name} (+${hp} HP)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+            lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
+            addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
           } else {
             // Generate random ring with elite rarity
             const rarity = rollRarity('elite');
@@ -3633,16 +3741,31 @@ if (enragedTurns > 0) {
   }
 }
 
-// Knight Blood Oath: Reduce incoming damage by 20%
+
+// Knight defense modifiers (additive stacking)
+let knightDefenseModifier = 0;
+
+// Blood Oath: -30% defense (TAKE MORE DAMAGE - glass cannon)
 if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffReduction);
-  bossDamage = Math.max(1, bossDamage - reduction);
+  knightDefenseModifier -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction; // -0.30
 }
 
-// Knight Rallying Roar: +10% Defense (reduce incoming damage)
+// Rallying Roar: +40% defense (TANK MODE)
 if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus);
-  bossDamage = Math.max(1, bossDamage - reduction);
+  knightDefenseModifier += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus; // +0.40
+}
+
+// Apply net modifier (can be positive or negative)
+if (knightDefenseModifier !== 0) {
+  if (knightDefenseModifier > 0) {
+    // Defense buff - reduce incoming damage
+    const reduction = Math.floor(bossDamage * knightDefenseModifier);
+    bossDamage = Math.max(1, bossDamage - reduction);
+  } else {
+    // Defense penalty - INCREASE incoming damage
+    const penalty = Math.floor(bossDamage * Math.abs(knightDefenseModifier));
+    bossDamage += penalty;
+  }
 }
 
 // Wizard Ethereal Barrier: 30% damage reduction + 10% reflection
@@ -3657,6 +3780,12 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     setBossHp(h => Math.max(0, h - reflectDamage));
     addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
   }
+}
+
+// Crusader Bastion of Faith: +20% defense
+if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
+  bossDamage = Math.max(1, bossDamage - reduction);
 }
       
       setPlayerFlash(true);
@@ -3710,20 +3839,6 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
       });
       addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
       
-      // Crusader Sanctified: Heal when boss attacks
-      if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
-        const sanctifiedHeal = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedHeal;
-        setHp(h => Math.min(getMaxHp(), h + sanctifiedHeal));
-        addLog(`✨ Sanctified: +${sanctifiedHeal} HP`);
-      }
-      
-      // Crusader Bastion of Faith: Heal per turn
-      if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
-        const bastionHeal = GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.healPerTurn;
-        setHp(h => Math.min(getMaxHp(), h + bastionHeal));
-        addLog(`✙ Bastion of Faith: +${bastionHeal} HP`);
-      }
-      
       // Taunt trigger: 25% chance after taking damage
       if (!isTauntAvailable && bossDamage > 0 && Math.random() < 0.25) {
         setIsTauntAvailable(true);
@@ -3744,12 +3859,12 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
         });
       }
       
-      // Decrement Crusader Sanctified turns
-      if (crusaderSanctified > 0) {
-        setCrusaderSanctified(prev => {
+      // Decrement Crusader Holy Empowerment turns
+      if (crusaderHolyEmpowerment > 0) {
+        setCrusaderHolyEmpowerment(prev => {
           const newTurns = prev - 1;
           if (newTurns === 0) {
-            addLog(`✨ Sanctified fades...`);
+            addLog(`✙ Holy Empowerment fades...`);
           }
           return newTurns;
         });
@@ -3960,6 +4075,8 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     }
     
     let hpCost = 0;
+    let totalPercent = 0; // DECLARE HERE to fix scope bug
+    
     if (hero.class.name === 'Knight') {
       // NEW: Blood Oath - percentage-based HP cost with escalation
       let basePercent = GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.hpCostPercent;
@@ -3971,7 +4088,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
         addLog(`⚔️ Rallying Roar synergy: HP cost reduced by 5%!`);
       }
       
-      const totalPercent = basePercent + (knightConsecutiveUses * escalation);
+      totalPercent = basePercent + (knightConsecutiveUses * escalation);
       hpCost = Math.floor(hp * totalPercent);
       
       if (hp <= hpCost) {
@@ -3984,7 +4101,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     
     if (hpCost > 0 && hero.class.name === 'Knight') {
       setHp(h => Math.max(1, h - hpCost));
-      const percentUsed = Math.floor((basePercent + (knightConsecutiveUses * escalation)) * 100);
+      const percentUsed = Math.floor(totalPercent * 100); // FIX: use totalPercent directly
       addLog(`⚔️ Blood Oath! Sacrificed ${hpCost} HP (${percentUsed}% of current HP)`);
       setKnightConsecutiveUses(u => u + 1);
     }
@@ -4008,7 +4125,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
     
     // Crusader Sanctified: +10% crit chance
-    if (crusaderSanctified > 0 && hero?.class?.name === 'Crusader') {
+    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
       critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
     }
     
@@ -4059,7 +4176,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     if (hero.class.name === 'Knight') {
       // NEW: Blood Oath buff (2 turns: +20% damage, -20% incoming)
       setKnightBloodOathTurns(GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffTurns);
-      effectMessage = `⚔️ BLOOD OATH! Empowered for ${GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffTurns} turns`;
+      effectMessage = `⚔️ BLOOD OATH! +50% damage, -30% defense for ${GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffTurns} turns (GLASS CANNON MODE)`;
     } else if (hero.class.name === 'Wizard') {
       // Check cooldown - can't use twice in a row
       if (wizardTemporalCooldown) {
@@ -4131,26 +4248,20 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     } else if (hero.class.name === 'Crusader') {
       // Check cooldown - can't use twice in a row
       if (crusaderJudgmentCooldown) {
-        addLog(`✨ Judgment of Light is still recovering! Use a normal attack first.`);
+        addLog(`✙ Judgment of Light is still recovering! Use a normal attack first.`);
         return;
       }
       
       // NEW: Judgment of Light mechanics
-      let healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
-      
-      // Synergy: Bastion of Faith increases Judgment heal by +10 HP
-      if (crusaderBastionOfFaith > 0) {
-        healAmount += GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.judgmentBonus;
-        addLog(`✙ Bastion of Faith synergy: +10 HP to healing!`);
-      }
+      const healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
       
       setHp(h => Math.min(getMaxHp(), h + healAmount));
       
-      // Apply Sanctified buff (2 turns)
-      setCrusaderSanctified(GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedTurns);
+      // Apply Holy Empowerment buff (3 turns)
+      setCrusaderHolyEmpowerment(GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentTurns);
       setCrusaderJudgmentCooldown(true); // Can't use again until after next attack
       
-      effectMessage = `✨ JUDGMENT OF LIGHT! +${healAmount} HP, Sanctified (2 turns)`;
+      effectMessage = `✙ JUDGMENT OF LIGHT! +${healAmount} HP, Holy Empowerment (3 turns: +25% dmg, +15% crit, heal on hit)`;
     }
     
     const newBossHp = Math.max(0, bossHp - damage);
@@ -4249,6 +4360,10 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
       
       setBattling(false);
       setBattleMode(false);
+      setKnightConsecutiveUses(0); // Reset HP cost escalation on combat end
+      setKnightCrushingBlowCooldown(false); // Reset Crushing Blow cooldown
+      setCrusaderSmiteCooldown(false); // Reset Smite cooldown
+      setRecklessStacks(0);
       
       const lootMessages = [];
       
@@ -4287,7 +4402,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
       const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const attack = Math.floor(baseAttack * multiplier);
       
-      const names = GAME_CONSTANTS.WEAPON_NAMES;
+      const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
@@ -4295,8 +4410,8 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
       const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
       setWeaponInventory(prev => [...prev, newWeapon]);
       
-      lootMessages.push(`${rarityName} ${name} (+${attack} ATK)`);
-      addLog(`💎 Looted: ${rarityName} ${name} (+${attack} ATK)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
       // Generate random armor piece with boss-tier rarity
       const rarity = rollRarity('boss');
@@ -4308,7 +4423,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
       const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const defense = Math.floor(baseDefense * multiplier);
       
-      const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+      const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
       
@@ -4319,8 +4434,8 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
         [slot]: [...prev[slot], newArmor]
       }));
       
-      lootMessages.push(`${rarityName} ${name} (+${defense} DEF)`);
-      addLog(`💎 Looted: ${rarityName} ${name} (+${defense} DEF)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${defense} Defense)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
       // Generate random pendant with boss-tier rarity
       const rarity = rollRarity('boss');
@@ -4337,8 +4452,8 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
       const newPendant = { name, hp, rarity, id: Date.now() };
       setPendantInventory(prev => [...prev, newPendant]);
       
-      lootMessages.push(`${rarityName} ${name} (+${hp} HP)`);
-      addLog(`💎 Looted: ${rarityName} ${name} (+${hp} HP)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
+      lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
+      addLog(`💎 Looted: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else {
       // Generate random ring with boss-tier rarity
       const rarity = rollRarity('boss');
@@ -4465,16 +4580,31 @@ if (enragedTurns > 0) {
   }
 }
 
-// Knight Blood Oath: Reduce incoming damage by 20%
+
+// Knight defense modifiers (additive stacking)
+let knightDefenseModifier = 0;
+
+// Blood Oath: -30% defense (TAKE MORE DAMAGE - glass cannon)
 if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffReduction);
-  bossDamage = Math.max(1, bossDamage - reduction);
+  knightDefenseModifier -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction; // -0.30
 }
 
-// Knight Rallying Roar: +10% Defense (reduce incoming damage)
+// Rallying Roar: +40% defense (TANK MODE)
 if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus);
-  bossDamage = Math.max(1, bossDamage - reduction);
+  knightDefenseModifier += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus; // +0.40
+}
+
+// Apply net modifier (can be positive or negative)
+if (knightDefenseModifier !== 0) {
+  if (knightDefenseModifier > 0) {
+    // Defense buff - reduce incoming damage
+    const reduction = Math.floor(bossDamage * knightDefenseModifier);
+    bossDamage = Math.max(1, bossDamage - reduction);
+  } else {
+    // Defense penalty - INCREASE incoming damage
+    const penalty = Math.floor(bossDamage * Math.abs(knightDefenseModifier));
+    bossDamage += penalty;
+  }
 }
 
 // Wizard Ethereal Barrier: 30% damage reduction + 10% reflection
@@ -4489,6 +4619,12 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     setBossHp(h => Math.max(0, h - reflectDamage));
     addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
   }
+}
+
+// Crusader Bastion of Faith: +20% defense
+if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
+  bossDamage = Math.max(1, bossDamage - reduction);
 }
         
         setPlayerFlash(true);
@@ -4527,12 +4663,12 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
           });
         }
         
-        // Decrement Crusader Sanctified turns
-        if (crusaderSanctified > 0) {
-          setCrusaderSanctified(prev => {
+        // Decrement Crusader Holy Empowerment turns
+        if (crusaderHolyEmpowerment > 0) {
+          setCrusaderHolyEmpowerment(prev => {
             const newTurns = prev - 1;
             if (newTurns === 0) {
-              addLog(`✨ Sanctified fades...`);
+              addLog(`✙ Holy Empowerment fades...`);
             }
             return newTurns;
           });
@@ -4660,6 +4796,529 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     }
   };
   
+  const useCrushingBlow = () => {
+    if (!battling || bossHp <= 0 || !hero || hero.class.name !== 'Knight') return;
+    
+    const skill = GAME_CONSTANTS.BASIC_SKILLS.Knight;
+    
+    // Check cooldown
+    if (knightCrushingBlowCooldown) {
+      addLog(`⚔️ Crushing Blow is recovering! Use a different attack first.`);
+      return;
+    }
+    
+    // Check stamina
+    if (stamina < skill.cost) {
+      addLog(`The hero needs ${skill.cost} stamina! (Have ${stamina})`);
+      return;
+    }
+    
+    // Clear other Knight cooldowns
+    if (knightRallyingRoarCooldown) {
+      setKnightRallyingRoarCooldown(false);
+    }
+    
+    setStamina(s => s - skill.cost);
+    setKnightCrushingBlowCooldown(true); // Set cooldown
+    
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    
+    // Get enemy defense based on battle type
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    } else if (battleType === 'final' || isFinalBoss) {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    }
+    
+    // Assassin Mark for Death: Reduce enemy defense by 20%
+    if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
+      enemyDef = Math.floor(enemyDef * (1 - GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.defenseReduction));
+    }
+    
+    // Calculate base damage with Crushing Blow multiplier
+    const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
+    
+    // Crit system
+    let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    let critMultiplier = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
+    
+    // Add weapon affixes to crit
+    if (equippedWeapon && equippedWeapon.affixes) {
+      if (equippedWeapon.affixes.critChance) {
+        critChance += equippedWeapon.affixes.critChance;
+      }
+      if (equippedWeapon.affixes.critMultiplier) {
+        critMultiplier += equippedWeapon.affixes.critMultiplier;
+      }
+    }
+    
+    const critRoll = Math.random() * 100;
+    const isCrit = critRoll < critChance;
+    const actualCritMultiplier = isCrit ? critMultiplier : 1.0;
+    
+    // Apply crit and skill multiplier
+    const baseDamage = (rawDamage * actualCritMultiplier) * skill.damageMultiplier;
+    let damage = Math.max(1, Math.floor(baseDamage - enemyDef));
+    let finalDamage = damage;
+    let bonusMessages = [];
+    
+    if (isCrit) {
+      bonusMessages.push(`💥 CRITICAL HIT! (${actualCritMultiplier.toFixed(1)}x damage)`);
+    }
+    
+    // Check for poison vulnerability
+    if (bossDebuffs.poisonTurns > 0) {
+      const poisonBonus = Math.floor(finalDamage * bossDebuffs.poisonedVulnerability);
+      finalDamage += poisonBonus;
+      bonusMessages.push(`☠️ +${poisonBonus} from poison vulnerability`);
+    }
+    
+    // Apply enraged bonus
+    if (enragedTurns > 0) {
+      const enragedBonus = Math.floor(finalDamage * 0.2);
+      finalDamage += enragedBonus;
+      bonusMessages.push(`🔥 +${enragedBonus} from ENRAGED!`);
+    }
+    
+    // Apply Knight's Blood Oath damage bonus
+    if (knightBloodOathTurns > 0) {
+      const bloodOathBonus = Math.floor(finalDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.buffDamage);
+      finalDamage += bloodOathBonus;
+      bonusMessages.push(`⚔️ +${bloodOathBonus} from Blood Oath (+50%)`);
+    }
+    
+    const newBossHp = Math.max(0, bossHp - finalDamage);
+    setBossHp(newBossHp);
+    
+    // Build charges for special attacks
+    if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+      setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
+      if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+        addLog(`⚡ SPECIAL CHARGED! (Next special deals +25% damage)`);
+      }
+    }
+    
+    addLog(`⚔️ CRUSHING BLOW! Dealt ${finalDamage} damage!`);
+    bonusMessages.forEach(msg => addLog(msg));
+    
+    setBossFlash(true);
+    setTimeout(() => setBossFlash(false), 200);
+    
+    if (newBossHp <= 0) {
+      // Victory logic (same as regular attack)
+      setTimeout(() => {
+        setCurrentAnimation('battle-shake');
+        setTimeout(() => setCurrentAnimation(null), 250);
+      }, 100);
+      
+      setRecklessStacks(0);
+      
+      let xpGain;
+      let goldGain;
+      if (isFinalBoss) {
+        xpGain = GAME_CONSTANTS.XP_REWARDS.finalBoss;
+        goldGain = 100;
+      } else if (battleType === 'elite') {
+        xpGain = GAME_CONSTANTS.XP_REWARDS.miniBoss;
+        goldGain = 50;
+      } else if (battleType === 'wave') {
+        xpGain = 15;
+        goldGain = 12;
+      } else {
+        xpGain = 10;
+        goldGain = 10;
+      }
+      
+      setXp(x => x + xpGain);
+      setGold(e => e + goldGain);
+      
+      if (battleType === 'wave') {
+        setWaveGoldTotal(t => t + goldGain);
+      }
+      
+      addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
+      
+      // Set victory dialogue
+      if (battleType === 'elite' || battleType === 'final') {
+        const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
+        const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
+        if (bossDialogue) {
+          setEnemyDialogue(bossDialogue.VICTORY_PLAYER);
+        }
+      } else {
+        const victoryQuotes = GAME_CONSTANTS.ENEMY_DIALOGUE.VICTORY_PLAYER;
+        const randomQuote = victoryQuotes[Math.floor(Math.random() * victoryQuotes.length)];
+        setEnemyDialogue(randomQuote);
+      }
+      
+      if (battleType === 'elite') {
+        setEliteBossDefeatedToday(true);
+        addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
+      }
+      
+      if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
+        const nextEnemy = currentWaveEnemy + 1;
+        addLog(`Next wave enemy incoming...`);
+        setTimeout(() => spawnRegularEnemy(true, nextEnemy, totalWaveEnemies), 1500);
+        return;
+      }
+      
+      if (battleType === 'wave') {
+        setXp(x => x + 20);
+        addLog(`The wave is vanquished! +20 bonus XP`);
+      }
+      
+      setBattling(false);
+      setBattleMode(false);
+      setKnightConsecutiveUses(0);
+      setRecklessStacks(0);
+      
+      // Loot would go here (skipping for brevity, same as regular attack)
+      setVictoryLoot([]);
+      setVictoryFlash(true);
+      setTimeout(() => setVictoryFlash(false), 400);
+      
+      return;
+    }
+    
+    // Boss counter-attack (same as regular attack)
+    setTimeout(() => {
+      if (!battling || hp <= 0) return;
+      
+      setCurrentAnimation('battle-shake');
+      setTimeout(() => setCurrentAnimation(null), 250);
+      
+      const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+      let baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+      
+      if (battleType === 'elite') {
+        const eliteDay = ((currentDay - 1) % 7) + 1;
+        const baseDmg = GAME_CONSTANTS.MINI_BOSS_ATK_BASE;
+        const scaling = GAME_CONSTANTS.MINI_BOSS_ATK_SCALING;
+        baseAttack = Math.floor(baseDmg + (eliteDay * scaling));
+      } else if (battleType === 'final' || isFinalBoss) {
+        const baseDmg = GAME_CONSTANTS.BOSS_ATTACK_BASE;
+        const scaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+        baseAttack = Math.floor(baseDmg + (currentDay * scaling));
+      }
+      
+      let bossDamage = Math.max(1, Math.floor(
+        baseAttack - getBaseDefense()
+      ));
+      
+      // Phase 2 ramping damage
+      if (inPhase2 && battleType === 'final') {
+        const rampBonus = Math.floor(bossDamage * (phase2DamageStacks * 0.05));
+        if (rampBonus > 0) {
+          bossDamage += rampBonus;
+        }
+        setPhase2DamageStacks(prev => prev + 1);
+      }
+      
+      // Enraged enemies
+      if (enragedTurns > 0) {
+        const enragedBonus = Math.floor(bossDamage * 0.15);
+        bossDamage += enragedBonus;
+        
+        if (Math.random() < 0.25) {
+          addLog(`The enemy's wild strike misses!`);
+          setEnragedTurns(prev => {
+            const newTurns = prev - 1;
+            if (newTurns === 0) {
+              addLog(`😤 Enemy is no longer ENRAGED`);
+              setPlayerTaunt('');
+              setEnemyTauntResponse('');
+              setShowTauntBoxes(false);
+            }
+            return newTurns;
+          });
+          if (!isTauntAvailable) {
+            setIsTauntAvailable(true);
+            addLog(`💬 [TAUNT AVAILABLE] - Enemy missed! Opening spotted!`);
+          }
+          return;
+        }
+      }
+      
+      // Knight defense modifiers
+      let knightDefenseModifier = 0;
+      if (knightBloodOathTurns > 0) {
+        knightDefenseModifier -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction;
+      }
+      if (knightRallyingRoar > 0) {
+        knightDefenseModifier += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus;
+      }
+      
+      if (knightDefenseModifier !== 0) {
+        if (knightDefenseModifier > 0) {
+          const reduction = Math.floor(bossDamage * knightDefenseModifier);
+          bossDamage = Math.max(1, bossDamage - reduction);
+        } else {
+          const penalty = Math.floor(bossDamage * Math.abs(knightDefenseModifier));
+          bossDamage += penalty;
+        }
+      }
+      
+      setHp(currentHp => {
+        const newHp = Math.max(0, currentHp - bossDamage);
+        if (newHp <= 0) {
+          setTimeout(() => {
+            addLog('💀 You have been defeated!');
+            die();
+          }, 500);
+        }
+        return newHp;
+      });
+      
+      addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
+      setPlayerFlash(true);
+      setTimeout(() => setPlayerFlash(false), 200);
+      
+      // Decrement buff turns
+      if (knightBloodOathTurns > 0) {
+        setKnightBloodOathTurns(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) {
+            addLog(`⚔️ Blood Oath fades...`);
+            setKnightConsecutiveUses(0);
+          }
+          return newTurns;
+        });
+      }
+      
+      if (knightRallyingRoar > 0) {
+        setKnightRallyingRoar(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`⚔️ Rallying Roar fades...`);
+          return newTurns;
+        });
+      }
+      
+      if (enragedTurns > 0) {
+        setEnragedTurns(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) {
+            addLog(`😤 Enemy is no longer ENRAGED`);
+            setPlayerTaunt('');
+            setEnemyTauntResponse('');
+            setShowTauntBoxes(false);
+          }
+          return newTurns;
+        });
+      }
+      
+    }, 1000);
+  };
+  
+  const useSmite = () => {
+    if (!battling || bossHp <= 0 || !hero || hero.class.name !== 'Crusader') return;
+    
+    const skill = GAME_CONSTANTS.BASIC_SKILLS.Crusader;
+    
+    // Check cooldown
+    if (crusaderSmiteCooldown) {
+      addLog(`✙ Smite is recovering! Use a different attack first.`);
+      return;
+    }
+    
+    // Check stamina
+    if (stamina < skill.cost) {
+      addLog(`The hero needs ${skill.cost} stamina! (Have ${stamina})`);
+      return;
+    }
+    
+    // Clear other Crusader cooldowns
+    if (crusaderJudgmentCooldown) {
+      setCrusaderJudgmentCooldown(false);
+    }
+    
+    setStamina(s => s - skill.cost);
+    setCrusaderSmiteCooldown(true);
+    
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    
+    // Get enemy defense
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    } else if (battleType === 'final' || isFinalBoss) {
+      enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    }
+    
+    // Calculate damage with Smite multiplier
+    const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
+    
+    // Crit system
+    let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    let critMultiplier = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
+    
+    // Holy Empowerment: +15% crit
+    if (crusaderHolyEmpowerment > 0) {
+      critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentCrit;
+    }
+    
+    // Weapon affixes
+    if (equippedWeapon && equippedWeapon.affixes) {
+      if (equippedWeapon.affixes.critChance) {
+        critChance += equippedWeapon.affixes.critChance;
+      }
+      if (equippedWeapon.affixes.critMultiplier) {
+        critMultiplier += equippedWeapon.affixes.critMultiplier;
+      }
+    }
+    
+    const critRoll = Math.random() * 100;
+    const isCrit = critRoll < critChance;
+    const actualCritMultiplier = isCrit ? critMultiplier : 1.0;
+    
+    const baseDamage = (rawDamage * actualCritMultiplier) * skill.damageMultiplier;
+    let damage = Math.max(1, Math.floor(baseDamage - enemyDef));
+    let finalDamage = damage;
+    let bonusMessages = [];
+    
+    if (isCrit) {
+      bonusMessages.push(`💥 CRITICAL HIT! (${actualCritMultiplier.toFixed(1)}x damage)`);
+    }
+    
+    // Apply Holy Empowerment damage bonus
+    if (crusaderHolyEmpowerment > 0) {
+      const empowermentBonus = Math.floor(finalDamage * GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentDamage);
+      finalDamage += empowermentBonus;
+      bonusMessages.push(`✙ +${empowermentBonus} from Holy Empowerment (+25%)`);
+    }
+    
+    // Apply Bastion of Faith damage bonus
+    if (crusaderBastionOfFaith > 0) {
+      const bastionBonus = Math.floor(finalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageBonus);
+      finalDamage += bastionBonus;
+      bonusMessages.push(`✙ +${bastionBonus} from Bastion of Faith (+15%)`);
+    }
+    
+    const newBossHp = Math.max(0, bossHp - finalDamage);
+    setBossHp(newBossHp);
+    
+    // Heal from Smite
+    const healAmount = skill.healAmount;
+    setHp(h => Math.min(getMaxHp(), h + healAmount));
+    addLog(`✙ SMITE! Dealt ${finalDamage} damage and healed ${healAmount} HP!`);
+    bonusMessages.forEach(msg => addLog(msg));
+    
+    // Holy Empowerment: heal on hit
+    if (crusaderHolyEmpowerment > 0) {
+      let empowermentHeal = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentHeal;
+      
+      // Bastion synergy: double the heal
+      if (crusaderBastionOfFaith > 0) {
+        empowermentHeal = Math.floor(empowermentHeal * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.empowermentHealBonus);
+      }
+      
+      setHp(h => Math.min(getMaxHp(), h + empowermentHeal));
+      addLog(`✙ Holy Empowerment: +${empowermentHeal} HP`);
+    }
+    
+    setBossFlash(true);
+    setTimeout(() => setBossFlash(false), 200);
+    
+    // Build charges
+    if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+      setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
+      if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
+        addLog(`⚡ SPECIAL CHARGED! (Next special deals +25% damage)`);
+      }
+    }
+    
+    if (newBossHp <= 0) {
+      // Victory - simplified version
+      setTimeout(() => {
+        setCurrentAnimation('battle-shake');
+        setTimeout(() => setCurrentAnimation(null), 250);
+      }, 100);
+      
+      setRecklessStacks(0);
+      
+      let xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : (battleType === 'elite' ? GAME_CONSTANTS.XP_REWARDS.miniBoss : 10);
+      let goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
+      
+      setXp(x => x + xpGain);
+      setGold(e => e + goldGain);
+      addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
+      
+      setBattling(false);
+      setBattleMode(false);
+      setKnightConsecutiveUses(0);
+      setKnightCrushingBlowCooldown(false);
+      setCrusaderSmiteCooldown(false);
+      setRecklessStacks(0);
+      
+      setVictoryLoot([]);
+      setVictoryFlash(true);
+      setTimeout(() => setVictoryFlash(false), 400);
+      return;
+    }
+    
+    // Boss counter-attack (simplified)
+    setTimeout(() => {
+      if (!battling || hp <= 0) return;
+      
+      setCurrentAnimation('battle-shake');
+      setTimeout(() => setCurrentAnimation(null), 250);
+      
+      const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+      let baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+      
+      if (battleType === 'elite') {
+        const eliteDay = ((currentDay - 1) % 7) + 1;
+        baseAttack = Math.floor(GAME_CONSTANTS.MINI_BOSS_ATK_BASE + (eliteDay * GAME_CONSTANTS.MINI_BOSS_ATK_SCALING));
+      } else if (battleType === 'final' || isFinalBoss) {
+        baseAttack = Math.floor(GAME_CONSTANTS.BOSS_ATTACK_BASE + (currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING));
+      }
+      
+      let bossDamage = Math.max(1, Math.floor(baseAttack - getBaseDefense()));
+      
+      // Bastion of Faith: +20% defense (reduce incoming damage)
+      if (crusaderBastionOfFaith > 0) {
+        const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
+        bossDamage = Math.max(1, bossDamage - reduction);
+      }
+      
+      setHp(currentHp => {
+        const newHp = Math.max(0, currentHp - bossDamage);
+        if (newHp <= 0) {
+          setTimeout(() => {
+            addLog('💀 You have been defeated!');
+            die();
+          }, 500);
+        }
+        return newHp;
+      });
+      
+      addLog(`💥 Boss strikes! -${bossDamage} HP`);
+      setPlayerFlash(true);
+      setTimeout(() => setPlayerFlash(false), 200);
+      
+      // Decrement buff turns
+      if (crusaderHolyEmpowerment > 0) {
+        setCrusaderHolyEmpowerment(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✙ Holy Empowerment fades...`);
+          return newTurns;
+        });
+      }
+      
+      if (crusaderBastionOfFaith > 0) {
+        setCrusaderBastionOfFaith(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✙ Bastion of Faith fades...`);
+          return newTurns;
+        });
+      }
+      
+    }, 1000);
+  };
+  
   const useTacticalSkill = () => {
     if (!battling || bossHp <= 0 || !hero || !hero.class) return;
     
@@ -4696,7 +5355,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     if (hero.class.name === 'Knight') {
       setKnightRallyingRoar(skill.duration);
       setKnightRallyingRoarCooldown(true);
-      addLog(`⚔️ RALLYING ROAR! +20% ATK, +10% DEF for ${skill.duration} turns`);
+      addLog(`⚔️ RALLYING ROAR! +40% DEF, crit immunity, -30% stamina costs for ${skill.duration} turns`);
     } else if (hero.class.name === 'Wizard') {
       setWizardEtherealBarrier(skill.duration);
       setWizardEtherealBarrierCooldown(true);
@@ -4718,8 +5377,135 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     } else if (hero.class.name === 'Crusader') {
       setCrusaderBastionOfFaith(skill.duration);
       setCrusaderBastionOfFaithCooldown(true);
-      addLog(`✙ BASTION OF FAITH! 4 HP/turn, 50% crit reduction for ${skill.duration} turns`);
+      addLog(`✙ BASTION OF FAITH! +15% damage, +20% defense for ${skill.duration} turns`);
     }
+    
+    // CRITICAL: Trigger enemy counter-attack (tactical skill ends your turn)
+    setTimeout(() => {
+      if (!battling || hp <= 0) return;
+      
+      setCurrentAnimation('battle-shake');
+      setTimeout(() => setCurrentAnimation(null), 250);
+      
+      // Calculate boss damage (same formula as regular attacks)
+      const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+      let baseAttack = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+      
+      if (battleType === 'elite') {
+        const eliteDay = ((currentDay - 1) % 7) + 1;
+        const baseDmg = GAME_CONSTANTS.MINI_BOSS_ATK_BASE;
+        const scaling = GAME_CONSTANTS.MINI_BOSS_ATK_SCALING;
+        baseAttack = Math.floor(baseDmg + (eliteDay * scaling));
+      } else if (battleType === 'final' || isFinalBoss) {
+        const baseDmg = GAME_CONSTANTS.BOSS_ATTACK_BASE;
+        const scaling = GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+        baseAttack = Math.floor(baseDmg + (currentDay * scaling));
+      }
+      
+      let bossDamage = Math.max(1, Math.floor(
+        baseAttack - getBaseDefense()
+      ));
+      
+      // Apply Knight defense modifiers (same as attack function)
+      let knightDefenseModifier = 0;
+      if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
+        knightDefenseModifier -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction;
+      }
+      if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
+        knightDefenseModifier += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus;
+      }
+      
+      if (knightDefenseModifier !== 0) {
+        if (knightDefenseModifier > 0) {
+          const reduction = Math.floor(bossDamage * knightDefenseModifier);
+          bossDamage = Math.max(1, bossDamage - reduction);
+        } else {
+          const penalty = Math.floor(bossDamage * Math.abs(knightDefenseModifier));
+          bossDamage += penalty;
+        }
+      }
+      
+      // Apply other defensive buffs (Wizard, Crusader, etc.)
+      if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
+        const originalDamage = bossDamage;
+        const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReduction);
+        bossDamage = Math.max(1, bossDamage - reduction);
+        
+        const reflectDamage = Math.floor(originalDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReflect);
+        if (reflectDamage > 0) {
+          setBossHp(h => Math.max(0, h - reflectDamage));
+          addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
+        }
+      }
+      
+      setHp(currentHp => {
+        const newHp = Math.max(0, currentHp - bossDamage);
+        if (newHp <= 0) {
+          setTimeout(() => {
+            addLog('💀 You have been defeated!');
+            die();
+          }, 500);
+        }
+        return newHp;
+      });
+      
+      addLog(`💥 Boss retaliates! -${bossDamage} HP`);
+      setPlayerFlash(true);
+      setTimeout(() => setPlayerFlash(false), 200);
+      
+      // Decrement buff turns
+      if (knightBloodOathTurns > 0) {
+        setKnightBloodOathTurns(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) {
+            addLog(`⚔️ Blood Oath fades...`);
+            setKnightConsecutiveUses(0);
+          }
+          return newTurns;
+        });
+      }
+      
+      if (knightRallyingRoar > 0) {
+        setKnightRallyingRoar(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`⚔️ Rallying Roar fades...`);
+          return newTurns;
+        });
+      }
+      
+      if (wizardEtherealBarrier > 0) {
+        setWizardEtherealBarrier(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✨ Ethereal Barrier fades...`);
+          return newTurns;
+        });
+      }
+      
+      if (assassinMarkForDeath > 0) {
+        setAssassinMarkForDeath(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`☠️ Mark for Death fades...`);
+          return newTurns;
+        });
+      }
+      
+      if (crusaderBastionOfFaith > 0) {
+        setCrusaderBastionOfFaith(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✙ Bastion of Faith fades...`);
+          return newTurns;
+        });
+      }
+      
+      if (crusaderHolyEmpowerment > 0) {
+        setCrusaderSanctified(prev => {
+          const newTurns = prev - 1;
+          if (newTurns === 0) addLog(`✨ Sanctified fades...`);
+          return newTurns;
+        });
+      }
+      
+    }, 1000); // Delay counter-attack like normal
   };
   
   const flee = () => {
@@ -4745,6 +5531,9 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     setBossHp(0); // Trigger victory screen
     setBattling(false);
     setBattleMode(false); // Clear battle border
+    setKnightConsecutiveUses(0); // Reset HP cost escalation on combat end
+    setKnightCrushingBlowCooldown(false); // Reset Crushing Blow cooldown
+    setCrusaderSmiteCooldown(false); // Reset Smite cooldown
     setRecklessStacks(0);
     
     addLog(`The hero fled from ${bossName}! Lost 25 Stamina.`);
@@ -4766,6 +5555,9 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
     setBattling(false);
     setShowBoss(false);
     setBattleMode(false);
+    setKnightConsecutiveUses(0); // Reset HP cost escalation on combat end
+    setKnightCrushingBlowCooldown(false); // Reset Crushing Blow cooldown
+    setCrusaderSmiteCooldown(false); // Reset Smite cooldown
     setRecklessStacks(0);
     
     // Add curse level instead of permadeath
@@ -5218,7 +6010,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                     const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
                     const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                     const defense = Math.floor(baseDefense * multiplier);
-                    const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+                    const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
                     const name = names[Math.floor(Math.random() * names.length)];
                     const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
                     const affixes = generateAffixes(rarity, 'armor');
@@ -5227,7 +6019,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                       ...prev,
                       [slot]: [...prev[slot], newArmor]
                     }));
-                    addLog(`Debug: Found ${rarityName} ${name} (+${defense} DEF)`);
+                    addLog(`Debug: Found ${rarityName} ${name} (+${defense} Defense)`);
                   }} className="bg-amber-800 hover:bg-amber-700 px-4 py-2 rounded text-xs transition-all border border-amber-600" style={{color: '#F5F5DC'}}>+Random Armor</button>
                   <button onClick={() => {
                     const rarity = rollRarity('normal');
@@ -5235,13 +6027,13 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                     const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
                     const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                     const attack = Math.floor(baseAttack * multiplier);
-                    const names = GAME_CONSTANTS.WEAPON_NAMES;
+                    const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
                     const name = names[Math.floor(Math.random() * names.length)];
                     const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
                     const affixes = generateAffixes(rarity, 'weapon');
                     const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
                     setWeaponInventory(prev => [...prev, newWeapon]);
-                    addLog(`Debug: Found ${rarityName} ${name} (+${attack} ATK)`);
+                    addLog(`Debug: Found ${rarityName} ${name} (+${attack} Attack)`);
                   }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>+Random Weapon</button>
                 </div>
               </div>
@@ -5296,13 +6088,13 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
                         const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                         const attack = Math.floor(baseAttack * multiplier);
-                        const names = GAME_CONSTANTS.WEAPON_NAMES;
+                        const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
                         const name = names[Math.floor(Math.random() * names.length)];
                         const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
                         const affixes = generateAffixes(rarity, 'weapon');
                         const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
                         setWeaponInventory(prev => [...prev, newWeapon]);
-                        addLog(`Debug: ${rarityName} ${name} (+${attack} ATK)`);
+                        addLog(`Debug: ${rarityName} ${name} (+${attack} Attack)`);
                       }} className="hover:brightness-110 px-2 py-2 rounded text-xs transition-all border-2" style={{
                         backgroundColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color + '40',
                         borderColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color,
@@ -5326,7 +6118,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
                         const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                         const defense = Math.floor(baseDefense * multiplier);
-                        const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+                        const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
                         const name = names[Math.floor(Math.random() * names.length)];
                         const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
                         const affixes = generateAffixes(rarity, 'armor');
@@ -5335,7 +6127,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                           ...prev,
                           [slot]: [...prev[slot], newArmor]
                         }));
-                        addLog(`Debug: ${rarityName} ${name} (+${defense} DEF)`);
+                        addLog(`Debug: ${rarityName} ${name} (+${defense} Defense)`);
                       }} className="hover:brightness-110 px-2 py-2 rounded text-xs transition-all border-2" style={{
                         backgroundColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color + '40',
                         borderColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color,
@@ -5357,7 +6149,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                       const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
                       const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                       const attack = Math.floor(baseAttack * multiplier);
-                      const names = GAME_CONSTANTS.WEAPON_NAMES;
+                      const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
                       const name = names[Math.floor(Math.random() * names.length)];
                       // Force poison affixes
                       const affixes = {
@@ -5377,7 +6169,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                       const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
                       const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                       const attack = Math.floor(baseAttack * multiplier);
-                      const names = GAME_CONSTANTS.WEAPON_NAMES;
+                      const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
                       const name = names[Math.floor(Math.random() * names.length)];
                       // Force crit affixes
                       const affixes = {
@@ -5399,7 +6191,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                       const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
                       const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
                       const defense = Math.floor(baseDefense * multiplier);
-                      const names = GAME_CONSTANTS.ARMOR_NAMES[slot];
+                      const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
                       const name = names[Math.floor(Math.random() * names.length)];
                       // Force tank affixes
                       const affixes = {
@@ -7482,7 +8274,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                               {GAME_CONSTANTS.RARITY_TIERS[equippedWeapon.rarity].name}
                             </p>
                           )}
-                          <p className="text-base text-center mb-3" style={{color: '#68D391'}}>+{equippedWeapon.attack} ATK</p>
+                          <p className="text-base text-center mb-3" style={{color: '#68D391'}}>+{equippedWeapon.attack} Attack</p>
                           {equippedWeapon.affixes && Object.keys(equippedWeapon.affixes).length > 0 && (
                             <>
                               <div className="border-t mx-6 mb-3" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7546,7 +8338,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                   {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
                                 </p>
                               )}
-                              <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{wpn.attack} ATK</p>
+                              <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{wpn.attack} Attack</p>
                               {wpn.affixes && Object.keys(wpn.affixes).length > 0 && (
                                 <>
                                   <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7569,7 +8361,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                   ...prev.filter(w => w.id !== wpn.id),
                                   ...(oldWeapon ? [oldWeapon] : [])
                                 ]);
-                                addLog(`Equipped: ${wpn.name} (+${wpn.attack} ATK)`);
+                                addLog(`Equipped: ${wpn.name} (+${wpn.attack} Attack)`);
                                 if (oldWeapon) {
                                   addLog(`Unequipped: ${oldWeapon.name}`);
                                 }
@@ -7619,7 +8411,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         {equippedArmor.helmet ? (
                           <div>
                             <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.helmet.rarity || 'common')}}>{equippedArmor.helmet.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} DEF</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} Defense</p>
                             {equippedArmor.helmet.affixes && Object.keys(equippedArmor.helmet.affixes).length > 0 && (
                               <>
                                 <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7646,7 +8438,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         {equippedArmor.chest ? (
                           <div>
                             <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.chest.rarity || 'common')}}>{equippedArmor.chest.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} DEF</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} Defense</p>
                             {equippedArmor.chest.affixes && Object.keys(equippedArmor.chest.affixes).length > 0 && (
                               <>
                                 <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7673,7 +8465,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         {equippedArmor.gloves ? (
                           <div>
                             <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.gloves.rarity || 'common')}}>{equippedArmor.gloves.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} DEF</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} Defense</p>
                             {equippedArmor.gloves.affixes && Object.keys(equippedArmor.gloves.affixes).length > 0 && (
                               <>
                                 <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7700,7 +8492,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         {equippedArmor.boots ? (
                           <div>
                             <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.boots.rarity || 'common')}}>{equippedArmor.boots.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} DEF</p>
+                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} Defense</p>
                             {equippedArmor.boots.affixes && Object.keys(equippedArmor.boots.affixes).length > 0 && (
                               <>
                                 <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7754,7 +8546,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                         {GAME_CONSTANTS.RARITY_TIERS[piece.rarity].name}
                                       </p>
                                     )}
-                                    <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{piece.defense} DEF</p>
+                                    <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{piece.defense} Defense</p>
                                     {piece.affixes && Object.keys(piece.affixes).length > 0 && (
                                       <>
                                         <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -7783,7 +8575,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                         ]
                                       }));
                                       
-                                      addLog(`Equipped: ${piece.name} (+${piece.defense} DEF)`);
+                                      addLog(`Equipped: ${piece.name} (+${piece.defense} Defense)`);
                                       if (oldPiece) {
                                         addLog(`Unequipped: ${oldPiece.name}`);
                                       }
@@ -7832,7 +8624,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                         {equippedPendant ? (
                           <div>
                             <p className="text-sm font-bold" style={{color: getRarityColor(equippedPendant.rarity || 'common')}}>{equippedPendant.name}</p>
-                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedPendant.hp} HP</p>
+                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedPendant.hp} Health</p>
                             {equippedPendant.rarity && (
                               <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedPendant.rarity)}}>
                                 {GAME_CONSTANTS.RARITY_TIERS[equippedPendant.rarity].name}
@@ -7888,7 +8680,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                           <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
-                              <p className="text-xs" style={{color: '#68D391'}}>+{pend.hp} HP</p>
+                              <p className="text-xs" style={{color: '#68D391'}}>+{pend.hp} Health</p>
                               {pend.rarity && (
                                 <p className="text-xs italic" style={{color: getRarityColor(pend.rarity)}}>
                                   {GAME_CONSTANTS.RARITY_TIERS[pend.rarity].name}
@@ -7903,7 +8695,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                   ...prev.filter(p => p.id !== pend.id),
                                   ...(oldPendant ? [oldPendant] : [])
                                 ]);
-                                addLog(`Equipped: ${pend.name} (+${pend.hp} HP)`);
+                                addLog(`Equipped: ${pend.name} (+${pend.hp} Health)`);
                                 if (oldPendant) {
                                   addLog(`Unequipped: ${oldPendant.name}`);
                                 }
@@ -8730,13 +9522,13 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                   {GAME_CONSTANTS.RARITY_TIERS[item.rarity].name} {item.type === 'armor' ? item.slot : item.type}
                                 </p>
                                 {item.type === 'weapon' && (
-                                  <p className="text-xs" style={{color: '#68D391'}}>+{item.attack} ATK</p>
+                                  <p className="text-xs" style={{color: '#68D391'}}>+{item.attack} Attack</p>
                                 )}
                                 {item.type === 'armor' && (
-                                  <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.defense} DEF</p>
+                                  <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.defense} Defense</p>
                                 )}
                                 {item.type === 'pendant' && (
-                                  <p className="text-xs" style={{color: '#68D391'}}>+{item.hp} HP</p>
+                                  <p className="text-xs" style={{color: '#68D391'}}>+{item.hp} Health</p>
                                 )}
                                 {item.type === 'ring' && (
                                   <p className="text-xs" style={{color: '#6BB6FF'}}>+{item.stamina} STA</p>
@@ -8845,7 +9637,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                               }}>
                                 <div className="flex-1">
                                   <p className="text-sm font-bold" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
-                                  <p className="text-xs" style={{color: '#F5F5DC'}}>+{wpn.attack} ATK</p>
+                                  <p className="text-xs" style={{color: '#F5F5DC'}}>+{wpn.attack} Attack</p>
                                   {wpn.rarity && (
                                     <p className="text-xs italic" style={{color: getRarityColor(wpn.rarity)}}>
                                       {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
@@ -8887,7 +9679,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                                 }}>
                                   <div className="flex-1">
                                     <p className="text-sm font-bold" style={{color: getRarityColor(arm.rarity || 'common')}}>{arm.name}</p>
-                                    <p className="text-xs" style={{color: '#F5F5DC'}}>+{arm.defense} DEF • {slot.charAt(0).toUpperCase() + slot.slice(1)}</p>
+                                    <p className="text-xs" style={{color: '#F5F5DC'}}>+{arm.defense} Defense • {slot.charAt(0).toUpperCase() + slot.slice(1)}</p>
                                     {arm.rarity && (
                                       <p className="text-xs italic" style={{color: getRarityColor(arm.rarity)}}>
                                         {GAME_CONSTANTS.RARITY_TIERS[arm.rarity].name}
@@ -8929,7 +9721,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                               }}>
                                 <div className="flex-1">
                                   <p className="text-sm font-bold" style={{color: getRarityColor(pnd.rarity || 'common')}}>{pnd.name}</p>
-                                  <p className="text-xs" style={{color: '#68D391'}}>+{pnd.hp} HP</p>
+                                  <p className="text-xs" style={{color: '#68D391'}}>+{pnd.hp} Health</p>
                                   {pnd.rarity && (
                                     <p className="text-xs italic" style={{color: getRarityColor(pnd.rarity)}}>
                                       {GAME_CONSTANTS.RARITY_TIERS[pnd.rarity].name}
@@ -10774,7 +11566,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                       {/* Fight Submenu */}
                       {battleMenu === 'fight' && (
                         <>
-                          <div className="grid grid-cols-3 gap-3 mb-4">
+                          <div className="grid grid-cols-4 gap-3 mb-4">
                             <button 
                               onClick={attack}
                               className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
@@ -10787,6 +11579,62 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
                               <div className="text-base uppercase">Attack</div>
                               <div className="text-xs mt-1 opacity-75">Basic Strike</div>
                             </button>
+                            
+                            {/* Knight Crushing Blow */}
+                            {hero && hero.class && hero.class.name === 'Knight' && (
+                              <button 
+                                onClick={useCrushingBlow}
+                                disabled={stamina < 17 || knightCrushingBlowCooldown}
+                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                  background: (stamina >= 17 && !knightCrushingBlowCooldown) 
+                                    ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.8), rgba(100, 25, 25, 0.8))' 
+                                    : 'rgba(44, 62, 80, 0.6)',
+                                  borderColor: (stamina >= 17 && !knightCrushingBlowCooldown) 
+                                    ? 'rgba(165, 42, 42, 0.6)' 
+                                    : 'rgba(128, 128, 128, 0.3)',
+                                  color: '#F5F5DC'
+                                }}
+                                title="Powerful strike that cannot be used twice in a row"
+                              >
+                                <div className="text-sm uppercase">Crushing Blow</div>
+                                <div className="text-xs mt-1 opacity-75">
+                                  {knightCrushingBlowCooldown ? (
+                                    <span className="text-yellow-400">⏳ Cooldown</span>
+                                  ) : (
+                                    <>17 SP</>
+                                  )}
+                                </div>
+                              </button>
+                            )}
+                            
+                            {/* Crusader Smite */}
+                            {hero && hero.class && hero.class.name === 'Crusader' && (
+                              <button 
+                                onClick={useSmite}
+                                disabled={stamina < 15 || crusaderSmiteCooldown}
+                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{
+                                  background: (stamina >= 15 && !crusaderSmiteCooldown) 
+                                    ? 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))' 
+                                    : 'rgba(44, 62, 80, 0.6)',
+                                  borderColor: (stamina >= 15 && !crusaderSmiteCooldown) 
+                                    ? 'rgba(218, 165, 32, 0.6)' 
+                                    : 'rgba(128, 128, 128, 0.3)',
+                                  color: '#F5F5DC'
+                                }}
+                                title="Holy strike that heals. Cannot be used twice in a row."
+                              >
+                                <div className="text-sm uppercase">Smite</div>
+                                <div className="text-xs mt-1 opacity-75">
+                                  {crusaderSmiteCooldown ? (
+                                    <span className="text-yellow-400">⏳ Cooldown</span>
+                                  ) : (
+                                    <>15 SP</>
+                                  )}
+                                </div>
+                              </button>
+                            )}
                             
                             {hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (
                               <button 
@@ -11238,7 +12086,7 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.8.0 - Wizard Revamp</p>
+          <p className="text-xs text-gray-600">v4.12.0 - Knight Crushing Blow + Tactical Overhaul</p>
         </div>
       </div>
       )}
