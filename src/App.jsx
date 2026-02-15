@@ -1,4 +1,4 @@
-// FANTASY STUDY QUEST - v4.15.0
+// FANTASY STUDY QUEST - v4.15.1
 // Study Links Feature - Save and organize study resources in the Forge
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -2431,7 +2431,7 @@ if (tasks.length === 0) {
   };
 
   // Sell equipment function
-  const sellEquipment = (item, itemType, inventorySetter) => {
+  const sellEquipment = (item, itemType, slot = null) => {
     const sellPrice = calculateSellPrice(item, itemType);
     
     setGold(g => g + sellPrice);
@@ -2440,7 +2440,11 @@ if (tasks.length === 0) {
     if (itemType === 'weapon') {
       setWeaponInventory(prev => prev.filter(w => w.id !== item.id));
     } else if (itemType === 'armor') {
-      const slot = item.slot;
+      // Slot must be provided for armor
+      if (!slot) {
+        console.error('Armor slot not provided to sellEquipment');
+        return;
+      }
       setArmorInventory(prev => ({
         ...prev,
         [slot]: prev[slot].filter(a => a.id !== item.id)
@@ -2801,6 +2805,219 @@ setTimeout(() => {
       [day]: currentDayTasks
     }));
   };
+
+  // Reusable loot generation function - called from all victory paths
+  const generateVictoryLoot = useCallback((battleType, isFinalBoss, goldGain, waveGoldTotal = 0) => {
+    const lootMessages = [];
+    
+    if (!isFinalBoss) {
+      // Regular/wave enemies: potions, weapons, armor, and accessories
+      if (battleType === 'regular' || battleType === 'wave') {
+        const isWave = battleType === 'wave';
+        const healthPotRate = isWave ? 0.22 : 0.18; // 22% wave, 18% regular
+        const staminaPotRate = isWave ? 0.52 : 0.43; // 52% wave cumulative, 43% regular cumulative
+        
+        const lootRoll = Math.random();
+        if (lootRoll < healthPotRate) {
+          // Health Potion
+          setHealthPots(h => h + 1);
+          lootMessages.push('Health Potion');
+          addLog('The hero found a Health Potion among the remains!');
+        } else if (lootRoll < staminaPotRate) {
+          // Stamina Potion
+          setStaminaPots(s => s + 1);
+          lootMessages.push('Stamina Potion');
+          addLog('The hero discovered a Stamina Potion in the aftermath!');
+        } else if (lootRoll < 0.50) {
+          // 20% Weapon with rarity
+          const rarity = rollRarity('normal');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+          const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const attack = Math.floor(baseAttack * multiplier);
+          
+          const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const affixes = generateAffixes(rarity, 'weapon');
+          const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
+          setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
+          
+          lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
+          addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
+        } else if (lootRoll < 0.70) {
+          // 20% Armor with rarity
+          const rarity = rollRarity('normal');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const slots = ['helmet', 'chest', 'gloves', 'boots'];
+          const slot = slots[Math.floor(Math.random() * slots.length)];
+          const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+          const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const defense = Math.floor(baseDefense * multiplier);
+          
+          const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const affixes = generateAffixes(rarity, 'armor');
+          const newArmor = { name, defense, rarity, affixes, id: Date.now() };
+          setArmorInventory(prev => ({
+            ...prev,
+            [slot]: sortByRarity([...prev[slot], newArmor])
+          }));
+          
+          lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
+          addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)`);
+        } else if (lootRoll < 0.80) {
+          // 10% Pendant with rarity
+          const rarity = rollRarity('normal');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+          const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const hp = Math.floor(baseHp * multiplier);
+          
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const newPendant = { name, hp, rarity, id: Date.now() };
+          setPendantInventory(prev => sortByRarity([...prev, newPendant]));
+          
+          lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
+          addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
+        } else if (lootRoll < 0.90) {
+          // 10% Ring with rarity
+          const rarity = rollRarity('normal');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+          const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const stamina = Math.floor(baseStamina * multiplier);
+          
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const newRing = { name, stamina, rarity, id: Date.now() };
+          setRingInventory(prev => sortByRarity([...prev, newRing]));
+          
+          lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
+          addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
+        }
+        // 10% chance of no loot
+      } else {
+        // Elite bosses: weapon/armor upgrades
+        const lootRoll = Math.random();
+        const luckMultiplier = luckyCharmActive ? 2 : 1;
+        
+        if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
+          setHealthPots(h => h + luckMultiplier);
+          lootMessages.push(`Health Potion${luckyCharmActive ? ' x2' : ''}`);
+          addLog(`The hero claimed a precious Health Potion${luckyCharmActive ? ' - the lucky charm doubles the bounty!' : ' from the fallen champion!'}`);
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
+          setStaminaPots(s => s + luckMultiplier);
+          lootMessages.push(`Stamina Potion${luckyCharmActive ? ' x2' : ''}`);
+          addLog(`The hero secured a rare Stamina Potion${luckyCharmActive ? ' - fortune favors the prepared!' : ' from the defeated foe!'}`);
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
+          // Generate random weapon with better rarity for elites
+          const rarity = rollRarity('elite');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+          const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const attack = Math.floor(baseAttack * multiplier);
+          
+          const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const affixes = generateAffixes(rarity, 'weapon');
+          const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
+          setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
+          
+          lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
+          addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
+          // Generate random armor piece with better rarity for elites
+          const rarity = rollRarity('elite');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const slots = ['helmet', 'chest', 'gloves', 'boots'];
+          const slot = slots[Math.floor(Math.random() * slots.length)];
+          const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
+          const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const defense = Math.floor(baseDefense * multiplier);
+          
+          const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const affixes = generateAffixes(rarity, 'armor');
+          const newArmor = { name, defense, rarity, affixes, id: Date.now() };
+          setArmorInventory(prev => ({
+            ...prev,
+            [slot]: sortByRarity([...prev[slot], newArmor])
+          }));
+          
+          lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
+          addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+        } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
+          // Generate random pendant with elite rarity
+          const rarity = rollRarity('elite');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+          const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const hp = Math.floor(baseHp * multiplier);
+          
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const newPendant = { name, hp, rarity, id: Date.now() };
+          setPendantInventory(prev => sortByRarity([...prev, newPendant]));
+          
+          lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
+          addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+        } else {
+          // Generate random ring with elite rarity
+          const rarity = rollRarity('elite');
+          const multiplier = getRarityMultiplier(rarity);
+          
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+          const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+          const stamina = Math.floor(baseStamina * multiplier);
+          
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+          const name = names[Math.floor(Math.random() * names.length)];
+          const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
+          
+          const newRing = { name, stamina, rarity, id: Date.now() };
+          setRingInventory(prev => sortByRarity([...prev, newRing]));
+          
+          lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
+          addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+        }
+        
+        if (luckyCharmActive) {
+          setLuckyCharmActive(false);
+          addLog('The lucky charm crumbles to dust, its magic spent.');
+        }
+      }
+    }
+    
+    // Add gold gain to loot display
+    const displayGold = battleType === 'wave' ? waveGoldTotal : goldGain;
+    lootMessages.unshift(`+${displayGold} Gold`);
+    
+    setVictoryLoot(lootMessages);
+    setVictoryFlash(true);
+    setTimeout(() => setVictoryFlash(false), 400);
+  }, [luckyCharmActive, addLog, rollRarity, getRarityMultiplier, generateAffixes, sortByRarity]);
 
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
@@ -3510,217 +3727,8 @@ if (battleType === 'elite') {
   setCrusaderSmiteCooldown(false); // Reset Smite cooldown
   setRecklessStacks(0);
       
-      const lootMessages = [];
-      
-      if (!isFinalBoss) {
-        // Regular/wave enemies: potions, weapons, armor, and accessories
-        if (battleType === 'regular' || battleType === 'wave') {
-          const isWave = battleType === 'wave';
-          const healthPotRate = isWave ? 0.22 : 0.18; // 22% wave, 18% regular
-          const staminaPotRate = isWave ? 0.52 : 0.43; // 52% wave cumulative, 43% regular cumulative
-          
-          const lootRoll = Math.random();
-          if (lootRoll < healthPotRate) {
-            // Health Potion
-            setHealthPots(h => h + 1);
-            lootMessages.push('Health Potion');
-            addLog('The hero found a Health Potion among the remains!');
-          } else if (lootRoll < staminaPotRate) {
-            // Stamina Potion
-            setStaminaPots(s => s + 1);
-            lootMessages.push('Stamina Potion');
-            addLog('The hero discovered a Stamina Potion in the aftermath!');
-          } else if (lootRoll < 0.50) {
-            // 20% Weapon with rarity
-            const rarity = rollRarity('normal');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-            const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const attack = Math.floor(baseAttack * multiplier);
-            
-            const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const affixes = generateAffixes(rarity, 'weapon');
-            const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-            setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
-            
-            lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
-            addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
-          } else if (lootRoll < 0.70) {
-            // 20% Armor with rarity
-            const rarity = rollRarity('normal');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const slots = ['helmet', 'chest', 'gloves', 'boots'];
-            const slot = slots[Math.floor(Math.random() * slots.length)];
-            const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-            const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const defense = Math.floor(baseDefense * multiplier);
-            
-            const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const affixes = generateAffixes(rarity, 'armor');
-            const newArmor = { name, defense, rarity, affixes, id: Date.now() };
-            setArmorInventory(prev => ({
-              ...prev,
-              [slot]: sortByRarity([...prev[slot], newArmor])
-            }));
-            
-            lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
-            addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)`);
-          } else if (lootRoll < 0.80) {
-            // 10% Pendant with rarity
-            const rarity = rollRarity('normal');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
-            const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const hp = Math.floor(baseHp * multiplier);
-            
-            const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const newPendant = { name, hp, rarity, id: Date.now() };
-            setPendantInventory(prev => sortByRarity([...prev, newPendant]));
-            
-            lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
-            addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
-          } else if (lootRoll < 0.90) {
-            // 10% Ring with rarity
-            const rarity = rollRarity('normal');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
-            const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const stamina = Math.floor(baseStamina * multiplier);
-            
-            const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const newRing = { name, stamina, rarity, id: Date.now() };
-            setRingInventory(prev => sortByRarity([...prev, newRing]));
-            
-            lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
-            addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
-          }
-          // 10% chance of no loot
-        } else {
-          // Elite bosses: weapon/armor upgrades
-          const lootRoll = Math.random();
-          const luckMultiplier = luckyCharmActive ? 2 : 1;
-          
-          if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.HEALTH_POTION) {
-            setHealthPots(h => h + luckMultiplier);
-            lootMessages.push(`Health Potion${luckyCharmActive ? ' x2' : ''}`);
-            addLog(`The hero claimed a precious Health Potion${luckyCharmActive ? ' - the lucky charm doubles the bounty!' : ' from the fallen champion!'}`);
-          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.STAMINA_POTION) {
-            setStaminaPots(s => s + luckMultiplier);
-            lootMessages.push(`Stamina Potion${luckyCharmActive ? ' x2' : ''}`);
-            addLog(`The hero secured a rare Stamina Potion${luckyCharmActive ? ' - fortune favors the prepared!' : ' from the defeated foe!'}`);
-          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
-            // Generate random weapon with better rarity for elites
-            const rarity = rollRarity('elite');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-            const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const attack = Math.floor(baseAttack * multiplier);
-            
-            const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const affixes = generateAffixes(rarity, 'weapon');
-            const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-            setWeaponInventory(prev => sortByRarity([...prev, newWeapon]));
-            
-            lootMessages.push(`${rarityName} ${name} (+${attack} Attack)`);
-            addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
-          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
-            // Generate random armor piece with better rarity for elites
-            const rarity = rollRarity('elite');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const slots = ['helmet', 'chest', 'gloves', 'boots'];
-            const slot = slots[Math.floor(Math.random() * slots.length)];
-            const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-            const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const defense = Math.floor(baseDefense * multiplier);
-            
-            const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const affixes = generateAffixes(rarity, 'armor');
-            const newArmor = { name, defense, rarity, affixes, id: Date.now() };
-            setArmorInventory(prev => ({
-              ...prev,
-              [slot]: sortByRarity([...prev[slot], newArmor])
-            }));
-            
-            lootMessages.push(`${rarityName} ${name} (+${defense} Defense)`);
-            addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
-          } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
-            // Generate random pendant with elite rarity
-            const rarity = rollRarity('elite');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
-            const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const hp = Math.floor(baseHp * multiplier);
-            
-            const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const newPendant = { name, hp, rarity, id: Date.now() };
-            setPendantInventory(prev => sortByRarity([...prev, newPendant]));
-            
-            lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
-            addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
-          } else {
-            // Generate random ring with elite rarity
-            const rarity = rollRarity('elite');
-            const multiplier = getRarityMultiplier(rarity);
-            
-            const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
-            const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-            const stamina = Math.floor(baseStamina * multiplier);
-            
-            const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
-            const name = names[Math.floor(Math.random() * names.length)];
-            const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-            
-            const newRing = { name, stamina, rarity, id: Date.now() };
-            setRingInventory(prev => sortByRarity([...prev, newRing]));
-            
-            lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
-            addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
-          }
-          
-          if (luckyCharmActive) {
-            setLuckyCharmActive(false);
-            addLog('The lucky charm crumbles to dust, its magic spent.');
-          }
-        }
-        
-        // Auto-heal removed - player must manage HP between battles
-      }
-      
-      // Add gold gain to loot display
-      const displayGold = battleType === 'wave' ? waveGoldTotal : goldGain;
-      lootMessages.unshift(`+${displayGold} Gold`);
-      
-      setVictoryLoot(lootMessages);
-      setVictoryFlash(true);
-      setTimeout(() => setVictoryFlash(false), 400);
+      // Generate loot using reusable function
+      generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal);
       
       // No auto-close - let player click continue button
       
@@ -4034,8 +4042,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   addLog('The hero is fully healed!');
                 }
                 
-                setVictoryFlash(true);
-                setTimeout(() => setVictoryFlash(false), 400);
+                // Generate loot using reusable function
+                generateVictoryLoot(battleType, isFinalBoss, goldGain);
               }, 500);
             }
             return newHp;
@@ -4838,8 +4846,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     addLog('The hero is fully healed!');
                   }
                   
-                  setVictoryFlash(true);
-                  setTimeout(() => setVictoryFlash(false), 400);
+                  // Generate loot using reusable function
+                  generateVictoryLoot(battleType, isFinalBoss, goldGain);
                 }, 500);
               }
               return newHp;
@@ -5042,10 +5050,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setKnightConsecutiveUses(0);
       setRecklessStacks(0);
       
-      // Loot would go here (skipping for brevity, same as regular attack)
-      setVictoryLoot([]);
-      setVictoryFlash(true);
-      setTimeout(() => setVictoryFlash(false), 400);
+      // Generate loot using reusable function
+      generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal);
       
       return;
     }
@@ -5320,9 +5326,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setCrusaderSmiteCooldown(false);
       setRecklessStacks(0);
       
-      setVictoryLoot([]);
-      setVictoryFlash(true);
-      setTimeout(() => setVictoryFlash(false), 400);
+      // Generate loot using reusable function
+      generateVictoryLoot(battleType, isFinalBoss, goldGain);
       return;
     }
     
@@ -7836,7 +7841,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           color: '#F5F5DC'
         }}
       >
-        RESOURCES
+        FORGED LINKS
       </button>
     </div>
     
@@ -8036,20 +8041,41 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     </>
     )}
     
-    {/* Resources Tab Content */}
+    {/* Forged Links Tab Content */}
     {forgeSubTab === 'resources' && (
     <>
     <div>
-      <p className="text-sm mb-6 text-center" style={{color: '#95A5A6'}}>
-        Save your most-used study websites for quick access
-      </p>
+      <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Forge the chains that bind knowledge to will..."</p>
       
-      {/* Add New Website Form */}
-      <div className="bg-black bg-opacity-40 rounded-lg p-4 mb-4 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.4)'}}>
+      {/* Forge New Link Form */}
+      <div className="bg-black bg-opacity-40 rounded-lg p-4 mb-6 border-2 relative overflow-hidden" style={{
+        borderColor: 'rgba(212, 175, 55, 0.5)',
+        boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)'
+      }}>
+        {/* Decorative corner accents */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '20px',
+          height: '20px',
+          borderTop: '2px solid rgba(212, 175, 55, 0.3)',
+          borderLeft: '2px solid rgba(212, 175, 55, 0.3)'
+        }}/>
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '20px',
+          height: '20px',
+          borderTop: '2px solid rgba(212, 175, 55, 0.3)',
+          borderRight: '2px solid rgba(212, 175, 55, 0.3)'
+        }}/>
+        
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <input
             type="text"
-            placeholder="Name (e.g., Stack Overflow)"
+            placeholder="Relic Name (e.g., Canvas LMS)"
             value={newWebsiteName}
             onChange={(e) => setNewWebsiteName(e.target.value)}
             onKeyPress={(e) => {
@@ -8057,16 +8083,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 addStudyWebsite();
               }
             }}
-            className="px-4 py-2.5 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
+            className="px-4 py-3 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
             style={{
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
-              fontSize: '14px'
+              fontSize: '14px',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
             }}
           />
           <input
             type="text"
-            placeholder="URL (e.g., stackoverflow.com)"
+            placeholder="Source URL (e.g., canvas.instructure.com)"
             value={newWebsiteUrl}
             onChange={(e) => setNewWebsiteUrl(e.target.value)}
             onKeyPress={(e) => {
@@ -8074,107 +8101,231 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 addStudyWebsite();
               }
             }}
-            className="px-4 py-2.5 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
+            className="px-4 py-3 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
             style={{
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
-              fontSize: '14px'
+              fontSize: '14px',
+              boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
             }}
           />
           <button
-            onClick={addStudyWebsite}
+            onClick={(e) => {
+              if (newWebsiteName.trim() && newWebsiteUrl.trim()) {
+                // Visual feedback - golden flash
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(218, 165, 32, 0.8), inset 0 0 20px rgba(218, 165, 32, 0.3)';
+                e.currentTarget.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+                  e.currentTarget.style.transform = 'scale(1)';
+                }, 150);
+                addStudyWebsite();
+              }
+            }}
             disabled={!newWebsiteName.trim() || !newWebsiteUrl.trim()}
-            className="px-4 py-2.5 rounded font-bold transition-all border-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase text-sm"
+            className="px-4 py-3 rounded font-bold transition-all border-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase text-sm relative overflow-hidden"
             style={{
               background: (!newWebsiteName.trim() || !newWebsiteUrl.trim()) 
                 ? 'rgba(100, 100, 100, 0.3)' 
-                : 'linear-gradient(to bottom, #B8860B, #8B6914)',
+                : 'linear-gradient(135deg, #B8860B 0%, #8B6914 50%, #B8860B 100%)',
               borderColor: (!newWebsiteName.trim() || !newWebsiteUrl.trim()) 
                 ? 'rgba(100, 100, 100, 0.3)' 
                 : '#CD7F32',
-              color: '#F5F5DC'
+              color: '#F5F5DC',
+              boxShadow: (!newWebsiteName.trim() || !newWebsiteUrl.trim()) 
+                ? 'none' 
+                : '0 4px 12px rgba(0,0,0,0.4)',
+              letterSpacing: '0.1em',
+              textShadow: '0 1px 2px rgba(0,0,0,0.5)'
             }}
             onMouseEnter={(e) => {
               if (newWebsiteName.trim() && newWebsiteUrl.trim()) {
-                e.currentTarget.style.background = 'linear-gradient(to bottom, #DAA520, #B8860B)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #DAA520 0%, #B8860B 50%, #DAA520 100%)';
+                e.currentTarget.style.borderColor = '#D4AF37';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.4)';
               }
             }}
             onMouseLeave={(e) => {
               if (newWebsiteName.trim() && newWebsiteUrl.trim()) {
-                e.currentTarget.style.background = 'linear-gradient(to bottom, #B8860B, #8B6914)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, #B8860B 0%, #8B6914 50%, #B8860B 100%)';
+                e.currentTarget.style.borderColor = '#CD7F32';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
               }
             }}
           >
-            Add
+            <Hammer size={16} className="inline mr-2 mb-0.5"/>
+            Forge Link
           </button>
         </div>
       </div>
       
-      {/* Saved Websites List */}
+      {/* Forged Links Collection */}
       {studyWebsites.length === 0 ? (
-        <div className="text-center py-8 rounded-lg border-2" style={{
-          background: 'rgba(0, 0, 0, 0.3)',
+        <div className="text-center py-12 rounded-lg border-2 relative" style={{
+          background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(26, 22, 18, 0.3))',
           borderColor: 'rgba(212, 175, 55, 0.3)'
         }}>
-          <p className="text-sm" style={{color: '#95A5A6'}}>No study resources saved yet. Add your first one above!</p>
+          <Sparkles size={32} style={{color: 'rgba(212, 175, 55, 0.3)', margin: '0 auto 12px'}}/>
+          <p className="text-sm mb-2" style={{color: '#C9A961', fontWeight: '500'}}>Your forge awaits...</p>
+          <p className="text-xs" style={{color: '#95A5A6'}}>Craft your first knowledge relic above</p>
         </div>
       ) : (
         <div className="space-y-3">
-          {studyWebsites.map((site) => (
-            <div
-              key={site.id}
-              className="flex items-center justify-between p-3 rounded-lg border-2 transition-all"
-              style={{
-                background: 'rgba(0, 0, 0, 0.4)',
-                borderColor: 'rgba(212, 175, 55, 0.3)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
-                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.4)';
-                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
-              }}
-            >
-              <div className="flex-1 min-w-0">
-                <a
-                  href={site.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackWebsiteClick(site.id)}
-                  className="block group"
-                >
-                  <p className="font-bold group-hover:underline mb-1" style={{color: '#D4AF37', fontSize: '14px'}}>
-                    {site.name}
-                  </p>
-                  <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap" style={{color: '#95A5A6'}}>
-                    {site.url.replace(/^https?:\/\//, '')}
-                  </p>
-                </a>
-              </div>
-              <button
-                onClick={() => {
-                  if (window.confirm(`Delete "${site.name}"?`)) {
-                    removeStudyWebsite(site.id);
-                  }
+          {studyWebsites.map((site) => {
+            // Extract domain for favicon and smart icons
+            const urlObj = (() => {
+              try {
+                return new URL(site.url);
+              } catch {
+                return null;
+              }
+            })();
+            const domain = urlObj ? urlObj.hostname.replace('www.', '') : '';
+            const faviconUrl = urlObj ? `https://www.google.com/s2/favicons?domain=${domain}&sz=32` : null;
+            
+            // Smart domain detection for special icons
+            const getDomainIcon = (domain) => {
+              const d = domain.toLowerCase();
+              if (d.includes('canvas') || d.includes('instructure')) return { icon: '🎓', color: '#E13F2B', label: 'LMS' };
+              if (d.includes('github')) return { icon: '</>' , color: '#6e5494', label: 'Code' };
+              if (d.includes('stackoverflow') || d.includes('stackexchange')) return { icon: '💻', color: '#F48024', label: 'Dev' };
+              if (d.includes('youtube') || d.includes('youtu.be')) return { icon: '▶️', color: '#FF0000', label: 'Video' };
+              if (d.includes('docs.google') || d.includes('drive.google')) return { icon: '📄', color: '#4285F4', label: 'Docs' };
+              if (d.includes('wikipedia')) return { icon: '📚', color: '#000000', label: 'Wiki' };
+              if (d.includes('medium') || d.includes('substack')) return { icon: '✍️', color: '#00AB6C', label: 'Article' };
+              if (d.includes('coursera') || d.includes('udemy') || d.includes('edx')) return { icon: '🎯', color: '#0056D2', label: 'Course' };
+              if (d.includes('notion')) return { icon: '📝', color: '#000000', label: 'Notes' };
+              if (d.includes('leetcode') || d.includes('hackerrank') || d.includes('codewars')) return { icon: '⚔️', color: '#FFA116', label: 'Practice' };
+              return { icon: '🔗', color: '#9B8B7E', label: 'Link' };
+            };
+            
+            const domainInfo = getDomainIcon(domain);
+            
+            return (
+              <div
+                key={site.id}
+                className="group relative rounded-lg border-2 transition-all duration-300"
+                style={{
+                  background: 'linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(26, 22, 18, 0.4))',
+                  borderColor: 'rgba(155, 139, 126, 0.4)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  transform: 'translateY(0)'
                 }}
-                className="ml-3 p-2 rounded transition-all flex-shrink-0"
-                style={{color: '#9B1B30'}}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#B8293E';
-                  e.currentTarget.style.background = 'rgba(155, 27, 48, 0.1)';
+                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(26, 22, 18, 0.7), rgba(42, 36, 28, 0.6))';
+                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.6)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.2), inset 0 1px 0 rgba(212, 175, 55, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#9B1B30';
-                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(26, 22, 18, 0.4))';
+                  e.currentTarget.style.borderColor = 'rgba(155, 139, 126, 0.4)';
+                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
                 }}
-                title="Delete resource"
               >
-                <X size={16}/>
-              </button>
-            </div>
-          ))}
+                {/* Metallic edge highlight */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent)',
+                  opacity: 0
+                }} className="group-hover:opacity-100 transition-opacity"/>
+                
+                <div className="flex items-center p-4">
+                  {/* Favicon + Smart Icon */}
+                  <div className="flex items-center gap-3 mr-4">
+                    {faviconUrl && (
+                      <img 
+                        src={faviconUrl} 
+                        alt="" 
+                        className="w-6 h-6 rounded"
+                        style={{
+                          border: '1px solid rgba(155, 139, 126, 0.3)',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                    )}
+                    <div className="flex flex-col items-center">
+                      <span style={{fontSize: '20px', lineHeight: '1'}}>{domainInfo.icon}</span>
+                      <span style={{
+                        fontSize: '8px',
+                        color: domainInfo.color,
+                        fontWeight: '600',
+                        letterSpacing: '0.05em',
+                        marginTop: '2px',
+                        textTransform: 'uppercase'
+                      }}>
+                        {domainInfo.label}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Link Content */}
+                  <div className="flex-1 min-w-0">
+                    <a
+                      href={site.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => trackWebsiteClick(site.id)}
+                      className="block"
+                    >
+                      <p className="font-bold group-hover:underline mb-1 flex items-center gap-2" style={{
+                        color: '#D4AF37',
+                        fontSize: '15px',
+                        letterSpacing: '0.03em',
+                        textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                      }}>
+                        {site.name}
+                        {site.clicks > 0 && (
+                          <span style={{
+                            fontSize: '10px',
+                            color: '#95A5A6',
+                            fontWeight: '400',
+                            marginLeft: '4px'
+                          }}>
+                            ({site.clicks} {site.clicks === 1 ? 'use' : 'uses'})
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap flex items-center gap-1" style={{color: '#95A5A6'}}>
+                        <span style={{color: 'rgba(155, 139, 126, 0.5)'}}>⚡</span>
+                        {domain || site.url.replace(/^https?:\/\//, '')}
+                      </p>
+                    </a>
+                  </div>
+                  
+                  {/* Delete Button */}
+                  <button
+                    onClick={() => {
+                      if (window.confirm(`Destroy the "${site.name}" relic?`)) {
+                        removeStudyWebsite(site.id);
+                      }
+                    }}
+                    className="ml-3 p-2.5 rounded transition-all flex-shrink-0 border border-transparent"
+                    style={{color: '#6B1318'}}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#9B1B30';
+                      e.currentTarget.style.background = 'rgba(155, 27, 48, 0.15)';
+                      e.currentTarget.style.borderColor = 'rgba(155, 27, 48, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#6B1318';
+                      e.currentTarget.style.background = 'transparent';
+                      e.currentTarget.style.borderColor = 'transparent';
+                    }}
+                    title="Destroy this relic"
+                  >
+                    <X size={18}/>
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -10064,7 +10215,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                     )}
                                   </div>
                                   <button
-                                    onClick={() => sellEquipment(arm, 'armor')}
+                                    onClick={() => sellEquipment(arm, 'armor', slot)}
                                     className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
                                     style={{
                                       background: 'linear-gradient(to bottom, rgba(184, 134, 11, 0.5), rgba(139, 101, 8, 0.55))',
