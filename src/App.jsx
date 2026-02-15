@@ -1,5 +1,5 @@
-// FANTASY STUDY QUEST - v4.14.0
-// Crusader Martyr Tank Rework - Absorbed Pain mechanic, healing lockout, sustain-focused gameplay
+// FANTASY STUDY QUEST - v4.15.0
+// Study Links Feature - Save and organize study resources in the Forge
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
@@ -323,12 +323,13 @@ const GAME_CONSTANTS = {
     Crusader: { 
       name: 'Judgment of Light', 
       cost: 30, 
-      damageMultiplier: 2.2, 
-      effect: 'Consumes ALL Absorbed Pain. Base: 2.2x damage. Pain Bonus: +0.8 dmg per pain. Healing: 40% of pain consumed. With 0 pain: 10 HP base heal.',
-      baseDamageMultiplier: 2.2,
-      painToDamage: 0.8,
-      painToHealing: 0.40,
-      baseHealNoPain: 10
+      damageMultiplier: 2.6, 
+      effect: 'Deal damage and heal 20 HP. Holy Empowerment (3 turns): +25% damage, +15% crit, heal 5 HP per attack.',
+      healAmount: 20,
+      empowermentTurns: 3,
+      empowermentDamage: 0.25,
+      empowermentCrit: 15,
+      empowermentHeal: 5
     }
   },
   
@@ -365,11 +366,11 @@ const GAME_CONSTANTS = {
     Crusader: {
       name: 'Bastion of Faith',
       cost: 25,
-      duration: 3,
-      effect: 'For 3 turns: +30% Damage Reduction. Prevented damage → Absorbed Pain (max 100). Cannot heal while active. Pain decays -10/turn after Bastion ends.',
-      damageReduction: 0.30,
-      painCap: 100,
-      painDecayPerTurn: 10
+      duration: 4,
+      effect: 'For 4 turns: +15% Damage, +20% Defense. Synergy: Doubles Holy Empowerment heal-on-hit (10 HP per attack).',
+      damageBonus: 0.15,
+      defenseBonus: 0.20,
+      empowermentHealBonus: 2.0
     }
   },
   
@@ -384,9 +385,9 @@ const GAME_CONSTANTS = {
     Crusader: {
       name: 'Smite',
       cost: 15,
-      damageMultiplier: 1.6,
-      healAmount: 8,
-      effect: 'Holy strike that heals 8 HP. BLOCKED while Bastion of Faith is active. Cannot be used twice in a row.',
+      damageMultiplier: 1.7,
+      healAmount: 10,
+      effect: 'Holy strike that heals. Cannot be used twice in a row.',
       cooldown: true
     }
   },
@@ -854,6 +855,7 @@ const globalStyles = `
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
+  const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
@@ -1117,6 +1119,12 @@ const [pomodorosCompleted, setPomodorosCompleted] = useState(0);
     Saturday: [],
     Sunday: []
   });
+  
+  // Study Links Feature
+  const [studyWebsites, setStudyWebsites] = useState([]);
+  const [newWebsiteName, setNewWebsiteName] = useState('');
+  const [newWebsiteUrl, setNewWebsiteUrl] = useState('');
+  const [newWebsiteCategory, setNewWebsiteCategory] = useState('uncategorized');
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedDay, setSelectedDay] = useState(null);
   const [newPlanItem, setNewPlanItem] = useState({ title: '', priority: 'routine' });
@@ -1214,7 +1222,6 @@ const [waveGoldTotal, setWaveGoldTotal] = useState(0);
   const [crusaderHolyEmpowerment, setCrusaderHolyEmpowerment] = useState(0); // Holy Empowerment turns remaining
   const [crusaderJudgmentCooldown, setCrusaderJudgmentCooldown] = useState(false); // Can't spam Judgment
   const [crusaderSmiteCooldown, setCrusaderSmiteCooldown] = useState(false); // Can't spam Smite
-  const [crusaderAbsorbedPain, setCrusaderAbsorbedPain] = useState(0); // Stored pain from Bastion damage reduction
   
   // Tactical skills state
   const [knightRallyingRoar, setKnightRallyingRoar] = useState(0); // Turns remaining
@@ -1255,6 +1262,7 @@ const [customClass, setCustomClass] = useState(null);
   const [showInventoryModal, setShowInventoryModal] = useState(false);
   const [suppliesTab, setSuppliesTab] = useState('potions'); // 'potions' or 'armor'
   const [showCraftingModal, setShowCraftingModal] = useState(false);
+  const [craftingTab, setCraftingTab] = useState('craft'); // 'craft', 'manage', 'disenchant', 'links'
   const [weaponOilActive, setWeaponOilActive] = useState(false);
   const [armorPolishActive, setArmorPolishActive] = useState(false);
   const [luckyCharmActive, setLuckyCharmActive] = useState(false);
@@ -1383,6 +1391,44 @@ const getDateKey = useCallback((date) => {
   
   const addLog = useCallback((msg) => {
     setLog(prev => [...prev, msg].slice(-GAME_CONSTANTS.LOG_MAX_ENTRIES));
+  }, []);
+  
+  // Study Links Functions
+  const addStudyWebsite = useCallback(() => {
+    if (!newWebsiteName.trim() || !newWebsiteUrl.trim()) {
+      alert('Please enter both a name and URL');
+      return;
+    }
+    
+    // Add https:// if missing
+    let url = newWebsiteUrl.trim();
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    
+    const newSite = {
+      id: Date.now(),
+      name: newWebsiteName.trim(),
+      url: url,
+      category: newWebsiteCategory,
+      addedDate: new Date().toISOString(),
+      clicks: 0
+    };
+    
+    setStudyWebsites(prev => [...prev, newSite]);
+    setNewWebsiteName('');
+    setNewWebsiteUrl('');
+    setNewWebsiteCategory('uncategorized');
+  }, [newWebsiteName, newWebsiteUrl, newWebsiteCategory]);
+  
+  const removeStudyWebsite = useCallback((id) => {
+    setStudyWebsites(prev => prev.filter(site => site.id !== id));
+  }, []);
+  
+  const trackWebsiteClick = useCallback((id) => {
+    setStudyWebsites(prev => prev.map(site => 
+      site.id === id ? { ...site, clicks: site.clicks + 1 } : site
+    ));
   }, []);
   
   // Achievement system functions
@@ -1583,6 +1629,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           });
           setCalendarEvents(migratedEvents);
         }
+        if (data.studyWebsites) setStudyWebsites(data.studyWebsites);
       } catch (e) {
         console.error('Failed to load save:', e);
         // If saved data is corrupted, generate new hero
@@ -1641,7 +1688,8 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
-  isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted
+  isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
+  studyWebsites
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
       
@@ -1649,7 +1697,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -3801,21 +3849,10 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
   }
 }
 
-// NEW: Crusader Bastion of Faith - damage reduction + pain storage
+// Crusader Bastion of Faith: +20% defense
 if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
-  const originalDamage = bossDamage;
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageReduction);
-  const damageBlocked = reduction;
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
   bossDamage = Math.max(1, bossDamage - reduction);
-  
-  // Store prevented damage as pain (capped at 100)
-  setCrusaderAbsorbedPain(prev => {
-    const newPain = Math.min(prev + damageBlocked, GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap);
-    if (damageBlocked > 0) {
-      addLog(`✙ Bastion absorbed ${damageBlocked} damage! (Pain: ${newPain}/${GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap})`);
-    }
-    return newPain;
-  });
 }
       
       setPlayerFlash(true);
@@ -3937,18 +3974,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       if (crusaderBastionOfFaith > 0) {
         setCrusaderBastionOfFaith(prev => {
           const newTurns = prev - 1;
-          if (newTurns === 0) addLog(`✙ Bastion of Faith fades... Pain will decay -10/turn.`);
+          if (newTurns === 0) addLog(`✙ Bastion of Faith fades...`);
           return newTurns;
-        });
-      } else if (crusaderAbsorbedPain > 0 && hero?.class?.name === 'Crusader') {
-        // Pain decay: -10 per turn after Bastion ends
-        setCrusaderAbsorbedPain(prev => {
-          const decayAmount = GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painDecayPerTurn;
-          const newPain = Math.max(0, prev - decayAmount);
-          if (prev > 0) {
-            addLog(`✙ Absorbed Pain decays: ${prev} → ${newPain} (-${decayAmount})`);
-          }
-          return newPain;
         });
       }
       
@@ -4292,31 +4319,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         return;
       }
       
-      // NEW: Martyr Tank Judgment of Light - Consumes Absorbed Pain
-      const painConsumed = crusaderAbsorbedPain;
-      const special = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader;
-      
-      // Add bonus damage from pain (0.8 dmg per 1 pain)
-      if (painConsumed > 0) {
-        const painBonusDamage = Math.floor(painConsumed * special.painToDamage);
-        damage += painBonusDamage;
-        addLog(`✙ Absorbed Pain unleashed! +${painBonusDamage} damage from ${painConsumed} pain!`);
-      }
-      
-      // Healing: 40% of pain consumed (or 10 HP base if 0 pain)
-      const healAmount = painConsumed > 0 
-        ? Math.floor(painConsumed * special.painToHealing)
-        : special.baseHealNoPain;
+      // NEW: Judgment of Light mechanics
+      const healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
       
       setHp(h => Math.min(getMaxHp(), h + healAmount));
       
-      // Consume all pain
-      setCrusaderAbsorbedPain(0);
-      setCrusaderJudgmentCooldown(true);
+      // Apply Holy Empowerment buff (3 turns)
+      setCrusaderHolyEmpowerment(GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentTurns);
+      setCrusaderJudgmentCooldown(true); // Can't use again until after next attack
       
-      effectMessage = painConsumed > 0
-        ? `✙ JUDGMENT OF LIGHT! Consumed ${painConsumed} pain → +${Math.floor(painConsumed * special.painToDamage)} dmg, +${healAmount} HP!`
-        : `✙ JUDGMENT OF LIGHT! No pain stored. +${healAmount} HP base heal.`;
+      effectMessage = `✙ JUDGMENT OF LIGHT! +${healAmount} HP, Holy Empowerment (3 turns: +25% dmg, +15% crit, heal on hit)`;
     }
     
     const newBossHp = Math.max(0, bossHp - damage);
@@ -4676,21 +4688,10 @@ if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
   }
 }
 
-// NEW: Crusader Bastion of Faith - damage reduction + pain storage
+// Crusader Bastion of Faith: +20% defense
 if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
-  const originalDamage = bossDamage;
-  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageReduction);
-  const damageBlocked = reduction;
+  const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus);
   bossDamage = Math.max(1, bossDamage - reduction);
-  
-  // Store prevented damage as pain (capped at 100)
-  setCrusaderAbsorbedPain(prev => {
-    const newPain = Math.min(prev + damageBlocked, GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap);
-    if (damageBlocked > 0) {
-      addLog(`✙ Bastion absorbed ${damageBlocked} damage! (Pain: ${newPain}/${GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap})`);
-    }
-    return newPain;
-  });
 }
         
         setPlayerFlash(true);
@@ -5183,12 +5184,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     const skill = GAME_CONSTANTS.BASIC_SKILLS.Crusader;
     
-    // NEW: Block healing while Bastion of Faith is active (Martyr mode)
-    if (crusaderBastionOfFaith > 0) {
-      addLog(`✙ Smite is BLOCKED while Bastion of Faith is active! (Cannot heal during martyr mode)`);
-      return;
-    }
-    
     // Check cooldown
     if (crusaderSmiteCooldown) {
       addLog(`✙ Smite is recovering! Use a different attack first.`);
@@ -5449,7 +5444,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else if (hero.class.name === 'Crusader') {
       setCrusaderBastionOfFaith(skill.duration);
       setCrusaderBastionOfFaithCooldown(true);
-      addLog(`✙ BASTION OF FAITH! Martyr mode: +30% DR, pain storage active, healing BLOCKED for ${skill.duration} turns`);
+      addLog(`✙ BASTION OF FAITH! +15% damage, +20% defense for ${skill.duration} turns`);
     }
     
     // CRITICAL: Trigger enemy counter-attack (tactical skill ends your turn)
@@ -5508,23 +5503,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           setBossHp(h => Math.max(0, h - reflectDamage));
           addLog(`✨ Ethereal Barrier reflects ${reflectDamage} damage!`);
         }
-      }
-      
-      // NEW: Crusader Bastion of Faith - damage reduction + pain storage
-      if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
-        const originalDamage = bossDamage;
-        const reduction = Math.floor(bossDamage * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.damageReduction);
-        const damageBlocked = reduction;
-        bossDamage = Math.max(1, bossDamage - reduction);
-        
-        // Store prevented damage as pain (capped at 100)
-        setCrusaderAbsorbedPain(prev => {
-          const newPain = Math.min(prev + damageBlocked, GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap);
-          if (damageBlocked > 0) {
-            addLog(`✙ Bastion absorbed ${damageBlocked} damage! (Pain: ${newPain}/${GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.painCap})`);
-          }
-          return newPain;
-        });
       }
       
       setHp(currentHp => {
@@ -7836,6 +7814,35 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     </div>
     <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Sharpen your mind, temper your wisdom..."</p>
     
+    {/* Sub-navigation tabs */}
+    <div className="flex gap-2 justify-center mb-6">
+      <button 
+        onClick={() => setForgeSubTab('flashcards')}
+        className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
+        style={{
+          backgroundColor: forgeSubTab === 'flashcards' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
+          borderColor: forgeSubTab === 'flashcards' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
+          color: '#F5F5DC'
+        }}
+      >
+        FLASHCARDS
+      </button>
+      <button 
+        onClick={() => setForgeSubTab('resources')}
+        className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
+        style={{
+          backgroundColor: forgeSubTab === 'resources' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
+          borderColor: forgeSubTab === 'resources' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
+          color: '#F5F5DC'
+        }}
+      >
+        RESOURCES
+      </button>
+    </div>
+    
+    {/* Flashcards Tab Content */}
+    {forgeSubTab === 'flashcards' && (
+    <>
     <div className="flex justify-between items-center mb-6">
       <div>
         <p className="text-lg" style={{color: '#F5F5DC'}}>Your Decks: <span className="font-bold" style={{color: '#D4AF37'}}>{flashcardDecks.length}</span></p>
@@ -8025,6 +8032,153 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           </div>
         ))}
       </div>
+    )}
+    </>
+    )}
+    
+    {/* Resources Tab Content */}
+    {forgeSubTab === 'resources' && (
+    <>
+    <div>
+      <p className="text-sm mb-6 text-center" style={{color: '#95A5A6'}}>
+        Save your most-used study websites for quick access
+      </p>
+      
+      {/* Add New Website Form */}
+      <div className="bg-black bg-opacity-40 rounded-lg p-4 mb-4 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.4)'}}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input
+            type="text"
+            placeholder="Name (e.g., Stack Overflow)"
+            value={newWebsiteName}
+            onChange={(e) => setNewWebsiteName(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && newWebsiteName && newWebsiteUrl) {
+                addStudyWebsite();
+              }
+            }}
+            className="px-4 py-2.5 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
+            style={{
+              borderColor: 'rgba(212, 175, 55, 0.3)',
+              color: '#F5F5DC',
+              fontSize: '14px'
+            }}
+          />
+          <input
+            type="text"
+            placeholder="URL (e.g., stackoverflow.com)"
+            value={newWebsiteUrl}
+            onChange={(e) => setNewWebsiteUrl(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter' && newWebsiteName && newWebsiteUrl) {
+                addStudyWebsite();
+              }
+            }}
+            className="px-4 py-2.5 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
+            style={{
+              borderColor: 'rgba(212, 175, 55, 0.3)',
+              color: '#F5F5DC',
+              fontSize: '14px'
+            }}
+          />
+          <button
+            onClick={addStudyWebsite}
+            disabled={!newWebsiteName.trim() || !newWebsiteUrl.trim()}
+            className="px-4 py-2.5 rounded font-bold transition-all border-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase text-sm"
+            style={{
+              background: (!newWebsiteName.trim() || !newWebsiteUrl.trim()) 
+                ? 'rgba(100, 100, 100, 0.3)' 
+                : 'linear-gradient(to bottom, #B8860B, #8B6914)',
+              borderColor: (!newWebsiteName.trim() || !newWebsiteUrl.trim()) 
+                ? 'rgba(100, 100, 100, 0.3)' 
+                : '#CD7F32',
+              color: '#F5F5DC'
+            }}
+            onMouseEnter={(e) => {
+              if (newWebsiteName.trim() && newWebsiteUrl.trim()) {
+                e.currentTarget.style.background = 'linear-gradient(to bottom, #DAA520, #B8860B)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (newWebsiteName.trim() && newWebsiteUrl.trim()) {
+                e.currentTarget.style.background = 'linear-gradient(to bottom, #B8860B, #8B6914)';
+              }
+            }}
+          >
+            Add
+          </button>
+        </div>
+      </div>
+      
+      {/* Saved Websites List */}
+      {studyWebsites.length === 0 ? (
+        <div className="text-center py-8 rounded-lg border-2" style={{
+          background: 'rgba(0, 0, 0, 0.3)',
+          borderColor: 'rgba(212, 175, 55, 0.3)'
+        }}>
+          <p className="text-sm" style={{color: '#95A5A6'}}>No study resources saved yet. Add your first one above!</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {studyWebsites.map((site) => (
+            <div
+              key={site.id}
+              className="flex items-center justify-between p-3 rounded-lg border-2 transition-all"
+              style={{
+                background: 'rgba(0, 0, 0, 0.4)',
+                borderColor: 'rgba(212, 175, 55, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.6)';
+                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.4)';
+                e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
+              }}
+            >
+              <div className="flex-1 min-w-0">
+                <a
+                  href={site.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => trackWebsiteClick(site.id)}
+                  className="block group"
+                >
+                  <p className="font-bold group-hover:underline mb-1" style={{color: '#D4AF37', fontSize: '14px'}}>
+                    {site.name}
+                  </p>
+                  <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap" style={{color: '#95A5A6'}}>
+                    {site.url.replace(/^https?:\/\//, '')}
+                  </p>
+                </a>
+              </div>
+              <button
+                onClick={() => {
+                  if (window.confirm(`Delete "${site.name}"?`)) {
+                    removeStudyWebsite(site.id);
+                  }
+                }}
+                className="ml-3 p-2 rounded transition-all flex-shrink-0"
+                style={{color: '#9B1B30'}}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#B8293E';
+                  e.currentTarget.style.background = 'rgba(155, 27, 48, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#9B1B30';
+                  e.currentTarget.style.background = 'transparent';
+                }}
+                title="Delete resource"
+              >
+                <X size={16}/>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+    </>
     )}
   </div>
 )}
@@ -12273,7 +12427,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.14.0 - Crusader Martyr Tank Rework - Absorbed Pain System</p>
+          <p className="text-xs text-gray-600">v4.15.0 - Study Links - Save your study resources</p>
         </div>
       </div>
       )}
