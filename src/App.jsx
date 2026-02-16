@@ -24,7 +24,7 @@ const COLORS = {
   amber: { base: '#8B6914', hover: '#B8860B', border: '#9B8B7E' },
   
   // Special/Elite Actions
-  amethyst: { base: '#5A2472', hover: '#6B2C91', border: '#9B8B7E' },
+  amethyst: { base: '#5A2472', hover: '#6B2C91', border: '#9B8B7E' }
   teal: { base: '#004D4D', hover: '#006666', border: '#9B8B7E' },
   obsidian: { base: '#1C1C1C', hover: '#2D2D2D', border: '#9B8B7E' },
   
