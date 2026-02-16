@@ -14,9 +14,9 @@ if (!document.querySelector('style[data-font="cinzel"]')) {
 
 // Refined Medieval Color Scheme - Reduced Visual Noise
 const COLORS = {
-  // Primary Actions (Attack, Combat) - Deeper, less saturated
-  crimson: { base: '#6B1318', hover: '#8B1A28', border: '#9B8B7E' },
-  ruby: { base: '#7A1520', hover: '#9B1B30', border: '#9B8B7E' },
+  // Primary Actions (Attack, Combat) - Brighter, more readable
+  crimson: { base: '#B91C1C', hover: '#DC2626', border: '#EF4444' },
+  ruby: { base: '#B91C1C', hover: '#DC2626', border: '#EF4444' },
   
   // Secondary Actions (Heal, Support)
   emerald: { base: '#2F5233', hover: '#3D6B45', border: '#9B8B7E' },
@@ -28,9 +28,9 @@ const COLORS = {
   teal: { base: '#004D4D', hover: '#006666', border: '#9B8B7E' },
   obsidian: { base: '#1C1C1C', hover: '#2D2D2D', border: '#9B8B7E' },
   
-  // Danger/Warning - More muted
-  burgundy: { base: '#5A0E15', hover: '#6B0F1A', border: '#9B8B7E' },
-  darkOrange: { base: '#A64400', hover: '#CC5500', border: '#9B8B7E' },
+  // Danger/Warning - Brighter, more readable
+  burgundy: { base: '#991B1B', hover: '#B91C1C', border: '#DC2626' },
+  darkOrange: { base: '#C2410C', hover: '#EA580C', border: '#F97316' },
   
   // Utility - Neutral palette
   slate: { base: '#2C3E50', hover: '#34495E', border: '#9B8B7E' },
@@ -289,6 +289,13 @@ const GAME_CONSTANTS = {
     chargeBonus: 0.25 // +25% damage at max charges
   },
   
+  BASIC_ATTACK_NAMES: {
+    Knight: 'Shield Bash',
+    Crusader: 'Holy Strike',
+    Wizard: 'Arcane Bolt',
+    Assassin: 'Quick Slash'
+  },
+  
   SPECIAL_ATTACKS: {
     Knight: { 
       name: 'Blood Oath', 
@@ -380,7 +387,8 @@ const GAME_CONSTANTS = {
       cost: 17,
       damageMultiplier: 1.8,
       effect: 'A powerful strike that cannot be used twice in a row.',
-      cooldown: true
+      cooldown: true,
+      unlockLevel: 3
     },
     Crusader: {
       name: 'Smite',
@@ -388,8 +396,15 @@ const GAME_CONSTANTS = {
       damageMultiplier: 1.7,
       healAmount: 10,
       effect: 'Holy strike that heals. Cannot be used twice in a row.',
-      cooldown: true
+      cooldown: true,
+      unlockLevel: 3
     }
+  },
+  
+  SKILL_UNLOCK_LEVELS: {
+    basicSkill: 3,    // Crushing Blow / Smite
+    special: 5,       // Blood Oath / Temporal Rift / Shadow Venom / Judgment
+    tactical: 7       // Rallying Roar / Ethereal Barrier / Mark for Death / Bastion
   },
   
   ARMOR_STAT_RANGES: {
@@ -1309,9 +1324,9 @@ const [debugWarningState, setDebugWarningState] = useState(null); // null = auto
   
   const classes = [
     { name: 'Knight', color: 'red', emblem: '⚔︎', gradient: ['from-red-900', 'from-red-800', 'from-red-700', 'from-red-600'], glow: ['shadow-red-900/50', 'shadow-red-700/60', 'shadow-red-600/70', 'shadow-red-500/80'] },
-    { name: 'Wizard', color: 'purple', emblem: '✦', gradient: ['from-purple-900', 'from-purple-800', 'from-purple-700', 'from-purple-600'], glow: ['shadow-purple-900/50', 'shadow-purple-700/60', 'shadow-purple-600/70', 'shadow-purple-500/80'] },
+    { name: 'Wizard', color: 'blue', emblem: '✦', gradient: ['from-blue-700', 'from-blue-600', 'from-blue-500', 'from-blue-400'], glow: ['shadow-blue-700/60', 'shadow-blue-600/70', 'shadow-blue-500/80', 'shadow-blue-400/90'] },
     { name: 'Assassin', color: 'green', emblem: '†', gradient: ['from-green-900', 'from-green-800', 'from-green-700', 'from-green-600'], glow: ['shadow-green-900/50', 'shadow-green-700/60', 'shadow-green-600/70', 'shadow-green-500/80'] },
-    { name: 'Crusader', color: 'yellow', emblem: '✙', gradient: ['from-yellow-900', 'from-yellow-800', 'from-yellow-700', 'from-yellow-600'], glow: ['shadow-yellow-900/50', 'shadow-yellow-700/60', 'shadow-yellow-600/70', 'shadow-yellow-500/80'] }
+    { name: 'Crusader', color: 'white', emblem: '✙', gradient: ['from-gray-100', 'from-gray-50', 'from-white', 'from-white'], glow: ['shadow-gray-200/80', 'shadow-gray-100/90', 'shadow-white/95', 'shadow-white/100'] }
   ];
 
   const makeName = useCallback(() => {
@@ -1365,15 +1380,19 @@ const getDateKey = useCallback((date) => {
     const borders = ['3px solid', '3px solid', '3px solid', '4px solid', '4px solid', '5px solid', '5px solid'];
     const borderColors = {
       red: ['#8B0000', '#8B0000', '#B22222', '#DC143C', '#DC143C', '#FF4500', '#FF4500'],
-      purple: ['#4B0082', '#4B0082', '#6A0DAD', '#8B008B', '#8B008B', '#9370DB', '#9370DB'],
+      blue: ['#2563EB', '#2563EB', '#3B82F6', '#60A5FA', '#60A5FA', '#93C5FD', '#93C5FD'],
       green: ['#004d00', '#004d00', '#006400', '#228B22', '#228B22', '#32CD32', '#32CD32'],
+      white: ['#D1D5DB', '#D1D5DB', '#E5E7EB', '#F3F4F6', '#F9FAFB', '#FFFFFF', '#FFFFFF'],
+      purple: ['#4B0082', '#4B0082', '#6A0DAD', '#8B008B', '#8B008B', '#9370DB', '#9370DB'],
       yellow: ['#B8860B', '#B8860B', '#DAA520', '#FFD700', '#FFD700', '#FFEC8B', '#FFEC8B'],
       amber: ['#8B4513', '#8B4513', '#A0522D', '#CD853F', '#CD853F', '#DEB887', '#DEB887']
     };
     const toColors = {
       red: ['to-red-800', 'to-red-800', 'to-red-700', 'to-red-600', 'to-red-600', 'to-orange-500', 'to-orange-500'],
-      purple: ['to-purple-800', 'to-purple-800', 'to-purple-700', 'to-indigo-600', 'to-indigo-600', 'to-pink-500', 'to-pink-500'],
+      blue: ['to-blue-600', 'to-blue-600', 'to-blue-500', 'to-blue-400', 'to-blue-400', 'to-blue-300', 'to-blue-300'],
       green: ['to-green-800', 'to-green-800', 'to-green-700', 'to-emerald-600', 'to-emerald-600', 'to-teal-500', 'to-teal-500'],
+      white: ['to-gray-200', 'to-gray-200', 'to-gray-100', 'to-gray-50', 'to-gray-50', 'to-white', 'to-white'],
+      purple: ['to-purple-800', 'to-purple-800', 'to-purple-700', 'to-indigo-600', 'to-indigo-600', 'to-pink-500', 'to-pink-500'],
       yellow: ['to-yellow-800', 'to-yellow-800', 'to-yellow-700', 'to-amber-600', 'to-amber-600', 'to-orange-400', 'to-orange-400'],
       amber: ['to-amber-800', 'to-amber-800', 'to-orange-700', 'to-orange-600', 'to-orange-600', 'to-yellow-500', 'to-yellow-500']
     };
@@ -1419,7 +1438,12 @@ const getDateKey = useCallback((date) => {
     setNewWebsiteName('');
     setNewWebsiteUrl('');
     setNewWebsiteCategory('uncategorized');
-  }, [newWebsiteName, newWebsiteUrl, newWebsiteCategory]);
+    
+    // Gold reward for organizing resources
+    const goldReward = 5;
+    setGold(g => g + goldReward);
+    addLog(`⚔️ Knowledge relic forged! +${goldReward} Gold`);
+  }, [newWebsiteName, newWebsiteUrl, newWebsiteCategory, addLog]);
   
   const removeStudyWebsite = useCallback((id) => {
     setStudyWebsites(prev => prev.filter(site => site.id !== id));
@@ -1457,12 +1481,22 @@ const getDateKey = useCallback((date) => {
     if (reward.weapon) setWeapon(prev => prev + reward.weapon);
     if (reward.armor) setArmor(prev => prev + reward.armor);
     
+    // Gold reward based on achievement rarity
+    const goldRewards = {
+      COMMON: 15,
+      RARE: 30,
+      EPIC: 50,
+      LEGENDARY: 100
+    };
+    const goldReward = goldRewards[achievement.rarity] || 20;
+    setGold(prev => prev + goldReward);
+    
     // Show notification
     setShowAchievementNotification(achievement);
     setTimeout(() => setShowAchievementNotification(null), 5000);
     
     // Log unlock
-    addLog(`🏆 Achievement Unlocked: ${achievement.name}!`);
+    addLog(`🏆 Achievement Unlocked: ${achievement.name}! +${goldReward} Gold`);
   }, [addLog]);
   
   const updateAchievementStat = useCallback((type, increment = 1) => {
@@ -2008,8 +2042,26 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setLevel(newLevel);
       addLog(`The hero has grown stronger! Now level ${newLevel}`);
       setHp(h => Math.min(getMaxHp(), h + 20));
+      
+      // Skill unlock notifications
+      if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && hero?.class) {
+        const skillName = GAME_CONSTANTS.BASIC_SKILLS[hero.class.name]?.name;
+        if (skillName) {
+          addLog(`⚔️ NEW SKILL UNLOCKED: ${skillName}!`);
+        }
+      } else if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special && hero?.class) {
+        const skillName = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name]?.name;
+        if (skillName) {
+          addLog(`✨ SPECIAL ATTACK UNLOCKED: ${skillName}!`);
+        }
+      } else if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical && hero?.class) {
+        const skillName = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name]?.name;
+        if (skillName) {
+          addLog(`🛡️ TACTICAL SKILL UNLOCKED: ${skillName}!`);
+        }
+      }
     }
-  }, [xp, level, addLog, getMaxHp]);
+  }, [xp, level, addLog, getMaxHp, hero]);
   
   const applySkipPenalty = useCallback(() => {
     const newSkipCount = skipCount + 1;
@@ -2880,7 +2932,7 @@ setTimeout(() => {
           const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const hp = Math.floor(baseHp * multiplier);
           
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
           
@@ -2898,7 +2950,7 @@ setTimeout(() => {
           const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const stamina = Math.floor(baseStamina * multiplier);
           
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
           
@@ -2974,7 +3026,7 @@ setTimeout(() => {
           const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const hp = Math.floor(baseHp * multiplier);
           
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
           
@@ -2992,7 +3044,7 @@ setTimeout(() => {
           const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const stamina = Math.floor(baseStamina * multiplier);
           
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
           
@@ -6053,7 +6105,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               </div>
 
               {/* Quick Stats Display */}
-              <div className="bg-black bg-opacity-40 rounded-lg p-3 mb-4 border border-gray-800">
+              <div className="bg-black bg-opacity-40 rounded-lg p-2 mb-4 border border-gray-800">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-center">
                   <div><span className="text-gray-400">Day:</span> <span className="text-white font-bold">{currentDay}</span></div>
                   <div><span className="text-gray-400">HP:</span> <span className="font-bold" style={{color: COLORS.cream}}>{hp}/{getMaxHp()}</span></div>
@@ -6519,9 +6571,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               background: (() => {
                 const colorMap = {
                   red: '#3D0A0A',      // Warrior - Deep crimson red (darker, richer)
-                  purple: '#2A1A3D',   // Mage - Deep royal purple (more saturated)
+                  blue: '#1E2A5A',     // Mage - Brighter deep blue (more vibrant)
                   green: '#1A2A3A',    // Rogue - Deep indigo/midnight blue (stealth, shadows)
-                  yellow: '#3D3A1F',   // Paladin - Deep gold/bronze (less muddy)
+                  white: '#4A4A4A',    // Crusader - Lighter gray (for more contrast with white)
+                  purple: '#2A1A3D',   // Legacy purple
+                  yellow: '#3D3A1F',   // Legacy yellow
                   amber: '#1E3A2E'     // Ranger - Forest green (nature theme)
                 };
                 return colorMap[hero.class.color] || colorMap.yellow;
@@ -6694,9 +6748,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       background: (() => {
                         const gradientMap = {
                           red: 'linear-gradient(90deg, #8B0000 0%, #DC143C 100%)',           // Warrior - unchanged
-                          purple: 'linear-gradient(90deg, #4B0082 0%, #9370DB 100%)',        // Mage - unchanged
+                          blue: 'linear-gradient(90deg, #2563EB 0%, #60A5FA 100%)',          // Mage - bright blue to lighter blue
                           green: 'linear-gradient(90deg, #1E3A5F 0%, #3B82F6 100%)',         // Rogue - dark indigo to blue (stealth theme)
-                          yellow: 'linear-gradient(90deg, #B8860B 0%, #FFD700 100%)',        // Paladin - dark gold to bright gold
+                          white: 'linear-gradient(90deg, #E5E7EB 0%, #FFFFFF 100%)',         // Crusader - light gray to pure white
+                          purple: 'linear-gradient(90deg, #4B0082 0%, #9370DB 100%)',        // Legacy purple
+                          yellow: 'linear-gradient(90deg, #B8860B 0%, #FFD700 100%)',        // Legacy yellow
                           amber: 'linear-gradient(90deg, #166534 0%, #22C55E 100%)'          // Ranger - dark forest to bright green
                         };
                         return gradientMap[hero.class.color] || 'linear-gradient(90deg, #B8860B 0%, #FFD700 100%)';
@@ -7083,7 +7139,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         ? undefined
         : t.priority === 'important'
           ? COLORS.gold
-          : undefined,
+          : 'rgba(59, 130, 246, 0.5)',
     position: 'relative',
     overflow: 'hidden',
     animation: t.overdue && !t.done 
@@ -7381,18 +7437,26 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   let cardStyle, titleColor, titleShadow, themeColor, borderColor, borderWidth, shadowStyle, dividerColor;
                   
                   if (isToday) {
-                    // TODAY: Full opacity, subtle glow, stronger border, lifted shadow
-                    cardStyle = weeklyPlan[day].length > 0 
-                      ? 'linear-gradient(135deg, rgba(70, 15, 15, 0.22) 0%, rgba(45, 10, 10, 0.38) 50%, rgba(28, 8, 8, 0.52) 100%)'
-                      : 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))';
-                    titleColor = '#D4AF37'; // Standard gold to match other tabs
-                    titleShadow = '0 0 8px rgba(212, 175, 55, 0.6)'; // Sharper shadow, slightly stronger
-                    themeColor = '#DAA520';
-                    borderColor = '#D4AF37';
-                    borderWidth = '2px';
-                    shadowStyle = weeklyPlan[day].length > 0
-                      ? '0 8px 16px rgba(0, 0, 0, 0.5), 0 0 20px rgba(70, 15, 15, 0.15)'
-                      : '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)';
+                    // TODAY: Stand out ONLY when empty, blend in when filled
+                    if (weeklyPlan[day].length > 0) {
+                      // Has tasks - look like other days (blend in)
+                      cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.55) 0%, rgba(30, 41, 59, 0.42) 100%)';
+                      titleColor = '#D4AF37';
+                      titleShadow = 'none';
+                      themeColor = '#DAA520';
+                      borderColor = 'rgba(100, 116, 139, 0.35)';
+                      borderWidth = '1px';
+                      shadowStyle = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                    } else {
+                      // Empty - stand out with golden glow
+                      cardStyle = 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))';
+                      titleColor = '#D4AF37';
+                      titleShadow = '0 0 8px rgba(212, 175, 55, 0.6)';
+                      themeColor = '#DAA520';
+                      borderColor = '#D4AF37';
+                      borderWidth = '2px';
+                      shadowStyle = '0 8px 16px rgba(0, 0, 0, 0.5), 0 0 12px rgba(212, 175, 55, 0.1)';
+                    }
                     dividerColor = 'rgba(212, 175, 55, 0.5)';
                   } else if (isFuture) {
                     // FUTURE: 70% opacity, no glow, thinner border, muted colors
@@ -7488,20 +7552,20 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} 
                         className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ml-4" 
                         style={{
-                          background: isToday 
-                            ? 'rgba(0, 0, 0, 0.5)' 
+                          background: isToday
+                            ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(161, 117, 10, 0.8))' 
                             : isFuture
                               ? 'linear-gradient(to bottom, rgba(120, 53, 15, 0.7), rgba(92, 40, 11, 0.7))'
                               : 'linear-gradient(to bottom, rgba(100, 43, 12, 0.6), rgba(76, 33, 9, 0.6))',
                           borderColor: isToday ? '#D4AF37' : isFuture ? 'rgba(212, 175, 55, 0.6)' : 'rgba(212, 175, 55, 0.45)',
                           borderWidth: isToday ? '2px' : '1.5px',
                           borderStyle: 'solid',
-                          color: isToday ? '#D4AF37' : isFuture ? 'rgba(212, 175, 55, 0.85)' : 'rgba(192, 192, 192, 0.7)',
+                          color: isToday ? '#1C1C1C' : isFuture ? 'rgba(212, 175, 55, 0.85)' : 'rgba(192, 192, 192, 0.7)',
                           boxShadow: isToday ? '0 0 15px rgba(212, 175, 55, 0.3)' : 'none'
                         }} 
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isToday 
-                            ? 'rgba(0, 0, 0, 0.7)' 
+                          e.currentTarget.style.background = isToday
+                            ? 'linear-gradient(to bottom, rgba(212, 175, 55, 0.95), rgba(184, 134, 11, 0.95))' 
                             : isFuture
                               ? 'linear-gradient(to bottom, rgba(120, 53, 15, 0.85), rgba(92, 40, 11, 0.85))'
                               : 'linear-gradient(to bottom, rgba(100, 43, 12, 0.75), rgba(76, 33, 9, 0.75))';
@@ -7509,7 +7573,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         }} 
                         onMouseLeave={(e) => {
                           e.currentTarget.style.background = isToday 
-                            ? 'rgba(0, 0, 0, 0.5)' 
+                            ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(161, 117, 10, 0.8))' 
                             : isFuture
                               ? 'linear-gradient(to bottom, rgba(120, 53, 15, 0.7), rgba(92, 40, 11, 0.7))'
                               : 'linear-gradient(to bottom, rgba(100, 43, 12, 0.6), rgba(76, 33, 9, 0.6))';
@@ -8391,7 +8455,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       return (
                         <div
                           key={achievement.id}
-                          className="rounded-lg p-3 border-2 transition-all relative overflow-hidden"
+                          className="rounded-lg p-2 border-2 transition-all relative overflow-hidden"
                           style={{
                             background: isUnlocked 
                               ? `linear-gradient(135deg, rgba(60, 10, 10, 0.9), rgba(80, 20, 20, 0.9), rgba(40, 0, 0, 0.9))`
@@ -9597,7 +9661,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {merchantTab === 'buy' && (
                 <div>
                   {/* Potion Market Status */}
-                  <div className="rounded-lg p-3 mb-4 border" style={{
+                  <div className="rounded-lg p-2 mb-4 border" style={{
                     background: 'rgba(0, 0, 0, 0.3)',
                     borderColor: 'rgba(212, 175, 55, 0.3)'
                   }}>
@@ -9864,7 +9928,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {merchantTab === 'sellPotions' && (
                 <div>
                   {/* Market Status Indicator for Potions */}
-                  <div className="rounded-lg p-3 mb-4 border" style={{
+                  <div className="rounded-lg p-2 mb-4 border" style={{
                     background: 'rgba(0, 0, 0, 0.3)',
                     borderColor: 'rgba(212, 175, 55, 0.3)'
                   }}>
@@ -9899,7 +9963,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         <h3 className="font-bold text-sm mb-2" style={{color: '#D4AF37'}}>POTIONS</h3>
                         <div className="space-y-2">
                           {healthPots > 0 && (
-                            <div className="rounded-lg p-3 border flex justify-between items-center" style={{
+                            <div className="rounded-lg p-2 border flex justify-between items-center" style={{
                               background: 'rgba(0, 0, 0, 0.3)',
                               borderColor: 'rgba(220, 38, 38, 0.6)'
                             }}>
@@ -9924,7 +9988,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           )}
                           
                           {staminaPots > 0 && (
-                            <div className="rounded-lg p-3 border flex justify-between items-center" style={{
+                            <div className="rounded-lg p-2 border flex justify-between items-center" style={{
                               background: 'rgba(0, 0, 0, 0.3)',
                               borderColor: 'rgba(59, 130, 246, 0.6)'
                             }}>
@@ -9949,7 +10013,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           )}
                           
                           {cleansePots > 0 && (
-                            <div className="rounded-lg p-3 border flex justify-between items-center" style={{
+                            <div className="rounded-lg p-2 border flex justify-between items-center" style={{
                               background: 'rgba(0, 0, 0, 0.3)',
                               borderColor: 'rgba(168, 85, 247, 0.6)'
                             }}>
@@ -9992,7 +10056,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {merchantTab === 'buyEquipment' && (
                 <div>
                   {/* Market Status Indicator */}
-                  <div className="rounded-lg p-3 mb-4 border" style={{
+                  <div className="rounded-lg p-2 mb-4 border" style={{
                     background: 'rgba(0, 0, 0, 0.3)',
                     borderColor: 'rgba(212, 175, 55, 0.3)'
                   }}>
@@ -10037,7 +10101,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         const canAfford = gold >= finalPrice;
                         
                         return (
-                          <div key={item.id} className="rounded-lg p-3 border-2 transition-all" style={{
+                          <div key={item.id} className="rounded-lg p-2 border-2 transition-all" style={{
                             background: 'rgba(0, 0, 0, 0.4)',
                             borderColor: getRarityColor(item.rarity)
                           }}>
@@ -10159,7 +10223,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           {sortByRarity(weaponInventory).map(wpn => {
                             const sellPrice = calculateSellPrice(wpn, 'weapon');
                             return (
-                              <div key={wpn.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                              <div key={wpn.id} className="rounded-lg p-2 border flex justify-between items-center" style={{
                                 background: 'rgba(0, 0, 0, 0.3)',
                                 borderColor: getRarityColor(wpn.rarity || 'common')
                               }}>
@@ -10201,7 +10265,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                             sortByRarity(items).map(arm => {
                               const sellPrice = calculateSellPrice(arm, 'armor');
                               return (
-                                <div key={arm.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                                <div key={arm.id} className="rounded-lg p-2 border flex justify-between items-center" style={{
                                   background: 'rgba(0, 0, 0, 0.3)',
                                   borderColor: getRarityColor(arm.rarity || 'common')
                                 }}>
@@ -10243,7 +10307,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           {sortByRarity(pendantInventory).map(pnd => {
                             const sellPrice = calculateSellPrice(pnd, 'pendant');
                             return (
-                              <div key={pnd.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                              <div key={pnd.id} className="rounded-lg p-2 border flex justify-between items-center" style={{
                                 background: 'rgba(0, 0, 0, 0.3)',
                                 borderColor: getRarityColor(pnd.rarity || 'common')
                               }}>
@@ -10284,7 +10348,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           {sortByRarity(ringInventory).map(rng => {
                             const sellPrice = calculateSellPrice(rng, 'ring');
                             return (
-                              <div key={rng.id} className="rounded-lg p-3 border flex justify-between items-center" style={{
+                              <div key={rng.id} className="rounded-lg p-2 border flex justify-between items-center" style={{
                                 background: 'rgba(0, 0, 0, 0.3)',
                                 borderColor: getRarityColor(rng.rarity || 'common')
                               }}>
@@ -10344,7 +10408,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
           {showCustomizeModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCustomizeModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: VISUAL_STYLES.modal.dark, borderColor: COLORS.burgundy.base, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowCustomizeModal(false)} 
@@ -10467,7 +10531,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showDeckModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowDeckModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
@@ -10549,7 +10613,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showCardModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCardModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
@@ -10654,7 +10718,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showStudyModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -10835,7 +10899,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 {showQuizModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -10950,11 +11014,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 
                   const nextIndex = currentQuizIndex + 1;
                 if (nextIndex >= quizQuestions.length) {
-                  // Quiz complete - award XP and loot
+                  // Quiz complete - award XP, Gold, and loot
                   const baseXP = finalScore * 10;
                   const xpGain = isRetakeQuiz ? Math.floor(baseXP * 0.5) : baseXP;
                   setXp(x => x + xpGain);
-                  addLog(`Quiz complete! +${xpGain} XP${isRetakeQuiz ? ' (retake)' : ''}`);
+                  
+                  // Gold reward based on score
+                  const baseGold = finalScore * 3; // 3 gold per correct answer
+                  const goldGain = isRetakeQuiz ? Math.floor(baseGold * 0.5) : baseGold;
+                  setGold(g => g + goldGain);
+                  
+                  addLog(`Quiz complete! +${xpGain} XP, +${goldGain} Gold${isRetakeQuiz ? ' (retake)' : ''}`);
                   
                   // Loot for good performance (70%+) - only on first attempt
                   if (!isRetakeQuiz && finalScore >= quizQuestions.length * 0.7) {
@@ -11030,7 +11100,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             background: 'rgba(184, 134, 11, 0.2)',
             borderColor: 'rgba(212, 175, 55, 0.4)'
           }}>
-            <p className="text-xl mb-2" style={{color: COLORS.gold}}>+{isRetakeQuiz ? Math.floor(quizScore * 10 * 0.5) : quizScore * 10} XP Earned{isRetakeQuiz ? ' (Retake - 50%)' : ''}</p>
+            <p className="text-xl mb-2" style={{color: COLORS.gold}}>
+              +{isRetakeQuiz ? Math.floor(quizScore * 10 * 0.5) : quizScore * 10} XP Earned{isRetakeQuiz ? ' (Retake - 50%)' : ''}
+            </p>
+            <p className="text-lg mb-2" style={{color: COLORS.gold}}>
+              +{isRetakeQuiz ? Math.floor(quizScore * 3 * 0.5) : quizScore * 3} Gold Earned{isRetakeQuiz ? ' (Retake - 50%)' : ''}
+            </p>
             {!isRetakeQuiz && quizScore >= quizQuestions.length * 0.7 && (
               <p style={{color: COLORS.silver}}>Bonus loot awarded! Check your inventory.</p>
             )}
@@ -11288,7 +11363,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(50, 8, 8, 0.95), rgba(35, 5, 5, 0.95), rgba(22, 3, 5, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowModal(false)} 
@@ -11409,7 +11484,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
 {showImportModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowImportModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(0, 35, 35, 0.95), rgba(0, 26, 26, 0.95), rgba(0, 18, 18, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowImportModal(false)} 
@@ -11621,7 +11696,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 )}
           {showCalendarModal && selectedDate && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCalendarModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(10, 36, 18, 0.95), rgba(6, 28, 14, 0.95), rgba(3, 20, 10, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1), inset 0 0 40px rgba(0, 0, 0, 0.15)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1), inset 0 0 40px rgba(0, 0, 0, 0.15)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowCalendarModal(false)} 
@@ -11821,14 +11896,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
           {showBoss && (
             <div className="fixed inset-0 flex items-start justify-center p-4 z-50 overflow-y-auto" style={{background: 'radial-gradient(ellipse at center, rgba(90, 14, 21, 0.3) 0%, rgba(0, 0, 0, 0.95) 70%)'}}>
-              <div className={`rounded-2xl p-8 max-w-3xl w-full relative boss-enter my-8 ${bossFlash ? 'damage-flash-boss' : ''}`} style={{
-                background: 'linear-gradient(to bottom, rgba(42, 36, 28, 0.98), rgba(26, 22, 18, 0.98))',
-                border: '2px solid rgba(155, 139, 126, 0.5)',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.4)'
+              <div className={`rounded-2xl p-4 max-w-3xl w-full relative boss-enter my-1 ${bossFlash ? 'damage-flash-boss' : ''}`} style={{
+                background: 'linear-gradient(to bottom, rgba(60, 15, 15, 0.98), rgba(40, 10, 10, 0.98))',
+                border: '2px solid rgba(139, 0, 0, 0.6)',
+                boxShadow: '0 8px 24px rgba(139, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.4)'
               }}>
                 {/* Header Section */}
-                <div className="text-center mb-6">
-                  <p className="text-xs uppercase tracking-[0.3em] mb-4" style={{color: '#CD7F32', letterSpacing: '0.3em'}}>
+                <div className="text-center mb-3">
+                  <p className="text-xs uppercase tracking-[0.3em] mb-1" style={{color: '#CD7F32', letterSpacing: '0.3em'}}>
                     {isFinalBoss ? (inPhase3 ? 'PHASE 3: ABYSS AWAKENING' : inPhase2 ? 'PHASE 2: THE PRESSURE' : 'THE UNDYING LEGEND') : 
                      battleType === 'elite' ? 'TORMENTED CHAMPION' : 
                      battleType === 'wave' ? `WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
@@ -11836,7 +11911,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </p>
                   
                   {bossName && (
-                    <h2 className="text-5xl font-bold mb-2" style={{
+                    <h2 className="text-3xl font-bold mb-0" style={{
                       fontFamily: 'Cinzel, serif',
                       color: '#D4AF37',
                       textShadow: '0 0 20px rgba(212, 175, 55, 0.4)',
@@ -11848,16 +11923,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     </h2>
                   )}
                   
-                  <div className="flex items-center justify-center gap-2 mt-2">
+                  <div className="flex items-center justify-center gap-2 mt-1">
                     <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
                     <span style={{color: 'rgba(212, 175, 55, 0.5)', fontSize: '8px'}}>◆</span>
                     <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
                   </div>
                 </div>
                 
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {/* Enemy HP Section */}
-                  <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
+                  <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
                     <div className="flex justify-between mb-1">
                       <span className="text-sm uppercase tracking-wider" style={{color: '#CD7F32'}}>
                         {bossName || 'Enemy'}
@@ -11875,7 +11950,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   
                   {/* Phase 2 Warning */}
                   {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
-                    <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(204, 85, 0, 0.2)', border: '1px solid rgba(255, 140, 0, 0.5)'}}>
+                    <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(204, 85, 0, 0.2)', border: '1px solid rgba(255, 140, 0, 0.5)'}}>
                       <p className="text-xs uppercase tracking-wider text-center mb-1" style={{color: '#CD7F32'}}>RAMPING PRESSURE</p>
                       <p className="text-white text-center text-sm">Boss damage: +{phase2DamageStacks * 5}% ({phase2DamageStacks} stacks)</p>
                     </div>
@@ -11883,7 +11958,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   
                   {/* Shadow Adds */}
                   {(inPhase2 || inPhase3) && shadowAdds.length > 0 && (
-                    <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', border: '1px solid rgba(147, 51, 234, 0.5)'}}>
+                    <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', border: '1px solid rgba(147, 51, 234, 0.5)'}}>
                       <p className="text-xs uppercase tracking-wider text-center mb-2" style={{color: '#B794F4'}}>Shadow Add{shadowAdds.length > 1 ? 's' : ''} ({shadowAdds.length})</p>
                       <div className="space-y-2">
                         {shadowAdds.map((add, idx) => (
@@ -11909,14 +11984,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   
                   {/* Enemy Dialogue */}
                   {showTauntBoxes ? (
-                    <div className="rounded-lg p-3 relative" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
+                    <div className="rounded-lg p-2 relative" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
                       <div className="absolute -top-2 left-3 px-2 py-0.5 rounded" style={{backgroundColor: 'rgba(139, 0, 0, 0.9)', border: '1px solid rgba(220, 38, 38, 0.6)'}}>
                         <p className="text-xs uppercase tracking-wider" style={{color: '#F5F5DC', fontSize: '10px'}}>Enemy</p>
                       </div>
                       <p className="text-sm italic mt-2 text-center" style={{color: '#F5F5DC'}}>"{enemyTauntResponse || '...'}"</p>
                     </div>
                   ) : enemyDialogue ? (
-                    <div className="rounded-lg p-3 relative" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(100, 100, 100, 0.3)'}}>
+                    <div className="rounded-lg p-2 relative" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(100, 100, 100, 0.3)'}}>
                       <div className="absolute -top-2 left-3 px-2 py-0.5 rounded" style={{backgroundColor: 'rgba(139, 0, 0, 0.9)', border: '1px solid rgba(220, 38, 38, 0.6)'}}>
                         <p className="text-xs uppercase tracking-wider" style={{color: '#F5F5DC', fontSize: '10px'}}>Enemy</p>
                       </div>
@@ -11938,7 +12013,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </div>
                   
                   {/* Player Section */}
-                  <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(0, 100, 0, 0.5)'}}>
+                  <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(0, 100, 0, 0.5)'}}>
                     <div className="flex justify-between mb-1">
                       <span className="text-sm uppercase tracking-wider" style={{color: '#68D391'}}>{hero.name}</span>
                       <span style={{color: '#F5F5DC'}}>HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span>
@@ -11979,7 +12054,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   
                   {/* Player Dialogue */}
                   {showTauntBoxes && (
-                    <div className="rounded-lg p-3" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(59, 130, 246, 0.5)'}}>
+                    <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(59, 130, 246, 0.5)'}}>
                       <p className="text-sm" style={{color: '#F5F5DC'}}>"{playerTaunt}"</p>
                     </div>
                   )}
@@ -12068,7 +12143,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 color: '#F5F5DC'
                               }}
                             >
-                              <div className="text-base uppercase">Attack</div>
+                              <div className="text-base uppercase">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
                               <div className="text-xs mt-1 opacity-75">Basic Strike</div>
                             </button>
                             
@@ -12076,22 +12151,24 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                             {hero && hero.class && hero.class.name === 'Knight' && (
                               <button 
                                 onClick={useCrushingBlow}
-                                disabled={stamina < 17 || knightCrushingBlowCooldown}
+                                disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 17 || knightCrushingBlowCooldown}
                                 className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
-                                  background: (stamina >= 17 && !knightCrushingBlowCooldown) 
+                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown) 
                                     ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.8), rgba(100, 25, 25, 0.8))' 
                                     : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (stamina >= 17 && !knightCrushingBlowCooldown) 
+                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown) 
                                     ? 'rgba(165, 42, 42, 0.6)' 
                                     : 'rgba(128, 128, 128, 0.3)',
                                   color: '#F5F5DC'
                                 }}
-                                title="Powerful strike that cannot be used twice in a row"
+                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Powerful strike that cannot be used twice in a row'}
                               >
                                 <div className="text-sm uppercase">Crushing Blow</div>
                                 <div className="text-xs mt-1 opacity-75">
-                                  {knightCrushingBlowCooldown ? (
+                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? (
+                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
+                                  ) : knightCrushingBlowCooldown ? (
                                     <span className="text-yellow-400">⏳ Cooldown</span>
                                   ) : (
                                     <>17 SP</>
@@ -12104,22 +12181,24 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                             {hero && hero.class && hero.class.name === 'Crusader' && (
                               <button 
                                 onClick={useSmite}
-                                disabled={stamina < 15 || crusaderSmiteCooldown}
+                                disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 15 || crusaderSmiteCooldown}
                                 className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
-                                  background: (stamina >= 15 && !crusaderSmiteCooldown) 
+                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown) 
                                     ? 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))' 
                                     : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (stamina >= 15 && !crusaderSmiteCooldown) 
+                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown) 
                                     ? 'rgba(218, 165, 32, 0.6)' 
                                     : 'rgba(128, 128, 128, 0.3)',
                                   color: '#F5F5DC'
                                 }}
-                                title="Holy strike that heals. Cannot be used twice in a row."
+                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Holy strike that heals. Cannot be used twice in a row.'}
                               >
                                 <div className="text-sm uppercase">Smite</div>
                                 <div className="text-xs mt-1 opacity-75">
-                                  {crusaderSmiteCooldown ? (
+                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? (
+                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
+                                  ) : crusaderSmiteCooldown ? (
                                     <span className="text-yellow-400">⏳ Cooldown</span>
                                   ) : (
                                     <>15 SP</>
@@ -12132,6 +12211,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                               <button 
                                 onClick={specialAttack}
                                 disabled={
+                                  level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ||
                                   stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || 
                                   (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) ||
                                   (hero.class.name === 'Wizard' && wizardTemporalCooldown) ||
@@ -12139,21 +12219,25 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 }
                                 className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
-                                  background: (stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
+                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
+                                              stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
                                               !(hero.class.name === 'Wizard' && wizardTemporalCooldown) && 
                                               !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown)) 
                                               ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.8), rgba(8, 77, 94, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
+                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
+                                               stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
                                                !(hero.class.name === 'Wizard' && wizardTemporalCooldown) && 
                                                !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown)) 
                                                ? 'rgba(13, 116, 142, 0.6)' : 'rgba(128, 128, 128, 0.3)',
                                   color: '#F5F5DC'
                                 }}
-                                title={GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].effect}
+                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].effect}
                               >
                                 <div className="text-sm uppercase">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
                                 <div className="text-xs mt-1 opacity-75">
-                                  {hero.class.name === 'Wizard' && wizardTemporalCooldown ? (
+                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? (
+                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}</span>
+                                  ) : hero.class.name === 'Wizard' && wizardTemporalCooldown ? (
                                     <span className="text-yellow-400">⏳ On Cooldown</span>
                                   ) : hero.class.name === 'Crusader' && crusaderJudgmentCooldown ? (
                                     <span className="text-yellow-400">⏳ On Cooldown</span>
@@ -12168,6 +12252,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                               <button 
                                 onClick={useTacticalSkill}
                                 disabled={
+                                  level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ||
                                   stamina < GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost ||
                                   (hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
                                   (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
@@ -12176,13 +12261,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                 }
                                 className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                 style={{
-                                  background: (stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
+                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
+                                              stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
                                               !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
                                                 (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
                                                 (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
                                                 (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
                                               ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(120, 87, 7, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
+                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
+                                               stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
                                                !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
                                                  (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
                                                  (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
@@ -12190,11 +12277,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                                                ? 'rgba(184, 134, 11, 0.6)' : 'rgba(128, 128, 128, 0.3)',
                                   color: '#F5F5DC'
                                 }}
-                                title={GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].effect}
+                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].effect}
                               >
                                 <div className="text-sm uppercase">{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].name}</div>
                                 <div className="text-xs mt-1 opacity-75">
-                                  {((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? (
+                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}</span>
+                                  ) : ((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
                                     (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
                                     (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
                                     (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)) ? (
@@ -12578,7 +12667,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
         
         <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.15.0 - Study Links - Save your study resources</p>
+          <p className="text-xs text-gray-600">v4.15.1 - Forged Links + Skill Unlocks - Level-gated progression</p>
         </div>
       </div>
       )}
