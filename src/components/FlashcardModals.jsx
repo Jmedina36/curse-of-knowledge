@@ -70,6 +70,7 @@ const FlashcardModals = ({
   setHealthPots,
   setStaminaPots,
   setNewTask,
+  showModal,
   setShowModal,
 }) => {
   return (

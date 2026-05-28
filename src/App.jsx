@@ -5889,7 +5889,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             generateQuiz={generateQuiz} addLog={addLog} updateAchievementStat={updateAchievementStat}
             gold={gold} setGold={setGold} xp={xp} setXp={setXp}
             setHealthPots={setHealthPots} setStaminaPots={setStaminaPots}
-            newTask={newTask} setNewTask={setNewTask} setShowModal={setShowModal}
+            newTask={newTask} setNewTask={setNewTask} showModal={showModal} setShowModal={setShowModal}
           />
           {showImportModal && (
             <ImportModal
