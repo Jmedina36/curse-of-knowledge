@@ -5791,7 +5791,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {activeTab === 'legacy' && (
-            <LegacyTab graveyard={graveyard} />
+            <LegacyTab graveyard={graveyard} heroes={heroes} />
           )}
           {showInventoryModal && (
             <InventoryModal

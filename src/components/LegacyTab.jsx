@@ -1,8 +1,8 @@
 import React from 'react';
-import { Skull } from 'lucide-react';
-import { GAME_CONSTANTS } from '../constants';
+import { Skull, Trophy } from 'lucide-react';
+import { COLORS, GAME_CONSTANTS } from '../constants';
 
-const LegacyTab = ({ graveyard }) => {
+const LegacyTab = ({ graveyard, heroes }) => {
   return (
             <div className="space-y-6">
               {/* Main Page Header */}
