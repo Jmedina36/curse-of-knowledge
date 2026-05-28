@@ -5771,8 +5771,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               showDeckModal={showDeckModal} setShowDeckModal={setShowDeckModal}
               showCardModal={showCardModal} setShowCardModal={setShowCardModal}
               showStudyModal={showStudyModal} setShowStudyModal={setShowStudyModal}
-              showQuizModal={showQuizModal} setShowQuizModal={setShowQuizModal}
-              showMatchModal={showMatchModal} setShowMatchModal={setShowMatchModal}
+              currentCardIndex={currentCardIndex} setCurrentCardIndex={setCurrentCardIndex}
+              studyQueue={studyQueue} setStudyQueue={setStudyQueue}
+              isFlipped={isFlipped} setIsFlipped={setIsFlipped}
               studyWebsites={studyWebsites}
               newWebsiteUrl={newWebsiteUrl} setNewWebsiteUrl={setNewWebsiteUrl}
               newWebsiteName={newWebsiteName} setNewWebsiteName={setNewWebsiteName}
@@ -5796,12 +5797,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <InventoryModal
               suppliesTab={suppliesTab} setSuppliesTab={setSuppliesTab}
               setShowInventoryModal={setShowInventoryModal}
-              hp={hp} stamina={stamina} level={level} gold={gold} setGold={setGold}
+              hp={hp} stamina={stamina} setStamina={setStamina} level={level} gold={gold}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense}
-              healthPots={healthPots} setHealthPots={setHealthPots}
-              staminaPots={staminaPots} setStaminaPots={setStaminaPots}
-              cleansePotions={cleansePotions} setCleansePotions={setCleansePotions}
+              healthPots={healthPots} staminaPots={staminaPots} setStaminaPots={setStaminaPots}
+              cleansePots={cleansePotions}
               equippedWeapon={equippedWeapon} setEquippedWeapon={setEquippedWeapon}
               equippedArmor={equippedArmor} setEquippedArmor={setEquippedArmor}
               equippedPendant={equippedPendant} setEquippedPendant={setEquippedPendant}
@@ -5818,13 +5818,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <CraftingModal
               setShowCraftingModal={setShowCraftingModal}
               craftingTab={craftingTab} setCraftingTab={setCraftingTab}
-              level={level} gold={gold} setGold={setGold} xp={xp} setXp={setXp}
-              hp={hp} setHp={setHp} stamina={stamina} setStamina={setStamina}
-              healthPots={healthPots} setHealthPots={setHealthPots}
-              staminaPots={staminaPots} setStaminaPots={setStaminaPots}
-              cleansePotions={cleansePotions} setCleansePotions={setCleansePotions}
+              level={level} gold={gold} currentDay={currentDay}
+              hp={hp} stamina={stamina} healthPots={healthPots} staminaPots={staminaPots}
+              cleansePots={cleansePotions}
               cleansePotionPurchasedToday={cleansePotionPurchasedToday}
-              setCleansePotionPurchasedToday={setCleansePotionPurchasedToday}
               weaponOilActive={weaponOilActive} setWeaponOilActive={setWeaponOilActive}
               armorPolishActive={armorPolishActive} setArmorPolishActive={setArmorPolishActive}
               luckyCharmActive={luckyCharmActive} setLuckyCharmActive={setLuckyCharmActive}
@@ -5870,13 +5867,25 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             showMatchModal={showMatchModal} setShowMatchModal={setShowMatchModal}
             flashcardDecks={flashcardDecks} setFlashcardDecks={setFlashcardDecks}
             selectedDeck={selectedDeck} setSelectedDeck={setSelectedDeck}
-            editingCard={editingCard} setEditingCard={setEditingCard}
-            newCardFront={newCardFront} setNewCardFront={setNewCardFront}
-            newCardBack={newCardBack} setNewCardBack={setNewCardBack}
-            newDeckName={newDeckName} setNewDeckName={setNewDeckName}
-            studySession={studySession} setStudySession={setStudySession}
-            quizState={quizState} setQuizState={setQuizState}
-            matchState={matchState} setMatchState={setMatchState}
+            newDeck={newDeck} setNewDeck={setNewDeck}
+            newCard={newCard} setNewCard={setNewCard}
+            currentCardIndex={currentCardIndex} setCurrentCardIndex={setCurrentCardIndex}
+            studyQueue={studyQueue} setStudyQueue={setStudyQueue}
+            isFlipped={isFlipped} setIsFlipped={setIsFlipped}
+            quizQuestions={quizQuestions} setQuizQuestions={setQuizQuestions}
+            currentQuizIndex={currentQuizIndex} setCurrentQuizIndex={setCurrentQuizIndex}
+            quizScore={quizScore} setQuizScore={setQuizScore}
+            selectedAnswer={selectedAnswer} setSelectedAnswer={setSelectedAnswer}
+            showQuizResults={showQuizResults} setShowQuizResults={setShowQuizResults}
+            wrongCardIndices={wrongCardIndices} setWrongCardIndices={setWrongCardIndices}
+            isRetakeQuiz={isRetakeQuiz} setIsRetakeQuiz={setIsRetakeQuiz}
+            mistakesReviewed={mistakesReviewed} setMistakesReviewed={setMistakesReviewed}
+            reviewingMistakes={reviewingMistakes} setReviewingMistakes={setReviewingMistakes}
+            matchCards={matchCards} setMatchCards={setMatchCards}
+            selectedMatchCards={selectedMatchCards} setSelectedMatchCards={setSelectedMatchCards}
+            matchedPairs={matchedPairs} setMatchedPairs={setMatchedPairs}
+            matchStartTime={matchStartTime}
+            matchGlowCards={matchGlowCards} setMatchGlowCards={setMatchGlowCards}
             generateQuiz={generateQuiz} addLog={addLog} updateAchievementStat={updateAchievementStat}
             gold={gold} setGold={setGold} xp={xp} setXp={setXp}
             setHealthPots={setHealthPots} setStaminaPots={setStaminaPots}
@@ -5911,54 +5920,38 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           )}
           {showBoss && (
             <BattleModal
-              showBoss={showBoss} bossPhase={bossPhase} bossDialogue={bossDialogue}
-              bossType={bossType} bossHp={bossHp} setBossHp={setBossHp}
-              bossMaxHp={bossMaxHp} bossAttack={bossAttack} bossDefense={bossDefense}
-              bossName={bossName} bossEmoji={bossEmoji}
-              currentWave={currentWave} maxWaves={maxWaves} waveEnemies={waveEnemies}
-              currentEnemy={currentEnemy} setCurrentEnemy={setCurrentEnemy}
-              hp={hp} setHp={setHp} stamina={stamina} setStamina={setStamina}
-              level={level} gold={gold} setGold={setGold} xp={xp} setXp={setXp}
-              getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
-              getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense}
-              equippedWeapon={equippedWeapon} equippedArmor={equippedArmor}
-              equippedPendant={equippedPendant} equippedRing={equippedRing}
-              weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive}
-              luckyCharmActive={luckyCharmActive}
-              healthPots={healthPots} setHealthPots={setHealthPots}
-              staminaPots={staminaPots} setStaminaPots={setStaminaPots}
-              battleLog={battleLog} setBattleLog={setBattleLog}
-              battlePhase={battlePhase} setBattlePhase={setBattlePhase}
-              victory={victory} setVictory={setVictory}
-              playerDodging={playerDodging} setPlayerDodging={setPlayerDodging}
-              playerTaunting={playerTaunting} setPlayerTaunting={setPlayerTaunting}
-              crushingBlowCooldown={crushingBlowCooldown} setCrushingBlowCooldown={setCrushingBlowCooldown}
-              smiteCooldown={smiteCooldown} setSmiteCooldown={setSmiteCooldown}
-              tacticalCooldown={tacticalCooldown} setTacticalCooldown={setTacticalCooldown}
-              hero={hero} setHero={setHero} currentDay={currentDay} setCurrentDay={setCurrentDay}
-              setShowBoss={setShowBoss} setBossPhase={setBossPhase} setBossDialogue={setBossDialogue}
-              miniBossCount={miniBossCount} setMiniBossCount={setMiniBossCount}
-              eliteBossDefeatedToday={eliteBossDefeatedToday} setEliteBossDefeatedToday={setEliteBossDefeatedToday}
-              gauntletUnlocked={gauntletUnlocked} setGauntletUnlocked={setGauntletUnlocked}
-              gauntletMilestone={gauntletMilestone} setGauntletMilestone={setGauntletMilestone}
-              consecutiveDays={consecutiveDays} tasks={tasks} setTasks={setTasks}
-              hasStarted={hasStarted} setHasStarted={setHasStarted}
-              isDayActive={isDayActive} setIsDayActive={setIsDayActive}
-              skipCount={skipCount} setSkipCount={setSkipCount}
-              graveyard={graveyard} setGraveyard={setGraveyard}
-              curseLevel={curseLevel} setCurseLevel={setCurseLevel}
-              weeklyPlan={weeklyPlan} setWeeklyPlan={setWeeklyPlan}
-              weaponInventory={weaponInventory} setWeaponInventory={setWeaponInventory}
-              armorInventory={armorInventory} setArmorInventory={setArmorInventory}
-              pendantInventory={pendantInventory} setPendantInventory={setPendantInventory}
-              ringInventory={ringInventory} setRingInventory={setRingInventory}
-              shopInventory={shopInventory} setShopInventory={setShopInventory}
-              unlockedAchievements={unlockedAchievements} setUnlockedAchievements={setUnlockedAchievements}
-              achievementStats={achievementStats} updateAchievementStat={updateAchievementStat}
-              addLog={addLog} attack={attack} useCrushingBlow={useCrushingBlow}
+              bossHp={bossHp} bossMax={bossMax} bossName={bossName}
+              bossFlash={bossFlash} bossDebuffs={bossDebuffs} enragedTurns={enragedTurns}
+              battleType={battleType} isFinalBoss={isFinalBoss}
+              currentWaveEnemy={currentWaveEnemy} totalWaveEnemies={totalWaveEnemies} waveCount={waveCount}
+              inPhase2={inPhase2} inPhase3={inPhase3}
+              phase2DamageStacks={phase2DamageStacks} shadowAdds={shadowAdds}
+              aoeWarning={aoeWarning} showDodgeButton={showDodgeButton}
+              showTauntBoxes={showTauntBoxes} enemyDialogue={enemyDialogue}
+              enemyTauntResponse={enemyTauntResponse} playerTaunt={playerTaunt}
+              isTauntAvailable={isTauntAvailable}
+              hp={hp} getMaxHp={getMaxHp} stamina={stamina} getMaxStamina={getMaxStamina}
+              level={level} hero={hero} gold={gold}
+              healthPots={healthPots} staminaPots={staminaPots} curseLevel={curseLevel}
+              battling={battling} battleMenu={battleMenu} setBattleMenu={setBattleMenu}
+              canFlee={canFlee} hasFled={hasFled} setHasFled={setHasFled}
+              setShowBoss={setShowBoss}
+              chargeStacks={chargeStacks} recklessStacks={recklessStacks}
+              knightCrushingBlowCooldown={knightCrushingBlowCooldown}
+              knightRallyingRoarCooldown={knightRallyingRoarCooldown}
+              wizardTemporalCooldown={wizardTemporalCooldown}
+              wizardEtherealBarrierCooldown={wizardEtherealBarrierCooldown}
+              assassinMarkForDeathCooldown={assassinMarkForDeathCooldown}
+              crusaderJudgmentCooldown={crusaderJudgmentCooldown}
+              crusaderSmiteCooldown={crusaderSmiteCooldown}
+              crusaderBastionOfFaithCooldown={crusaderBastionOfFaithCooldown}
+              victoryLoot={victoryLoot} log={log}
+              attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}
               flee={flee} dodge={dodge} taunt={taunt} advance={advance} die={die}
+              addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
+              getRarityColor={getRarityColor}
             />
           )}
           {showPomodoro && pomodoroTask && (
