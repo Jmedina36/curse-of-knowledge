@@ -254,7 +254,7 @@ const BattleModal = ({
     setTurnPhase('narrating');
 
     // After player text is read, show enemy move
-    const playerTextDuration = Math.max(2200, playerActionName.length * 55);
+    const playerTextDuration = Math.max(3500, playerActionName.length * 70);
     schedule(() => {
       setBattleLine(`${enemyName} used ${move.name}! ${enemyName} ${move.desc}`);
     }, playerTextDuration);
