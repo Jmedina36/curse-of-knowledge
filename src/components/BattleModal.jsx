@@ -2,6 +2,44 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 
+// ─── Enemy move pools by battle type ─────────────────────────────────────────
+const ENEMY_MOVES = {
+  regular: [
+    { name: 'Strike',      desc: 'lunges at you with reckless force!' },
+    { name: 'Slam',        desc: 'slams down with crushing weight!' },
+    { name: 'Rend',        desc: 'tears into you with savage claws!' },
+    { name: 'Bash',        desc: 'bashes you with brute force!' },
+  ],
+  elite: [
+    { name: 'Tormented Strike',    desc: 'channels its torment into a vicious strike!' },
+    { name: 'Soul Rend',           desc: 'tears at the threads of your soul!' },
+    { name: 'Exhausting Assault',  desc: 'unleashes a relentless, draining assault!' },
+    { name: 'Cursed Slash',        desc: 'slashes with a curse-infused blade!' },
+    { name: 'Double Strike',       desc: 'strikes twice in rapid, brutal succession!' },
+  ],
+  wave: [
+    { name: 'Frenzied Strike', desc: 'attacks in a frenzied rush!' },
+    { name: 'Overwhelming Blow', desc: 'overwhelms you with sheer numbers!' },
+    { name: 'Coordinated Assault', desc: 'coordinates a devastating group assault!' },
+  ],
+  final: [
+    { name: 'Curse Slam',           desc: 'brings the full weight of the curse crashing down!' },
+    { name: 'Abyssal Strike',       desc: 'strikes from the depths of the abyss!' },
+    { name: 'Void Drain',           desc: 'reaches into your being and drains your will to fight!' },
+    { name: 'Shadow Barrage',       desc: 'erupts in a relentless barrage of shadow strikes!' },
+    { name: 'Wrath of the Undying', desc: 'is consumed by ancient, undying wrath!' },
+    { name: 'Abyss Awakens',        desc: 'channels the roaring void into a single devastating blow!' },
+  ],
+};
+
+const pickMove = (isFinalBoss, battleType) => {
+  const pool = isFinalBoss ? ENEMY_MOVES.final
+    : battleType === 'elite' ? ENEMY_MOVES.elite
+    : battleType === 'wave'  ? ENEMY_MOVES.wave
+    : ENEMY_MOVES.regular;
+  return pool[Math.floor(Math.random() * pool.length)];
+};
+
 // ─── Log entry color coding ───────────────────────────────────────────────────
 const getLogColor = (entry) => {
   if (/❤|heal|Heal|restored|recovered/i.test(entry)) return '#4ADE80';
@@ -101,6 +139,9 @@ const BattleModal = ({
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [shaking, setShaking] = useState(false);
   const [phaseCard, setPhaseCard] = useState(null);
+  const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'enemy'
+  const [enemyMove, setEnemyMove] = useState(null);
+  const enemyTurnTimer = useRef(null);
   const logRef = useRef(null);
   const prevBossHp = useRef(bossHp);
   const prevPlayerHp = useRef(hp);
@@ -156,6 +197,29 @@ const BattleModal = ({
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [log]);
+
+  // Cancel enemy turn immediately on boss death or player death
+  useEffect(() => {
+    if (bossHp <= 0 || hp <= 0) {
+      clearTimeout(enemyTurnTimer.current);
+      setTurnPhase('player');
+      setEnemyMove(null);
+    }
+  }, [bossHp, hp]);
+
+  // Wrap player actions: execute game logic, then show enemy turn sequence
+  const handlePlayerAction = (actionFn, skipEnemyTurn = false) => {
+    if (turnPhase !== 'player') return;
+    actionFn();
+    if (skipEnemyTurn) return;
+    const move = pickMove(isFinalBoss, battleType);
+    setEnemyMove(move);
+    setTurnPhase('enemy');
+    enemyTurnTimer.current = setTimeout(() => {
+      setTurnPhase('player');
+      setEnemyMove(null);
+    }, 1900);
+  };
 
   // ── Derived values ──────────────────────────────────────────────────────────
   const bossHpPct = (bossHp / bossMax) * 100;
@@ -505,24 +569,66 @@ const BattleModal = ({
           {/* ══════════════════════════════════════════════════════════════════ */}
           {battling && bossHp > 0 && hp > 0 && (
             <div>
-              {/* YOUR TURN indicator */}
+              {/* Turn indicator */}
               <div className="flex items-center gap-3 mb-3">
                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.4))' }} />
-                <motion.p
-                  animate={{ opacity: [0.6, 1, 0.6] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                  className="text-sm font-bold uppercase tracking-[0.3em]"
-                  style={{ color: '#D4AF37' }}
-                >
-                  ⚔ Your Turn
-                </motion.p>
+                <AnimatePresence mode="wait">
+                  {turnPhase === 'player' ? (
+                    <motion.p key="your-turn"
+                      initial={{ opacity: 0 }} animate={{ opacity: [0.6, 1, 0.6] }} exit={{ opacity: 0 }}
+                      transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                      className="text-sm font-bold uppercase tracking-[0.3em]"
+                      style={{ color: '#D4AF37' }}>
+                      Your Turn
+                    </motion.p>
+                  ) : (
+                    <motion.p key="enemy-turn"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="text-sm font-bold uppercase tracking-[0.3em]"
+                      style={{ color: '#FF4444' }}>
+                      Enemy Strikes
+                    </motion.p>
+                  )}
+                </AnimatePresence>
                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.4))' }} />
               </div>
 
               <AnimatePresence mode="wait">
 
+                {/* ── Enemy Turn Panel ── */}
+                {turnPhase === 'enemy' && enemyMove && (
+                  <motion.div key="enemy-turn-panel"
+                    initial={{ opacity: 0, y: 14, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.97 }}
+                    transition={{ duration: 0.2 }}
+                    className="rounded py-5 px-4 text-center"
+                    style={{ background: 'linear-gradient(to bottom, rgba(80,5,5,0.6), rgba(40,2,2,0.6))', border: '1px solid rgba(200,30,30,0.5)', boxShadow: '0 0 30px rgba(200,0,0,0.15)' }}
+                  >
+                    <p className="text-xs uppercase tracking-[0.4em] mb-3" style={{ color: '#CD7F32' }}>
+                      {bossName || 'Enemy'}
+                    </p>
+                    <p className="font-black mb-1" style={{ fontFamily: 'Cinzel, serif', fontSize: '1.5rem', color: '#FF4444', textShadow: '0 0 20px rgba(255,68,68,0.5)' }}>
+                      {enemyMove.name}
+                    </p>
+                    <p className="text-base italic mb-5" style={{ color: 'rgba(245,245,220,0.8)' }}>
+                      The {bossName || 'enemy'} {enemyMove.desc}
+                    </p>
+                    {/* Countdown bar */}
+                    <div className="mx-6 h-1 rounded overflow-hidden" style={{ backgroundColor: 'rgba(139,0,0,0.3)' }}>
+                      <motion.div
+                        className="h-full rounded"
+                        initial={{ width: '100%' }}
+                        animate={{ width: '0%' }}
+                        transition={{ duration: 1.9, ease: 'linear' }}
+                        style={{ background: 'linear-gradient(to right, rgba(220,20,60,0.8), rgba(255,80,80,0.8))' }}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* ── Main Menu ── */}
-                {battleMenu === 'main' && (
+                {turnPhase === 'player' && battleMenu === 'main' && (
                   <motion.div key="main" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
                     <div className={`grid gap-3 mb-3 ${canFlee || showDodgeButton ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => setBattleMenu('fight')}
@@ -539,7 +645,8 @@ const BattleModal = ({
                       </button>
 
                       {canFlee && (
-                        <button onClick={flee} disabled={stamina < 25}
+                        <button onClick={() => handlePlayerAction(flee, true)}
+                          disabled={stamina < 25}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                           style={{ background: stamina >= 25 ? 'linear-gradient(to bottom, rgba(30, 70, 35, 0.9), rgba(15, 40, 18, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${stamina >= 25 ? 'rgba(60, 160, 70, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Flee
@@ -548,7 +655,7 @@ const BattleModal = ({
                       )}
 
                       {showDodgeButton && (
-                        <button onClick={dodge}
+                        <button onClick={() => handlePlayerAction(dodge, true)}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(20, 50, 100, 0.9), rgba(10, 30, 60, 0.9))', border: '2px solid rgba(96, 165, 250, 0.7)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Dodge
@@ -558,7 +665,7 @@ const BattleModal = ({
                     </div>
 
                     {isTauntAvailable && (
-                      <button onClick={taunt}
+                      <button onClick={() => handlePlayerAction(taunt)}
                         className="w-full py-3 rounded font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                         style={{ background: 'linear-gradient(to right, rgba(180, 60, 0, 0.6), rgba(220, 90, 0, 0.6), rgba(180, 60, 0, 0.6))', border: '1px solid rgba(220, 90, 0, 0.5)', color: '#FB923C', fontSize: '1rem', letterSpacing: '0.25em' }}>
                         Taunt Enemy (Enrage)
@@ -568,12 +675,12 @@ const BattleModal = ({
                 )}
 
                 {/* ── Fight Submenu ── */}
-                {battleMenu === 'fight' && (
+                {turnPhase === 'player' && battleMenu === 'fight' && (
                   <motion.div key="fight" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
                     <div className="grid grid-cols-2 gap-2 mb-2">
 
                       {/* Basic Attack */}
-                      <button onClick={attack}
+                      <button onClick={() => handlePlayerAction(attack)}
                         className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.85), rgba(90, 4, 4, 0.85))', borderColor: 'rgba(200, 30, 30, 0.6)', color: '#F5F5DC' }}>
                         <div className="text-base uppercase tracking-wide">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
@@ -587,7 +694,7 @@ const BattleModal = ({
                         const noSP = stamina < 17;
                         const unavail = locked || noSP || cd;
                         return (
-                          <button onClick={useCrushingBlow} disabled={unavail}
+                          <button onClick={() => handlePlayerAction(useCrushingBlow)} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Powerful strike. Cannot be used twice in a row.'}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.85), rgba(100, 25, 25, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(165, 42, 42, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
@@ -608,7 +715,7 @@ const BattleModal = ({
                         const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill;
                         const unavail = locked || stamina < 15 || cd;
                         return (
-                          <button onClick={useSmite} disabled={unavail}
+                          <button onClick={() => handlePlayerAction(useSmite)} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Holy strike that heals.'}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(218, 165, 32, 0.85), rgba(160, 120, 10, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(218, 165, 32, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
@@ -630,7 +737,7 @@ const BattleModal = ({
                         const cd = (hero.class.name === 'Wizard' && wizardTemporalCooldown) || (hero.class.name === 'Crusader' && crusaderJudgmentCooldown);
                         const unavail = locked || stamina < spec.cost || (spec.hpCost && hp <= spec.hpCost) || cd;
                         return (
-                          <button onClick={specialAttack} disabled={unavail}
+                          <button onClick={() => handlePlayerAction(specialAttack)} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : spec.effect}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.85), rgba(8, 77, 94, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(13, 116, 142, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
@@ -655,7 +762,7 @@ const BattleModal = ({
                           (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown);
                         const unavail = locked || stamina < tac.cost || cd;
                         return (
-                          <button onClick={useTacticalSkill} disabled={unavail}
+                          <button onClick={() => handlePlayerAction(useTacticalSkill)} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : tac.effect}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.85), rgba(120, 87, 7, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(184, 134, 11, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
@@ -680,10 +787,10 @@ const BattleModal = ({
                 )}
 
                 {/* ── Items Submenu ── */}
-                {battleMenu === 'items' && (
+                {turnPhase === 'player' && battleMenu === 'items' && (
                   <motion.div key="items" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
                     <div className="grid grid-cols-2 gap-3 mb-2">
-                      <button onClick={useHealth} disabled={healthPots === 0}
+                      <button onClick={() => handlePlayerAction(useHealth)} disabled={healthPots === 0}
                         className="py-4 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: healthPots > 0 ? 'linear-gradient(to bottom, rgba(180, 30, 30, 0.85), rgba(120, 15, 15, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: healthPots > 0 ? 'rgba(220, 50, 50, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC' }}>
                         <div className="text-base uppercase tracking-wide">Health Potion</div>
