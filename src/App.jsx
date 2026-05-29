@@ -5802,7 +5802,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense}
               healthPots={healthPots} staminaPots={staminaPots} setStaminaPots={setStaminaPots}
-              cleansePots={cleansePotions}
+              cleansePots={cleansePots}
               equippedWeapon={equippedWeapon} setEquippedWeapon={setEquippedWeapon}
               equippedArmor={equippedArmor} setEquippedArmor={setEquippedArmor}
               equippedPendant={equippedPendant} setEquippedPendant={setEquippedPendant}
@@ -5822,7 +5822,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               craftingTab={craftingTab} setCraftingTab={setCraftingTab}
               level={level} gold={gold} currentDay={currentDay}
               hp={hp} stamina={stamina} healthPots={healthPots} staminaPots={staminaPots}
-              cleansePots={cleansePotions}
+              cleansePots={cleansePots}
               cleansePotionPurchasedToday={cleansePotionPurchasedToday}
               weaponOilActive={weaponOilActive} setWeaponOilActive={setWeaponOilActive}
               armorPolishActive={armorPolishActive} setArmorPolishActive={setArmorPolishActive}
