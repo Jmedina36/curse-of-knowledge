@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, HERO_CLASSES } from '../constants';
 
@@ -14,7 +15,7 @@ const CustomizeModal = ({
   const classes = HERO_CLASSES;
   return (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCustomizeModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 my-8" style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
+    <motion.div className="rounded-xl p-6 max-w-md w-full border-2 my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowCustomizeModal(false)} 
@@ -130,7 +131,7 @@ const CustomizeModal = ({
           Cancel
         </button>
       </div>
-    </div>
+    </motion.div>
   </div>
   );
 };

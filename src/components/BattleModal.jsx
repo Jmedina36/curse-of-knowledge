@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 
 const BattleModal = ({
@@ -82,7 +83,7 @@ const BattleModal = ({
 }) => {
   return (
             <div className="fixed inset-0 flex items-start justify-center p-4 z-50 overflow-y-auto" style={{background: 'radial-gradient(ellipse at center, rgba(90, 14, 21, 0.3) 0%, rgba(0, 0, 0, 0.95) 70%)'}}>
-              <div className={`rounded-2xl p-4 max-w-3xl w-full relative boss-enter my-1 ${bossFlash ? 'damage-flash-boss' : ''}`} style={{
+              <motion.div className={`rounded-2xl p-4 max-w-3xl w-full relative boss-enter my-1 ${bossFlash ? 'damage-flash-boss' : ''}`} initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{
                 background: 'linear-gradient(to bottom, rgba(60, 15, 15, 0.98), rgba(40, 10, 10, 0.98))',
                 border: '2px solid rgba(139, 0, 0, 0.6)',
                 boxShadow: '0 8px 24px rgba(139, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.4)'
@@ -675,7 +676,7 @@ const BattleModal = ({
                     </div>
                   )}
                 </div>
-              </div>
+              </motion.div>
             </div>
   );
 };

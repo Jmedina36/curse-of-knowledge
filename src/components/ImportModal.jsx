@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS } from '../constants';
 
@@ -13,7 +14,7 @@ const ImportModal = ({
 }) => {
   return (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowImportModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <motion.div className="rounded-xl p-6 max-w-md w-full border-2 relative" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowImportModal(false)} 
@@ -118,7 +119,7 @@ const ImportModal = ({
       >
         Cancel
       </button>
-    </div>
+    </motion.div>
   </div>
   );
 };

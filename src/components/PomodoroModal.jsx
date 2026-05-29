@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS } from '../constants';
 
@@ -18,7 +19,7 @@ const PomodoroModal = ({
 }) => {
   return (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
-    <div className="rounded-xl p-12 max-w-2xl w-full border-2 relative my-8" style={{
+    <motion.div className="rounded-xl p-12 max-w-2xl w-full border-2 relative my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{
       background: 'linear-gradient(to bottom, rgba(60, 10, 10, 0.95), rgba(40, 0, 0, 0.95), rgba(20, 0, 10, 0.95))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
@@ -148,7 +149,7 @@ const PomodoroModal = ({
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   </div>
   );
 };

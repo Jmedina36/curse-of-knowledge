@@ -2,6 +2,8 @@
 // Refactored: App.jsx split into components
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { sounds } from './sounds';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES } from './constants';
 import QuestTab from './components/QuestTab';
@@ -645,6 +647,7 @@ const getDateKey = useCallback((date) => {
     
     // Show notification
     setShowAchievementNotification(achievement);
+    sounds.achievementUnlock();
     setTimeout(() => setShowAchievementNotification(null), 5000);
     
     // Log unlock
@@ -1192,6 +1195,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     
     if (newLevel > level) {
       setLevel(newLevel);
+      sounds.levelUp();
       addLog(`The hero has grown stronger! Now level ${newLevel}`);
       setHp(h => Math.min(getMaxHp(), h + 20));
       
@@ -1835,6 +1839,7 @@ if (task.overdue) {
     let xpGain = Math.floor(baseXp * xpMultiplier);
     
     setXp(x => x + xpGain);
+    sounds.taskComplete();
     
     setStudyStats(prev => ({
       ...prev,
@@ -2346,6 +2351,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       Math.floor(maxHp * (GAME_CONSTANTS.HEALTH_POTION_HEAL_PERCENT / 100))
     );
     setHp(h => Math.min(maxHp, h + healAmount));
+    sounds.potionUse();
     addLog(`💊 Used Health Potion! +${healAmount} HP`);
   }
 };
@@ -2375,6 +2381,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
  const useCleanse = () => {
   if (cleansePots > 0 && curseLevel > 0) {
     setCleansePots(c => c - 1);
+    sounds.cleanse();
     const oldLevel = curseLevel;
     const newLevel = curseLevel - 1;
     setCurseLevel(newLevel);
@@ -2598,6 +2605,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         setHp(h => Math.max(0, h - baseDamage));
         addLog(`The enemy retaliates, dealing ${baseDamage} damage to the hero!`);
         setPlayerFlash(true);
+        sounds.playerDamage();
         setTimeout(() => setPlayerFlash(false), 200);
       }, 1000);
       
@@ -2851,9 +2859,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     setBossFlash(true);
+    sounds.bossDamage();
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
+      sounds.victory();
   setTimeout(() => {
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
@@ -3068,6 +3078,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 }
       
       setPlayerFlash(true);
+      sounds.playerDamage();
       setTimeout(() => setPlayerFlash(false), 200);
       
       // Check for AOE execution (Phase 3 gauntlet)
@@ -3907,6 +3918,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 }
         
         setPlayerFlash(true);
+        sounds.playerDamage();
         setTimeout(() => setPlayerFlash(false), 200);
         setTimeout(() => setPlayerFlash(false), 200);
         
@@ -4351,6 +4363,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
       setPlayerFlash(true);
+      sounds.playerDamage();
       setTimeout(() => setPlayerFlash(false), 200);
       
       // Decrement buff turns
@@ -4573,6 +4586,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       addLog(`💥 Boss strikes! -${bossDamage} HP`);
       setPlayerFlash(true);
+      sounds.playerDamage();
       setTimeout(() => setPlayerFlash(false), 200);
       
       // Decrement buff turns
@@ -4727,6 +4741,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       addLog(`💥 Boss retaliates! -${bossDamage} HP`);
       setPlayerFlash(true);
+      sounds.playerDamage();
       setTimeout(() => setPlayerFlash(false), 200);
       
       // Decrement buff turns
@@ -5717,6 +5732,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
 
 
+          <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+          >
           {activeTab === 'quest' && (
             <QuestTab
               hero={hero} hp={hp} stamina={stamina} xp={xp} level={level} gold={gold}
@@ -5794,6 +5817,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {activeTab === 'legacy' && (
             <LegacyTab graveyard={graveyard} heroes={heroes} />
           )}
+          </motion.div>
+          </AnimatePresence>
           {showInventoryModal && (
             <InventoryModal
               suppliesTab={suppliesTab} setSuppliesTab={setSuppliesTab}

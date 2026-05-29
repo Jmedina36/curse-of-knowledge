@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { COLORS } from '../constants';
 
 const PlanModal = ({
@@ -10,7 +11,7 @@ const PlanModal = ({
 }) => {
   return (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowPlanModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2" style={{background: 'linear-gradient(to bottom, rgba(10, 40, 60, 0.95), rgba(5, 28, 45, 0.95), rgba(0, 18, 32, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <motion.div className="rounded-xl p-6 max-w-md w-full border-2" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: 'linear-gradient(to bottom, rgba(10, 40, 60, 0.95), rgba(5, 28, 45, 0.95), rgba(0, 18, 32, 0.95))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6">
         <div className="text-center">
           <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>PLAN FOR {selectedDay.toUpperCase()}</h3>
@@ -106,7 +107,7 @@ const PlanModal = ({
           Cancel
         </button>
       </div>
-    </div>
+    </motion.div>
   </div>
   );
 };

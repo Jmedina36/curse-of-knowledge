@@ -1,0 +1,21 @@
+// FANTASY STUDY QUEST - v4.15.1
+// Refactored: App.jsx split into components
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
+import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES } from './constants';
+import QuestTab from './components/QuestTab';
+import PlannerTab from './components/PlannerTab';
+import ForgeTab from './components/ForgeTab';
+import ProgressTab from './components/ProgressTab';
+import LegacyTab from './components/LegacyTab';
+import InventoryModal from './components/InventoryModal';
+import CraftingModal from './components/CraftingModal';
+import CustomizeModal from './components/CustomizeModal';
+import FlashcardModals from './components/FlashcardModals';
+import ImportModal from './components/ImportModal';
+import PlanModal from './components/PlanModal';
+import CalendarModal from './components/CalendarModal';
+import BattleModal from './components/BattleModal';
+import PomodoroModal from './components/PomodoroModal';
+
