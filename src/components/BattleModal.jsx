@@ -840,31 +840,6 @@ const BattleModal = ({
                 </AnimatePresence>
               </div>
 
-              {/* ── Battle Log ─────────────────────────────────────────────── */}
-              {log && log.length > 0 && (
-                <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                  <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: 'rgba(212,175,55,0.4)' }}>Battle Log</p>
-                  <div
-                    ref={logRef}
-                    className="space-y-0.5 overflow-y-auto pr-1"
-                    style={{ maxHeight: '7rem' }}
-                  >
-                    {log.map((entry, i) => (
-                      <p
-                        key={i}
-                        className="text-sm"
-                        style={{
-                          color: getLogColor(entry),
-                          lineHeight: '1.5',
-                          opacity: i === log.length - 1 ? 1 : i >= log.length - 4 ? 0.7 : 0.35,
-                        }}
-                      >
-                        {entry}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
