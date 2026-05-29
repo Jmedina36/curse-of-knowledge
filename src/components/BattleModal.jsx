@@ -97,7 +97,7 @@ const BattleModal = ({
     <div
       className="fixed inset-0 z-50 flex flex-col overflow-y-auto"
       style={{
-        background: 'radial-gradient(ellipse at 50% 20%, rgba(110, 8, 18, 0.55) 0%, rgba(4, 0, 0, 0.97) 65%)',
+        background: 'radial-gradient(ellipse at 50% 20%, rgb(80, 5, 12) 0%, rgb(4, 0, 0) 65%)',
       }}
     >
       {/* Scanline atmospheric overlay */}
