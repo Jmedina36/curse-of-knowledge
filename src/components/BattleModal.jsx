@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 
 const BattleModal = ({
@@ -81,603 +81,766 @@ const BattleModal = ({
   setStaminaPots,
   getRarityColor,
 }) => {
+  const bossHpPct = (bossHp / bossMax) * 100;
+  const playerHpPct = (hp / getMaxHp()) * 100;
+  const staminaPct = (stamina / getMaxStamina()) * 100;
+
+  const phaseLabel = isFinalBoss
+    ? (inPhase3 ? 'PHASE 3 — ABYSS AWAKENING' : inPhase2 ? 'PHASE 2 — THE PRESSURE' : 'THE UNDYING LEGEND')
+    : battleType === 'elite' ? 'TORMENTED CHAMPION'
+    : battleType === 'wave' ? `WAVE ASSAULT · Enemy ${currentWaveEnemy}/${totalWaveEnemies}`
+    : 'ENEMY ENCOUNTER';
+
+  const isBossAvailable = (cd) => !cd;
+
   return (
-            <div className="fixed inset-0 flex items-start justify-center p-4 z-50 overflow-y-auto" style={{background: 'radial-gradient(ellipse at center, rgba(90, 14, 21, 0.3) 0%, rgba(0, 0, 0, 0.95) 70%)'}}>
-              <motion.div className={`rounded-2xl p-4 max-w-3xl w-full relative boss-enter my-1 ${bossFlash ? 'damage-flash-boss' : ''}`} initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{
-                background: 'linear-gradient(to bottom, rgba(60, 15, 15, 0.98), rgba(40, 10, 10, 0.98))',
-                border: '2px solid rgba(139, 0, 0, 0.6)',
-                boxShadow: '0 8px 24px rgba(139, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.4)'
-              }}>
-                {/* Header Section */}
-                <div className="text-center mb-3">
-                  <p className="text-xs uppercase tracking-[0.3em] mb-1" style={{color: '#CD7F32', letterSpacing: '0.3em'}}>
-                    {isFinalBoss ? (inPhase3 ? 'PHASE 3: ABYSS AWAKENING' : inPhase2 ? 'PHASE 2: THE PRESSURE' : 'THE UNDYING LEGEND') : 
-                     battleType === 'elite' ? 'TORMENTED CHAMPION' : 
-                     battleType === 'wave' ? `WAVE ASSAULT - Enemy ${currentWaveEnemy}/${totalWaveEnemies}` : 
-                     'ENEMY ENCOUNTER'}
-                  </p>
-                  
-                  {bossName && (
-                    <h2 className="text-3xl font-bold mb-0" style={{
-                      fontFamily: 'Cinzel, serif',
-                      color: '#D4AF37',
-                      textShadow: '0 0 20px rgba(212, 175, 55, 0.4)',
-                      letterSpacing: '0.05em'
-                    }}>
-                      {bossName}
-                      {bossDebuffs.poisonTurns > 0 && <span className="ml-3 text-lg text-green-400 animate-pulse"> ☠️ POISONED ({bossDebuffs.poisonTurns})</span>}
-                      {bossDebuffs.stunned && <span className="ml-3 text-lg text-purple-400 animate-pulse"> ✨ STUNNED</span>}
-                    </h2>
-                  )}
-                  
-                  <div className="flex items-center justify-center gap-2 mt-1">
-                    <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-                    <span style={{color: 'rgba(212, 175, 55, 0.5)', fontSize: '8px'}}>◆</span>
-                    <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+    <div
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto"
+      style={{
+        background: 'radial-gradient(ellipse at 50% 20%, rgba(110, 8, 18, 0.55) 0%, rgba(4, 0, 0, 0.97) 65%)',
+      }}
+    >
+      {/* Scanline atmospheric overlay */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)',
+          zIndex: 1,
+        }}
+      />
+
+      <div className="relative flex flex-col min-h-screen" style={{ zIndex: 2 }}>
+
+        {/* ══════════════════════════════════════════ */}
+        {/*  ENEMY SECTION                            */}
+        {/* ══════════════════════════════════════════ */}
+        <div className="flex-1 flex flex-col justify-end px-6 pt-6 pb-4">
+
+          {/* Phase Label */}
+          <div className="text-center mb-3">
+            <motion.p
+              key={phaseLabel}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-xs uppercase tracking-[0.4em]"
+              style={{ color: inPhase3 ? '#FF6B6B' : inPhase2 ? '#FF8C42' : '#CD7F32' }}
+            >
+              {phaseLabel}
+            </motion.p>
+          </div>
+
+          {/* Boss Name */}
+          {bossName && (
+            <motion.h1
+              className="text-center font-black mb-2"
+              style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: 'clamp(2rem, 6vw, 3.5rem)',
+                color: bossFlash ? '#FF3333' : (isFinalBoss ? '#D4AF37' : '#E8E8E8'),
+                textShadow: bossFlash
+                  ? '0 0 40px rgba(255, 68, 68, 0.9), 0 0 80px rgba(255, 0, 0, 0.4)'
+                  : isFinalBoss
+                  ? '0 0 30px rgba(212, 175, 55, 0.6), 0 2px 0 rgba(0,0,0,0.8)'
+                  : '0 0 20px rgba(220, 50, 50, 0.4), 0 2px 0 rgba(0,0,0,0.8)',
+                transition: 'color 0.1s, text-shadow 0.1s',
+                letterSpacing: '0.04em',
+              }}
+            >
+              {bossName}
+            </motion.h1>
+          )}
+
+          {/* Debuff badges */}
+          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0) && (
+            <div className="flex justify-center gap-2 mb-3 flex-wrap">
+              {bossDebuffs.poisonTurns > 0 && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ADE80' }}>
+                  ☠ POISONED ({bossDebuffs.poisonTurns})
+                </span>
+              )}
+              {bossDebuffs.stunned && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid rgba(168, 85, 247, 0.5)', color: '#C084FC' }}>
+                  ✦ STUNNED
+                </span>
+              )}
+              {enragedTurns > 0 && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)', border: '1px solid rgba(249, 115, 22, 0.5)', color: '#FB923C' }}>
+                  ⚡ ENRAGED ({enragedTurns})
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Boss HP Bar */}
+          <div className="mb-2">
+            <div className="flex justify-between items-baseline mb-1">
+              <span className="text-xs uppercase tracking-widest" style={{ color: '#CD7F32' }}>Enemy HP</span>
+              <span className="text-sm font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
+            </div>
+            <div className="h-5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+              <motion.div
+                className={`h-full ${bossFlash ? 'hp-pulse' : ''}`}
+                animate={{ width: `${bossHpPct}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                style={{
+                  background: bossHpPct > 50
+                    ? 'linear-gradient(to right, #7B0000, #DC143C, #FF4444)'
+                    : bossHpPct > 25
+                    ? 'linear-gradient(to right, #5B0000, #B22222, #DC143C)'
+                    : 'linear-gradient(to right, #3B0000, #7B0000, #B22222)',
+                  boxShadow: '0 0 8px rgba(220, 20, 60, 0.5)',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Phase 2 Pressure */}
+          {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
+            <div className="rounded p-2 mb-2 text-center" style={{ backgroundColor: 'rgba(204, 85, 0, 0.15)', border: '1px solid rgba(255, 140, 0, 0.4)' }}>
+              <span className="text-xs" style={{ color: '#FB923C' }}>
+                ⚠ RAMPING PRESSURE — Boss damage +{phase2DamageStacks * 5}% ({phase2DamageStacks} stacks)
+              </span>
+            </div>
+          )}
+
+          {/* Shadow Adds */}
+          {(inPhase2 || inPhase3) && shadowAdds.length > 0 && (
+            <div className="rounded p-2 mb-2" style={{ backgroundColor: 'rgba(107, 44, 145, 0.15)', border: '1px solid rgba(147, 51, 234, 0.4)' }}>
+              <p className="text-xs uppercase tracking-widest text-center mb-2" style={{ color: '#B794F4' }}>Shadow Add{shadowAdds.length > 1 ? 's' : ''} ({shadowAdds.length})</p>
+              <div className="space-y-1">
+                {shadowAdds.map((add, idx) => (
+                  <div key={add.id} className="flex items-center gap-2">
+                    <span className="text-xs w-4" style={{ color: '#B794F4' }}>#{idx + 1}</span>
+                    <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
+                      <div className="h-2 rounded-full" style={{ width: `${(add.hp / add.maxHp) * 100}%`, backgroundColor: '#B794F4' }} />
+                    </div>
+                    <span className="text-xs" style={{ color: '#B794F4' }}>{add.hp}/{add.maxHp}</span>
                   </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* AOE Warning */}
+          {aoeWarning && inPhase3 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="rounded p-3 mb-2 text-center animate-pulse"
+              style={{ backgroundColor: 'rgba(139, 0, 0, 0.4)', border: '2px solid #FBBF24', boxShadow: '0 0 20px rgba(251, 191, 36, 0.3)' }}
+            >
+              <p className="text-yellow-400 font-bold">⚠ DEVASTATING AOE INCOMING!</p>
+              <p className="text-white text-sm mt-1">Next turn: 35 damage slam!</p>
+            </motion.div>
+          )}
+
+          {/* Enemy Dialogue */}
+          <AnimatePresence>
+            {(showTauntBoxes || enemyDialogue) && (
+              <motion.div
+                key={showTauntBoxes ? 'taunt' : 'dialogue'}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="rounded p-3 relative"
+                style={{ backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(139, 0, 0, 0.4)' }}
+              >
+                <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(100,0,0,0.9)', border: '1px solid rgba(200,30,30,0.5)' }}>
+                  <p className="text-xs uppercase tracking-wider" style={{ color: '#F5F5DC', fontSize: '9px' }}>{bossName || 'Enemy'}</p>
                 </div>
-                
-                <div className="space-y-2">
-                  {/* Enemy HP Section */}
-                  <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm uppercase tracking-wider" style={{color: '#CD7F32'}}>
-                        {bossName || 'Enemy'}
-                        {enragedTurns > 0 && <span className="ml-3 text-orange-400 font-bold animate-pulse"> ENRAGED ({enragedTurns})</span>}
-                      </span>
-                      <span style={{color: '#F5F5DC'}}>{bossHp}/{bossMax}</span>
-                    </div>
-                    <div className="rounded-full h-3 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                      <div className={`h-3 rounded-full transition-all duration-300 ${bossFlash ? 'hp-pulse' : ''}`} style={{
-                        width: `${(bossHp / bossMax) * 100}%`,
-                        background: 'linear-gradient(to right, #DC143C, #FF6B6B)'
-                      }}></div>
-                    </div>
-                  </div>
-                  
-                  {/* Phase 2 Warning */}
-                  {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
-                    <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(204, 85, 0, 0.2)', border: '1px solid rgba(255, 140, 0, 0.5)'}}>
-                      <p className="text-xs uppercase tracking-wider text-center mb-1" style={{color: '#CD7F32'}}>RAMPING PRESSURE</p>
-                      <p className="text-white text-center text-sm">Boss damage: +{phase2DamageStacks * 5}% ({phase2DamageStacks} stacks)</p>
-                    </div>
-                  )}
-                  
-                  {/* Shadow Adds */}
-                  {(inPhase2 || inPhase3) && shadowAdds.length > 0 && (
-                    <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', border: '1px solid rgba(147, 51, 234, 0.5)'}}>
-                      <p className="text-xs uppercase tracking-wider text-center mb-2" style={{color: '#B794F4'}}>Shadow Add{shadowAdds.length > 1 ? 's' : ''} ({shadowAdds.length})</p>
-                      <div className="space-y-2">
-                        {shadowAdds.map((add, idx) => (
-                          <div key={add.id} className="flex items-center gap-3">
-                            <span className="text-xs" style={{color: '#F5F5DC'}}>#{idx + 1}</span>
-                            <div className="flex-1 rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                              <div className="h-2 rounded-full" style={{width: `${(add.hp / add.maxHp) * 100}%`, backgroundColor: '#B794F4'}}></div>
-                            </div>
-                            <span className="text-xs" style={{color: '#B794F4'}}>{add.hp}/{add.maxHp}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* AOE Warning */}
-                  {aoeWarning && inPhase3 && (
-                    <div className="rounded-lg p-4 animate-pulse" style={{backgroundColor: 'rgba(139, 0, 0, 0.4)', border: '2px solid #FBBF24'}}>
-                      <p className="text-yellow-400 font-bold text-center">⚠️ DEVASTATING AOE INCOMING!</p>
-                      <p className="text-white text-center text-sm mt-1">Next turn: 35 damage slam!</p>
-                    </div>
-                  )}
-                  
-                  {/* Enemy Dialogue */}
-                  {showTauntBoxes ? (
-                    <div className="rounded-lg p-2 relative" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(139, 0, 0, 0.5)'}}>
-                      <div className="absolute -top-2 left-3 px-2 py-0.5 rounded" style={{backgroundColor: 'rgba(139, 0, 0, 0.9)', border: '1px solid rgba(220, 38, 38, 0.6)'}}>
-                        <p className="text-xs uppercase tracking-wider" style={{color: '#F5F5DC', fontSize: '10px'}}>Enemy</p>
-                      </div>
-                      <p className="text-sm italic mt-2 text-center" style={{color: '#F5F5DC'}}>"{enemyTauntResponse || '...'}"</p>
-                    </div>
-                  ) : enemyDialogue ? (
-                    <div className="rounded-lg p-2 relative" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(100, 100, 100, 0.3)'}}>
-                      <div className="absolute -top-2 left-3 px-2 py-0.5 rounded" style={{backgroundColor: 'rgba(139, 0, 0, 0.9)', border: '1px solid rgba(220, 38, 38, 0.6)'}}>
-                        <p className="text-xs uppercase tracking-wider" style={{color: '#F5F5DC', fontSize: '10px'}}>Enemy</p>
-                      </div>
-                      <p className="text-sm italic mt-2 text-center" style={{color: '#F5F5DC'}}>"{enemyDialogue}"</p>
-                    </div>
-                  ) : null}
-                  
-                  {/* VS Divider */}
-                  <div className="text-center py-2">
-                    <div className="flex items-center justify-center gap-3">
-                      <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                      <p className="text-xl font-bold uppercase tracking-wider" style={{
-                        color: '#D4AF37',
-                        textShadow: '0 0 10px rgba(212, 175, 55, 0.5)',
-                        letterSpacing: '0.2em'
-                      }}>VS</p>
-                      <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                    </div>
-                  </div>
-                  
-                  {/* Player Section */}
-                  <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(0, 100, 0, 0.5)'}}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-sm uppercase tracking-wider" style={{color: '#68D391'}}>{hero.name}</span>
-                      <span style={{color: '#F5F5DC'}}>HP: {hp}/{getMaxHp()} | SP: {stamina}/{getMaxStamina()}</span>
-                    </div>
-                    <div className="rounded-full h-3 overflow-hidden mb-1" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                      <div className={`h-3 rounded-full transition-all duration-300 ${playerFlash ? 'hp-pulse' : ''}`} style={{
-                        width: `${(hp / getMaxHp()) * 100}%`,
-                        background: 'linear-gradient(to right, #2F5233, #68D391)'
-                      }}></div>
-                    </div>
-                    <div className="rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)'}}>
-                      <div className="h-2 rounded-full transition-all duration-300" style={{
-                        width: `${(stamina / getMaxStamina()) * 100}%`,
-                        background: 'linear-gradient(to right, #0E7490, #06B6D4)'
-                      }}></div>
-                    </div>
-                  </div>
-                  
-                  {/* Charge Stacks Only */}
-                  {chargeStacks > 0 && (
-                    <div className="rounded-lg p-2 text-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', border: '1px solid rgba(212, 175, 55, 0.3)'}}>
-                      <div className="flex items-center justify-center gap-1">
-                        <span className="text-xs" style={{color: COLORS.gold}}>CHARGES:</span>
-                        {[1, 2, 3].map(i => (
-                          <div 
-                            key={i}
-                            className={`w-2 h-2 rounded-full transition-all`}
-                            style={{
-                              backgroundColor: i <= chargeStacks ? COLORS.gold : '#4B5563',
-                              boxShadow: i <= chargeStacks ? `0 0 6px ${COLORS.gold}` : 'none'
-                            }}
-                          />
-                        ))}
-                        {chargeStacks === 3 && <span className="text-xs font-bold ml-1" style={{color: COLORS.gold}}>⚡ READY</span>}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Player Dialogue */}
-                  {showTauntBoxes && (
-                    <div className="rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.6)', border: '1px solid rgba(59, 130, 246, 0.5)'}}>
-                      <p className="text-sm" style={{color: '#F5F5DC'}}>"{playerTaunt}"</p>
-                    </div>
-                  )}
-                  
-                  {/* Actions Section */}
-                  {battling && bossHp > 0 && hp > 0 && (
-                    <>
-                      <div className="text-center pt-2 pb-2">
-                        <p className="text-sm font-bold uppercase tracking-[0.3em] mb-1" style={{color: '#D4AF37'}}>Actions</p>
-                        <div className="flex items-center justify-center gap-2">
-                          <div style={{width: '200px', height: '2px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.6), transparent)'}}></div>
-                        </div>
-                      </div>
-                      
-                      {/* Main Menu */}
-                      {battleMenu === 'main' && (
-                        <div className="grid grid-cols-3 gap-3">
-                          <button 
-                            onClick={() => setBattleMenu('fight')} 
-                            className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
-                            style={{
-                              background: 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(80, 0, 0, 0.8))',
-                              borderColor: 'rgba(139, 0, 0, 0.6)',
-                              color: '#F5F5DC'
-                            }}
-                          >
-                            <div className="text-base uppercase">Fight</div>
-                          </button>
-                          
-                          <button 
-                            onClick={() => setBattleMenu('items')}
-                            disabled={healthPots === 0 && staminaPots === 0}
-                            className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                            style={{
-                              background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(120, 87, 7, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                              borderColor: (healthPots > 0 || staminaPots > 0) ? 'rgba(184, 134, 11, 0.6)' : 'rgba(128, 128, 128, 0.3)',
-                              color: '#F5F5DC'
-                            }}
-                          >
-                            <div className="text-base uppercase">Items</div>
-                          </button>
-                          
-                          {canFlee && (
-                            <button 
-                              onClick={flee}
-                              disabled={stamina < 25}
-                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                              style={{
-                                background: stamina >= 25 ? 'linear-gradient(to bottom, rgba(47, 82, 51, 0.8), rgba(30, 52, 33, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                borderColor: stamina >= 25 ? 'rgba(47, 82, 51, 0.6)' : 'rgba(128, 128, 128, 0.3)',
-                                color: '#F5F5DC'
-                              }}
-                            >
-                              <div className="text-base uppercase">Flee</div>
-                              {stamina >= 25 && <div className="text-xs mt-1 opacity-75">25 SP</div>}
-                            </button>
-                          )}
-                          
-                          {showDodgeButton && (
-                            <button 
-                              onClick={dodge}
-                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 animate-pulse"
-                              style={{
-                                background: 'linear-gradient(to bottom, rgba(30, 58, 95, 0.8), rgba(20, 40, 65, 0.8))',
-                                borderColor: 'rgba(30, 58, 95, 0.6)',
-                                color: '#F5F5DC'
-                              }}
-                            >
-                              <div className="text-base uppercase">Dodge</div>
-                              <div className="text-xs mt-1 opacity-75">Avoid AOE</div>
-                            </button>
-                          )}
-                        </div>
-                      )}
-                      
-                      {/* Fight Submenu */}
-                      {battleMenu === 'fight' && (
-                        <>
-                          <div className="grid grid-cols-4 gap-3 mb-4">
-                            <button 
-                              onClick={attack}
-                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
-                              style={{
-                                background: 'linear-gradient(to bottom, rgba(139, 0, 0, 0.8), rgba(80, 0, 0, 0.8))',
-                                borderColor: 'rgba(139, 0, 0, 0.6)',
-                                color: '#F5F5DC'
-                              }}
-                            >
-                              <div className="text-base uppercase">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
-                              <div className="text-xs mt-1 opacity-75">Basic Strike</div>
-                            </button>
-                            
-                            {/* Knight Crushing Blow */}
-                            {hero && hero.class && hero.class.name === 'Knight' && (
-                              <button 
-                                onClick={useCrushingBlow}
-                                disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 17 || knightCrushingBlowCooldown}
-                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{
-                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown) 
-                                    ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.8), rgba(100, 25, 25, 0.8))' 
-                                    : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown) 
-                                    ? 'rgba(165, 42, 42, 0.6)' 
-                                    : 'rgba(128, 128, 128, 0.3)',
-                                  color: '#F5F5DC'
-                                }}
-                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Powerful strike that cannot be used twice in a row'}
-                              >
-                                <div className="text-sm uppercase">Crushing Blow</div>
-                                <div className="text-xs mt-1 opacity-75">
-                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? (
-                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
-                                  ) : knightCrushingBlowCooldown ? (
-                                    <span className="text-yellow-400">⏳ Cooldown</span>
-                                  ) : (
-                                    <>17 SP</>
-                                  )}
-                                </div>
-                              </button>
-                            )}
-                            
-                            {/* Crusader Smite */}
-                            {hero && hero.class && hero.class.name === 'Crusader' && (
-                              <button 
-                                onClick={useSmite}
-                                disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 15 || crusaderSmiteCooldown}
-                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{
-                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown) 
-                                    ? 'linear-gradient(to bottom, rgba(218, 165, 32, 0.8), rgba(184, 134, 11, 0.8))' 
-                                    : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown) 
-                                    ? 'rgba(218, 165, 32, 0.6)' 
-                                    : 'rgba(128, 128, 128, 0.3)',
-                                  color: '#F5F5DC'
-                                }}
-                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Holy strike that heals. Cannot be used twice in a row.'}
-                              >
-                                <div className="text-sm uppercase">Smite</div>
-                                <div className="text-xs mt-1 opacity-75">
-                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? (
-                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
-                                  ) : crusaderSmiteCooldown ? (
-                                    <span className="text-yellow-400">⏳ Cooldown</span>
-                                  ) : (
-                                    <>15 SP</>
-                                  )}
-                                </div>
-                              </button>
-                            )}
-                            
-                            {hero && hero.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (
-                              <button 
-                                onClick={specialAttack}
-                                disabled={
-                                  level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ||
-                                  stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost || 
-                                  (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) ||
-                                  (hero.class.name === 'Wizard' && wizardTemporalCooldown) ||
-                                  (hero.class.name === 'Crusader' && crusaderJudgmentCooldown)
-                                }
-                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{
-                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
-                                              stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
-                                              !(hero.class.name === 'Wizard' && wizardTemporalCooldown) && 
-                                              !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown)) 
-                                              ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.8), rgba(8, 77, 94, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
-                                               stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost && 
-                                               !(hero.class.name === 'Wizard' && wizardTemporalCooldown) && 
-                                               !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown)) 
-                                               ? 'rgba(13, 116, 142, 0.6)' : 'rgba(128, 128, 128, 0.3)',
-                                  color: '#F5F5DC'
-                                }}
-                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].effect}
-                              >
-                                <div className="text-sm uppercase">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
-                                <div className="text-xs mt-1 opacity-75">
-                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? (
-                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}</span>
-                                  ) : hero.class.name === 'Wizard' && wizardTemporalCooldown ? (
-                                    <span className="text-yellow-400">⏳ On Cooldown</span>
-                                  ) : hero.class.name === 'Crusader' && crusaderJudgmentCooldown ? (
-                                    <span className="text-yellow-400">⏳ On Cooldown</span>
-                                  ) : (
-                                    <>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && ` • ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP`}</>
-                                  )}
-                                </div>
-                              </button>
-                            )}
-                            
-                            {hero && hero.class && GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name] && (
-                              <button 
-                                onClick={useTacticalSkill}
-                                disabled={
-                                  level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ||
-                                  stamina < GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost ||
-                                  (hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
-                                  (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
-                                  (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
-                                  (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)
-                                }
-                                className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{
-                                  background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
-                                              stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
-                                              !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
-                                                (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
-                                                (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
-                                                (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
-                                              ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.8), rgba(120, 87, 7, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                  borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
-                                               stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
-                                               !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
-                                                 (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
-                                                 (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
-                                                 (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
-                                               ? 'rgba(184, 134, 11, 0.6)' : 'rgba(128, 128, 128, 0.3)',
-                                  color: '#F5F5DC'
-                                }}
-                                title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].effect}
-                              >
-                                <div className="text-sm uppercase">{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].name}</div>
-                                <div className="text-xs mt-1 opacity-75">
-                                  {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? (
-                                    <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}</span>
-                                  ) : ((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
-                                    (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
-                                    (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
-                                    (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)) ? (
-                                    <span className="text-yellow-400">⏳ On Cooldown</span>
-                                  ) : (
-                                    <>{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost} SP</>
-                                  )}
-                                </div>
-                              </button>
-                            )}
-                          </div>
-                          
-                          <button 
-                            onClick={() => setBattleMenu('main')}
-                            className="w-full rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
-                            style={{
-                              background: 'rgba(44, 62, 80, 0.6)',
-                              borderColor: 'rgba(128, 128, 128, 0.3)',
-                              color: '#F5F5DC'
-                            }}
-                          >
-                            <div className="text-sm uppercase">Back</div>
-                          </button>
-                        </>
-                      )}
-                      
-                      {/* Items Submenu */}
-                      {battleMenu === 'items' && (
-                        <>
-                          <div className="grid grid-cols-2 gap-3 mb-4">
-                            <button 
-                              onClick={useHealth}
-                              disabled={healthPots === 0}
-                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                              style={{
-                                background: healthPots > 0 ? 'linear-gradient(to bottom, rgba(220, 38, 38, 0.8), rgba(153, 27, 27, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                borderColor: healthPots > 0 ? 'rgba(220, 38, 38, 0.6)' : 'rgba(128, 128, 128, 0.3)',
-                                color: '#F5F5DC'
-                              }}
-                            >
-                              <div className="text-base uppercase">Health Potion</div>
-                              <div className="text-xs mt-1 opacity-75">x{healthPots}</div>
-                            </button>
-                            
-                            <button 
-                              onClick={() => { 
-                                if (staminaPots > 0) {
-                                  const maxStamina = getMaxStamina();
-                                  const restoreAmount = Math.max(
-                                    GAME_CONSTANTS.STAMINA_POTION_MIN,
-                                    Math.floor(maxStamina * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))
-                                  );
-                                  setStamina(Math.min(stamina + restoreAmount, maxStamina)); 
-                                  setStaminaPots(staminaPots - 1); 
-                                  addLog(`💙 Used Stamina Potion (+${restoreAmount} SP)`);
-                                }
-                              }}
-                              disabled={staminaPots === 0}
-                              className="rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                              style={{
-                                background: staminaPots > 0 ? 'linear-gradient(to bottom, rgba(6, 182, 212, 0.8), rgba(8, 145, 178, 0.8))' : 'rgba(44, 62, 80, 0.6)',
-                                borderColor: staminaPots > 0 ? 'rgba(6, 182, 212, 0.6)' : 'rgba(128, 128, 128, 0.3)',
-                                color: '#F5F5DC'
-                              }}
-                            >
-                              <div className="text-base uppercase">Stamina Potion</div>
-                              <div className="text-xs mt-1 opacity-75">x{staminaPots}</div>
-                            </button>
-                          </div>
-                          
-                          <button 
-                            onClick={() => setBattleMenu('main')}
-                            className="w-full rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95"
-                            style={{
-                              background: 'rgba(44, 62, 80, 0.6)',
-                              borderColor: 'rgba(128, 128, 128, 0.3)',
-                              color: '#F5F5DC'
-                            }}
-                          >
-                            <div className="text-sm uppercase">Back</div>
-                          </button>
-                        </>
-                      )}
-                      
-                      {/* Taunt Button - Full Width Below Main Actions */}
-                      {battleMenu === 'main' && isTauntAvailable && (
-                        <button 
-                          onClick={taunt}
-                          className="w-full mt-3 rounded-lg py-3 px-4 font-bold transition-all border-2 hover:scale-105 active:scale-95 animate-pulse fade-in"
-                          style={{
-                            background: 'linear-gradient(to bottom, rgba(204, 85, 0, 0.8), rgba(153, 64, 0, 0.8))',
-                            borderColor: 'rgba(204, 85, 0, 0.6)',
-                            color: '#F5F5DC'
-                          }}
-                        >
-                          <div className="text-base uppercase">Taunt Enemy (Enrage)</div>
-                        </button>
-                      )}
-                    </>
-                  )}
-                  
-                  {/* Victory/Defeat */}
-                  {bossHp <= 0 && (
-                    <div className="text-center pt-4">
-                      {hasFled ? (
-                        <>
-                          <p className="text-4xl font-bold mb-4 animate-pulse" style={{color: '#FBBF24'}}>FLED</p>
-                          <p className="text-lg mb-6 italic" style={{color: '#F5F5DC'}}>"Cowardice is also a strategy..."</p>
-                        </>
-                      ) : (
-                        <>
-                          <div className="mb-6">
-                            <div className="flex items-center justify-center gap-3 mb-2">
-                              <div style={{width: '100px', height: '2px', background: 'linear-gradient(to right, transparent, rgba(104, 211, 145, 0.6))'}}></div>
-                              <p className="text-5xl font-bold" style={{
-                                color: '#68D391', 
-                                fontFamily: 'Cinzel, serif',
-                                textShadow: '0 0 20px rgba(104, 211, 145, 0.5)',
-                                letterSpacing: '0.1em'
-                              }}>
-                                {isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}
-                              </p>
-                              <div style={{width: '100px', height: '2px', background: 'linear-gradient(to left, transparent, rgba(104, 211, 145, 0.6))'}}></div>
-                            </div>
-                            <p className="text-sm italic" style={{color: '#F5F5DC'}}>{isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}</p>
-                          </div>
-                        </>
-                      )}
-                      
-                      {!hasFled && victoryLoot.length > 0 && (
-                        <div className="rounded-lg p-6 mb-6 fade-in" style={{
-                          background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.15), rgba(184, 134, 11, 0.1))',
-                          border: '2px solid rgba(212, 175, 55, 0.6)',
-                          boxShadow: '0 0 30px rgba(212, 175, 55, 0.3)'
-                        }}>
-                          <div className="flex items-center justify-center gap-3 mb-4">
-                            <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                            <p className="font-bold text-lg uppercase tracking-wider" style={{
-                              color: '#D4AF37',
-                              textShadow: '0 0 10px rgba(212, 175, 55, 0.5)'
-                            }}>Spoils of Battle</p>
-                            <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                          </div>
-                          <div className="space-y-2">
-                            {victoryLoot.map((loot, idx) => (
-                              <div key={idx} className="rounded px-4 py-2 fade-in" style={{
-                                backgroundColor: 'rgba(0, 0, 0, 0.3)',
-                                border: '1px solid rgba(212, 175, 55, 0.3)',
-                                animationDelay: `${idx * 0.1}s`
-                              }}>
-                                <p className="text-base font-semibold" style={{color: '#F5F5DC'}}>{loot}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      
-                      {(battleType === 'elite' || isFinalBoss) && (
-                        <button 
-                          onClick={advance}
-                          className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2 hover:scale-105"
-                          style={{
-                            background: 'linear-gradient(to bottom, #D4AF37, #B8860B)',
-                            borderColor: '#1C1C1C',
-                            color: '#1C1C1C',
-                            boxShadow: '0 0 20px rgba(212, 175, 55, 0.4)'
-                          }}
-                        >
-                          {isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}
-                        </button>
-                      )}
-                      {(battleType === 'regular' || battleType === 'wave') && (
-                        <button 
-                          onClick={() => { setShowBoss(false); setHasFled(false); addLog('⚔️ Ready for your next trial...'); }}
-                          className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2 hover:scale-105"
-                          style={{
-                            background: 'linear-gradient(to bottom, rgba(47, 82, 51, 0.8), rgba(30, 52, 33, 0.8))',
-                            borderColor: 'rgba(192, 192, 192, 0.6)',
-                            color: '#F5F5DC'
-                          }}
-                        >
-                          CONTINUE
-                        </button>
-                      )}
-                    </div>
-                  )}
-                  
-                  {hp <= 0 && (
-                    <div className="text-center pt-4">
-                      <p className="text-4xl font-bold mb-2" style={{color: '#9B1B30', fontFamily: 'Cinzel, serif'}}>DEFEATED</p>
-                      <p className="text-sm mb-4 italic" style={{color: '#F5F5DC'}}>"The curse claims another victim..."</p>
-                      <button 
-                        onClick={() => { setShowBoss(false); die(); }}
-                        className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2 hover:scale-105"
+                <p className="text-sm italic text-center mt-1" style={{ color: 'rgba(245,245,220,0.85)' }}>
+                  "{showTauntBoxes ? (enemyTauntResponse || '...') : enemyDialogue}"
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ══════════════════════════════════════════ */}
+        {/*  VS DIVIDER                               */}
+        {/* ══════════════════════════════════════════ */}
+        <div
+          className="flex items-center px-6 py-2"
+          style={{
+            borderTop: '1px solid rgba(139, 0, 0, 0.25)',
+            borderBottom: '1px solid rgba(139, 0, 0, 0.25)',
+            background: 'linear-gradient(to right, transparent, rgba(100, 5, 10, 0.2), transparent)',
+          }}
+        >
+          <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.7))' }} />
+          <p
+            className="mx-5 font-black tracking-[0.5em]"
+            style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '1.75rem',
+              color: '#D4AF37',
+              textShadow: '0 0 25px rgba(212, 175, 55, 0.8), 0 0 50px rgba(212, 175, 55, 0.3)',
+            }}
+          >
+            VS
+          </p>
+          <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.7))' }} />
+        </div>
+
+        {/* ══════════════════════════════════════════ */}
+        {/*  PLAYER SECTION                           */}
+        {/* ══════════════════════════════════════════ */}
+        <div className="flex-1 flex flex-col px-6 pt-4 pb-6">
+
+          {/* Player identity */}
+          <div className="flex justify-between items-baseline mb-2">
+            <span className="font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#68D391', fontSize: '1.1rem' }}>{hero?.name}</span>
+            <span className="text-xs uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
+          </div>
+
+          {/* Player HP */}
+          <div className="mb-1">
+            <div className="flex justify-between items-baseline mb-1">
+              <span className="text-xs uppercase tracking-widest" style={{ color: '#68D391' }}>HP</span>
+              <span className="text-sm font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
+            </div>
+            <div className="h-4 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0, 100, 0, 0.4)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+              <motion.div
+                className={`h-full ${playerFlash ? 'hp-pulse' : ''}`}
+                animate={{ width: `${playerHpPct}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                style={{
+                  background: playerHpPct > 50
+                    ? 'linear-gradient(to right, #1A4020, #2F6B3A, #68D391)'
+                    : playerHpPct > 25
+                    ? 'linear-gradient(to right, #5A4010, #B8860B, #D4A843)'
+                    : 'linear-gradient(to right, #5A1010, #B82020, #DC2626)',
+                  boxShadow: '0 0 6px rgba(104, 211, 145, 0.4)',
+                  transition: 'background 0.5s',
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Player Stamina */}
+          <div className="mb-3">
+            <div className="flex justify-between items-baseline mb-1">
+              <span className="text-xs uppercase tracking-widest" style={{ color: '#06B6D4' }}>SP</span>
+              <span className="text-xs" style={{ color: '#A0AEC0' }}>{stamina} / {getMaxStamina()}</span>
+            </div>
+            <div className="h-2.5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+              <motion.div
+                className="h-full"
+                animate={{ width: `${staminaPct}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                style={{ background: 'linear-gradient(to right, #0E7490, #06B6D4)', boxShadow: '0 0 6px rgba(6, 182, 212, 0.4)' }}
+              />
+            </div>
+          </div>
+
+          {/* Charge stacks */}
+          {chargeStacks > 0 && (
+            <div className="flex items-center justify-center gap-2 mb-3 py-1.5 rounded" style={{ backgroundColor: 'rgba(212, 175, 55, 0.08)', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+              <span className="text-xs uppercase tracking-widest" style={{ color: COLORS.gold }}>Charges</span>
+              {[1, 2, 3].map(i => (
+                <div
+                  key={i}
+                  className="w-3 h-3 rounded-full transition-all"
+                  style={{
+                    backgroundColor: i <= chargeStacks ? COLORS.gold : '#374151',
+                    boxShadow: i <= chargeStacks ? `0 0 8px ${COLORS.gold}` : 'none',
+                  }}
+                />
+              ))}
+              {chargeStacks === 3 && (
+                <span className="text-xs font-bold ml-1" style={{ color: COLORS.gold }}>⚡ READY</span>
+              )}
+            </div>
+          )}
+
+          {/* Player Taunt Box */}
+          {showTauntBoxes && playerTaunt && (
+            <div className="rounded p-2 mb-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
+              <p className="text-sm" style={{ color: '#F5F5DC' }}>"{playerTaunt}"</p>
+            </div>
+          )}
+
+          {/* ══════════════════════════════════════════ */}
+          {/*  BATTLE ACTIONS                           */}
+          {/* ══════════════════════════════════════════ */}
+          {battling && bossHp > 0 && hp > 0 && (
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.4))' }} />
+                <p className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: '#D4AF37' }}>Actions</p>
+                <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.4))' }} />
+              </div>
+
+              <AnimatePresence mode="wait">
+                {/* ── Main Menu ── */}
+                {battleMenu === 'main' && (
+                  <motion.div key="main" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
+                    <div className={`grid gap-3 mb-3 ${canFlee || showDodgeButton ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                      {/* FIGHT */}
+                      <button
+                        onClick={() => setBattleMenu('fight')}
+                        className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{
-                          background: 'linear-gradient(to bottom, rgba(107, 15, 26, 0.8), rgba(60, 8, 14, 0.8))',
-                          borderColor: 'rgba(205, 127, 50, 0.6)',
-                          color: '#F5F5DC'
+                          background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))',
+                          border: '2px solid rgba(200, 30, 30, 0.7)',
+                          color: '#F5F5DC',
+                          boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)',
+                          fontFamily: 'Cinzel, serif',
+                          letterSpacing: '0.15em',
                         }}
                       >
-                        CONTINUE
+                        ⚔ Fight
+                      </button>
+
+                      {/* ITEMS */}
+                      <button
+                        onClick={() => setBattleMenu('items')}
+                        disabled={healthPots === 0 && staminaPots === 0}
+                        className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{
+                          background: (healthPots > 0 || staminaPots > 0)
+                            ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))'
+                            : 'rgba(30, 40, 55, 0.7)',
+                          border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`,
+                          color: '#F5F5DC',
+                          boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none',
+                          fontFamily: 'Cinzel, serif',
+                          letterSpacing: '0.15em',
+                        }}
+                      >
+                        ⚗ Items
+                      </button>
+
+                      {/* FLEE */}
+                      {canFlee && (
+                        <button
+                          onClick={flee}
+                          disabled={stamina < 25}
+                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                          style={{
+                            background: stamina >= 25
+                              ? 'linear-gradient(to bottom, rgba(30, 70, 35, 0.9), rgba(15, 40, 18, 0.9))'
+                              : 'rgba(30, 40, 55, 0.7)',
+                            border: `2px solid ${stamina >= 25 ? 'rgba(60, 160, 70, 0.6)' : 'rgba(80,80,80,0.3)'}`,
+                            color: '#F5F5DC',
+                            fontFamily: 'Cinzel, serif',
+                            letterSpacing: '0.15em',
+                          }}
+                        >
+                          ↩ Flee
+                          {stamina >= 25 && <div className="text-xs font-normal mt-0.5 opacity-60">25 SP</div>}
+                        </button>
+                      )}
+
+                      {/* DODGE */}
+                      {showDodgeButton && (
+                        <button
+                          onClick={dodge}
+                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                          style={{
+                            background: 'linear-gradient(to bottom, rgba(20, 50, 100, 0.9), rgba(10, 30, 60, 0.9))',
+                            border: '2px solid rgba(96, 165, 250, 0.7)',
+                            color: '#93C5FD',
+                            fontFamily: 'Cinzel, serif',
+                            letterSpacing: '0.15em',
+                          }}
+                        >
+                          ◈ Dodge
+                          <div className="text-xs font-normal mt-0.5 opacity-70">Avoid AOE</div>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Taunt */}
+                    {isTauntAvailable && (
+                      <button
+                        onClick={taunt}
+                        className="w-full py-3 rounded font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                        style={{
+                          background: 'linear-gradient(to right, rgba(180, 60, 0, 0.6), rgba(220, 90, 0, 0.6), rgba(180, 60, 0, 0.6))',
+                          border: '1px solid rgba(220, 90, 0, 0.5)',
+                          color: '#FB923C',
+                          fontSize: '0.75rem',
+                          letterSpacing: '0.25em',
+                        }}
+                      >
+                        ☞ Taunt Enemy (Enrage)
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* ── Fight Submenu ── */}
+                {battleMenu === 'fight' && (
+                  <motion.div key="fight" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      {/* Basic Attack */}
+                      <button
+                        onClick={attack}
+                        className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.85), rgba(90, 4, 4, 0.85))',
+                          borderColor: 'rgba(200, 30, 30, 0.6)',
+                          color: '#F5F5DC',
+                        }}
+                      >
+                        <div className="text-sm uppercase tracking-wide">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
+                        <div className="text-xs mt-0.5 opacity-60">Basic Strike</div>
+                      </button>
+
+                      {/* Knight: Crushing Blow */}
+                      {hero?.class?.name === 'Knight' && (
+                        <button
+                          onClick={useCrushingBlow}
+                          disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 17 || knightCrushingBlowCooldown}
+                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Powerful strike that cannot be used twice in a row'}
+                          style={{
+                            background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown)
+                              ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.85), rgba(100, 25, 25, 0.85))'
+                              : 'rgba(30, 40, 55, 0.6)',
+                            borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown)
+                              ? 'rgba(165, 42, 42, 0.6)'
+                              : 'rgba(80,80,80,0.3)',
+                            color: '#F5F5DC',
+                          }}
+                        >
+                          <div className="text-sm uppercase tracking-wide">Crushing Blow</div>
+                          <div className="text-xs mt-0.5 opacity-60">
+                            {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
+                              : knightCrushingBlowCooldown ? <span className="text-yellow-400">⏳ Cooldown</span>
+                              : '17 SP'}
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Crusader: Smite */}
+                      {hero?.class?.name === 'Crusader' && (
+                        <button
+                          onClick={useSmite}
+                          disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 15 || crusaderSmiteCooldown}
+                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Holy strike that heals. Cannot be used twice in a row.'}
+                          style={{
+                            background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown)
+                              ? 'linear-gradient(to bottom, rgba(218, 165, 32, 0.85), rgba(160, 120, 10, 0.85))'
+                              : 'rgba(30, 40, 55, 0.6)',
+                            borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown)
+                              ? 'rgba(218, 165, 32, 0.6)'
+                              : 'rgba(80,80,80,0.3)',
+                            color: '#F5F5DC',
+                          }}
+                        >
+                          <div className="text-sm uppercase tracking-wide">Smite</div>
+                          <div className="text-xs mt-0.5 opacity-60">
+                            {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
+                              : crusaderSmiteCooldown ? <span className="text-yellow-400">⏳ Cooldown</span>
+                              : '15 SP'}
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Special Attack */}
+                      {hero?.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (
+                        <button
+                          onClick={specialAttack}
+                          disabled={
+                            level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ||
+                            stamina < GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost ||
+                            (GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost && hp <= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost) ||
+                            (hero.class.name === 'Wizard' && wizardTemporalCooldown) ||
+                            (hero.class.name === 'Crusader' && crusaderJudgmentCooldown)
+                          }
+                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].effect}
+                          style={{
+                            background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
+                              stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost &&
+                              !(hero.class.name === 'Wizard' && wizardTemporalCooldown) &&
+                              !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown))
+                              ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.85), rgba(8, 77, 94, 0.85))'
+                              : 'rgba(30, 40, 55, 0.6)',
+                            borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
+                              stamina >= GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost &&
+                              !(hero.class.name === 'Wizard' && wizardTemporalCooldown) &&
+                              !(hero.class.name === 'Crusader' && crusaderJudgmentCooldown))
+                              ? 'rgba(13, 116, 142, 0.6)'
+                              : 'rgba(80,80,80,0.3)',
+                            color: '#F5F5DC',
+                          }}
+                        >
+                          <div className="text-sm uppercase tracking-wide">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
+                          <div className="text-xs mt-0.5 opacity-60">
+                            {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}</span>
+                              : (hero.class.name === 'Wizard' && wizardTemporalCooldown) || (hero.class.name === 'Crusader' && crusaderJudgmentCooldown) ? <span className="text-yellow-400">⏳ Cooldown</span>
+                              : <>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost ? ` · ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP` : ''}</>}
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Tactical Skill */}
+                      {hero?.class && GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name] && (
+                        <button
+                          onClick={useTacticalSkill}
+                          disabled={
+                            level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ||
+                            stamina < GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost ||
+                            (hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                            (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                            (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                            (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)
+                          }
+                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].effect}
+                          style={{
+                            background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
+                              stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
+                              !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
+                              ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.85), rgba(120, 87, 7, 0.85))'
+                              : 'rgba(30, 40, 55, 0.6)',
+                            borderColor: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
+                              stamina >= GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost &&
+                              !((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)))
+                              ? 'rgba(184, 134, 11, 0.6)'
+                              : 'rgba(80,80,80,0.3)',
+                            color: '#F5F5DC',
+                          }}
+                        >
+                          <div className="text-sm uppercase tracking-wide">{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].name}</div>
+                          <div className="text-xs mt-0.5 opacity-60">
+                            {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}</span>
+                              : ((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
+                                (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
+                                (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
+                                (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)) ? <span className="text-yellow-400">⏳ Cooldown</span>
+                              : <>{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].cost} SP</>}
+                          </div>
+                        </button>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={() => setBattleMenu('main')}
+                      className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
+                      style={{ background: 'rgba(30, 40, 55, 0.6)', border: '1px solid rgba(80,80,80,0.3)', color: '#9CA3AF' }}
+                    >
+                      ← Back
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* ── Items Submenu ── */}
+                {battleMenu === 'items' && (
+                  <motion.div key="items" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
+                    <div className="grid grid-cols-2 gap-3 mb-2">
+                      <button
+                        onClick={useHealth}
+                        disabled={healthPots === 0}
+                        className="py-4 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{
+                          background: healthPots > 0 ? 'linear-gradient(to bottom, rgba(180, 30, 30, 0.85), rgba(120, 15, 15, 0.85))' : 'rgba(30, 40, 55, 0.6)',
+                          borderColor: healthPots > 0 ? 'rgba(220, 50, 50, 0.6)' : 'rgba(80,80,80,0.3)',
+                          color: '#F5F5DC',
+                        }}
+                      >
+                        <div className="text-base uppercase tracking-wide">❤ Health Potion</div>
+                        <div className="text-xs mt-1 opacity-60">x{healthPots}</div>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          if (staminaPots > 0) {
+                            const maxStamina = getMaxStamina();
+                            const restoreAmount = Math.max(
+                              GAME_CONSTANTS.STAMINA_POTION_MIN,
+                              Math.floor(maxStamina * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))
+                            );
+                            setStamina(Math.min(stamina + restoreAmount, maxStamina));
+                            setStaminaPots(staminaPots - 1);
+                            addLog(`💙 Used Stamina Potion (+${restoreAmount} SP)`);
+                          }
+                        }}
+                        disabled={staminaPots === 0}
+                        className="py-4 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={{
+                          background: staminaPots > 0 ? 'linear-gradient(to bottom, rgba(6, 140, 170, 0.85), rgba(4, 90, 110, 0.85))' : 'rgba(30, 40, 55, 0.6)',
+                          borderColor: staminaPots > 0 ? 'rgba(6, 182, 212, 0.6)' : 'rgba(80,80,80,0.3)',
+                          color: '#F5F5DC',
+                        }}
+                      >
+                        <div className="text-base uppercase tracking-wide">💙 Stamina Potion</div>
+                        <div className="text-xs mt-1 opacity-60">x{staminaPots}</div>
                       </button>
                     </div>
-                  )}
-                </div>
-              </motion.div>
+
+                    <button
+                      onClick={() => setBattleMenu('main')}
+                      className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
+                      style={{ background: 'rgba(30, 40, 55, 0.6)', border: '1px solid rgba(80,80,80,0.3)', color: '#9CA3AF' }}
+                    >
+                      ← Back
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
+          )}
+
+          {/* ══════════════════════════════════════════ */}
+          {/*  VICTORY                                  */}
+          {/* ══════════════════════════════════════════ */}
+          {bossHp <= 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center pt-2"
+            >
+              {hasFled ? (
+                <>
+                  <p className="text-4xl font-bold mb-3 animate-pulse" style={{ color: '#FBBF24', fontFamily: 'Cinzel, serif' }}>FLED</p>
+                  <p className="text-base italic mb-6" style={{ color: '#A0AEC0' }}>"Cowardice is also a strategy..."</p>
+                </>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <div className="flex items-center justify-center gap-3 mb-1">
+                      <div style={{ width: '80px', height: '2px', background: 'linear-gradient(to right, transparent, rgba(104, 211, 145, 0.7))' }} />
+                      <p className="font-black" style={{
+                        fontFamily: 'Cinzel, serif',
+                        fontSize: 'clamp(2.5rem, 7vw, 4rem)',
+                        color: '#68D391',
+                        textShadow: '0 0 30px rgba(104, 211, 145, 0.6), 0 0 60px rgba(104, 211, 145, 0.2)',
+                        letterSpacing: '0.1em',
+                      }}>
+                        {isFinalBoss ? 'CURSE BROKEN!' : 'VICTORY'}
+                      </p>
+                      <div style={{ width: '80px', height: '2px', background: 'linear-gradient(to left, transparent, rgba(104, 211, 145, 0.7))' }} />
+                    </div>
+                    <p className="text-sm italic" style={{ color: '#A0AEC0' }}>
+                      {isFinalBoss ? '"You are finally free..."' : '"The beast falls. You are healed and rewarded."'}
+                    </p>
+                  </div>
+                </>
+              )}
+
+              {!hasFled && victoryLoot.length > 0 && (
+                <div className="rounded p-4 mb-4" style={{
+                  background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.12), rgba(180, 130, 10, 0.06))',
+                  border: '1px solid rgba(212, 175, 55, 0.5)',
+                  boxShadow: '0 0 25px rgba(212, 175, 55, 0.2)',
+                }}>
+                  <p className="text-xs uppercase tracking-[0.3em] text-center mb-3" style={{ color: '#D4AF37' }}>Spoils of Battle</p>
+                  <div className="space-y-1.5">
+                    {victoryLoot.map((loot, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.08 }}
+                        className="rounded px-3 py-1.5"
+                        style={{ backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212, 175, 55, 0.2)' }}
+                      >
+                        <p className="text-sm" style={{ color: '#F5F5DC' }}>{loot}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(battleType === 'elite' || isFinalBoss) && (
+                <button
+                  onClick={advance}
+                  className="px-10 py-3 rounded font-black text-lg uppercase tracking-widest transition-all hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(to bottom, #D4AF37, #B8860B)',
+                    border: '2px solid rgba(212, 175, 55, 0.8)',
+                    color: '#1C1C1C',
+                    boxShadow: '0 0 25px rgba(212, 175, 55, 0.5)',
+                    fontFamily: 'Cinzel, serif',
+                  }}
+                >
+                  {isFinalBoss ? 'CLAIM FREEDOM' : 'CONTINUE'}
+                </button>
+              )}
+              {(battleType === 'regular' || battleType === 'wave') && (
+                <button
+                  onClick={() => { setShowBoss(false); setHasFled(false); addLog('⚔️ Ready for your next trial...'); }}
+                  className="px-10 py-3 rounded font-black text-lg uppercase tracking-widest transition-all hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(40, 80, 45, 0.9), rgba(20, 50, 25, 0.9))',
+                    border: '2px solid rgba(60, 160, 70, 0.6)',
+                    color: '#F5F5DC',
+                    fontFamily: 'Cinzel, serif',
+                  }}
+                >
+                  CONTINUE
+                </button>
+              )}
+            </motion.div>
+          )}
+
+          {/* ══════════════════════════════════════════ */}
+          {/*  DEFEAT                                   */}
+          {/* ══════════════════════════════════════════ */}
+          {hp <= 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center pt-2"
+            >
+              <p className="font-black mb-2" style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: 'clamp(2.5rem, 7vw, 4rem)',
+                color: '#9B1B30',
+                textShadow: '0 0 30px rgba(155, 27, 48, 0.7)',
+                letterSpacing: '0.08em',
+              }}>DEFEATED</p>
+              <p className="text-sm italic mb-6" style={{ color: '#A0AEC0' }}>"The curse claims another victim..."</p>
+              <button
+                onClick={() => { setShowBoss(false); die(); }}
+                className="px-10 py-3 rounded font-black text-lg uppercase tracking-widest transition-all hover:scale-105"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(100, 10, 20, 0.9), rgba(55, 5, 10, 0.9))',
+                  border: '2px solid rgba(200, 30, 30, 0.5)',
+                  color: '#F5F5DC',
+                  fontFamily: 'Cinzel, serif',
+                }}
+              >
+                CONTINUE
+              </button>
+            </motion.div>
+          )}
+
+          {/* ══════════════════════════════════════════ */}
+          {/*  BATTLE LOG (last 4 entries)              */}
+          {/* ══════════════════════════════════════════ */}
+          {log && log.length > 0 && battling && bossHp > 0 && hp > 0 && (
+            <div className="mt-4 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <div className="space-y-0.5">
+                {log.slice(-4).map((entry, i, arr) => (
+                  <p
+                    key={i}
+                    className="text-xs"
+                    style={{
+                      color: i === arr.length - 1 ? 'rgba(245,245,220,0.75)' : 'rgba(245,245,220,0.35)',
+                      lineHeight: '1.5',
+                    }}
+                  >
+                    {entry}
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
