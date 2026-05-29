@@ -391,10 +391,7 @@ const BattleModal = ({
                 className="rounded p-3 relative"
                 style={{ backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(139, 0, 0, 0.4)' }}
               >
-                <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(100,0,0,0.9)', border: '1px solid rgba(200,30,30,0.5)' }}>
-                  <p className="text-xs uppercase tracking-wider" style={{ color: '#F5F5DC', fontSize: '9px' }}>{bossName || 'Enemy'}</p>
-                </div>
-                <p className="text-base italic text-center mt-1" style={{ color: 'rgba(245,245,220,0.85)' }}>
+                <p className="text-base italic text-center" style={{ color: 'rgba(245,245,220,0.85)' }}>
                   "{showTauntBoxes ? (enemyTauntResponse || '...') : enemyDialogue}"
                 </p>
               </motion.div>
