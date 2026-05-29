@@ -616,31 +616,6 @@ const BattleModal = ({
           {/* ══════════════════════════════════════════════════════════════════ */}
           {battling && bossHp > 0 && hp > 0 && (
             <div>
-              {/* ── Pokémon-style text box ── */}
-              <div className="rounded mb-3 px-4 py-3 min-h-[4.5rem] flex items-center" style={{
-                background: 'rgba(0,0,0,0.55)',
-                border: '2px solid rgba(212,175,55,0.25)',
-                boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.4)',
-              }}>
-                <AnimatePresence mode="wait">
-                  {turnPhase === 'narrating' && battleLine ? (
-                    <motion.p key={battleLine}
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-base leading-relaxed"
-                      style={{ color: '#F5F5DC' }}>
-                      <TypewriterText text={battleLine} speed={25} />
-                    </motion.p>
-                  ) : (
-                    <motion.p key="idle"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-sm uppercase tracking-[0.3em] w-full text-center"
-                      style={{ color: 'rgba(212,175,55,0.6)' }}>
-                      What will {hero?.name || 'you'} do?
-                    </motion.p>
-                  )}
-                </AnimatePresence>
-              </div>
-
               <AnimatePresence mode="wait">
 
                 {/* ── Main Menu ── */}
@@ -839,6 +814,31 @@ const BattleModal = ({
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* ── Pokémon-style text box ── */}
+              <div className="rounded mt-3 px-5 py-4 min-h-[6rem] flex items-center" style={{
+                background: 'rgba(0,0,0,0.55)',
+                border: '2px solid rgba(212,175,55,0.25)',
+                boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.4)',
+              }}>
+                <AnimatePresence mode="wait">
+                  {turnPhase === 'narrating' && battleLine ? (
+                    <motion.p key={battleLine}
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="text-lg leading-relaxed"
+                      style={{ color: '#F5F5DC' }}>
+                      <TypewriterText text={battleLine} speed={25} />
+                    </motion.p>
+                  ) : (
+                    <motion.p key="idle"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="text-sm uppercase tracking-[0.3em] w-full text-center"
+                      style={{ color: 'rgba(212,175,55,0.6)' }}>
+                      What will {hero?.name || 'you'} do?
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
 
               {/* ── Battle Log ─────────────────────────────────────────────── */}
               {log && log.length > 0 && (
