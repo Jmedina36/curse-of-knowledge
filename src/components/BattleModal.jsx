@@ -17,17 +17,6 @@ const getLogColor = (entry) => {
   return 'rgba(245,245,220,0.65)';
 };
 
-// ─── Boss avatar icon ─────────────────────────────────────────────────────────
-const getBossIcon = (isFinalBoss, battleType, bossName) => {
-  if (isFinalBoss) return '💀';
-  if (battleType === 'elite') return '👹';
-  if (battleType === 'wave') return '⚔️';
-  if (bossName && /dragon|drake/i.test(bossName)) return '🐉';
-  if (bossName && /witch|mage|wizard/i.test(bossName)) return '🧙';
-  if (bossName && /knight|warrior/i.test(bossName)) return '⚔️';
-  if (bossName && /demon|devil/i.test(bossName)) return '😈';
-  return '👺';
-};
 
 const BattleModal = ({
   // Enemy state
@@ -172,7 +161,6 @@ const BattleModal = ({
   const bossHpPct = (bossHp / bossMax) * 100;
   const playerHpPct = (hp / getMaxHp()) * 100;
   const staminaPct = (stamina / getMaxStamina()) * 100;
-  const bossIcon = getBossIcon(isFinalBoss, battleType, bossName);
 
   const phaseLabel = isFinalBoss
     ? (inPhase3 ? 'PHASE 3 — ABYSS AWAKENING' : inPhase2 ? 'PHASE 2 — THE PRESSURE' : 'THE UNDYING LEGEND')
@@ -259,61 +247,13 @@ const BattleModal = ({
             </motion.p>
           </div>
 
-          {/* Boss Avatar */}
-          <div className="text-center mb-2 relative" style={{ lineHeight: 1 }}>
-            <motion.div
-              animate={bossFlash
-                ? { scale: 0.88, filter: 'brightness(2.5) sepia(1) hue-rotate(290deg)' }
-                : { scale: 1, filter: 'brightness(1) sepia(0)' }
-              }
-              transition={{ duration: 0.08 }}
-              style={{
-                display: 'inline-block',
-                fontSize: 'clamp(3.5rem, 10vw, 6rem)',
-                filter: `drop-shadow(0 0 18px rgba(220, 20, 60, 0.5))`,
-              }}
-            >
-              {bossIcon}
-            </motion.div>
-
-            {/* Boss floating damage numbers */}
-            <div className="absolute inset-0 pointer-events-none overflow-visible" style={{ top: 0 }}>
-              <AnimatePresence>
-                {floatingNumbers.filter(n => n.type === 'boss').map(n => (
-                  <motion.div
-                    key={n.id}
-                    initial={{ opacity: 1, y: 0, x: n.x }}
-                    animate={{ opacity: 0, y: -60, x: n.x }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.0, ease: 'easeOut' }}
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      fontFamily: 'Cinzel, serif',
-                      fontSize: '1.8rem',
-                      fontWeight: 900,
-                      color: '#FF4444',
-                      textShadow: '0 0 15px rgba(255,0,0,0.8)',
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    {n.value}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </div>
-
           {/* Boss Name */}
           {bossName && (
             <motion.h1
               className="text-center font-black mb-2"
               style={{
                 fontFamily: 'Cinzel, serif',
-                fontSize: 'clamp(1.8rem, 5vw, 3rem)',
+                fontSize: 'clamp(2.2rem, 6vw, 3.8rem)',
                 color: bossFlash ? '#FF3333' : (isFinalBoss ? '#D4AF37' : '#E8E8E8'),
                 textShadow: bossFlash
                   ? '0 0 40px rgba(255, 68, 68, 0.9), 0 0 80px rgba(255, 0, 0, 0.4)'
@@ -350,10 +290,38 @@ const BattleModal = ({
           )}
 
           {/* Boss HP Bar */}
-          <div className="mb-2">
+          <div className="mb-2 relative">
             <div className="flex justify-between items-baseline mb-1">
               <span className="text-sm uppercase tracking-widest" style={{ color: '#CD7F32' }}>Enemy HP</span>
               <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
+            </div>
+            {/* Boss floating damage numbers */}
+            <div className="absolute pointer-events-none overflow-visible" style={{ top: 0, left: 0, right: 0, bottom: 0 }}>
+              <AnimatePresence>
+                {floatingNumbers.filter(n => n.type === 'boss').map(n => (
+                  <motion.div
+                    key={n.id}
+                    initial={{ opacity: 1, y: 0, x: n.x }}
+                    animate={{ opacity: 0, y: -50, x: n.x }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 1.0, ease: 'easeOut' }}
+                    style={{
+                      position: 'absolute',
+                      top: '0',
+                      left: '50%',
+                      fontFamily: 'Cinzel, serif',
+                      fontSize: '1.8rem',
+                      fontWeight: 900,
+                      color: '#FF4444',
+                      textShadow: '0 0 15px rgba(255,0,0,0.8)',
+                      whiteSpace: 'nowrap',
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    {n.value}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
             <div className="h-7 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
