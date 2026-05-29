@@ -122,7 +122,7 @@ const BattleModal = ({
               key={phaseLabel}
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-xs uppercase tracking-[0.4em]"
+              className="text-sm uppercase tracking-[0.4em]"
               style={{ color: inPhase3 ? '#FF6B6B' : inPhase2 ? '#FF8C42' : '#CD7F32' }}
             >
               {phaseLabel}
@@ -154,17 +154,17 @@ const BattleModal = ({
           {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0) && (
             <div className="flex justify-center gap-2 mb-3 flex-wrap">
               {bossDebuffs.poisonTurns > 0 && (
-                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ADE80' }}>
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ADE80' }}>
                   ☠ POISONED ({bossDebuffs.poisonTurns})
                 </span>
               )}
               {bossDebuffs.stunned && (
-                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid rgba(168, 85, 247, 0.5)', color: '#C084FC' }}>
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)', border: '1px solid rgba(168, 85, 247, 0.5)', color: '#C084FC' }}>
                   ✦ STUNNED
                 </span>
               )}
               {enragedTurns > 0 && (
-                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)', border: '1px solid rgba(249, 115, 22, 0.5)', color: '#FB923C' }}>
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)', border: '1px solid rgba(249, 115, 22, 0.5)', color: '#FB923C' }}>
                   ⚡ ENRAGED ({enragedTurns})
                 </span>
               )}
@@ -174,10 +174,10 @@ const BattleModal = ({
           {/* Boss HP Bar */}
           <div className="mb-2">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-xs uppercase tracking-widest" style={{ color: '#CD7F32' }}>Enemy HP</span>
-              <span className="text-sm font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
+              <span className="text-sm uppercase tracking-widest" style={{ color: '#CD7F32' }}>Enemy HP</span>
+              <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
             </div>
-            <div className="h-5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+            <div className="h-7 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
                 className={`h-full ${bossFlash ? 'hp-pulse' : ''}`}
                 animate={{ width: `${bossHpPct}%` }}
@@ -197,7 +197,7 @@ const BattleModal = ({
           {/* Phase 2 Pressure */}
           {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
             <div className="rounded p-2 mb-2 text-center" style={{ backgroundColor: 'rgba(204, 85, 0, 0.15)', border: '1px solid rgba(255, 140, 0, 0.4)' }}>
-              <span className="text-xs" style={{ color: '#FB923C' }}>
+              <span className="text-sm" style={{ color: '#FB923C' }}>
                 ⚠ RAMPING PRESSURE — Boss damage +{phase2DamageStacks * 5}% ({phase2DamageStacks} stacks)
               </span>
             </div>
@@ -206,15 +206,15 @@ const BattleModal = ({
           {/* Shadow Adds */}
           {(inPhase2 || inPhase3) && shadowAdds.length > 0 && (
             <div className="rounded p-2 mb-2" style={{ backgroundColor: 'rgba(107, 44, 145, 0.15)', border: '1px solid rgba(147, 51, 234, 0.4)' }}>
-              <p className="text-xs uppercase tracking-widest text-center mb-2" style={{ color: '#B794F4' }}>Shadow Add{shadowAdds.length > 1 ? 's' : ''} ({shadowAdds.length})</p>
+              <p className="text-sm uppercase tracking-widest text-center mb-2" style={{ color: '#B794F4' }}>Shadow Add{shadowAdds.length > 1 ? 's' : ''} ({shadowAdds.length})</p>
               <div className="space-y-1">
                 {shadowAdds.map((add, idx) => (
                   <div key={add.id} className="flex items-center gap-2">
-                    <span className="text-xs w-4" style={{ color: '#B794F4' }}>#{idx + 1}</span>
+                    <span className="text-sm w-5" style={{ color: '#B794F4' }}>#{idx + 1}</span>
                     <div className="flex-1 rounded-full h-2 overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }}>
                       <div className="h-2 rounded-full" style={{ width: `${(add.hp / add.maxHp) * 100}%`, backgroundColor: '#B794F4' }} />
                     </div>
-                    <span className="text-xs" style={{ color: '#B794F4' }}>{add.hp}/{add.maxHp}</span>
+                    <span className="text-sm" style={{ color: '#B794F4' }}>{add.hp}/{add.maxHp}</span>
                   </div>
                 ))}
               </div>
@@ -248,7 +248,7 @@ const BattleModal = ({
                 <div className="absolute -top-2.5 left-3 px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(100,0,0,0.9)', border: '1px solid rgba(200,30,30,0.5)' }}>
                   <p className="text-xs uppercase tracking-wider" style={{ color: '#F5F5DC', fontSize: '9px' }}>{bossName || 'Enemy'}</p>
                 </div>
-                <p className="text-sm italic text-center mt-1" style={{ color: 'rgba(245,245,220,0.85)' }}>
+                <p className="text-base italic text-center mt-1" style={{ color: 'rgba(245,245,220,0.85)' }}>
                   "{showTauntBoxes ? (enemyTauntResponse || '...') : enemyDialogue}"
                 </p>
               </motion.div>
@@ -289,17 +289,17 @@ const BattleModal = ({
 
           {/* Player identity */}
           <div className="flex justify-between items-baseline mb-2">
-            <span className="font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#68D391', fontSize: '1.1rem' }}>{hero?.name}</span>
-            <span className="text-xs uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
+            <span className="font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#68D391', fontSize: '1.4rem' }}>{hero?.name}</span>
+            <span className="text-sm uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
           </div>
 
           {/* Player HP */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-xs uppercase tracking-widest" style={{ color: '#68D391' }}>HP</span>
-              <span className="text-sm font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
+              <span className="text-sm uppercase tracking-widest" style={{ color: '#68D391' }}>HP</span>
+              <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
             </div>
-            <div className="h-4 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0, 100, 0, 0.4)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+            <div className="h-6 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0, 100, 0, 0.4)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
                 className={`h-full ${playerFlash ? 'hp-pulse' : ''}`}
                 animate={{ width: `${playerHpPct}%` }}
@@ -320,10 +320,10 @@ const BattleModal = ({
           {/* Player Stamina */}
           <div className="mb-3">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-xs uppercase tracking-widest" style={{ color: '#06B6D4' }}>SP</span>
-              <span className="text-xs" style={{ color: '#A0AEC0' }}>{stamina} / {getMaxStamina()}</span>
+              <span className="text-sm uppercase tracking-widest" style={{ color: '#06B6D4' }}>SP</span>
+              <span className="text-sm" style={{ color: '#A0AEC0' }}>{stamina} / {getMaxStamina()}</span>
             </div>
-            <div className="h-2.5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+            <div className="h-4 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
               <motion.div
                 className="h-full"
                 animate={{ width: `${staminaPct}%` }}
@@ -336,11 +336,11 @@ const BattleModal = ({
           {/* Charge stacks */}
           {chargeStacks > 0 && (
             <div className="flex items-center justify-center gap-2 mb-3 py-1.5 rounded" style={{ backgroundColor: 'rgba(212, 175, 55, 0.08)', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-              <span className="text-xs uppercase tracking-widest" style={{ color: COLORS.gold }}>Charges</span>
+              <span className="text-sm uppercase tracking-widest" style={{ color: COLORS.gold }}>Charges</span>
               {[1, 2, 3].map(i => (
                 <div
                   key={i}
-                  className="w-3 h-3 rounded-full transition-all"
+                  className="w-4 h-4 rounded-full transition-all"
                   style={{
                     backgroundColor: i <= chargeStacks ? COLORS.gold : '#374151',
                     boxShadow: i <= chargeStacks ? `0 0 8px ${COLORS.gold}` : 'none',
@@ -348,7 +348,7 @@ const BattleModal = ({
                 />
               ))}
               {chargeStacks === 3 && (
-                <span className="text-xs font-bold ml-1" style={{ color: COLORS.gold }}>⚡ READY</span>
+                <span className="text-sm font-bold ml-1" style={{ color: COLORS.gold }}>⚡ READY</span>
               )}
             </div>
           )}
@@ -356,7 +356,7 @@ const BattleModal = ({
           {/* Player Taunt Box */}
           {showTauntBoxes && playerTaunt && (
             <div className="rounded p-2 mb-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
-              <p className="text-sm" style={{ color: '#F5F5DC' }}>"{playerTaunt}"</p>
+              <p className="text-base" style={{ color: '#F5F5DC' }}>"{playerTaunt}"</p>
             </div>
           )}
 
@@ -367,7 +367,7 @@ const BattleModal = ({
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.4))' }} />
-                <p className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: '#D4AF37' }}>Actions</p>
+                <p className="text-sm font-bold uppercase tracking-[0.3em]" style={{ color: '#D4AF37' }}>Actions</p>
                 <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.4))' }} />
               </div>
 
@@ -428,7 +428,7 @@ const BattleModal = ({
                           }}
                         >
                           ↩ Flee
-                          {stamina >= 25 && <div className="text-xs font-normal mt-0.5 opacity-60">25 SP</div>}
+                          {stamina >= 25 && <div className="text-sm font-normal mt-0.5 opacity-60">25 SP</div>}
                         </button>
                       )}
 
@@ -446,7 +446,7 @@ const BattleModal = ({
                           }}
                         >
                           ◈ Dodge
-                          <div className="text-xs font-normal mt-0.5 opacity-70">Avoid AOE</div>
+                          <div className="text-sm font-normal mt-0.5 opacity-70">Avoid AOE</div>
                         </button>
                       )}
                     </div>
@@ -460,7 +460,7 @@ const BattleModal = ({
                           background: 'linear-gradient(to right, rgba(180, 60, 0, 0.6), rgba(220, 90, 0, 0.6), rgba(180, 60, 0, 0.6))',
                           border: '1px solid rgba(220, 90, 0, 0.5)',
                           color: '#FB923C',
-                          fontSize: '0.75rem',
+                          fontSize: '1rem',
                           letterSpacing: '0.25em',
                         }}
                       >
@@ -477,15 +477,15 @@ const BattleModal = ({
                       {/* Basic Attack */}
                       <button
                         onClick={attack}
-                        className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95"
+                        className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95"
                         style={{
                           background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.85), rgba(90, 4, 4, 0.85))',
                           borderColor: 'rgba(200, 30, 30, 0.6)',
                           color: '#F5F5DC',
                         }}
                       >
-                        <div className="text-sm uppercase tracking-wide">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
-                        <div className="text-xs mt-0.5 opacity-60">Basic Strike</div>
+                        <div className="text-base uppercase tracking-wide">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
+                        <div className="text-sm mt-0.5 opacity-60">Basic Strike</div>
                       </button>
 
                       {/* Knight: Crushing Blow */}
@@ -493,7 +493,7 @@ const BattleModal = ({
                         <button
                           onClick={useCrushingBlow}
                           disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 17 || knightCrushingBlowCooldown}
-                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                           title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Powerful strike that cannot be used twice in a row'}
                           style={{
                             background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 17 && !knightCrushingBlowCooldown)
@@ -505,8 +505,8 @@ const BattleModal = ({
                             color: '#F5F5DC',
                           }}
                         >
-                          <div className="text-sm uppercase tracking-wide">Crushing Blow</div>
-                          <div className="text-xs mt-0.5 opacity-60">
+                          <div className="text-base uppercase tracking-wide">Crushing Blow</div>
+                          <div className="text-sm mt-0.5 opacity-60">
                             {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
                               : knightCrushingBlowCooldown ? <span className="text-yellow-400">⏳ Cooldown</span>
                               : '17 SP'}
@@ -519,7 +519,7 @@ const BattleModal = ({
                         <button
                           onClick={useSmite}
                           disabled={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill || stamina < 15 || crusaderSmiteCooldown}
-                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                           title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Holy strike that heals. Cannot be used twice in a row.'}
                           style={{
                             background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && stamina >= 15 && !crusaderSmiteCooldown)
@@ -531,8 +531,8 @@ const BattleModal = ({
                             color: '#F5F5DC',
                           }}
                         >
-                          <div className="text-sm uppercase tracking-wide">Smite</div>
-                          <div className="text-xs mt-0.5 opacity-60">
+                          <div className="text-base uppercase tracking-wide">Smite</div>
+                          <div className="text-sm mt-0.5 opacity-60">
                             {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
                               : crusaderSmiteCooldown ? <span className="text-yellow-400">⏳ Cooldown</span>
                               : '15 SP'}
@@ -551,7 +551,7 @@ const BattleModal = ({
                             (hero.class.name === 'Wizard' && wizardTemporalCooldown) ||
                             (hero.class.name === 'Crusader' && crusaderJudgmentCooldown)
                           }
-                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                           title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].effect}
                           style={{
                             background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
@@ -569,8 +569,8 @@ const BattleModal = ({
                             color: '#F5F5DC',
                           }}
                         >
-                          <div className="text-sm uppercase tracking-wide">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
-                          <div className="text-xs mt-0.5 opacity-60">
+                          <div className="text-base uppercase tracking-wide">{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].name}</div>
+                          <div className="text-sm mt-0.5 opacity-60">
                             {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}</span>
                               : (hero.class.name === 'Wizard' && wizardTemporalCooldown) || (hero.class.name === 'Crusader' && crusaderJudgmentCooldown) ? <span className="text-yellow-400">⏳ Cooldown</span>
                               : <>{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].cost} SP{GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost ? ` · ${GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name].hpCost + (recklessStacks * 10)} HP` : ''}</>}
@@ -590,7 +590,7 @@ const BattleModal = ({
                             (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
                             (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown)
                           }
-                          className="py-3 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                           title={level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].effect}
                           style={{
                             background: (level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical &&
@@ -612,8 +612,8 @@ const BattleModal = ({
                             color: '#F5F5DC',
                           }}
                         >
-                          <div className="text-sm uppercase tracking-wide">{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].name}</div>
-                          <div className="text-xs mt-0.5 opacity-60">
+                          <div className="text-base uppercase tracking-wide">{GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name].name}</div>
+                          <div className="text-sm mt-0.5 opacity-60">
                             {level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}</span>
                               : ((hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
                                 (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
@@ -627,7 +627,7 @@ const BattleModal = ({
 
                     <button
                       onClick={() => setBattleMenu('main')}
-                      className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
+                      className="w-full py-3 rounded text-base uppercase tracking-widest transition-all hover:opacity-80"
                       style={{ background: 'rgba(30, 40, 55, 0.6)', border: '1px solid rgba(80,80,80,0.3)', color: '#9CA3AF' }}
                     >
                       ← Back
@@ -650,7 +650,7 @@ const BattleModal = ({
                         }}
                       >
                         <div className="text-base uppercase tracking-wide">❤ Health Potion</div>
-                        <div className="text-xs mt-1 opacity-60">x{healthPots}</div>
+                        <div className="text-sm mt-1 opacity-60">x{healthPots}</div>
                       </button>
 
                       <button
@@ -675,13 +675,13 @@ const BattleModal = ({
                         }}
                       >
                         <div className="text-base uppercase tracking-wide">💙 Stamina Potion</div>
-                        <div className="text-xs mt-1 opacity-60">x{staminaPots}</div>
+                        <div className="text-sm mt-1 opacity-60">x{staminaPots}</div>
                       </button>
                     </div>
 
                     <button
                       onClick={() => setBattleMenu('main')}
-                      className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
+                      className="w-full py-3 rounded text-base uppercase tracking-widest transition-all hover:opacity-80"
                       style={{ background: 'rgba(30, 40, 55, 0.6)', border: '1px solid rgba(80,80,80,0.3)', color: '#9CA3AF' }}
                     >
                       ← Back
@@ -826,9 +826,9 @@ const BattleModal = ({
                 {log.slice(-4).map((entry, i, arr) => (
                   <p
                     key={i}
-                    className="text-xs"
+                    className="text-sm"
                     style={{
-                      color: i === arr.length - 1 ? 'rgba(245,245,220,0.75)' : 'rgba(245,245,220,0.35)',
+                      color: i === arr.length - 1 ? 'rgba(245,245,220,0.9)' : 'rgba(245,245,220,0.5)',
                       lineHeight: '1.5',
                     }}
                   >
