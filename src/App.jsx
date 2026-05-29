@@ -5896,7 +5896,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {showImportModal && (
             <ImportModal
               setShowImportModal={setShowImportModal}
-              importFromPlanner={importFromPlanner}
+              weeklyPlan={weeklyPlan} importFromPlanner={importFromPlanner}
               flashcardDecks={flashcardDecks} setFlashcardDecks={setFlashcardDecks}
               addLog={addLog} updateAchievementStat={updateAchievementStat}
             />

@@ -4,6 +4,7 @@ import { COLORS } from '../constants';
 
 const ImportModal = ({
   setShowImportModal,
+  weeklyPlan,
   importFromPlanner,
   flashcardDecks,
   setFlashcardDecks,
