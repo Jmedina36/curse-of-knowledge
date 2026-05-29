@@ -218,7 +218,7 @@ const BattleModal = ({
     enemyTurnTimer.current = setTimeout(() => {
       setTurnPhase('player');
       setEnemyMove(null);
-    }, 1900);
+    }, 3000);
   };
 
   // ── Derived values ──────────────────────────────────────────────────────────
@@ -620,7 +620,7 @@ const BattleModal = ({
                         className="h-full rounded"
                         initial={{ width: '100%' }}
                         animate={{ width: '0%' }}
-                        transition={{ duration: 1.9, ease: 'linear' }}
+                        transition={{ duration: 2.65, ease: 'linear' }}
                         style={{ background: 'linear-gradient(to right, rgba(220,20,60,0.8), rgba(255,80,80,0.8))' }}
                       />
                     </div>
