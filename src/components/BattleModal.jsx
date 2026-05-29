@@ -251,14 +251,15 @@ const BattleModal = ({
     turnTimers.current = [];
 
     const CHAR_SPEED = 25; // must match TypewriterText speed prop
-    const READ_PAUSE = 900; // ms to hold after typing finishes before advancing
+    const READ_PAUSE = 900;   // ms to hold after typing finishes before advancing
+    const ENEMY_DELAY = 1500; // extra ms gap before enemy attacks
 
     const playerText = `${heroName} used ${playerActionName}!`;
     setBattleLine(playerText);
     setTurnPhase('narrating');
 
-    // Wait for player text to finish typing, then show enemy move
-    const playerTextDuration = playerText.length * CHAR_SPEED + READ_PAUSE;
+    // Wait for player text to finish typing + extra gap, then show enemy move
+    const playerTextDuration = playerText.length * CHAR_SPEED + READ_PAUSE + ENEMY_DELAY;
     const enemyText = `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
     schedule(() => {
       setBattleLine(enemyText);
