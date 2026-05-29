@@ -62,6 +62,8 @@ const QuestTab = ({
   // Task actions
   complete,
   handleDragStart,
+  handleDragEnd,
+  handleDragOver,
   handleDrop,
   // Pomodoro
   setShowPomodoro,

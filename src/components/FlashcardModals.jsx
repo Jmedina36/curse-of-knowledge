@@ -69,7 +69,9 @@ const FlashcardModals = ({
   setXp,
   setHealthPots,
   setStaminaPots,
+  newTask,
   setNewTask,
+  addTask,
   showModal,
   setShowModal,
 }) => {

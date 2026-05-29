@@ -5737,7 +5737,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
               overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
               setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
-              complete={complete} handleDragStart={handleDragStart} handleDrop={handleDrop}
+              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd} handleDragOver={handleDragOver} handleDrop={handleDrop}
               setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
               setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
               setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
@@ -5798,7 +5798,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <InventoryModal
               suppliesTab={suppliesTab} setSuppliesTab={setSuppliesTab}
               setShowInventoryModal={setShowInventoryModal}
-              hp={hp} stamina={stamina} setStamina={setStamina} level={level} gold={gold}
+              hp={hp} stamina={stamina} setStamina={setStamina} level={level} gold={gold} curseLevel={curseLevel}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense}
               healthPots={healthPots} staminaPots={staminaPots} setStaminaPots={setStaminaPots}
@@ -5847,7 +5847,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               calculateSellPrice={calculateSellPrice}
               getRarityColor={getRarityColor} sortByRarity={sortByRarity}
               addLog={addLog}
-              buyItem={buyItem} purchaseShopItem={purchaseShopItem}
+              purchaseShopItem={purchaseShopItem}
               sellEquipment={sellEquipment} sellPotion={sellPotion} craftItem={craftItem}
               addStudyWebsite={addStudyWebsite} removeStudyWebsite={removeStudyWebsite}
               trackWebsiteClick={trackWebsiteClick}
@@ -5891,7 +5891,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             generateQuiz={generateQuiz} addLog={addLog} updateAchievementStat={updateAchievementStat}
             gold={gold} setGold={setGold} xp={xp} setXp={setXp}
             setHealthPots={setHealthPots} setStaminaPots={setStaminaPots}
-            newTask={newTask} setNewTask={setNewTask} showModal={showModal} setShowModal={setShowModal}
+            newTask={newTask} setNewTask={setNewTask} addTask={addTask} showModal={showModal} setShowModal={setShowModal}
           />
           {showImportModal && (
             <ImportModal

@@ -43,6 +43,7 @@ const InventoryModal = ({
   // Stamina setter (for using potions in inventory view)
   setStamina,
   // Helpers
+  curseLevel,
   luckyCharmActive,
   getRarityColor,
   sortByRarity,
