@@ -240,37 +240,41 @@ const BattleModal = ({
   // Pokémon-style: show player action text → enemy move text → return control
   const handlePlayerAction = (actionFn, playerActionName, skipEnemyTurn = false) => {
     if (turnPhase !== 'player') return;
-    actionFn();
+
+    const CHAR_SPEED = 25; // must match TypewriterText speed prop
+    const READ_PAUSE = 1000; // ms to hold after typing finishes before advancing
+
+    const heroName = hero?.name || 'You';
+    const enemyName = bossName || 'The enemy';
+    const playerText = `${heroName} used ${playerActionName}!`;
+
+    // Delay before enemy acts = time for player text to fully type + read pause
+    const enemyActDelay = playerText.length * CHAR_SPEED + READ_PAUSE;
+
+    // Pass the delay so the enemy counter-attack fires in sync with the text
+    actionFn(skipEnemyTurn ? undefined : enemyActDelay);
     if (skipEnemyTurn) return;
 
     const move = pickMove(isFinalBoss, battleType);
-    const heroName = hero?.name || 'You';
-    const enemyName = bossName || 'The enemy';
+    const enemyText = `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
 
     turnTimers.current.forEach(clearTimeout);
     turnTimers.current = [];
 
-    const CHAR_SPEED = 25; // must match TypewriterText speed prop
-    const READ_PAUSE = 900;   // ms to hold after typing finishes before advancing
-    const ENEMY_DELAY = 1500; // extra ms gap before enemy attacks
-
-    const playerText = `${heroName} used ${playerActionName}!`;
     setBattleLine(playerText);
     setTurnPhase('narrating');
 
-    // Wait for player text to finish typing + extra gap, then show enemy move
-    const playerTextDuration = playerText.length * CHAR_SPEED + READ_PAUSE + ENEMY_DELAY;
-    const enemyText = `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
+    // Show enemy text at the exact moment enemy damage fires
     schedule(() => {
       setBattleLine(enemyText);
-    }, playerTextDuration);
+    }, enemyActDelay);
 
-    // Wait for enemy text to finish typing, then return control
+    // After enemy text finishes typing, return control to player
     const enemyTextDuration = enemyText.length * CHAR_SPEED + READ_PAUSE;
     schedule(() => {
       setBattleLine('');
       setTurnPhase('player');
-    }, playerTextDuration + enemyTextDuration);
+    }, enemyActDelay + enemyTextDuration);
   };
 
   // ── Derived values ──────────────────────────────────────────────────────────

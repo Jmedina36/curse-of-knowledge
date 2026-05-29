@@ -2524,7 +2524,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsTauntAvailable(false);
   };
   
-  const attack = () => {
+  const attack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
     if (!battling || bossHp <= 0) return;
     
     // Wizard Temporal Rift - restore stamina at start of next turn
@@ -3350,10 +3350,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           }
         }
       }, 200);
-    }, GAME_CONSTANTS.BOSS_ATTACK_DELAY);
+    }, enemyDelay);
   };
   
-  const specialAttack = () => {
+  const specialAttack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
     if (!battling || bossHp <= 0 || !hero || !hero.class) return;
     
     const special = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name];
@@ -4080,14 +4080,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             }
           }
         }, 200);
-      }, GAME_CONSTANTS.BOSS_ATTACK_DELAY);
+      }, enemyDelay);
     } else {
       // Counter-attack skipped (Wizard Temporal Rift)
       setBossDebuffs(prev => ({ ...prev, stunned: false }));
     }
   };
   
-  const useCrushingBlow = () => {
+  const useCrushingBlow = (enemyDelay = 1000) => {
     if (!battling || bossHp <= 0 || !hero || hero.class.name !== 'Knight') return;
     
     const skill = GAME_CONSTANTS.BASIC_SKILLS.Knight;
@@ -4399,10 +4399,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         });
       }
       
-    }, 1000);
+    }, enemyDelay);
   };
   
-  const useSmite = () => {
+  const useSmite = (enemyDelay = 1000) => {
     if (!battling || bossHp <= 0 || !hero || hero.class.name !== 'Crusader') return;
     
     const skill = GAME_CONSTANTS.BASIC_SKILLS.Crusader;
@@ -4606,10 +4606,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         });
       }
       
-    }, 1000);
+    }, enemyDelay);
   };
   
-  const useTacticalSkill = () => {
+  const useTacticalSkill = (enemyDelay = 1000) => {
     if (!battling || bossHp <= 0 || !hero || !hero.class) return;
     
     const skill = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name];
@@ -4796,7 +4796,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         });
       }
       
-    }, 1000); // Delay counter-attack like normal
+    }, enemyDelay); // Delay counter-attack like normal
   };
   
   const flee = () => {
