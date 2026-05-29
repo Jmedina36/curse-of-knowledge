@@ -180,6 +180,37 @@ const BattleModal = ({
       transition={{ duration: 0.45, ease: 'easeOut' }}
       style={{ background: 'radial-gradient(ellipse at 50% 20%, rgb(80, 5, 12) 0%, rgb(4, 0, 0) 65%)' }}
     >
+      {/* ── Floating damage/heal numbers overlay ─────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 50 }}>
+        <AnimatePresence>
+          {floatingNumbers.map(n => (
+            <motion.div
+              key={n.id}
+              initial={{ opacity: 1, y: 0 }}
+              animate={{ opacity: [1, 1, 0], y: n.type === 'boss' ? -90 : n.type === 'damage' ? 70 : -70 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 2.0, ease: 'easeOut', times: n.type === 'boss' ? [0, 0.5, 1] : [0, 0.45, 1] }}
+              style={{
+                position: 'absolute',
+                top: n.type === 'boss' ? '28%' : '62%',
+                left: `calc(50% + ${n.x}px)`,
+                transform: 'translateX(-50%)',
+                fontFamily: 'Cinzel, serif',
+                fontSize: '2.2rem',
+                fontWeight: 900,
+                color: n.type === 'heal' ? '#4ADE80' : '#FF3333',
+                textShadow: n.type === 'heal'
+                  ? '0 0 20px rgba(74,222,128,0.9), 0 2px 0 rgba(0,0,0,0.8)'
+                  : '0 0 20px rgba(255,0,0,0.9), 0 2px 0 rgba(0,0,0,0.8)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {n.value}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+
       {/* Scanline overlay */}
       <div className="fixed inset-0 pointer-events-none" style={{
         background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)',
@@ -290,38 +321,10 @@ const BattleModal = ({
           )}
 
           {/* Boss HP Bar */}
-          <div className="mb-2 relative">
+          <div className="mb-2">
             <div className="flex justify-between items-baseline mb-1">
               <span className="text-sm uppercase tracking-widest" style={{ color: '#CD7F32' }}>Enemy HP</span>
               <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
-            </div>
-            {/* Boss floating damage numbers */}
-            <div className="absolute pointer-events-none overflow-visible" style={{ top: 0, left: 0, right: 0, bottom: 0 }}>
-              <AnimatePresence>
-                {floatingNumbers.filter(n => n.type === 'boss').map(n => (
-                  <motion.div
-                    key={n.id}
-                    initial={{ opacity: 1, y: 0, x: n.x }}
-                    animate={{ opacity: 0, y: -50, x: n.x }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.0, ease: 'easeOut' }}
-                    style={{
-                      position: 'absolute',
-                      top: '0',
-                      left: '50%',
-                      fontFamily: 'Cinzel, serif',
-                      fontSize: '1.8rem',
-                      fontWeight: 900,
-                      color: '#FF4444',
-                      textShadow: '0 0 15px rgba(255,0,0,0.8)',
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    {n.value}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
             </div>
             <div className="h-7 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
@@ -436,8 +439,8 @@ const BattleModal = ({
             <span className="text-sm uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
           </div>
 
-          {/* Player HP — with floating numbers */}
-          <div className="mb-1 relative">
+          {/* Player HP */}
+          <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
               <span className="text-sm uppercase tracking-widest" style={{ color: '#68D391' }}>HP</span>
               <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
@@ -457,37 +460,6 @@ const BattleModal = ({
                   transition: 'background 0.5s',
                 }}
               />
-            </div>
-            {/* Player floating numbers */}
-            <div className="absolute inset-0 pointer-events-none overflow-visible">
-              <AnimatePresence>
-                {floatingNumbers.filter(n => n.type === 'damage' || n.type === 'heal').map(n => (
-                  <motion.div
-                    key={n.id}
-                    initial={{ opacity: 1, y: 0, x: n.x }}
-                    animate={{ opacity: 0, y: n.type === 'damage' ? 40 : -40, x: n.x }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 1.0, ease: 'easeOut' }}
-                    style={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, -50%)',
-                      fontFamily: 'Cinzel, serif',
-                      fontSize: '1.6rem',
-                      fontWeight: 900,
-                      color: n.type === 'heal' ? '#4ADE80' : '#FF4444',
-                      textShadow: n.type === 'heal'
-                        ? '0 0 15px rgba(74,222,128,0.8)'
-                        : '0 0 15px rgba(255,0,0,0.8)',
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
-                    }}
-                  >
-                    {n.value}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
             </div>
           </div>
 
