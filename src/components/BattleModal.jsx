@@ -250,18 +250,22 @@ const BattleModal = ({
     turnTimers.current.forEach(clearTimeout);
     turnTimers.current = [];
 
-    setBattleLine(`${heroName} used ${playerActionName}!`);
+    const CHAR_SPEED = 25; // must match TypewriterText speed prop
+    const READ_PAUSE = 900; // ms to hold after typing finishes before advancing
+
+    const playerText = `${heroName} used ${playerActionName}!`;
+    setBattleLine(playerText);
     setTurnPhase('narrating');
 
-    // After player text is read, show enemy move
-    const playerTextDuration = Math.max(3500, playerActionName.length * 70);
+    // Wait for player text to finish typing, then show enemy move
+    const playerTextDuration = playerText.length * CHAR_SPEED + READ_PAUSE;
+    const enemyText = `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
     schedule(() => {
-      setBattleLine(`${enemyName} used ${move.name}! ${enemyName} ${move.desc}`);
+      setBattleLine(enemyText);
     }, playerTextDuration);
 
-    // After enemy text is read, return control
-    const enemyText = `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
-    const enemyTextDuration = Math.max(1800, enemyText.length * 30);
+    // Wait for enemy text to finish typing, then return control
+    const enemyTextDuration = enemyText.length * CHAR_SPEED + READ_PAUSE;
     schedule(() => {
       setBattleLine('');
       setTurnPhase('player');
