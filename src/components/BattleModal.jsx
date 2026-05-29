@@ -559,21 +559,21 @@ const BattleModal = ({
                       <button onClick={() => setBattleMenu('fight')}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
-                        ⚔ Fight
+                        Fight
                       </button>
 
                       <button onClick={() => setBattleMenu('items')}
                         disabled={healthPots === 0 && staminaPots === 0}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
-                        ⚗ Items
+                        Items
                       </button>
 
                       {canFlee && (
                         <button onClick={flee} disabled={stamina < 25}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                           style={{ background: stamina >= 25 ? 'linear-gradient(to bottom, rgba(30, 70, 35, 0.9), rgba(15, 40, 18, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${stamina >= 25 ? 'rgba(60, 160, 70, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
-                          ↩ Flee
+                          Flee
                           {stamina >= 25 && <div className="text-sm font-normal mt-0.5 opacity-60">25 SP</div>}
                         </button>
                       )}
@@ -582,7 +582,7 @@ const BattleModal = ({
                         <button onClick={dodge}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(20, 50, 100, 0.9), rgba(10, 30, 60, 0.9))', border: '2px solid rgba(96, 165, 250, 0.7)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
-                          ◈ Dodge
+                          Dodge
                           <div className="text-sm font-normal mt-0.5 opacity-70">Avoid AOE</div>
                         </button>
                       )}
@@ -592,7 +592,7 @@ const BattleModal = ({
                       <button onClick={taunt}
                         className="w-full py-3 rounded font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                         style={{ background: 'linear-gradient(to right, rgba(180, 60, 0, 0.6), rgba(220, 90, 0, 0.6), rgba(180, 60, 0, 0.6))', border: '1px solid rgba(220, 90, 0, 0.5)', color: '#FB923C', fontSize: '1rem', letterSpacing: '0.25em' }}>
-                        ☞ Taunt Enemy (Enrage)
+                        Taunt Enemy (Enrage)
                       </button>
                     )}
                   </motion.div>
@@ -717,7 +717,7 @@ const BattleModal = ({
                       <button onClick={useHealth} disabled={healthPots === 0}
                         className="py-4 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: healthPots > 0 ? 'linear-gradient(to bottom, rgba(180, 30, 30, 0.85), rgba(120, 15, 15, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: healthPots > 0 ? 'rgba(220, 50, 50, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC' }}>
-                        <div className="text-base uppercase tracking-wide">❤ Health Potion</div>
+                        <div className="text-base uppercase tracking-wide">Health Potion</div>
                         <div className="text-sm mt-1 opacity-60">x{healthPots}</div>
                       </button>
 
@@ -728,13 +728,13 @@ const BattleModal = ({
                             const restoreAmount = Math.max(GAME_CONSTANTS.STAMINA_POTION_MIN, Math.floor(maxStamina * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100)));
                             setStamina(Math.min(stamina + restoreAmount, maxStamina));
                             setStaminaPots(staminaPots - 1);
-                            addLog(`💙 Used Stamina Potion (+${restoreAmount} SP)`);
+                            addLog(`Used Stamina Potion (+${restoreAmount} SP)`);
                           }
                         }}
                         disabled={staminaPots === 0}
                         className="py-4 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: staminaPots > 0 ? 'linear-gradient(to bottom, rgba(6, 140, 170, 0.85), rgba(4, 90, 110, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: staminaPots > 0 ? 'rgba(6, 182, 212, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC' }}>
-                        <div className="text-base uppercase tracking-wide">💙 Stamina Potion</div>
+                        <div className="text-base uppercase tracking-wide">Stamina Potion</div>
                         <div className="text-sm mt-1 opacity-60">x{staminaPots}</div>
                       </button>
                     </div>
