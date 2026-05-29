@@ -5757,6 +5757,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               currentYear={currentYear} setCurrentYear={setCurrentYear}
               calendarTasks={calendarTasks} calendarEvents={calendarEvents} calendarFocus={calendarFocus}
               draggedPlanTask={draggedPlanTask} setDraggedPlanTask={setDraggedPlanTask}
+              handlePlanDragEnd={handlePlanDragEnd} handlePlanDragOver={handlePlanDragOver}
               getNextDayOfWeek={getNextDayOfWeek}
               setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay}
               setShowCalendarModal={setShowCalendarModal} setShowPlanModal={setShowPlanModal}
@@ -5810,6 +5811,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               armorInventory={armorInventory} setArmorInventory={setArmorInventory}
               pendantInventory={pendantInventory} setPendantInventory={setPendantInventory}
               ringInventory={ringInventory} setRingInventory={setRingInventory}
+              luckyCharmActive={luckyCharmActive}
               getRarityColor={getRarityColor} sortByRarity={sortByRarity}
               addLog={addLog} useHealth={useHealth} useCleanse={useCleanse}
             />
@@ -5922,6 +5924,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <BattleModal
               bossHp={bossHp} bossMax={bossMax} bossName={bossName}
               bossFlash={bossFlash} bossDebuffs={bossDebuffs} enragedTurns={enragedTurns}
+              playerFlash={playerFlash}
               battleType={battleType} isFinalBoss={isFinalBoss}
               currentWaveEnemy={currentWaveEnemy} totalWaveEnemies={totalWaveEnemies} waveCount={waveCount}
               inPhase2={inPhase2} inPhase3={inPhase3}

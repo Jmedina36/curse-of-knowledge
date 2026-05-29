@@ -18,6 +18,8 @@ const PlannerTab = ({
   calendarFocus,
   draggedPlanTask,
   setDraggedPlanTask,
+  handlePlanDragEnd,
+  handlePlanDragOver,
   getNextDayOfWeek,
   setSelectedDate,
   setSelectedDay,

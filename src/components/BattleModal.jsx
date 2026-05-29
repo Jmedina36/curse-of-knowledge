@@ -29,6 +29,7 @@ const BattleModal = ({
   playerTaunt,
   isTauntAvailable,
   // Player state
+  playerFlash,
   hp,
   getMaxHp,
   stamina,
