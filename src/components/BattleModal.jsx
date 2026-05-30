@@ -342,8 +342,35 @@ const BattleModal = ({
         : { x: 0 }
       }
       transition={{ duration: 0.45, ease: 'easeOut' }}
-      style={{ background: 'radial-gradient(ellipse at 50% 20%, rgb(80, 5, 12) 0%, rgb(4, 0, 0) 65%)' }}
+      style={{ background: (() => {
+        if (isFinalBoss)           return 'radial-gradient(ellipse at 50% 0%, rgba(100,0,140,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(60,0,100,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(60,0,100,0.4) 0%, transparent 40%), rgb(2,0,7)';
+        if (battleType === 'elite') return 'radial-gradient(ellipse at 50% 0%, rgba(160,60,0,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(100,25,0,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(90,20,0,0.4) 0%, transparent 40%), rgb(6,1,0)';
+        if (battleType === 'wave')  return 'radial-gradient(ellipse at 50% 0%, rgba(0,45,120,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(0,25,80,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(0,25,80,0.4) 0%, transparent 40%), rgb(0,1,10)';
+        return                            'radial-gradient(ellipse at 50% 0%, rgba(130,8,15,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(80,0,5,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(80,0,5,0.4) 0%, transparent 40%), rgb(5,0,0)';
+      })() }}
     >
+      {/* ── Vignette — darkens edges to focus the eye ─────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none" style={{
+        background: 'radial-gradient(ellipse at 50% 50%, transparent 35%, rgba(0,0,0,0.75) 100%)',
+        zIndex: 2,
+      }} />
+
+      {/* ── Pulsing atmospheric aura ──────────────────────────────────────── */}
+      <motion.div
+        className="fixed inset-0 pointer-events-none"
+        animate={{ opacity: [0.04, 0.18, 0.04] }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        style={{
+          background: (() => {
+            if (isFinalBoss)           return 'radial-gradient(ellipse at 50% 25%, rgba(150,0,220,0.5) 0%, transparent 55%)';
+            if (battleType === 'elite') return 'radial-gradient(ellipse at 50% 25%, rgba(220,90,0,0.5) 0%, transparent 55%)';
+            if (battleType === 'wave')  return 'radial-gradient(ellipse at 50% 25%, rgba(0,80,200,0.5) 0%, transparent 55%)';
+            return                            'radial-gradient(ellipse at 50% 25%, rgba(200,0,0,0.5) 0%, transparent 55%)';
+          })(),
+          zIndex: 0,
+        }}
+      />
+
       {/* ── Floating damage/heal numbers overlay ─────────────────────────── */}
       <div className="fixed inset-0 pointer-events-none" style={{ zIndex: 50 }}>
         <AnimatePresence>
@@ -377,8 +404,8 @@ const BattleModal = ({
 
       {/* Scanline overlay */}
       <div className="fixed inset-0 pointer-events-none" style={{
-        background: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px)',
-        zIndex: 1,
+        background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px)',
+        zIndex: 3,
       }} />
 
       {/* ── Phase Transition Cinematic ─────────────────────────────────────── */}
