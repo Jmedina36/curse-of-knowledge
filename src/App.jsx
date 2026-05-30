@@ -5194,18 +5194,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               letterSpacing: '0.12em',
               lineHeight: 1.05,
               marginBottom: '0.1em',
-              color: '#FFFFFF',
+              color: '#F5F5DC',
               textShadow: (() => {
                 const glowMap = {red:[220,50,50],blue:[96,165,250],green:[34,197,94],white:[220,220,220],purple:[167,139,250],yellow:[212,175,55],amber:[245,158,11]};
                 const [r,g,b] = glowMap[hero.class.color] || glowMap.red;
                 return [
-                  '0 0 6px rgba(255,255,255,1)',
-                  `0 0 18px rgba(${r},${g},${b},1)`,
-                  `0 0 45px rgba(${r},${g},${b},1)`,
-                  `0 0 90px rgba(${r},${g},${b},0.85)`,
-                  `0 0 160px rgba(${r},${g},${b},0.65)`,
-                  `0 0 240px rgba(${r},${g},${b},0.4)`,
-                  '0 3px 6px rgba(0,0,0,1)'
+                  `0 0 20px rgba(${r},${g},${b},0.95)`,
+                  `0 0 55px rgba(${r},${g},${b},0.75)`,
+                  `0 0 110px rgba(${r},${g},${b},0.45)`,
+                  '0 2px 4px rgba(0,0,0,1)'
                 ].join(', ');
               })(),
               animation: 'title-pulse 3s ease-in-out infinite',
