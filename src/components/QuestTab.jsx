@@ -277,6 +277,42 @@ const QuestTab = ({
                   </div>
                 </div>
 
+
+                {/* Ability Scores */}
+                <div className="flex items-center justify-center gap-3 mb-2 mt-1">
+                  {(()=>{const m={red:'rgba(220,50,50,0.45)',blue:'rgba(96,165,250,0.45)',green:'rgba(16,185,129,0.45)',white:'rgba(200,200,200,0.4)',purple:'rgba(167,139,250,0.45)',yellow:'rgba(212,175,55,0.45)',amber:'rgba(34,197,94,0.45)'};const c=m[hero.class.color]||m.yellow;return(<><div style={{flex:'1',height:'1px',background:`linear-gradient(to right,transparent,${c})`}}></div><p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color:c}}>Ability Scores</p><div style={{flex:'1',height:'1px',background:`linear-gradient(to left,transparent,${c})`}}></div></>);})()}
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {(()=>{
+                    const ab = hero.abilities || {str:10,dex:10,con:10,int:10,wis:10,cha:10};
+                    const primaryMap = {Knight:'str',Wizard:'int',Assassin:'dex',Crusader:'con'};
+                    const primary = primaryMap[hero.class.name] || 'str';
+                    const classColorMap = {red:'rgba(220,50,50,VAL)',blue:'rgba(96,165,250,VAL)',green:'rgba(16,185,129,VAL)',white:'rgba(200,200,200,VAL)',purple:'rgba(167,139,250,VAL)',yellow:'rgba(212,175,55,VAL)',amber:'rgba(34,197,94,VAL)'};
+                    const baseColor = (classColorMap[hero.class.color]||classColorMap.yellow);
+                    const abbrevs = {str:'STR',dex:'DEX',con:'CON',int:'INT',wis:'WIS',cha:'CHA'};
+                    const fullNames = {str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'};
+                    return ['str','dex','con','int','wis','cha'].map(key => {
+                      const score = ab[key] || 10;
+                      const mod = Math.floor((score - 10) / 2);
+                      const isPrimary = key === primary;
+                      const borderColor = isPrimary ? baseColor.replace('VAL','0.7') : 'rgba(80,80,80,0.4)';
+                      const labelColor = isPrimary ? baseColor.replace('VAL','1') : 'rgba(180,180,180,0.5)';
+                      return (
+                        <div key={key} className="rounded-lg p-2 text-center" style={{
+                          background: isPrimary ? baseColor.replace('VAL','0.08') : 'rgba(0,0,0,0.35)',
+                          border: `1px solid ${borderColor}`,
+                          boxShadow: isPrimary ? `inset 0 0 12px ${baseColor.replace('VAL','0.1')}` : 'none',
+                        }}>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.58rem',letterSpacing:'0.15em',color:labelColor,marginBottom:'2px'}}>{abbrevs[key]}</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'1.3rem',fontWeight:900,color:'#F5F5DC',lineHeight:1}}>{score}</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',color:mod>=0?'#34D399':'#EF4444',marginTop:'2px'}}>{mod>=0?'+':''}{mod}</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',color:'rgba(180,180,180,0.3)',marginTop:'1px',letterSpacing:'0.05em'}}>{fullNames[key]}</p>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+
                 {/* Curse Status Display */}
                 {curseLevel > 0 && (
                   <div

@@ -109,7 +109,8 @@ const FantasyStudyQuest = () => {
       }
     });
     
-    return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + armorHpBonus);
+    const conMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.con - 10) / 2)) : 0;
+    return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + armorHpBonus + conMod * 5);
   }, [equippedPendant, equippedArmor]);
   
   const getMaxStamina = useCallback(() => {
@@ -143,7 +144,8 @@ const FantasyStudyQuest = () => {
       }
     }
     
-    return Math.floor(baseAttack + weaponAttack + affixBonus);
+    const strMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.str - 10) / 2)) : 0;
+    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod);
   }, [hero, equippedWeapon]);
   
   const getBaseDefense = useCallback(() => {
@@ -765,6 +767,14 @@ const getDateKey = useCallback((date) => {
     }
   }, [isDayActive, currentDay]);
 
+  // Backfill ability scores for existing heroes that predate this feature
+  useEffect(() => {
+    if (hero && !hero.abilities) {
+      const defaults = STARTING_ABILITIES[hero.class?.name] || STARTING_ABILITIES.Knight;
+      setHero(prev => ({ ...prev, abilities: { ...defaults } }));
+    }
+  }, [hero?.name, hero?.class?.name]);
+
   // Intro cinematic on mount
   useEffect(() => {
     const advance = () => {
@@ -1232,6 +1242,18 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       sounds.levelUp();
       addLog(`The hero has grown stronger! Now level ${newLevel}`);
       setHp(h => Math.min(getMaxHp(), h + 20));
+      // Grow ability scores
+      if (hero?.class?.name) {
+        const primary = PRIMARY_ABILITY[hero.class.name];
+        const secondary = SECONDARY_ABILITY[hero.class.name];
+        setHero(prev => {
+          const ab = { ...(prev.abilities || STARTING_ABILITIES[hero.class.name] || STARTING_ABILITIES.Knight) };
+          ab[primary] = (ab[primary] || 10) + 1;
+          if (newLevel % 2 === 0) ab[secondary] = (ab[secondary] || 10) + 1;
+          return { ...prev, abilities: ab };
+        });
+        addLog(`${PRIMARY_ABILITY[hero.class.name].toUpperCase()} increased!${newLevel % 2 === 0 ? ` ${SECONDARY_ABILITY[hero.class.name].toUpperCase()} increased!` : ''}`);
+      }
       
       // Skill unlock notifications
       if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && hero?.class) {
@@ -1866,7 +1888,8 @@ if (tasks.length === 0) {
     
    // Apply priority multiplier
 const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
-let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * priorityMultiplier * dayBonuses.xpMultiplier;
+const intMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.int - 10) / 2)) : 0;
+let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * priorityMultiplier * dayBonuses.xpMultiplier * (1 + intMod * 0.02);
 
 // Apply curse debuff based on level
 if (curseLevel === 1) {

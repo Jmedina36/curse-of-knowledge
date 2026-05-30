@@ -859,3 +859,18 @@ export const HERO_CLASSES = [
   { name: 'Assassin', color: 'green', emblem: '†', gradient: ['from-green-900', 'from-green-800', 'from-green-700', 'from-green-600'], glow: ['shadow-green-900/50', 'shadow-green-700/60', 'shadow-green-600/70', 'shadow-green-500/80'] },
   { name: 'Crusader', color: 'white', emblem: '✙', gradient: ['from-gray-100', 'from-gray-50', 'from-white', 'from-white'], glow: ['shadow-gray-200/80', 'shadow-gray-100/90', 'shadow-white/95', 'shadow-white/100'] }
 ];
+
+export const STARTING_ABILITIES = {
+  Knight:   { str: 16, dex: 12, con: 14, int: 8,  wis: 10, cha: 10 },
+  Wizard:   { str: 8,  dex: 12, con: 10, int: 16, wis: 14, cha: 10 },
+  Assassin: { str: 10, dex: 16, con: 10, int: 12, wis: 8,  cha: 14 },
+  Crusader: { str: 14, dex: 8,  con: 16, int: 10, wis: 12, cha: 10 },
+};
+
+export const PRIMARY_ABILITY = {
+  Knight: 'str', Wizard: 'int', Assassin: 'dex', Crusader: 'con',
+};
+
+export const SECONDARY_ABILITY = {
+  Knight: 'con', Wizard: 'wis', Assassin: 'cha', Crusader: 'str',
+};
