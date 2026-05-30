@@ -22,6 +22,7 @@ import EncounterModal from './components/EncounterModal';
 import InitiativeModal from './components/InitiativeModal';
 import DeathSaveModal from './components/DeathSaveModal';
 import ASIModal from './components/ASIModal';
+import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
@@ -42,6 +43,7 @@ const FantasyStudyQuest = () => {
   const [initiativeRoll, setInitiativeRoll] = useState(null); // { roll, dexMod, total, playerFirst }
   const [isDying, setIsDying] = useState(false);
   const [asiPending, setAsiPending] = useState(null); // { newLevel }
+  const [chargedCritRoll, setChargedCritRoll] = useState(null); // { roll, multiplier, attackName }
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -3547,32 +3549,33 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     // Calculate base damage with special multiplier
     const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
     
-    // Crit system (specials can crit too!)
-    const critRoll = Math.random() * 100;
-    let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
-    
-    // Crusader Sanctified: +10% crit chance
-    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
-      critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
+    // Crit system — charged specials roll D20 for crit tier; uncharged use random chance
+    const isCharged = chargeStacks === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges;
+    let isCrit, critMultiplier, chargedD20 = null;
+
+    if (isCharged) {
+      chargedD20 = Math.ceil(Math.random() * 20);
+      isCrit = true;
+      if      (chargedD20 === 1)  critMultiplier = 1.5;
+      else if (chargedD20 <= 9)   critMultiplier = 2.0;
+      else if (chargedD20 <= 17)  critMultiplier = 2.5;
+      else if (chargedD20 <= 19)  critMultiplier = 3.0;
+      else                         critMultiplier = 4.0;
+      setChargedCritRoll({ roll: chargedD20, multiplier: critMultiplier, attackName: special.name });
+    } else {
+      let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+      if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
+        critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
+      }
+      isCrit = (Math.random() * 100) < critChance;
+      critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
     }
-    
-    const isCrit = critRoll < critChance;
-    const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
-    
+    setChargeStacks(0);
+
     const rawDamage = (baseDamage * critMultiplier) * special.damageMultiplier;
     let damage = Math.max(1, Math.floor(rawDamage - enemyDef));
-    
-    // Apply charge bonus if at max charges
-    if (chargeStacks === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-      const chargeBonus = Math.floor(damage * GAME_CONSTANTS.CHARGE_SYSTEM.chargeBonus);
-      damage += chargeBonus;
-      addLog(`⚡ CHARGED SPECIAL! +${chargeBonus} damage (+25%)`);
-      setChargeStacks(0); // Consume charges
-    } else {
-      setChargeStacks(0); // Still consume any partial charges
-    }
-    
-    if (isCrit) {
+
+    if (isCrit && !chargedD20) {
       addLog(`💥 CRITICAL ${special.name.toUpperCase()}!`);
     }
     
@@ -6319,6 +6322,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           conMod={hero?.abilities ? Math.floor((hero.abilities.con - 10) / 2) : 0}
           onClose={handleDeathSaveClose}
         />
+      )}
+      {chargedCritRoll && (
+        <ChargedCritModal data={chargedCritRoll} onClose={() => setChargedCritRoll(null)} />
       )}
       {asiPending && (
         <ASIModal
