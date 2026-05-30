@@ -19,6 +19,8 @@ import ImportModal from './components/ImportModal';
 import PlanModal from './components/PlanModal';
 import DiceRollModal from './components/DiceRollModal';
 import EncounterModal from './components/EncounterModal';
+import InitiativeModal from './components/InitiativeModal';
+import DeathSaveModal from './components/DeathSaveModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
@@ -31,10 +33,13 @@ const FantasyStudyQuest = () => {
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
   const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'fading' | 'done'
   const introTimers = useRef([]);
+  const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
   const [currentEncounter, setCurrentEncounter] = useState(null);
   const [lastEncounterDay, setLastEncounterDay] = useState(0);
   const [dayBonuses, setDayBonuses] = useState({ xpMultiplier: 1.0 });
+  const [initiativeRoll, setInitiativeRoll] = useState(null); // { roll, dexMod, total, playerFirst }
+  const [isDying, setIsDying] = useState(false);
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -1907,7 +1912,16 @@ if (task.overdue) {
     
     let xpGain = Math.floor(baseXp * xpMultiplier);
     
-    setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+    setXp(x => x + xpGain);
+    // D20 task completion roll
+    const _d20 = Math.ceil(Math.random() * 20);
+    let _bonusXP = 0, _bonusGold = 0;
+    if (_d20 === 20)      { _bonusXP = Math.round(xpGain * 0.5);  _bonusGold = 10; }
+    else if (_d20 >= 15) { _bonusXP = Math.round(xpGain * 0.20); _bonusGold = 5; }
+    else if (_d20 >= 10) { _bonusXP = Math.round(xpGain * 0.10); }
+    if (_bonusXP > 0)   setXp(x => x + _bonusXP);
+    if (_bonusGold > 0) setGold(g => g + _bonusGold);
+    setDiceRoll({ roll: _d20, bonusXP: _bonusXP, bonusGold: _bonusGold });
     sounds.taskComplete();
     
     setStudyStats(prev => ({
@@ -2349,7 +2363,23 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleType('regular');
     addLog(`${enemyName} emerges from the shadows!`);
   }
-}, [currentDay, canCustomize, addLog]);
+
+  // Initiative roll — DEX modifier adds to the D20
+  const _dexMod_init = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+  const _initRoll = Math.ceil(Math.random() * 20);
+  const _initTotal = Math.max(1, Math.min(20, _initRoll + _dexMod_init));
+  const _playerFirst = _initTotal >= 11;
+  setInitiativeRoll({ roll: _initRoll, dexMod: _dexMod_init, total: _initTotal, playerFirst: _playerFirst });
+  if (!_playerFirst) {
+    setTimeout(() => {
+      const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+      const _wis_init = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      const _openDmg = Math.max(3, Math.floor(_rawAtk * 0.40 * (1 - _wis_init * 0.02)));
+      setHp(h => Math.max(1, h - _openDmg)); // Opening strike never kills (min 1 HP)
+      addLog(`⚔️ AMBUSHED! Enemy strikes first! -${_openDmg} HP`);
+    }, 2600);
+  }
+}, [currentDay, canCustomize, addLog, hero]);
 
   const spawnRandomMiniBoss = (force = false) => {
     const completedTasks = tasks.filter(t => t.done).length;
@@ -2405,6 +2435,20 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     addLog(`AMBUSH! ${bossNameGenerated} emerges from the shadows!`);
+  // Initiative roll
+  const _dexMod_mb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+  const _mbRoll = Math.ceil(Math.random() * 20);
+  const _mbTotal = Math.max(1, Math.min(20, _mbRoll + _dexMod_mb));
+  setInitiativeRoll({ roll: _mbRoll, dexMod: _dexMod_mb, total: _mbTotal, playerFirst: _mbTotal >= 11 });
+  if (_mbTotal < 11) {
+    setTimeout(() => {
+      const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+      const _wis_mb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      const _openDmg = Math.max(3, Math.floor(_rawAtk * 0.40 * (1 - _wis_mb * 0.02)));
+      setHp(h => Math.max(1, h - _openDmg));
+      addLog(`⚔️ Enemy seizes initiative! -${_openDmg} HP`);
+    }, 2600);
+  }
   };
   
   const useHealth = () => {
@@ -2551,6 +2595,20 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setEnemyDialogue(bossDialogue.START);
     
     addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
+  // Initiative roll
+  const _dexMod_fb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+  const _fbRoll = Math.ceil(Math.random() * 20);
+  const _fbTotal = Math.max(1, Math.min(20, _fbRoll + _dexMod_fb));
+  setInitiativeRoll({ roll: _fbRoll, dexMod: _dexMod_fb, total: _fbTotal, playerFirst: _fbTotal >= 11 });
+  if (_fbTotal < 11) {
+    setTimeout(() => {
+      const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+      const _wis_fb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      const _openDmg = Math.max(3, Math.floor(_rawAtk * 0.50 * (1 - _wis_fb * 0.02)));
+      setHp(h => Math.max(1, h - _openDmg));
+      addLog(`⚔️ THE GAUNTLET STRIKES FIRST! -${_openDmg} HP`);
+    }, 2600);
+  }
   };
   
   const taunt = () => {
@@ -3182,8 +3240,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             const newHp = Math.max(0, currentHp - aoeDamage);
             if (newHp <= 0) {
               setTimeout(() => {
-                addLog('💀 You have been defeated by the AOE!');
-                die();
+                addLog('💀 AOE slams you down! Roll for death!');
+                enterDyingState();
               }, 500);
             }
             return newHp;
@@ -3199,8 +3257,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         const newHp = Math.max(0, currentHp - bossDamage);
         if (newHp <= 0) {
           setTimeout(() => {
-            addLog('💀 You have been defeated!');
-            die();
+            addLog('💀 You fall! Roll for death!');
+            enterDyingState();
           }, 500);
         }
         return newHp;
@@ -4013,8 +4071,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           const newHp = Math.max(0, currentHp - bossDamage);
           if (newHp <= 0) {
             setTimeout(() => {
-              addLog('💀 You have been defeated!');
-              die();
+              addLog('💀 You fall! Roll for death!');
+              enterDyingState();
             }, 500);
           }
           return newHp;
@@ -4450,8 +4508,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         const newHp = Math.max(0, currentHp - bossDamage);
         if (newHp <= 0) {
           setTimeout(() => {
-            addLog('💀 You have been defeated!');
-            die();
+            addLog('💀 You fall! Roll for death!');
+            enterDyingState();
           }, 500);
         }
         return newHp;
@@ -4682,8 +4740,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         const newHp = Math.max(0, currentHp - bossDamage);
         if (newHp <= 0) {
           setTimeout(() => {
-            addLog('💀 You have been defeated!');
-            die();
+            addLog('💀 You fall! Roll for death!');
+            enterDyingState();
           }, 500);
         }
         return newHp;
@@ -4846,8 +4904,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         const newHp = Math.max(0, currentHp - bossDamage);
         if (newHp <= 0) {
           setTimeout(() => {
-            addLog('💀 You have been defeated!');
-            die();
+            addLog('💀 You fall! Roll for death!');
+            enterDyingState();
           }, 500);
         }
         return newHp;
@@ -5049,6 +5107,24 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
 
 // PART 3 OF 6 - Copy this after part 2
+
+  // Death save entry point — guards against re-entry with a ref
+  const enterDyingState = () => {
+    if (enterDyingRef.current) return;
+    enterDyingRef.current = true;
+    setIsDying(true);
+  };
+
+  const handleDeathSaveClose = (survived) => {
+    enterDyingRef.current = false;
+    setIsDying(false);
+    if (survived) {
+      setHp(1);
+      addLog('💪 You stabilize at 1 HP! Fight on!');
+    } else {
+      die();
+    }
+  };
 
   const advance = () => {
     if (isFinalBoss && bossHp <= 0) {
@@ -6210,6 +6286,29 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
       </div>
       )}
+      {/* D&D modals — fixed overlays */}
+      {diceRoll && introPhase === 'done' && (
+        <DiceRollModal
+          roll={diceRoll.roll} bonusXP={diceRoll.bonusXP} bonusGold={diceRoll.bonusGold}
+          onClose={() => setDiceRoll(null)}
+        />
+      )}
+      {currentEncounter && introPhase === 'done' && (
+        <EncounterModal
+          encounter={currentEncounter}
+          onAccept={() => applyEncounter(currentEncounter)}
+        />
+      )}
+      {initiativeRoll && (
+        <InitiativeModal data={initiativeRoll} onClose={() => setInitiativeRoll(null)} />
+      )}
+      {isDying && (
+        <DeathSaveModal
+          conMod={hero?.abilities ? Math.floor((hero.abilities.con - 10) / 2) : 0}
+          onClose={handleDeathSaveClose}
+        />
+      )}
+
     </div>
   );
 };
