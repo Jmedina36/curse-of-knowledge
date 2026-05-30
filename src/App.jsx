@@ -17,6 +17,9 @@ import CustomizeModal from './components/CustomizeModal';
 import FlashcardModals from './components/FlashcardModals';
 import ImportModal from './components/ImportModal';
 import PlanModal from './components/PlanModal';
+import DiceRollModal from './components/DiceRollModal';
+import EncounterModal from './components/EncounterModal';
+import { DAILY_ENCOUNTERS } from './data/encounters';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
@@ -28,6 +31,10 @@ const FantasyStudyQuest = () => {
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
   const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'fading' | 'done'
   const introTimers = useRef([]);
+  const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
+  const [currentEncounter, setCurrentEncounter] = useState(null);
+  const [lastEncounterDay, setLastEncounterDay] = useState(0);
+  const [dayBonuses, setDayBonuses] = useState({ xpMultiplier: 1.0 });
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -749,6 +756,15 @@ const getDateKey = useCallback((date) => {
     setShowMatchModal(true);
   }, [flashcardDecks]);
   
+  // Daily encounter trigger
+  useEffect(() => {
+    if (isDayActive && hero && currentDay !== lastEncounterDay) {
+      const encounter = DAILY_ENCOUNTERS[Math.floor(Math.random() * DAILY_ENCOUNTERS.length)];
+      setCurrentEncounter(encounter);
+      setLastEncounterDay(currentDay);
+    }
+  }, [isDayActive, currentDay]);
+
   // Intro cinematic on mount
   useEffect(() => {
     const advance = () => {
@@ -1043,6 +1059,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         
         // Set day to dormant until next engagement
         setIsDayActive(false);
+        setDayBonuses({ xpMultiplier: 1.0 });
         }
       }
       
@@ -1270,6 +1287,18 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     
   }, [skipCount, addLog]);
   
+  const applyEncounter = (encounter) => {
+    const e = encounter.effect;
+    if (e.type === 'xp')           setXp(x => x + e.value);
+    if (e.type === 'gold')         setGold(g => g + e.value);
+    if (e.type === 'hp')           setHp(h => Math.min(h + e.value, getMaxHp()));
+    if (e.type === 'stamina')      setStamina(s => Math.min(s + e.value, getMaxStamina()));
+    if (e.type === 'full_restore') { setHp(getMaxHp()); setStamina(getMaxStamina()); }
+    if (e.type === 'xp_multiplier') setDayBonuses(prev => ({ ...prev, xpMultiplier: e.value }));
+    if (e.type !== 'none') addLog(`✨ Encounter: ${encounter.title} — ${encounter.effectText}`);
+    setCurrentEncounter(null);
+  };
+
   const start = () => {
   const today = new Date().toDateString();
   const currentHour = new Date().getHours();
@@ -1837,7 +1866,7 @@ if (tasks.length === 0) {
     
    // Apply priority multiplier
 const priorityMultiplier = task.priority === 'important' ? 1.25 : 1.0;
-let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * priorityMultiplier;
+let xpMultiplier = GAME_CONSTANTS.XP_MULTIPLIERS[(currentDay - 1) % 7] * priorityMultiplier * dayBonuses.xpMultiplier;
 
 // Apply curse debuff based on level
 if (curseLevel === 1) {
