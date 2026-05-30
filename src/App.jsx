@@ -5050,6 +5050,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           0%, 100% { opacity: 0.3; }
           50% { opacity: 0.6; }
         }
+        @keyframes title-pulse {
+          0%, 100% { filter: brightness(1); }
+          50% { filter: brightness(1.25); }
+        }
         @keyframes pulse-red-border {
           0%, 100% { 
             border-color: rgba(220, 38, 38, 0.6);
@@ -5195,14 +5199,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 const glowMap = {red:[220,50,50],blue:[96,165,250],green:[34,197,94],white:[220,220,220],purple:[167,139,250],yellow:[212,175,55],amber:[245,158,11]};
                 const [r,g,b] = glowMap[hero.class.color] || glowMap.red;
                 return [
-                  `0 0 15px rgba(${r},${g},${b},1)`,
-                  `0 0 40px rgba(${r},${g},${b},0.9)`,
-                  `0 0 80px rgba(${r},${g},${b},0.7)`,
-                  `0 0 140px rgba(${r},${g},${b},0.45)`,
-                  '0 2px 0 rgba(0,0,0,0.9)'
+                  '0 0 6px rgba(255,255,255,1)',
+                  `0 0 18px rgba(${r},${g},${b},1)`,
+                  `0 0 45px rgba(${r},${g},${b},1)`,
+                  `0 0 90px rgba(${r},${g},${b},0.85)`,
+                  `0 0 160px rgba(${r},${g},${b},0.65)`,
+                  `0 0 240px rgba(${r},${g},${b},0.4)`,
+                  '0 3px 6px rgba(0,0,0,1)'
                 ].join(', ');
               })(),
-              animation: 'pulse-glow 4s ease-in-out infinite',
+              animation: 'title-pulse 3s ease-in-out infinite',
             }}>
               CURSE OF KNOWLEDGE
             </h1>
