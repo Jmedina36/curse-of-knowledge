@@ -195,6 +195,16 @@ export const GAME_CONSTANTS = {
       flatArmor: 1,            // 1 budget = +1 armor
       percentDR: 3,            // 1 budget = +0.33% DR (capped at 40% total)
       flatHP: 2                // 1 budget = +0.5 HP
+    },
+    pendant: {
+      flatHP: 1.5,             // 1 budget = +0.67 max HP
+      regenHP: 3,              // 1 budget = +0.33 HP restored after combat
+      xpBonus: 6               // 1 budget = +0.17% XP gain
+    },
+    ring: {
+      flatStamina: 1.5,        // 1 budget = +0.67 max stamina
+      critChance: 5,           // 1 budget = +0.2% crit chance
+      goldBonus: 4             // 1 budget = +0.25% combat gold
     }
   },
   

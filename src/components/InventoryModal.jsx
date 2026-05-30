@@ -640,6 +640,9 @@ const InventoryModal = ({
                           <div>
                             <p className="text-sm font-bold" style={{color: getRarityColor(equippedPendant.rarity || 'common')}}>{equippedPendant.name}</p>
                             <p className="text-xs" style={{color: '#68D391'}}>+{equippedPendant.hp} Health</p>
+                            {equippedPendant.affixes?.flatHP    && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedPendant.affixes.flatHP)} Max HP</p>}
+                            {equippedPendant.affixes?.regenHP   && <p className="text-xs" style={{color: '#A78BFA'}}>+{Math.floor(equippedPendant.affixes.regenHP)} HP after combat</p>}
+                            {equippedPendant.affixes?.xpBonus   && <p className="text-xs" style={{color: '#F59E0B'}}>+{Math.floor(equippedPendant.affixes.xpBonus)}% XP gain</p>}
                             {equippedPendant.rarity && (
                               <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedPendant.rarity)}}>
                                 {GAME_CONSTANTS.RARITY_TIERS[equippedPendant.rarity].name}
@@ -658,6 +661,9 @@ const InventoryModal = ({
                           <div>
                             <p className="text-sm font-bold" style={{color: getRarityColor(equippedRing.rarity || 'common')}}>{equippedRing.name}</p>
                             <p className="text-xs" style={{color: '#4FC3F7'}}>+{equippedRing.stamina} STA</p>
+                            {equippedRing.affixes?.flatStamina && <p className="text-xs" style={{color: '#4FC3F7'}}>+{Math.floor(equippedRing.affixes.flatStamina)} Max STA</p>}
+                            {equippedRing.affixes?.critChance  && <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(equippedRing.affixes.critChance)}% Crit Chance</p>}
+                            {equippedRing.affixes?.goldBonus   && <p className="text-xs" style={{color: '#34D399'}}>+{Math.floor(equippedRing.affixes.goldBonus)}% Combat Gold</p>}
                             {equippedRing.rarity && (
                               <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedRing.rarity)}}>
                                 {GAME_CONSTANTS.RARITY_TIERS[equippedRing.rarity].name}
@@ -683,7 +689,7 @@ const InventoryModal = ({
                   {pendantInventory.length > 0 && (
                     <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
                       <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#FF6B6B'}}>PENDANTS</h3>
-                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum health</p>
+                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Health · Post-combat regen · XP bonus</p>
                       
                       <div className="space-y-2 max-h-40 overflow-y-auto">
                         {sortByRarity(pendantInventory)
@@ -692,6 +698,9 @@ const InventoryModal = ({
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
                               <p className="text-xs" style={{color: '#68D391'}}>+{pend.hp} Health</p>
+                              {pend.affixes?.flatHP  && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(pend.affixes.flatHP)} Max HP</p>}
+                              {pend.affixes?.regenHP && <p className="text-xs" style={{color: '#A78BFA'}}>+{Math.floor(pend.affixes.regenHP)} HP after combat</p>}
+                              {pend.affixes?.xpBonus && <p className="text-xs" style={{color: '#F59E0B'}}>+{Math.floor(pend.affixes.xpBonus)}% XP gain</p>}
                               <Delta value={pend.hp - (equippedPendant?.hp || 0)} label="vs equipped" />
                               {pend.rarity && (
                                 <p className="text-xs italic" style={{color: getRarityColor(pend.rarity)}}>
@@ -740,7 +749,7 @@ const InventoryModal = ({
                   {ringInventory.length > 0 && (
                     <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(0, 150, 255, 0.2)', borderColor: 'rgba(0, 150, 255, 0.5)'}}>
                       <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#4FC3F7'}}>RINGS</h3>
-                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Increase maximum stamina</p>
+                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Stamina · Crit chance · Combat gold</p>
                       
                       <div className="space-y-2 max-h-40 overflow-y-auto">
                         {sortByRarity(ringInventory)
@@ -749,6 +758,9 @@ const InventoryModal = ({
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(rng.rarity || 'common')}}>{rng.name}</p>
                               <p className="text-xs" style={{color: '#4FC3F7'}}>+{rng.stamina} STA</p>
+                              {rng.affixes?.flatStamina && <p className="text-xs" style={{color: '#4FC3F7'}}>+{Math.floor(rng.affixes.flatStamina)} Max STA</p>}
+                              {rng.affixes?.critChance  && <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(rng.affixes.critChance)}% Crit Chance</p>}
+                              {rng.affixes?.goldBonus   && <p className="text-xs" style={{color: '#34D399'}}>+{Math.floor(rng.affixes.goldBonus)}% Combat Gold</p>}
                               <Delta value={rng.stamina - (equippedRing?.stamina || 0)} label="vs equipped" />
                               {rng.rarity && (
                                 <p className="text-xs italic" style={{color: getRarityColor(rng.rarity)}}>

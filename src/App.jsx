@@ -109,7 +109,8 @@ const FantasyStudyQuest = () => {
   
   const getMaxHp = useCallback(() => {
     const pendantBonus = equippedPendant ? equippedPendant.hp : 0;
-    
+    const pendantFlatHP = Math.floor(equippedPendant?.affixes?.flatHP || 0);
+
     // Add flatHP from armor affixes
     let armorHpBonus = 0;
     Object.values(equippedArmor).forEach(piece => {
@@ -117,14 +118,15 @@ const FantasyStudyQuest = () => {
         armorHpBonus += piece.affixes.flatHP;
       }
     });
-    
+
     const conMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.con - 10) / 2)) : 0;
-    return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + armorHpBonus + conMod * 5);
+    return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + pendantFlatHP + armorHpBonus + conMod * 5);
   }, [equippedPendant, equippedArmor]);
   
   const getMaxStamina = useCallback(() => {
     const ringBonus = equippedRing ? equippedRing.stamina : 0;
-    return Math.floor(GAME_CONSTANTS.MAX_STAMINA + ringBonus);
+    const ringFlatStamina = Math.floor(equippedRing?.affixes?.flatStamina || 0);
+    return Math.floor(GAME_CONSTANTS.MAX_STAMINA + ringBonus + ringFlatStamina);
   }, [equippedRing]);
   
   const getBaseAttack = useCallback(() => {
@@ -1692,7 +1694,8 @@ if (tasks.length === 0) {
           type: 'pendant',
           name,
           hp,
-          rarity: selectedRarity
+          rarity: selectedRarity,
+          affixes: generateAffixes(selectedRarity, 'pendant')
         };
       } else {
         // Ring
@@ -1701,13 +1704,14 @@ if (tasks.length === 0) {
         const stamina = Math.floor(baseStamina * multiplier);
         const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
-        
+
         item = {
           id: `shop-${Date.now()}-${i}`,
           type: 'ring',
           name,
           stamina,
-          rarity: selectedRarity
+          rarity: selectedRarity,
+          affixes: generateAffixes(selectedRarity, 'ring')
         };
       }
       
@@ -2194,28 +2198,28 @@ setTimeout(() => {
           const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          
-          const newPendant = { name, hp, rarity, id: Date.now() };
+          const affixes = generateAffixes(rarity, 'pendant');
+          const newPendant = { name, hp, rarity, affixes, id: Date.now() };
           setPendantInventory(prev => sortByRarity([...prev, newPendant]));
-          
+
           lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
           addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
         } else if (lootRoll < 0.90) {
           // 10% Ring with rarity
           const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
-          
+
           const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
           const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const stamina = Math.floor(baseStamina * multiplier);
-          
+
           const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          
-          const newRing = { name, stamina, rarity, id: Date.now() };
+          const affixes = generateAffixes(rarity, 'ring');
+          const newRing = { name, stamina, rarity, affixes, id: Date.now() };
           setRingInventory(prev => sortByRarity([...prev, newRing]));
-          
+
           lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
           addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
         }
@@ -2288,32 +2292,32 @@ setTimeout(() => {
           const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          
-          const newPendant = { name, hp, rarity, id: Date.now() };
+          const affixes = generateAffixes(rarity, 'pendant');
+          const newPendant = { name, hp, rarity, affixes, id: Date.now() };
           setPendantInventory(prev => sortByRarity([...prev, newPendant]));
-          
+
           lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
           addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         } else {
           // Generate random ring with elite rarity
           const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
-          
+
           const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
           const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const stamina = Math.floor(baseStamina * multiplier);
-          
+
           const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          
-          const newRing = { name, stamina, rarity, id: Date.now() };
+          const affixes = generateAffixes(rarity, 'ring');
+          const newRing = { name, stamina, rarity, affixes, id: Date.now() };
           setRingInventory(prev => sortByRarity([...prev, newRing]));
-          
+
           lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
           addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         }
-        
+
         if (luckyCharmActive) {
           setLuckyCharmActive(false);
           addLog('The lucky charm crumbles to dust, its magic spent.');
@@ -2796,7 +2800,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
     }
     
-    // Add weapon affixes to crit
+    // Add weapon and ring affixes to crit
     if (equippedWeapon && equippedWeapon.affixes) {
       if (equippedWeapon.affixes.critChance) {
         critChance += equippedWeapon.affixes.critChance;
@@ -2805,11 +2809,14 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         critMultiplier += equippedWeapon.affixes.critMultiplier;
       }
     }
-    
+    if (equippedRing?.affixes?.critChance) {
+      critChance += equippedRing.affixes.critChance;
+    }
+
     const critRoll = Math.random() * 100;
     const isCrit = critRoll < critChance;
     const actualCritMultiplier = isCrit ? critMultiplier : 1.0;
-    
+
     // Apply crit and enemy defense
     const damage = Math.max(1, (rawDamage * actualCritMultiplier) - enemyDef);
     let finalDamage = damage;
@@ -3034,8 +3041,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     goldGain = 10; // Regular enemies
   }
   
-  setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
-  setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
+  const pendantXpBonus = 1 + (equippedPendant?.affixes?.xpBonus || 0) / 100;
+  const ringGoldBonus  = 1 + (equippedRing?.affixes?.goldBonus  || 0) / 100;
+  const chaMod = Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2));
+  setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier * pendantXpBonus));
+  setGold(e => e + Math.round(goldGain * (1 + chaMod * 0.05) * ringGoldBonus));
   
   // Accumulate wave gold for final display
   if (battleType === 'wave') {
@@ -3082,6 +3092,16 @@ if (battleType === 'elite') {
   
   setBattling(false);
   setBattleMode(false);
+
+  // Pendant regenHP: restore HP after combat victory
+  if (equippedPendant?.affixes?.regenHP) {
+    const regen = Math.floor(equippedPendant.affixes.regenHP);
+    if (regen > 0) {
+      setHp(h => Math.min(h + regen, getMaxHp()));
+      addLog(`✨ ${equippedPendant.name} restores ${regen} HP.`);
+    }
+  }
+
   setKnightConsecutiveUses(0); // Reset HP cost escalation on combat end
   setKnightCrushingBlowCooldown(false); // Reset Crushing Blow cooldown
   setCrusaderSmiteCooldown(false); // Reset Smite cooldown
@@ -3583,6 +3603,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
         critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
       }
+      if (equippedRing?.affixes?.critChance) {
+        critChance += equippedRing.affixes.critChance;
+      }
       isCrit = (Math.random() * 100) < critChance;
       critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
     }
@@ -3894,31 +3917,31 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const hp = Math.floor(baseHp * multiplier);
       
-      const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant;
+      const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-      
-      const newPendant = { name, hp, rarity, id: Date.now() };
+      const affixes = generateAffixes(rarity, 'pendant');
+      const newPendant = { name, hp, rarity, affixes, id: Date.now() };
       setPendantInventory(prev => sortByRarity([...prev, newPendant]));
-      
+
       lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else {
       // Generate random ring with boss-tier rarity
       const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
-      
+
       const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
       const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const stamina = Math.floor(baseStamina * multiplier);
-      
-      const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring;
+
+      const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-      
-      const newRing = { name, stamina, rarity, id: Date.now() };
+      const affixes = generateAffixes(rarity, 'ring');
+      const newRing = { name, stamina, rarity, affixes, id: Date.now() };
       setRingInventory(prev => sortByRarity([...prev, newRing]));
-      
+
       lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     }
@@ -4303,7 +4326,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
     let critMultiplier = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
     
-    // Add weapon affixes to crit
+    // Add weapon and ring affixes to crit
     if (equippedWeapon && equippedWeapon.affixes) {
       if (equippedWeapon.affixes.critChance) {
         critChance += equippedWeapon.affixes.critChance;
@@ -4312,11 +4335,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         critMultiplier += equippedWeapon.affixes.critMultiplier;
       }
     }
-    
+    if (equippedRing?.affixes?.critChance) {
+      critChance += equippedRing.affixes.critChance;
+    }
+
     const critRoll = Math.random() * 100;
     const isCrit = critRoll < critChance;
     const actualCritMultiplier = isCrit ? critMultiplier : 1.0;
-    
+
     // Apply crit and skill multiplier
     const baseDamage = (rawDamage * actualCritMultiplier) * skill.damageMultiplier;
     let damage = Math.max(1, Math.floor(baseDamage - enemyDef));
