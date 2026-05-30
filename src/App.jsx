@@ -21,6 +21,7 @@ import DiceRollModal from './components/DiceRollModal';
 import EncounterModal from './components/EncounterModal';
 import InitiativeModal from './components/InitiativeModal';
 import DeathSaveModal from './components/DeathSaveModal';
+import ASIModal from './components/ASIModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
@@ -40,6 +41,7 @@ const FantasyStudyQuest = () => {
   const [dayBonuses, setDayBonuses] = useState({ xpMultiplier: 1.0 });
   const [initiativeRoll, setInitiativeRoll] = useState(null); // { roll, dexMod, total, playerFirst }
   const [isDying, setIsDying] = useState(false);
+  const [asiPending, setAsiPending] = useState(null); // { newLevel }
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -1247,17 +1249,16 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       sounds.levelUp();
       addLog(`The hero has grown stronger! Now level ${newLevel}`);
       setHp(h => Math.min(getMaxHp(), h + 20));
-      // Grow ability scores
+      // Grow ability scores — primary auto-increments; even levels open ASI choice modal
       if (hero?.class?.name) {
         const primary = PRIMARY_ABILITY[hero.class.name];
-        const secondary = SECONDARY_ABILITY[hero.class.name];
         setHero(prev => {
           const ab = { ...(prev.abilities || STARTING_ABILITIES[hero.class.name] || STARTING_ABILITIES.Knight) };
           ab[primary] = (ab[primary] || 10) + 1;
-          if (newLevel % 2 === 0) ab[secondary] = (ab[secondary] || 10) + 1;
           return { ...prev, abilities: ab };
         });
-        addLog(`${PRIMARY_ABILITY[hero.class.name].toUpperCase()} increased!${newLevel % 2 === 0 ? ` ${SECONDARY_ABILITY[hero.class.name].toUpperCase()} increased!` : ''}`);
+        addLog(`${PRIMARY_ABILITY[hero.class.name].toUpperCase()} increased!`);
+        if (newLevel % 2 === 0) setAsiPending({ newLevel });
       }
       
       // Skill unlock notifications
@@ -5126,6 +5127,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     }
   };
 
+  const handleASIConfirm = (updatedAbilities) => {
+    setHero(prev => {
+      const gained = Object.entries(updatedAbilities)
+        .filter(([k, v]) => v > (prev.abilities?.[k] ?? 0))
+        .map(([k]) => k.toUpperCase()).join(' & ');
+      addLog(`\u2b06\ufe0f ASI: ${gained || 'stat'} increased!`);
+      return { ...prev, abilities: updatedAbilities };
+    });
+    setAsiPending(null);
+  };
+
   const advance = () => {
     if (isFinalBoss && bossHp <= 0) {
       // Gauntlet defeated - lock until next milestone
@@ -6306,6 +6318,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         <DeathSaveModal
           conMod={hero?.abilities ? Math.floor((hero.abilities.con - 10) / 2) : 0}
           onClose={handleDeathSaveClose}
+        />
+      )}
+      {asiPending && (
+        <ASIModal
+          hero={hero}
+          newLevel={asiPending.newLevel}
+          onClose={handleASIConfirm}
         />
       )}
 
