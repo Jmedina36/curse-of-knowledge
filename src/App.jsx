@@ -2423,7 +2423,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const _initRoll = Math.ceil(Math.random() * 20);
   const _initTotal = Math.max(1, Math.min(20, _initRoll + _dexMod_init));
   const _playerFirst = _initTotal >= 11;
-  setInitiativeRoll({ roll: _initRoll, dexMod: _dexMod_init, total: _initTotal, playerFirst: _playerFirst });
+  // Delay initiative roll until after the 3s entrance cinematic completes
+  setTimeout(() => setInitiativeRoll({ roll: _initRoll, dexMod: _dexMod_init, total: _initTotal, playerFirst: _playerFirst }), 3200);
   if (!_playerFirst) {
     setTimeout(() => {
       const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
@@ -2431,7 +2432,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       const _openDmg = Math.max(3, Math.floor(_rawAtk * 0.40 * (1 - _wis_init * 0.02)));
       setHp(h => Math.max(1, h - _openDmg)); // Opening strike never kills (min 1 HP)
       addLog(`⚔️ AMBUSHED! Enemy strikes first! -${_openDmg} HP`);
-    }, 2600);
+    }, 5800); // 3200ms (entrance) + 2600ms (initiative modal)
   }
 }, [currentDay, canCustomize, addLog, hero]);
 
@@ -2488,7 +2489,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const _dexMod_mb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
   const _mbRoll = Math.ceil(Math.random() * 20);
   const _mbTotal = Math.max(1, Math.min(20, _mbRoll + _dexMod_mb));
-  setInitiativeRoll({ roll: _mbRoll, dexMod: _dexMod_mb, total: _mbTotal, playerFirst: _mbTotal >= 11 });
+  setTimeout(() => setInitiativeRoll({ roll: _mbRoll, dexMod: _dexMod_mb, total: _mbTotal, playerFirst: _mbTotal >= 11 }), 3200);
   if (_mbTotal < 11) {
     setTimeout(() => {
       const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
@@ -2496,7 +2497,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       const _openDmg = Math.max(3, Math.floor(_rawAtk * 0.40 * (1 - _wis_mb * 0.02)));
       setHp(h => Math.max(1, h - _openDmg));
       addLog(`⚔️ Enemy seizes initiative! -${_openDmg} HP`);
-    }, 2600);
+    }, 5800);
   }
   };
   
@@ -2643,7 +2644,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const _dexMod_fb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
   const _fbRoll = Math.ceil(Math.random() * 20);
   const _fbTotal = Math.max(1, Math.min(20, _fbRoll + _dexMod_fb));
-  setInitiativeRoll({ roll: _fbRoll, dexMod: _dexMod_fb, total: _fbTotal, playerFirst: _fbTotal >= 11 });
+  setTimeout(() => setInitiativeRoll({ roll: _fbRoll, dexMod: _dexMod_fb, total: _fbTotal, playerFirst: _fbTotal >= 11 }), 3200);
   if (_fbTotal < 11) {
     setTimeout(() => {
       const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
@@ -2651,7 +2652,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       const _openDmg = Math.max(3, Math.floor(_rawAtk * 0.50 * (1 - _wis_fb * 0.02)));
       setHp(h => Math.max(1, h - _openDmg));
       addLog(`⚔️ THE GAUNTLET STRIKES FIRST! -${_openDmg} HP`);
-    }, 2600);
+    }, 5800);
   }
   };
   
