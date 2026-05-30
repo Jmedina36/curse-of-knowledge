@@ -834,14 +834,14 @@ const BattleModal = ({
                   {turnPhase === 'narrating' && battleLine ? (
                     <motion.p key={battleLine}
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-lg leading-relaxed"
+                      className="text-2xl leading-relaxed"
                       style={{ color: '#F5F5DC' }}>
                       <TypewriterText text={battleLine} speed={25} />
                     </motion.p>
                   ) : (
                     <motion.p key="idle"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-sm uppercase tracking-[0.3em] w-full text-center"
+                      className="text-xl uppercase tracking-[0.3em] w-full text-center"
                       style={{ color: '#FFFFFF' }}>
                       What will {hero?.name || 'you'} do?
                     </motion.p>
