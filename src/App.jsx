@@ -1,7 +1,7 @@
 // FANTASY STUDY QUEST - v4.15.1
 // Refactored: App.jsx split into components
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
@@ -26,6 +26,8 @@ const FantasyStudyQuest = () => {
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
+  const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'fading' | 'done'
+  const introTimers = useRef([]);
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -747,7 +749,15 @@ const getDateKey = useCallback((date) => {
     setShowMatchModal(true);
   }, [flashcardDecks]);
   
+  // Intro cinematic on mount
   useEffect(() => {
+    const t1 = setTimeout(() => setIntroPhase('fading'), 3800);
+    const t2 = setTimeout(() => setIntroPhase('done'), 4600);
+    introTimers.current = [t1, t2];
+    return () => introTimers.current.forEach(clearTimeout);
+  }, []);
+
+    useEffect(() => {
     const saved = localStorage.getItem('fantasyStudyQuest');
     if (saved) {
       try {
@@ -5054,6 +5064,19 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           0%, 100% { filter: brightness(1); }
           50% { filter: brightness(1.25); }
         }
+        @keyframes intro-slam {
+          0% { opacity: 0; transform: scale(1.5); filter: blur(10px); }
+          55% { opacity: 1; filter: blur(0px); }
+          100% { opacity: 1; transform: scale(1); filter: blur(0px); }
+        }
+        @keyframes intro-fade-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes intro-hint-pulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 0.9; }
+        }
         @keyframes pulse-red-border {
           0%, 100% { 
             border-color: rgba(220, 38, 38, 0.6);
@@ -5159,6 +5182,74 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }
       `}</style>
 
+      {/* ── Intro cinematic overlay ── */}
+      {introPhase !== 'done' && (
+        <div
+          onClick={() => {
+            introTimers.current.forEach(clearTimeout);
+            setIntroPhase('fading');
+            setTimeout(() => setIntroPhase('done'), 800);
+          }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'radial-gradient(ellipse at center, #1a0000 0%, #0d0000 45%, #000000 100%)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            opacity: introPhase === 'fading' ? 0 : 1,
+            transition: 'opacity 0.8s ease-in-out',
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          {/* Atmospheric scanlines */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
+          }} />
+
+          {/* Title slam */}
+          <div style={{ animation: 'intro-slam 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center' }}>
+            <h1 style={{
+              fontFamily: "'Cinzel', serif",
+              fontWeight: 900,
+              fontSize: 'clamp(3.5rem, 12vw, 8rem)',
+              letterSpacing: '0.12em',
+              lineHeight: 1,
+              color: '#F5F5DC',
+              textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 0 110px rgba(140,0,0,0.45), 0 3px 6px rgba(0,0,0,1)',
+              animation: 'title-pulse 3s ease-in-out infinite',
+            }}>CURSE OF KNOWLEDGE</h1>
+          </div>
+
+          {/* Ornament lines */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 16px', animation: 'intro-fade-up 0.6s ease-out 1.1s both' }}>
+            <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,60,60,0.7))' }} />
+            <span style={{ color: 'rgba(255,60,60,0.7)', fontSize: '10px', letterSpacing: '0.4em' }}>✦ ✦ ✦</span>
+            <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255,60,60,0.7))' }} />
+          </div>
+
+          {/* Tagline */}
+          <p style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.85rem',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: 'rgba(210,160,160,0.85)',
+            animation: 'intro-fade-up 0.6s ease-out 1.4s both',
+          }}>Study or be consumed by the abyss</p>
+
+          {/* Tap to begin */}
+          <p style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.7rem',
+            letterSpacing: '0.4em',
+            textTransform: 'uppercase',
+            color: 'rgba(212,175,55,0.7)',
+            marginTop: '48px',
+            animation: 'intro-fade-up 0.5s ease-out 2.8s both, intro-hint-pulse 2s ease-in-out 3.3s infinite',
+          }}>✦ tap to begin ✦</p>
+        </div>
+      )}
+
 
 
       <div className="absolute inset-0 bg-gradient-to-b from-red-950 via-black to-purple-950 opacity-60"></div>
@@ -5179,43 +5270,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       <div className="relative z-10 p-6">
         <div className={`max-w-6xl mx-auto rounded-xl transition-all`}>
-          <header className="text-center mb-8">
-            {/* Top ornament */}
-            <div className="flex items-center justify-center gap-3 mb-5">
-              <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 60, 60, 0.7))'}}></div>
-              <span style={{color: 'rgba(255, 80, 80, 0.8)', fontSize: '10px', letterSpacing: '0.4em'}}>✦ ✦ ✦</span>
-              <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255, 60, 60, 0.7))'}}></div>
-            </div>
 
-            <h1 style={{
-              fontFamily: "'Cinzel', serif",
-              fontWeight: 900,
-              fontSize: 'clamp(3rem, 10vw, 6.5rem)',
-              letterSpacing: '0.12em',
-              lineHeight: 1.05,
-              marginBottom: '0.1em',
-              color: '#F5F5DC',
-              textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 0 110px rgba(140,0,0,0.45), 0 2px 4px rgba(0,0,0,1)',
-              animation: 'title-pulse 3s ease-in-out infinite',
-            }}>
-              CURSE OF KNOWLEDGE
-            </h1>
-
-            {/* Bottom ornament */}
-            <div className="flex items-center justify-center gap-3 mt-4 mb-3">
-              <div style={{width: '220px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 60, 60, 0.6))'}}></div>
-              <span style={{color: 'rgba(255, 60, 60, 0.6)', fontSize: '8px'}}>◆</span>
-              <div style={{width: '220px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255, 60, 60, 0.6))'}}></div>
-            </div>
-
-            <p className="mb-6 italic text-center" style={{
-              color: 'rgba(210, 160, 160, 0.8)',
-              fontSize: '0.8rem',
-              letterSpacing: '0.25em',
-              textTransform: 'uppercase',
-              fontFamily: "'Cinzel', serif",
-            }}>Study or be consumed by the abyss</p>
-          </header>
         </div>
 
         {/* Navigation Section - Full Width */}
