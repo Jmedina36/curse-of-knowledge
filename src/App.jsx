@@ -47,6 +47,7 @@ const FantasyStudyQuest = () => {
   const [dayBannerOverlay, setDayBannerOverlay] = useState(null); // { day, theme }
   const [curseOverlay, setCurseOverlay] = useState(null); // { level, name, isFinal }
   const [levelUpOverlay, setLevelUpOverlay] = useState(null); // { level, className, primaryAbility, skillUnlocked }
+  const [lootFanfare, setLootFanfare] = useState(null); // { rarity, name, rarityName }
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -2360,6 +2361,17 @@ setTimeout(() => {
     setVictoryLoot(lootMessages);
     setVictoryFlash(true);
     setTimeout(() => setVictoryFlash(false), 400);
+    // Loot fanfare for rare+ gear
+    for (const _fr of ['legendary', 'epic', 'rare']) {
+      const _ft = GAME_CONSTANTS.RARITY_TIERS[_fr].name;
+      const _fm = lootMessages.find(m => m.startsWith(_ft));
+      if (_fm) {
+        const _fi = _fm.slice(_ft.length + 1).split(' (+')[0];
+        setLootFanfare({ rarity: _fr, name: _fi, rarityName: _ft });
+        setTimeout(() => setLootFanfare(null), _fr === 'legendary' ? 2800 : _fr === 'epic' ? 2400 : 2000);
+        break;
+      }
+    }
   }, [luckyCharmActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
 
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
@@ -5572,6 +5584,30 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           70% { opacity: 1; }
           100% { opacity: 0; }
         }
+        @keyframes loot-fanfare-bg {
+          0% { opacity: 0; }
+          12% { opacity: 1; }
+          68% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes loot-fanfare-card {
+          0% { opacity: 0; transform: translateY(28px) scale(0.93); }
+          22% { opacity: 1; transform: translateY(0) scale(1); }
+          70% { opacity: 1; }
+          100% { opacity: 0; transform: translateY(-10px) scale(0.97); }
+        }
+        @keyframes loot-fanfare-label {
+          0%, 10% { opacity: 0; transform: translateY(6px); }
+          28% { opacity: 1; transform: translateY(0); }
+          70% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes loot-fanfare-glow {
+          0% { opacity: 0; transform: scale(0.6); }
+          30% { opacity: 1; transform: scale(1.05); }
+          65% { opacity: 0.6; transform: scale(1); }
+          100% { opacity: 0; }
+        }
         @keyframes levelup-bg {
           0% { opacity: 0; }
           10% { opacity: 1; }
@@ -6607,6 +6643,70 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           )}
         </div>
       )}
+
+      {/* Loot fanfare */}
+      {lootFanfare && (() => {
+        const dur = lootFanfare.rarity === 'legendary' ? '2.8s' : lootFanfare.rarity === 'epic' ? '2.4s' : '2.0s';
+        const col = GAME_CONSTANTS.RARITY_TIERS[lootFanfare.rarity].color;
+        const colRgb = lootFanfare.rarity === 'legendary' ? '255,152,0'
+          : lootFanfare.rarity === 'epic' ? '156,39,176' : '33,150,243';
+        const label = lootFanfare.rarity === 'legendary' ? 'LEGENDARY' : lootFanfare.rarity === 'epic' ? 'EPIC FIND' : 'RARE FIND';
+        return (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 195, pointerEvents: 'none',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: `radial-gradient(ellipse at center, rgba(${colRgb},0.18) 0%, rgba(0,0,0,0.88) 65%)`,
+            animation: `loot-fanfare-bg ${dur} ease-in-out forwards`,
+          }}>
+            {/* Radial glow burst */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: `radial-gradient(ellipse at center, rgba(${colRgb},0.28) 0%, transparent 55%)`,
+              animation: `loot-fanfare-glow ${dur} ease-out forwards`,
+            }} />
+            {/* Card */}
+            <div style={{
+              position: 'relative',
+              padding: '28px 48px',
+              border: `2px solid rgba(${colRgb},0.7)`,
+              borderRadius: '10px',
+              background: `linear-gradient(to bottom, rgba(${colRgb},0.12), rgba(0,0,0,0.6))`,
+              boxShadow: `0 0 40px rgba(${colRgb},0.35), 0 0 80px rgba(${colRgb},0.12)`,
+              textAlign: 'center',
+              animation: `loot-fanfare-card ${dur} cubic-bezier(0.16,1,0.3,1) forwards`,
+            }}>
+              {/* Rarity label */}
+              <p style={{
+                fontFamily: "'Cinzel', serif", fontWeight: 700,
+                fontSize: lootFanfare.rarity === 'legendary' ? '0.9rem' : '0.72rem',
+                letterSpacing: '0.55em', textTransform: 'uppercase',
+                color: col,
+                textShadow: `0 0 12px rgba(${colRgb},0.9)`,
+                marginBottom: '12px',
+                animation: `loot-fanfare-label ${dur} ease-out forwards`,
+              }}>{label}</p>
+              {/* Item name */}
+              <p style={{
+                fontFamily: "'Cinzel', serif", fontWeight: 900,
+                fontSize: 'clamp(1.2rem, 4vw, 2rem)',
+                letterSpacing: '0.06em',
+                color: '#F5F5DC',
+                textShadow: `0 0 20px rgba(${colRgb},0.7), 0 2px 6px rgba(0,0,0,1)`,
+                animation: `loot-fanfare-card ${dur} cubic-bezier(0.16,1,0.3,1) forwards`,
+              }}>{lootFanfare.name}</p>
+              {/* Bottom ornament */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '10px', marginTop: '14px',
+                animation: `loot-fanfare-label ${dur} ease-out forwards`,
+              }}>
+                <div style={{ flex: 1, height: '1px', background: `linear-gradient(to right, transparent, rgba(${colRgb},0.5))` }} />
+                <span style={{ color: `rgba(${colRgb},0.6)`, fontSize: '8px' }}>✦</span>
+                <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, rgba(${colRgb},0.5))` }} />
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Level-up cinematic */}
       {levelUpOverlay && (() => {
