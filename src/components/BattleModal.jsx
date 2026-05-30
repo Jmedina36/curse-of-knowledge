@@ -471,23 +471,40 @@ const BattleModal = ({
 
           {/* Boss Name */}
           {bossName && (
-            <motion.h1
-              className="text-center font-black mb-2"
-              style={{
-                fontFamily: 'Cinzel, serif',
-                fontSize: 'clamp(2.2rem, 6vw, 3.8rem)',
-                color: bossFlash ? '#FF3333' : (isFinalBoss ? '#D4AF37' : '#E8E8E8'),
-                textShadow: bossFlash
-                  ? '0 0 40px rgba(255, 68, 68, 0.9), 0 0 80px rgba(255, 0, 0, 0.4)'
-                  : isFinalBoss
-                  ? '0 0 30px rgba(212, 175, 55, 0.6), 0 2px 0 rgba(0,0,0,0.8)'
-                  : '0 0 20px rgba(220, 50, 50, 0.4), 0 2px 0 rgba(0,0,0,0.8)',
-                transition: 'color 0.1s, text-shadow 0.1s',
-                letterSpacing: '0.04em',
-              }}
-            >
-              {bossName}
-            </motion.h1>
+            <div className="text-center mb-3">
+              <motion.h1
+                className="font-black uppercase"
+                style={{
+                  fontFamily: 'Cinzel, serif',
+                  fontSize: 'clamp(2.8rem, 8vw, 5.5rem)',
+                  lineHeight: 1,
+                  letterSpacing: '0.08em',
+                  color: bossFlash ? '#FF3333'
+                    : isFinalBoss    ? '#D4AF37'
+                    : battleType === 'elite' ? '#FB923C'
+                    : battleType === 'wave'  ? '#60A5FA'
+                    : '#E8E8E8',
+                  textShadow: bossFlash
+                    ? '0 0 50px rgba(255,50,50,1), 0 0 100px rgba(255,0,0,0.6), 0 3px 0 rgba(0,0,0,0.9)'
+                    : isFinalBoss
+                    ? '0 0 40px rgba(212,175,55,0.9), 0 0 80px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.15), 0 3px 0 rgba(0,0,0,0.9)'
+                    : battleType === 'elite'
+                    ? '0 0 35px rgba(251,146,60,0.8), 0 0 70px rgba(220,80,0,0.4), 0 3px 0 rgba(0,0,0,0.9)'
+                    : battleType === 'wave'
+                    ? '0 0 35px rgba(96,165,250,0.8), 0 0 70px rgba(30,100,220,0.4), 0 3px 0 rgba(0,0,0,0.9)'
+                    : '0 0 35px rgba(220,50,50,0.7), 0 0 70px rgba(180,0,0,0.3), 0 3px 0 rgba(0,0,0,0.9)',
+                  transition: 'color 0.1s, text-shadow 0.1s',
+                }}
+              >
+                {bossName}
+              </motion.h1>
+              {/* Underline accent */}
+              <div className="flex items-center justify-center gap-2 mt-1">
+                <div style={{ width: '60px', height: '1px', background: isFinalBoss ? 'linear-gradient(to right, transparent, rgba(212,175,55,0.7))' : battleType === 'elite' ? 'linear-gradient(to right, transparent, rgba(251,146,60,0.7))' : battleType === 'wave' ? 'linear-gradient(to right, transparent, rgba(96,165,250,0.7))' : 'linear-gradient(to right, transparent, rgba(220,50,50,0.7))' }} />
+                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : battleType === 'wave' ? '#60A5FA' : '#DC3232' }} />
+                <div style={{ width: '60px', height: '1px', background: isFinalBoss ? 'linear-gradient(to left, transparent, rgba(212,175,55,0.7))' : battleType === 'elite' ? 'linear-gradient(to left, transparent, rgba(251,146,60,0.7))' : battleType === 'wave' ? 'linear-gradient(to left, transparent, rgba(96,165,250,0.7))' : 'linear-gradient(to left, transparent, rgba(220,50,50,0.7))' }} />
+              </div>
+            </div>
           )}
 
           {/* Debuff badges */}
