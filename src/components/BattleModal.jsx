@@ -105,8 +105,8 @@ const getLogColor = (entry) => {
   if (/❤|heal|Heal|restored|recovered/i.test(entry)) return '#4ADE80';
   if (/💙|Stamina|stamina potion/i.test(entry)) return '#22D3EE';
   if (/☠|[Pp]oison/i.test(entry)) return '#A3E635';
-  if (/🩸|[Bb]leed/i.test(entry)) return '#F87171';
-  if (/SHATTERS|ARMOR SHRED|Armor shred/i.test(entry)) return '#FB923C';
+  if (/[Bb]leed/i.test(entry)) return '#F87171';
+  if (/SHATTERS|[Aa]rmor shred/i.test(entry)) return '#FB923C';
   if (/OVERWHELMING FORCE/i.test(entry)) return '#EF4444';
   if (/✨|[Ss]tun/i.test(entry)) return '#C084FC';
   if (/💰|[Gg]old|XP|⭐|[Ll]evel/i.test(entry)) return '#FBBF24';
@@ -205,6 +205,7 @@ const BattleModal = ({
   const [shaking, setShaking] = useState(false);
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
+  const [enemySpecialAnim, setEnemySpecialAnim] = useState(null); // 'bleed' | 'armorBreak' | 'overwhelmingForce'
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const [bossEntered, setBossEntered] = useState(false);
@@ -235,18 +236,35 @@ const BattleModal = ({
     prevBossHp.current = bossHp;
   }, [bossHp, log]);
 
-  // Detect new crit log entries → trigger slam animation
+  // Detect new log entries → trigger crit or enemy special animations
   useEffect(() => {
-    if (log.length > prevLogLen.current) {
-      const newEntries = log.slice(prevLogLen.current);
-      if (newEntries.some(e => /💥 CRITICAL/.test(e))) {
-        setCritAnim(true);
-        setShaking(true);
-        const t1 = setTimeout(() => setShaking(false), 450);
-        const t2 = setTimeout(() => setCritAnim(false), 950);
-        return () => { clearTimeout(t1); clearTimeout(t2); };
-      }
-      prevLogLen.current = log.length;
+    if (log.length <= prevLogLen.current) return;
+    const newEntries = log.slice(prevLogLen.current);
+    prevLogLen.current = log.length;
+
+    if (newEntries.some(e => /CRITICAL/.test(e))) {
+      setCritAnim(true);
+      setShaking(true);
+      const t1 = setTimeout(() => setShaking(false), 450);
+      const t2 = setTimeout(() => setCritAnim(false), 950);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }
+    if (newEntries.some(e => /OVERWHELMING FORCE/.test(e))) {
+      setEnemySpecialAnim('overwhelmingForce');
+      setShaking(true);
+      const t1 = setTimeout(() => setShaking(false), 500);
+      const t2 = setTimeout(() => setEnemySpecialAnim(null), 1100);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }
+    if (newEntries.some(e => /deep wound/.test(e))) {
+      setEnemySpecialAnim('bleed');
+      const t = setTimeout(() => setEnemySpecialAnim(null), 1400);
+      return () => clearTimeout(t);
+    }
+    if (newEntries.some(e => /SHATTERS your guard/.test(e))) {
+      setEnemySpecialAnim('armorBreak');
+      const t = setTimeout(() => setEnemySpecialAnim(null), 1200);
+      return () => clearTimeout(t);
     }
   }, [log]);
 
@@ -478,6 +496,83 @@ const BattleModal = ({
             >
               CRITICAL HIT!
             </motion.p>
+          </motion.div>
+        )}
+
+        {/* Enemy special move overlays */}
+        {enemySpecialAnim === 'bleed' && (
+          <motion.div
+            key="bleed-overlay"
+            className="fixed inset-0 flex flex-col items-center justify-center pointer-events-none"
+            style={{ zIndex: 90 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+          >
+            <motion.div className="fixed inset-0"
+              initial={{ opacity: 0 }} animate={{ opacity: [0, 0.55, 0] }}
+              transition={{ duration: 1.1, ease: 'easeOut' }}
+              style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(185,28,28,0.35) 0%, transparent 65%), linear-gradient(to bottom, rgba(100,0,0,0.3) 0%, transparent 40%, transparent 60%, rgba(100,0,0,0.3) 100%)' }}
+            />
+            <motion.p
+              initial={{ scale: 1.4, opacity: 0, y: -12 }}
+              animate={{ scale: [1.4, 1.0, 0.96], opacity: [0, 1, 0] }}
+              transition={{ duration: 1.1, times: [0, 0.22, 1], ease: 'easeOut' }}
+              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.8rem, 5.5vw, 3.2rem)', letterSpacing: '0.14em', color: '#F87171', textShadow: '0 0 40px rgba(248,113,113,0.9), 0 3px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
+            >DEEP WOUND</motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: [0, 0.85, 0] }}
+              transition={{ duration: 1.0, delay: 0.18, times: [0, 0.2, 1] }}
+              style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.75rem, 2vw, 1rem)', letterSpacing: '0.22em', color: '#FCA5A5', marginTop: '0.5rem', zIndex: 1 }}
+            >BLEEDING — 3 TURNS</motion.p>
+          </motion.div>
+        )}
+
+        {enemySpecialAnim === 'armorBreak' && (
+          <motion.div
+            key="armor-overlay"
+            className="fixed inset-0 flex flex-col items-center justify-center pointer-events-none"
+            style={{ zIndex: 90 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+          >
+            <motion.div className="fixed inset-0"
+              initial={{ opacity: 0 }} animate={{ opacity: [0, 0.5, 0] }}
+              transition={{ duration: 0.9, ease: 'easeOut' }}
+              style={{ background: 'radial-gradient(ellipse at 50% 48%, rgba(194,65,12,0.4) 0%, transparent 60%)' }}
+            />
+            <motion.p
+              initial={{ scale: 2.2, opacity: 0, y: 0 }}
+              animate={{ scale: [2.2, 1.0, 0.95], opacity: [0, 1, 0] }}
+              transition={{ duration: 0.95, times: [0, 0.25, 1], ease: 'easeOut' }}
+              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.5rem, 4.5vw, 2.8rem)', letterSpacing: '0.12em', color: '#FB923C', textShadow: '0 0 40px rgba(251,146,60,0.9), 0 3px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
+            >ARMOR SHATTERED</motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 4 }} animate={{ opacity: [0, 0.85, 0] }}
+              transition={{ duration: 0.85, delay: 0.15, times: [0, 0.22, 1] }}
+              style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.75rem, 2vw, 1rem)', letterSpacing: '0.22em', color: '#FED7AA', marginTop: '0.5rem', zIndex: 1 }}
+            >DEFENSE −35% — 2 TURNS</motion.p>
+          </motion.div>
+        )}
+
+        {enemySpecialAnim === 'overwhelmingForce' && (
+          <motion.div
+            key="force-overlay"
+            className="fixed inset-0 flex items-center justify-center pointer-events-none"
+            style={{ zIndex: 90 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.08 }}
+          >
+            <motion.div className="fixed inset-0"
+              initial={{ opacity: 0 }} animate={{ opacity: [0, 0.6, 0] }}
+              transition={{ duration: 0.75, ease: 'easeOut' }}
+              style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(153,27,27,0.5) 0%, transparent 58%)' }}
+            />
+            <motion.p
+              initial={{ scale: 2.8, opacity: 0, y: -10 }}
+              animate={{ scale: [2.8, 1.0, 0.9], opacity: [0, 1, 0] }}
+              transition={{ duration: 0.78, times: [0, 0.26, 1], ease: 'easeOut' }}
+              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.5rem, 4.8vw, 3rem)', letterSpacing: '0.1em', color: '#EF4444', textShadow: '0 0 50px rgba(239,68,68,1), 0 0 90px rgba(239,68,68,0.4), 0 4px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
+            >OVERWHELMING FORCE</motion.p>
           </motion.div>
         )}
       </AnimatePresence>

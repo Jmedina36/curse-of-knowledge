@@ -3152,7 +3152,7 @@ if (playerDebuffs.bleedTurns > 0) {
     if (next <= 0) setTimeout(() => enterDyingState(), 200);
     return next;
   });
-  addLog(`🩸 Bleeding! -${bleedDmg} HP`);
+  addLog(`Bleeding! -${bleedDmg} HP`);
   setPlayerDebuffs(prev => ({ ...prev, bleedTurns: prev.bleedTurns - 1 }));
 }
 
@@ -3182,11 +3182,11 @@ if (battleType !== 'final') {
     if (move === 'bleed') {
       const dmg = Math.max(3, Math.floor(rawEnemyDamage * 0.28));
       setPlayerDebuffs(prev => ({ ...prev, bleedTurns: 3, bleedDamage: dmg }));
-      addLog(`🩸 Enemy opens a deep wound! You BLEED for ${dmg}/turn (3 turns).`);
+      addLog(`Enemy opens a deep wound! You bleed for ${dmg} damage per turn (3 turns).`);
       return; // skip normal attack this turn
     } else if (move === 'armorBreak') {
       setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: 2 }));
-      addLog(`⚔️ Enemy SHATTERS your guard! Defense reduced 35% for 2 turns.`);
+      addLog(`Enemy SHATTERS your guard! Defense reduced 35% for 2 turns.`);
       return; // skip normal attack this turn
     } else {
       overwhelmingForceUsed = true; // 2.5× damage applied after calc
@@ -3202,7 +3202,7 @@ let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
 
 if (overwhelmingForceUsed) {
   bossDamage = Math.floor(bossDamage * 2.5);
-  addLog(`💥 OVERWHELMING FORCE! Enemy winds up and SLAMS for massive damage!`);
+  addLog(`OVERWHELMING FORCE! The enemy attacks with devastating power!`);
 }
 
 // Apply percentDR from armor affixes
@@ -4065,7 +4065,7 @@ if (playerDebuffs.bleedTurns > 0) {
     if (next <= 0) setTimeout(() => enterDyingState(), 200);
     return next;
   });
-  addLog(`🩸 Bleeding! -${bleedDmg} HP`);
+  addLog(`Bleeding! -${bleedDmg} HP`);
   setPlayerDebuffs(prev => ({ ...prev, bleedTurns: prev.bleedTurns - 1 }));
 }
 
