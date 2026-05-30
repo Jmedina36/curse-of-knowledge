@@ -3575,7 +3575,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     const rawDamage = (baseDamage * critMultiplier) * special.damageMultiplier;
     let damage = Math.max(1, Math.floor(rawDamage - enemyDef));
 
-    if (isCrit && !chargedD20) {
+    if (chargedD20) {
+      const tierLabel = critMultiplier >= 4 ? 'LEGENDARY STRIKE' : critMultiplier >= 3 ? 'DEVASTATING CRIT' : critMultiplier >= 2.5 ? 'HEAVY CRIT' : critMultiplier >= 2 ? 'CRITICAL HIT' : 'GLANCING CRIT';
+      addLog(`⚡ ${tierLabel}! (${critMultiplier}x)`);
+    } else if (isCrit) {
       addLog(`💥 CRITICAL ${special.name.toUpperCase()}!`);
     }
     

@@ -200,6 +200,7 @@ const BattleModal = ({
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [shaking, setShaking] = useState(false);
   const [phaseCard, setPhaseCard] = useState(null);
+  const [critAnim, setCritAnim] = useState(false);
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const [bossEntered, setBossEntered] = useState(false);
@@ -211,6 +212,7 @@ const BattleModal = ({
   const prevPhase2 = useRef(inPhase2);
   const prevPhase3 = useRef(inPhase3);
   const floatId = useRef(0);
+  const prevLogLen = useRef(0);
 
   // Floating number helper
   const spawnFloat = (value, type) => {
@@ -219,13 +221,30 @@ const BattleModal = ({
     setTimeout(() => setFloatingNumbers(prev => prev.filter(n => n.id !== id)), 1100);
   };
 
-  // Boss damage floats
+  // Boss damage floats — gold for crits
   useEffect(() => {
     if (bossHp < prevBossHp.current && prevBossHp.current > 0) {
-      spawnFloat(`-${prevBossHp.current - bossHp}`, 'boss');
+      const recentEntries = log.slice(Math.max(0, log.length - 3));
+      const isCritHit = recentEntries.some(e => /💥 CRITICAL/.test(e));
+      spawnFloat(`-${prevBossHp.current - bossHp}`, isCritHit ? 'crit' : 'boss');
     }
     prevBossHp.current = bossHp;
-  }, [bossHp]);
+  }, [bossHp, log]);
+
+  // Detect new crit log entries → trigger slam animation
+  useEffect(() => {
+    if (log.length > prevLogLen.current) {
+      const newEntries = log.slice(prevLogLen.current);
+      if (newEntries.some(e => /💥 CRITICAL/.test(e))) {
+        setCritAnim(true);
+        setShaking(true);
+        const t1 = setTimeout(() => setShaking(false), 450);
+        const t2 = setTimeout(() => setCritAnim(false), 950);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+      }
+      prevLogLen.current = log.length;
+    }
+  }, [log]);
 
   // Player damage / heal floats + screen shake
   useEffect(() => {
@@ -391,21 +410,23 @@ const BattleModal = ({
           {floatingNumbers.map(n => (
             <motion.div
               key={n.id}
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: [1, 1, 0], y: n.type === 'boss' ? -90 : n.type === 'damage' ? 70 : -70 }}
+              initial={{ opacity: 1, y: 0, scale: n.type === 'crit' ? 1.6 : 1 }}
+              animate={{ opacity: [1, 1, 0], y: n.type === 'boss' || n.type === 'crit' ? -110 : n.type === 'damage' ? 70 : -70, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 2.0, ease: 'easeOut', times: n.type === 'boss' ? [0, 0.5, 1] : [0, 0.45, 1] }}
+              transition={{ duration: n.type === 'crit' ? 1.6 : 2.0, ease: 'easeOut', times: [0, 0.5, 1] }}
               style={{
                 position: 'absolute',
-                top: n.type === 'boss' ? '28%' : '62%',
+                top: n.type === 'boss' || n.type === 'crit' ? '28%' : '62%',
                 left: `calc(50% + ${n.x}px)`,
                 transform: 'translateX(-50%)',
                 fontFamily: 'Cinzel, serif',
-                fontSize: '2.2rem',
+                fontSize: n.type === 'crit' ? '3rem' : '2.2rem',
                 fontWeight: 900,
-                color: n.type === 'heal' ? '#4ADE80' : '#FF3333',
+                color: n.type === 'heal' ? '#4ADE80' : n.type === 'crit' ? '#F59E0B' : '#FF3333',
                 textShadow: n.type === 'heal'
                   ? '0 0 20px rgba(74,222,128,0.9), 0 2px 0 rgba(0,0,0,0.8)'
+                  : n.type === 'crit'
+                  ? '0 0 24px rgba(245,158,11,1), 0 0 48px rgba(245,158,11,0.5), 0 3px 0 rgba(0,0,0,0.9)'
                   : '0 0 20px rgba(255,0,0,0.9), 0 2px 0 rgba(0,0,0,0.8)',
                 whiteSpace: 'nowrap',
               }}
@@ -415,6 +436,47 @@ const BattleModal = ({
           ))}
         </AnimatePresence>
       </div>
+
+      {/* ── Critical Hit overlay ──────────────────────────────────────────── */}
+      <AnimatePresence>
+        {critAnim && (
+          <motion.div
+            key="crit-overlay"
+            className="fixed inset-0 flex items-center justify-center pointer-events-none"
+            style={{ zIndex: 90 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.1 }}
+          >
+            {/* Gold radial pulse */}
+            <motion.div
+              className="fixed inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.5, 0] }}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+              style={{ background: 'radial-gradient(ellipse at 50% 38%, rgba(245,158,11,0.45) 0%, transparent 60%)' }}
+            />
+            {/* CRITICAL HIT text slam */}
+            <motion.p
+              initial={{ scale: 2.8, opacity: 0, y: -10 }}
+              animate={{ scale: [2.8, 1.0, 0.9], opacity: [0, 1, 0] }}
+              transition={{ duration: 0.82, times: [0, 0.28, 1], ease: 'easeOut' }}
+              style={{
+                fontFamily: 'Cinzel, serif', fontWeight: 900,
+                fontSize: 'clamp(2.2rem, 7vw, 4.5rem)',
+                letterSpacing: '0.12em',
+                color: '#F59E0B',
+                textShadow: '0 0 50px rgba(245,158,11,1), 0 0 100px rgba(245,158,11,0.5), 0 4px 0 rgba(0,0,0,0.9)',
+                whiteSpace: 'nowrap',
+                zIndex: 1,
+              }}
+            >
+              CRITICAL HIT!
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Scanline overlay */}
       <div className="fixed inset-0 pointer-events-none" style={{
