@@ -952,6 +952,46 @@ const BattleModal = ({
                 {/* ── Main Menu ── */}
                 {turnPhase === 'player' && battleMenu === 'main' && (
                   <motion.div key="main" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
+
+                    {/* ⚡ Charged Unleash — prominent shortcut when at max charges */}
+                    {chargeStacks === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges &&
+                      hero?.class &&
+                      GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] &&
+                      level >= GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special &&
+                      (() => {
+                        const spec = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name];
+                        const cd = (hero.class.name === 'Wizard' && wizardTemporalCooldown) ||
+                                   (hero.class.name === 'Crusader' && crusaderJudgmentCooldown);
+                        const canUse = stamina >= spec.cost && !cd && !(spec.hpCost && hp <= spec.hpCost);
+                        return (
+                          <motion.button
+                            key="unleash"
+                            initial={{ opacity: 0, scale: 0.94 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            onClick={() => canUse && handlePlayerAction(specialAttack, spec.name)}
+                            disabled={!canUse}
+                            className="w-full py-3 rounded font-black uppercase transition-all border-2 mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                            style={{
+                              background: canUse
+                                ? 'linear-gradient(to bottom, rgba(212,175,55,0.92), rgba(155,110,5,0.96))'
+                                : 'rgba(30,40,55,0.7)',
+                              borderColor: canUse ? '#D4AF37' : 'rgba(80,80,80,0.3)',
+                              color: canUse ? '#120d00' : '#888',
+                              boxShadow: canUse ? '0 0 24px rgba(212,175,55,0.55), 0 4px 14px rgba(212,175,55,0.22)' : 'none',
+                              fontFamily: 'Cinzel, serif',
+                              letterSpacing: '0.18em',
+                              animation: canUse ? 'intro-hint-pulse 1.6s ease-in-out infinite' : 'none',
+                            }}
+                          >
+                            ⚡ UNLEASH {spec.name.toUpperCase()}
+                            <div className="text-xs font-normal mt-0.5 opacity-75" style={{ letterSpacing: '0.08em' }}>
+                              {cd ? 'On Cooldown' : `${spec.cost} SP · D20 Crit Roll`}
+                            </div>
+                          </motion.button>
+                        );
+                      })()
+                    }
+
                     <div className={`grid gap-3 mb-3 ${canFlee || showDodgeButton ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => setBattleMenu('fight')}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
