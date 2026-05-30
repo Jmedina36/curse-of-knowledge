@@ -202,6 +202,7 @@ const BattleModal = ({
   const [phaseCard, setPhaseCard] = useState(null);
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
+  const [bossEntered, setBossEntered] = useState(false);
   const turnTimers = useRef([]);
   const turnCountRef = useRef(0);
   const logRef = useRef(null);
@@ -269,6 +270,18 @@ const BattleModal = ({
       setBattleLine('');
     }
   }, [bossHp, hp]);
+
+  // Boss entrance sequence on mount
+  useEffect(() => {
+    // Slam shake at the moment the name crashes in (~900ms)
+    const shakeTimer = setTimeout(() => {
+      setShaking(true);
+      setTimeout(() => setShaking(false), 500);
+    }, 900);
+    // Dismiss entrance overlay after full sequence
+    const doneTimer = setTimeout(() => setBossEntered(true), 3000);
+    return () => { clearTimeout(shakeTimer); clearTimeout(doneTimer); };
+  }, []);
 
   const schedule = (fn, delay) => {
     const id = setTimeout(fn, delay);
@@ -407,6 +420,94 @@ const BattleModal = ({
         background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 3px)',
         zIndex: 3,
       }} />
+
+      {/* ── Boss Entrance Cinematic ───────────────────────────────────────── */}
+      <AnimatePresence>
+        {!bossEntered && (
+          <motion.div
+            key="boss-entrance"
+            className="fixed inset-0 flex flex-col items-center justify-center overflow-hidden"
+            style={{ zIndex: 300, background: 'rgba(0,0,0,0.97)' }}
+            exit={{ opacity: 0, transition: { duration: 0.7, ease: 'easeInOut' } }}
+          >
+            {/* Ominous opening text */}
+            <motion.p
+              initial={{ opacity: 0, letterSpacing: '0.8em' }}
+              animate={{ opacity: [0, 0.7, 0.5], letterSpacing: ['0.8em', '0.3em', '0.3em'] }}
+              transition={{ duration: 0.7, delay: 0.1 }}
+              className="uppercase text-sm font-bold mb-8"
+              style={{ color: 'rgba(200,200,200,0.5)', fontFamily: 'Cinzel, serif' }}
+            >
+              {isFinalBoss ? 'The curse awakens' : battleType === 'elite' ? 'A dark presence stirs' : battleType === 'wave' ? 'They come for you' : 'An enemy appears'}
+            </motion.p>
+
+            {/* Horizontal crack that widens before the name slams in */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: [0, 1, 1], opacity: [0, 1, 0] }}
+              transition={{ duration: 0.5, delay: 0.55, times: [0, 0.5, 1] }}
+              style={{
+                position: 'absolute', top: '50%', left: 0, right: 0,
+                height: '2px',
+                background: isFinalBoss ? 'linear-gradient(to right, transparent, rgba(160,40,200,0.9), transparent)'
+                  : battleType === 'elite' ? 'linear-gradient(to right, transparent, rgba(220,120,0,0.9), transparent)'
+                  : battleType === 'wave'  ? 'linear-gradient(to right, transparent, rgba(30,120,220,0.9), transparent)'
+                  : 'linear-gradient(to right, transparent, rgba(220,30,30,0.9), transparent)',
+                boxShadow: isFinalBoss ? '0 0 20px rgba(160,40,200,0.8)' : battleType === 'elite' ? '0 0 20px rgba(220,120,0,0.8)' : battleType === 'wave' ? '0 0 20px rgba(30,120,220,0.8)' : '0 0 20px rgba(220,30,30,0.8)',
+              }}
+            />
+
+            {/* Boss name — slams in from large scale */}
+            <motion.h1
+              initial={{ scale: 3.5, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.35, ease: [0.12, 0, 0.28, 1] }}
+              className="uppercase font-black text-center"
+              style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: 'clamp(3rem, 10vw, 7rem)',
+                letterSpacing: '0.1em',
+                lineHeight: 1,
+                color: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : battleType === 'wave' ? '#60A5FA' : '#E8E8E8',
+                textShadow: isFinalBoss
+                  ? '0 0 60px rgba(212,175,55,1), 0 0 120px rgba(212,175,55,0.5)'
+                  : battleType === 'elite'
+                  ? '0 0 60px rgba(251,146,60,1), 0 0 120px rgba(220,80,0,0.5)'
+                  : battleType === 'wave'
+                  ? '0 0 60px rgba(96,165,250,1), 0 0 120px rgba(30,100,220,0.5)'
+                  : '0 0 60px rgba(255,60,60,1), 0 0 120px rgba(200,0,0,0.5)',
+              }}
+            >
+              {bossName}
+            </motion.h1>
+
+            {/* Battle type subtitle */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 0.6, y: 0 }}
+              transition={{ delay: 1.35, duration: 0.4 }}
+              className="uppercase text-sm font-bold mt-4 tracking-[0.4em]"
+              style={{ color: 'rgba(245,245,220,0.5)', fontFamily: 'Cinzel, serif' }}
+            >
+              {isFinalBoss ? '— Final Confrontation —' : battleType === 'elite' ? '— Elite Trial —' : battleType === 'wave' ? '— Wave Assault —' : '— Battle —'}
+            </motion.p>
+
+            {/* Bottom flash — pulses once then fades */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.35, 0] }}
+              transition={{ delay: 0.85, duration: 0.4 }}
+              className="fixed inset-0 pointer-events-none"
+              style={{
+                background: isFinalBoss ? 'radial-gradient(ellipse at 50% 50%, rgba(160,40,200,0.4) 0%, transparent 70%)'
+                  : battleType === 'elite' ? 'radial-gradient(ellipse at 50% 50%, rgba(220,120,0,0.4) 0%, transparent 70%)'
+                  : battleType === 'wave'  ? 'radial-gradient(ellipse at 50% 50%, rgba(30,120,220,0.4) 0%, transparent 70%)'
+                  : 'radial-gradient(ellipse at 50% 50%, rgba(220,30,30,0.4) 0%, transparent 70%)',
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Phase Transition Cinematic ─────────────────────────────────────── */}
       <AnimatePresence>
