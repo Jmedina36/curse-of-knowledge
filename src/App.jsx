@@ -409,11 +409,16 @@ const [waveGoldTotal, setWaveGoldTotal] = useState(0);
   const [bossName, setBossName] = useState('');
   const [canFlee, setCanFlee] = useState(false);
   const [hasFled, setHasFled] = useState(false);
-  const [bossDebuffs, setBossDebuffs] = useState({ 
-    poisonTurns: 0, 
-    poisonDamage: 0, 
+  const [bossDebuffs, setBossDebuffs] = useState({
+    poisonTurns: 0,
+    poisonDamage: 0,
     poisonedVulnerability: 0,
     stunned: false
+  });
+  const [playerDebuffs, setPlayerDebuffs] = useState({
+    bleedTurns: 0,
+    bleedDamage: 0,
+    armorShredTurns: 0,
   });
   const [recklessStacks, setRecklessStacks] = useState(0);
   
@@ -2355,11 +2360,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setIsFinalBoss(false);
   setCanFlee(true); // Allow fleeing from regular and wave enemies
   setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+  setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
   setVictoryLoot([]); // Clear previous loot
   
   // Reset charges at start of each battle
   setChargeStacks(0);
-  
+  setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+
   // Set meta dialogue for regular enemies
   const dialoguePool = isWave ? GAME_CONSTANTS.ENEMY_DIALOGUE.WAVE : GAME_CONSTANTS.ENEMY_DIALOGUE.REGULAR;
   const randomDialogue = dialoguePool[Math.floor(Math.random() * dialoguePool.length)];
@@ -2436,6 +2443,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCanFlee(true);
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+  setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]); // Clear previous loot
     
     // Reset charges at start of each battle
@@ -2585,10 +2593,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(true);
     setCanFlee(false);
     setVictoryLoot([]); // Clear previous loot
-    
+
     // Reset charges at start of each battle
     setChargeStacks(0);
-    
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+
     // Reset taunt state
     setIsTauntAvailable(false);
     setHasTriggeredLowHpTaunt(false);
@@ -3120,7 +3129,7 @@ if (battleType === 'elite') {
       
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
-      
+
       // Enemy attack damage
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
@@ -3134,10 +3143,67 @@ if (battleType === 'regular' || battleType === 'wave') {
 
 // Diminishing returns armor formula: damage * (K / (K + armor))
 const rawEnemyDamage = baseAttack + (currentDay * attackScaling);
-const playerArmor = getBaseDefense() + (armorPolishActive ? 5 : 0);
+
+// Apply bleed DoT tick
+if (playerDebuffs.bleedTurns > 0) {
+  const bleedDmg = playerDebuffs.bleedDamage;
+  setHp(h => {
+    const next = Math.max(0, h - bleedDmg);
+    if (next <= 0) setTimeout(() => enterDyingState(), 200);
+    return next;
+  });
+  addLog(`🩸 Bleeding! -${bleedDmg} HP`);
+  setPlayerDebuffs(prev => ({ ...prev, bleedTurns: prev.bleedTurns - 1 }));
+}
+
+// Decrement armor shred
+if (playerDebuffs.armorShredTurns > 0) {
+  setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: prev.armorShredTurns - 1 }));
+}
+
+// Enemy special move (final boss has its own phase system — skip)
+let overwhelmingForceUsed = false;
+if (battleType !== 'final') {
+  const specialChance = battleType === 'elite'
+    ? 0.25 + (currentDay - 1) * 0.025
+    : battleType === 'wave'
+    ? 0.10
+    : 0.18 + (currentDay - 1) * 0.02;
+
+  if (Math.random() < specialChance) {
+    const canBleed = playerDebuffs.bleedTurns === 0;
+    const canShred = playerDebuffs.armorShredTurns === 0;
+    const pool = [];
+    if (canBleed) pool.push('bleed');
+    if (canShred && battleType !== 'wave') pool.push('armorBreak');
+    pool.push('overwhelmingForce');
+
+    const move = pool[Math.floor(Math.random() * pool.length)];
+    if (move === 'bleed') {
+      const dmg = Math.max(3, Math.floor(rawEnemyDamage * 0.28));
+      setPlayerDebuffs(prev => ({ ...prev, bleedTurns: 3, bleedDamage: dmg }));
+      addLog(`🩸 Enemy opens a deep wound! You BLEED for ${dmg}/turn (3 turns).`);
+      return; // skip normal attack this turn
+    } else if (move === 'armorBreak') {
+      setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: 2 }));
+      addLog(`⚔️ Enemy SHATTERS your guard! Defense reduced 35% for 2 turns.`);
+      return; // skip normal attack this turn
+    } else {
+      overwhelmingForceUsed = true; // 2.5× damage applied after calc
+    }
+  }
+}
+
+const shredMultiplier = playerDebuffs.armorShredTurns > 0 ? 0.65 : 1;
+const playerArmor = Math.floor((getBaseDefense() + (armorPolishActive ? 5 : 0)) * shredMultiplier);
 const K = GAME_CONSTANTS.ARMOR_K_CONSTANT; // 60
 const damageReduction = K / (K + playerArmor);
 let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
+
+if (overwhelmingForceUsed) {
+  bossDamage = Math.floor(bossDamage * 2.5);
+  addLog(`💥 OVERWHELMING FORCE! Enemy winds up and SLAMS for massive damage!`);
+}
 
 // Apply percentDR from armor affixes
 let percentDR = 0;
@@ -3973,10 +4039,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         if (!battling || hp <= 0) return;
         
         setBossDebuffs(prev => ({ ...prev, stunned: false }));
-        
+
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
-        
+
         // Enemy attack damage
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
@@ -3990,7 +4056,27 @@ if (battleType === 'regular' || battleType === 'wave') {
 
 // Diminishing returns armor formula: damage * (K / (K + armor))
 const rawEnemyDamage = baseAttack + (currentDay * attackScaling);
-const playerArmor = getBaseDefense() + (armorPolishActive ? 5 : 0);
+
+// Apply bleed DoT tick (counter-attack turn)
+if (playerDebuffs.bleedTurns > 0) {
+  const bleedDmg = playerDebuffs.bleedDamage;
+  setHp(h => {
+    const next = Math.max(0, h - bleedDmg);
+    if (next <= 0) setTimeout(() => enterDyingState(), 200);
+    return next;
+  });
+  addLog(`🩸 Bleeding! -${bleedDmg} HP`);
+  setPlayerDebuffs(prev => ({ ...prev, bleedTurns: prev.bleedTurns - 1 }));
+}
+
+// Decrement armor shred (counter-attack turn)
+if (playerDebuffs.armorShredTurns > 0) {
+  setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: prev.armorShredTurns - 1 }));
+}
+
+// Enemy special move (counter-attack — no specials, just plain damage)
+const shredMult2 = playerDebuffs.armorShredTurns > 0 ? 0.65 : 1;
+const playerArmor = Math.floor((getBaseDefense() + (armorPolishActive ? 5 : 0)) * shredMult2);
 const K = GAME_CONSTANTS.ARMOR_K_CONSTANT; // 60
 const damageReduction = K / (K + playerArmor);
 let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
@@ -5968,6 +6054,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setIsFinalBoss(false);
                     setBossName('');
                     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+  setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
                     setRecklessStacks(0);
                     setInPhase1(false);
                     setInPhase2(false);
@@ -6258,7 +6345,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <BattleModal
               bossHp={bossHp} bossMax={bossMax} bossName={bossName}
               bossFlash={bossFlash} bossDebuffs={bossDebuffs} enragedTurns={enragedTurns}
-              playerFlash={playerFlash}
+              playerFlash={playerFlash} playerDebuffs={playerDebuffs}
               battleType={battleType} isFinalBoss={isFinalBoss}
               currentWaveEnemy={currentWaveEnemy} totalWaveEnemies={totalWaveEnemies} waveCount={waveCount}
               inPhase2={inPhase2} inPhase3={inPhase3}

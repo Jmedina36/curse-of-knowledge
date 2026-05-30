@@ -105,6 +105,9 @@ const getLogColor = (entry) => {
   if (/❤|heal|Heal|restored|recovered/i.test(entry)) return '#4ADE80';
   if (/💙|Stamina|stamina potion/i.test(entry)) return '#22D3EE';
   if (/☠|[Pp]oison/i.test(entry)) return '#A3E635';
+  if (/🩸|[Bb]leed/i.test(entry)) return '#F87171';
+  if (/SHATTERS|ARMOR SHRED|Armor shred/i.test(entry)) return '#FB923C';
+  if (/OVERWHELMING FORCE/i.test(entry)) return '#EF4444';
   if (/✨|[Ss]tun/i.test(entry)) return '#C084FC';
   if (/💰|[Gg]old|XP|⭐|[Ll]evel/i.test(entry)) return '#FBBF24';
   if (/🏃|[Ff]le[ed]/i.test(entry)) return '#94A3B8';
@@ -145,6 +148,7 @@ const BattleModal = ({
   isTauntAvailable,
   // Player state
   playerFlash,
+  playerDebuffs,
   hp,
   getMaxHp,
   stamina,
@@ -857,6 +861,22 @@ const BattleModal = ({
               />
             </div>
           </div>
+
+          {/* Player debuff badges */}
+          {playerDebuffs && (playerDebuffs.bleedTurns > 0 || playerDebuffs.armorShredTurns > 0) && (
+            <div className="flex gap-2 mb-2 flex-wrap">
+              {playerDebuffs.bleedTurns > 0 && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(220, 38, 38, 0.2)', border: '1px solid rgba(220, 38, 38, 0.5)', color: '#F87171' }}>
+                  🩸 BLEEDING ×{playerDebuffs.bleedTurns} ({playerDebuffs.bleedDamage}/turn)
+                </span>
+              )}
+              {playerDebuffs.armorShredTurns > 0 && (
+                <span className="px-2 py-0.5 rounded text-xs font-bold animate-pulse" style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)', border: '1px solid rgba(249, 115, 22, 0.5)', color: '#FB923C' }}>
+                  ⚔️ ARMOR SHRED ×{playerDebuffs.armorShredTurns}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Charge stacks */}
           {chargeStacks > 0 && (
