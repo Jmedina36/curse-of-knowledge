@@ -5176,32 +5176,49 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       <div className="relative z-10 p-6">
         <div className={`max-w-6xl mx-auto rounded-xl transition-all`}>
           <header className="text-center mb-8">
-            {/* Small decorative line above title */}
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 107, 107, 0.3), transparent)'}}></div>
+            {/* Top ornament */}
+            <div className="flex items-center justify-center gap-3 mb-5">
+              <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 60, 60, 0.7))'}}></div>
+              <span style={{color: 'rgba(255, 80, 80, 0.8)', fontSize: '10px', letterSpacing: '0.4em'}}>✦ ✦ ✦</span>
+              <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255, 60, 60, 0.7))'}}></div>
             </div>
-            
-            <h1 className="text-6xl mb-2" style={{
-              fontFamily: "'Cinzel', serif", 
+
+            <h1 style={{
+              fontFamily: "'Cinzel', serif",
               fontWeight: 900,
-              background: 'linear-gradient(to bottom, #FF6B6B 0%, #8B0000 100%)',
+              fontSize: 'clamp(3rem, 10vw, 6.5rem)',
+              letterSpacing: '0.12em',
+              lineHeight: 1.05,
+              marginBottom: '0.1em',
+              background: 'linear-gradient(to bottom, #ffffff 0%, #FF8080 30%, #CC0000 65%, #7a0000 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              textShadow: 'none',
-              letterSpacing: '0.1em',
-              filter: 'drop-shadow(0 0 15px rgba(255, 107, 107, 0.4)) drop-shadow(0 0 30px rgba(255, 107, 107, 0.25))'
+              filter: [
+                'drop-shadow(0 0 8px rgba(255, 80, 80, 0.95))',
+                'drop-shadow(0 0 25px rgba(255, 30, 30, 0.75))',
+                'drop-shadow(0 0 60px rgba(180, 0, 0, 0.55))',
+                'drop-shadow(0 3px 6px rgba(0,0,0,0.95))'
+              ].join(' '),
+              animation: 'pulse-glow 4s ease-in-out infinite',
             }}>
               CURSE OF KNOWLEDGE
             </h1>
-            
-            {/* Larger decorative line below title */}
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 107, 107, 0.3), transparent)'}}></div>
+
+            {/* Bottom ornament */}
+            <div className="flex items-center justify-center gap-3 mt-4 mb-3">
+              <div style={{width: '220px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255, 60, 60, 0.6))'}}></div>
+              <span style={{color: 'rgba(255, 60, 60, 0.6)', fontSize: '8px'}}>◆</span>
+              <div style={{width: '220px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255, 60, 60, 0.6))'}}></div>
             </div>
-            
-            <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Study or be consumed by the abyss..."</p>
-            
+
+            <p className="mb-6 italic text-center" style={{
+              color: 'rgba(210, 160, 160, 0.8)',
+              fontSize: '0.8rem',
+              letterSpacing: '0.25em',
+              textTransform: 'uppercase',
+              fontFamily: "'Cinzel', serif",
+            }}>Study or be consumed by the abyss</p>
           </header>
         </div>
 
