@@ -68,7 +68,7 @@ const FantasyStudyQuest = () => {
     luckyCharm: 1.0
   }); // Dynamic market prices (1.0 = normal, 1.5 = 50% bonus, etc.)
   const [lastMarketUpdateDay, setLastMarketUpdateDay] = useState(0); // Track last day market was updated
-  const [pityCounter, setPityCounter] = useState(0); // Fights without upgrade (pity timer)
+  const pityCounterRef = useRef(0); // Fights without a rare+ drop (pity timer)
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
   const [showShop, setShowShop] = useState(false); // Shop modal visibility
   const [daysSinceShop, setDaysSinceShop] = useState(0); // Track shop refresh
@@ -184,8 +184,10 @@ const FantasyStudyQuest = () => {
   // Rarity rolling system
   const rollRarity = useCallback((enemyType = 'normal') => {
     const roll = Math.random() * 100;
-    
-    // Elite and boss enemies have better drop rates
+    const t = Math.min((currentDay - 1) / 6, 1);
+    const lerp = (a, b) => a + (b - a) * t;
+
+    // Drop rates scale with day (normal/elite); boss rates stay fixed
     const rates = enemyType === 'boss' ? {
       common: 5,
       uncommon: 15,
@@ -193,28 +195,42 @@ const FantasyStudyQuest = () => {
       epic: 30,
       legendary: 15
     } : enemyType === 'elite' ? {
-      common: 30,
-      uncommon: 35,
-      rare: 25,
-      epic: 8,
-      legendary: 2
+      common:    lerp(30, 15),
+      uncommon:  lerp(35, 30),
+      rare:      lerp(25, 35),
+      epic:      lerp(8,  15),
+      legendary: lerp(2,  5)
     } : {
-      common: 50,
-      uncommon: 30,
-      rare: 15,
-      epic: 4,
-      legendary: 1
+      common:    lerp(50, 35),
+      uncommon:  30,
+      rare:      lerp(15, 22),
+      epic:      lerp(4,  9),
+      legendary: lerp(1,  4)
     };
-    
+
     let cumulative = 0;
     for (const [rarity, chance] of Object.entries(rates)) {
       cumulative += chance;
-      if (roll < cumulative) {
-        return rarity;
-      }
+      if (roll < cumulative) return rarity;
     }
     return 'common';
-  }, []);
+  }, [currentDay]);
+
+  // Wraps rollRarity with a pity guarantee: rare+ after 10 consecutive non-rare drops
+  const rollRarityWithPity = useCallback((enemyType) => {
+    const rarityOrder = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
+    const rarity = rollRarity(enemyType);
+    if (pityCounterRef.current >= GAME_CONSTANTS.PITY_TIMER_THRESHOLD) {
+      pityCounterRef.current = 0;
+      return rarityOrder[rarity] >= 3 ? rarity : 'rare';
+    }
+    if (rarityOrder[rarity] >= 3) {
+      pityCounterRef.current = 0;
+    } else {
+      pityCounterRef.current += 1;
+    }
+    return rarity;
+  }, [rollRarity]);
   
   // Get rarity color
   const getRarityColor = useCallback((rarity) => {
@@ -2125,7 +2141,7 @@ setTimeout(() => {
           addLog('The hero discovered a Stamina Potion in the aftermath!');
         } else if (lootRoll < 0.50) {
           // 20% Weapon with rarity
-          const rarity = rollRarity('normal');
+          const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
           
           const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
@@ -2144,7 +2160,7 @@ setTimeout(() => {
           addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)`);
         } else if (lootRoll < 0.70) {
           // 20% Armor with rarity
-          const rarity = rollRarity('normal');
+          const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
           
           const slots = ['helmet', 'chest', 'gloves', 'boots'];
@@ -2168,7 +2184,7 @@ setTimeout(() => {
           addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)`);
         } else if (lootRoll < 0.80) {
           // 10% Pendant with rarity
-          const rarity = rollRarity('normal');
+          const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
           
           const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
@@ -2186,7 +2202,7 @@ setTimeout(() => {
           addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
         } else if (lootRoll < 0.90) {
           // 10% Ring with rarity
-          const rarity = rollRarity('normal');
+          const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
           
           const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
@@ -2219,7 +2235,7 @@ setTimeout(() => {
           addLog(`The hero secured a rare Stamina Potion${luckyCharmActive ? ' - fortune favors the prepared!' : ' from the defeated foe!'}`);
         } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
           // Generate random weapon with better rarity for elites
-          const rarity = rollRarity('elite');
+          const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
           
           const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
@@ -2238,7 +2254,7 @@ setTimeout(() => {
           addLog(`Weapon found: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
           // Generate random armor piece with better rarity for elites
-          const rarity = rollRarity('elite');
+          const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
           
           const slots = ['helmet', 'chest', 'gloves', 'boots'];
@@ -2262,7 +2278,7 @@ setTimeout(() => {
           addLog(`Armor found: ${rarityName} ${name} (+${defense} Defense)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
           // Generate random pendant with elite rarity
-          const rarity = rollRarity('elite');
+          const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
           
           const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
@@ -2280,7 +2296,7 @@ setTimeout(() => {
           addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         } else {
           // Generate random ring with elite rarity
-          const rarity = rollRarity('elite');
+          const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
           
           const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
@@ -2312,7 +2328,7 @@ setTimeout(() => {
     setVictoryLoot(lootMessages);
     setVictoryFlash(true);
     setTimeout(() => setVictoryFlash(false), 400);
-  }, [luckyCharmActive, addLog, rollRarity, getRarityMultiplier, generateAffixes, sortByRarity]);
+  }, [luckyCharmActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
 
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
@@ -3111,7 +3127,7 @@ Object.values(equippedArmor).forEach(piece => {
   }
 });
 if (percentDR > 0) {
-  bossDamage = Math.floor(bossDamage * (1 - percentDR / 100));
+  bossDamage = Math.floor(bossDamage * (1 - Math.min(percentDR, 40) / 100));
 }
 
 // Curse level increases enemy damage
@@ -3828,7 +3844,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       addLog(`💎 Looted: Stamina Potion${luckyCharmActive ? ' x2 (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.WEAPON) {
       // Generate random weapon with boss-tier rarity
-      const rarity = rollRarity('boss');
+      const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
       
       const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
@@ -3847,7 +3863,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       addLog(`💎 Looted: ${rarityName} ${name} (+${attack} Attack)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.ARMOR) {
       // Generate random armor piece with boss-tier rarity
-      const rarity = rollRarity('boss');
+      const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
       
       const slots = ['helmet', 'chest', 'gloves', 'boots'];
@@ -3871,7 +3887,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       addLog(`💎 Looted: ${rarityName} ${name} (+${defense} Defense)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else if (lootRoll < GAME_CONSTANTS.MINI_BOSS_LOOT_RATES.PENDANT) {
       // Generate random pendant with boss-tier rarity
-      const rarity = rollRarity('boss');
+      const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
       
       const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
@@ -3889,7 +3905,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       addLog(`💎 Looted: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
     } else {
       // Generate random ring with boss-tier rarity
-      const rarity = rollRarity('boss');
+      const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
       
       const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
@@ -3964,7 +3980,7 @@ Object.values(equippedArmor).forEach(piece => {
   }
 });
 if (percentDR > 0) {
-  bossDamage = Math.floor(bossDamage * (1 - percentDR / 100));
+  bossDamage = Math.floor(bossDamage * (1 - Math.min(percentDR, 40) / 100));
 }
 
 // Curse level increases enemy damage

@@ -185,7 +185,7 @@ export const GAME_CONSTANTS = {
   AFFIX_COSTS: {
     weapon: {
       flatDamage: 1,           // 1 budget = +1 damage
-      percentDamage: 3,        // 1 budget = +0.33% damage
+      percentDamage: 1.5,      // 1 budget = +0.67% damage
       critChance: 5,           // 1 budget = +0.2% crit
       critMultiplier: 10,      // 1 budget = +0.1x crit damage
       poisonChance: 2,         // 1 budget = +0.5% poison chance
@@ -193,7 +193,7 @@ export const GAME_CONSTANTS = {
     },
     armor: {
       flatArmor: 1,            // 1 budget = +1 armor
-      percentDR: 8,            // 1 budget = +0.125% DR
+      percentDR: 3,            // 1 budget = +0.33% DR (capped at 40% total)
       flatHP: 2                // 1 budget = +0.5 HP
     }
   },
