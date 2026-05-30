@@ -751,10 +751,17 @@ const getDateKey = useCallback((date) => {
   
   // Intro cinematic on mount
   useEffect(() => {
-    const t1 = setTimeout(() => setIntroPhase('fading'), 3800);
-    const t2 = setTimeout(() => setIntroPhase('done'), 4600);
-    introTimers.current = [t1, t2];
-    return () => introTimers.current.forEach(clearTimeout);
+    const advance = () => {
+      setIntroPhase('fading');
+      const t = setTimeout(() => setIntroPhase('done'), 800);
+      introTimers.current = [t];
+    };
+    const onKey = (e) => { if (e.key === 'Enter') advance(); };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      introTimers.current.forEach(clearTimeout);
+    };
   }, []);
 
     useEffect(() => {
@@ -5188,7 +5195,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           onClick={() => {
             introTimers.current.forEach(clearTimeout);
             setIntroPhase('fading');
-            setTimeout(() => setIntroPhase('done'), 800);
+            const t = setTimeout(() => setIntroPhase('done'), 800);
+            introTimers.current = [t];
           }}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
@@ -5246,7 +5254,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             color: 'rgba(212,175,55,0.7)',
             marginTop: '48px',
             animation: 'intro-fade-up 0.5s ease-out 2.8s both, intro-hint-pulse 2s ease-in-out 3.3s infinite',
-          }}>✦ tap to begin ✦</p>
+          }}>✦ press enter or tap to begin ✦</p>
         </div>
       )}
 
