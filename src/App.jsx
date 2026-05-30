@@ -1907,7 +1907,7 @@ if (task.overdue) {
     
     let xpGain = Math.floor(baseXp * xpMultiplier);
     
-    setXp(x => x + xpGain);
+    setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
     sounds.taskComplete();
     
     setStudyStats(prev => ({
@@ -2957,8 +2957,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     goldGain = 10; // Regular enemies
   }
   
-  setXp(x => x + xpGain);
-  setGold(e => e + goldGain);
+  setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+  setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
   
   // Accumulate wave gold for final display
   if (battleType === 'wave') {
@@ -3058,6 +3058,15 @@ if (curseLevel === 2) {
   bossDamage = Math.floor(bossDamage * 1.2); // 20% harder
 } else if (curseLevel === 3) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
+}
+// WIS damage reduction (2% per modifier point above 10)
+const _wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+if (_wisMod > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod * 0.02)));
+// DEX dodge (3% per modifier point, cap 20%) — exits enemy turn early
+const _dexMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+if (_dexMod > 0 && Math.random() < Math.min(0.20, _dexMod * 0.03)) {
+  addLog(`⚡ You dodge the attack! (DEX)`);
+  return;
 }
 
 // Phase 2 ramping damage (Gauntlet only)
@@ -3300,8 +3309,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               setTimeout(() => {
                 const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
                 const goldGain = calculateCombatGold(isFinalBoss ? 'final' : (battleType === 'elite' ? 'elite' : 'normal'));
-                setXp(x => x + xpGain);
-                setGold(e => e + goldGain);
+                setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+                setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
                 addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
                 
                 // Set victory dialogue
@@ -3694,8 +3703,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
       const goldGain = calculateCombatGold(isFinalBoss ? 'final' : (battleType === 'elite' ? 'elite' : (battleType === 'wave' ? 'wave' : 'normal')));
-      setXp(x => x + xpGain);
-      setGold(e => e + goldGain);
+      setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+      setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
       
       // Accumulate wave gold for final display
       if (battleType === 'wave') {
@@ -3898,6 +3907,15 @@ if (curseLevel === 2) {
   bossDamage = Math.floor(bossDamage * 1.2); // 20% harder
 } else if (curseLevel === 3) {
   bossDamage = Math.floor(bossDamage * 1.4); // 40% harder
+}
+// WIS damage reduction (2% per modifier point above 10)
+const _wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+if (_wisMod > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod * 0.02)));
+// DEX dodge (3% per modifier point, cap 20%) — exits enemy turn early
+const _dexMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+if (_dexMod > 0 && Math.random() < Math.min(0.20, _dexMod * 0.03)) {
+  addLog(`⚡ You dodge the attack! (DEX)`);
+  return;
 }
 
 // Phase 2 ramping damage (Gauntlet only)
@@ -4105,8 +4123,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 setTimeout(() => {
                   const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
                   const goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
-                  setXp(x => x + xpGain);
-                  setGold(e => e + goldGain);
+                  setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+                  setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
                   addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
                   
                   // Set victory dialogue
@@ -4291,8 +4309,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         goldGain = 10;
       }
       
-      setXp(x => x + xpGain);
-      setGold(e => e + goldGain);
+      setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+      setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
       
       if (battleType === 'wave') {
         setWaveGoldTotal(t => t + goldGain);
@@ -4365,6 +4383,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       let bossDamage = Math.max(1, Math.floor(
         baseAttack - getBaseDefense()
       ));
+      // WIS damage reduction
+      const _wisMod2 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      if (_wisMod2 > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod2 * 0.02)));
+      // DEX dodge
+      const _dexMod2 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+      if (_dexMod2 > 0 && Math.random() < Math.min(0.20, _dexMod2 * 0.03)) {
+        addLog(`⚡ You dodge the attack! (DEX)`);
+        return;
+      }
       
       // Phase 2 ramping damage
       if (inPhase2 && battleType === 'final') {
@@ -4601,8 +4628,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       let xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : (battleType === 'elite' ? GAME_CONSTANTS.XP_REWARDS.miniBoss : 10);
       let goldGain = isFinalBoss ? 100 : (battleType === 'elite' ? 50 : 10);
       
-      setXp(x => x + xpGain);
-      setGold(e => e + goldGain);
+      setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+      setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
       addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
       
       setBattling(false);
@@ -4635,6 +4662,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       }
       
       let bossDamage = Math.max(1, Math.floor(baseAttack - getBaseDefense()));
+      // WIS damage reduction
+      const _wisMod3 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      if (_wisMod3 > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod3 * 0.02)));
+      // DEX dodge
+      const _dexMod3 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+      if (_dexMod3 > 0 && Math.random() < Math.min(0.20, _dexMod3 * 0.03)) {
+        addLog(`⚡ You dodge the attack! (DEX)`);
+        return;
+      }
       
       // Bastion of Faith: +20% defense (reduce incoming damage)
       if (crusaderBastionOfFaith > 0) {
@@ -4764,6 +4800,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       let bossDamage = Math.max(1, Math.floor(
         baseAttack - getBaseDefense()
       ));
+      // WIS damage reduction
+      const _wisMod4 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      if (_wisMod4 > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod4 * 0.02)));
+      // DEX dodge
+      const _dexMod4 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+      if (_dexMod4 > 0 && Math.random() < Math.min(0.20, _dexMod4 * 0.03)) {
+        addLog(`⚡ You dodge the attack! (DEX)`);
+        return;
+      }
       
       // Apply Knight defense modifiers (same as attack function)
       let knightDefenseModifier = 0;
