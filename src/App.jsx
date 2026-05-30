@@ -5191,7 +5191,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               lineHeight: 1.05,
               marginBottom: '0.1em',
               color: '#FFFFFF',
-              textShadow: '0 0 15px rgba(255,180,180,1), 0 0 40px rgba(255,60,60,0.95), 0 0 80px rgba(220,30,30,0.75), 0 0 140px rgba(180,0,0,0.5), 0 2px 0 rgba(0,0,0,0.9)',
+              textShadow: (() => {
+                const glowMap = {red:[220,50,50],blue:[96,165,250],green:[34,197,94],white:[220,220,220],purple:[167,139,250],yellow:[212,175,55],amber:[245,158,11]};
+                const [r,g,b] = glowMap[hero.class.color] || glowMap.red;
+                return [
+                  `0 0 15px rgba(${r},${g},${b},1)`,
+                  `0 0 40px rgba(${r},${g},${b},0.9)`,
+                  `0 0 80px rgba(${r},${g},${b},0.7)`,
+                  `0 0 140px rgba(${r},${g},${b},0.45)`,
+                  '0 2px 0 rgba(0,0,0,0.9)'
+                ].join(', ');
+              })(),
               animation: 'pulse-glow 4s ease-in-out infinite',
             }}>
               CURSE OF KNOWLEDGE
