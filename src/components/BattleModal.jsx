@@ -292,8 +292,9 @@ const BattleModal = ({
   const handlePlayerAction = (actionFn, playerActionName, skipEnemyTurn = false) => {
     if (turnPhase !== 'player') return;
 
-    const CHAR_SPEED = 25; // must match TypewriterText speed prop
-    const READ_PAUSE = 1000; // ms to hold after typing finishes before advancing
+    const CHAR_SPEED = 25;        // must match TypewriterText speed prop
+    const READ_PAUSE = 1000;      // pause after player text finishes
+    const ENEMY_READ_PAUSE = 2200; // pause after enemy text finishes (longer so it sinks in)
 
     const heroName = hero?.name || 'You';
     const enemyName = bossName || 'The enemy';
@@ -322,7 +323,7 @@ const BattleModal = ({
     }, enemyActDelay);
 
     // After enemy text finishes typing, return control to player
-    const enemyTextDuration = enemyText.length * CHAR_SPEED + READ_PAUSE;
+    const enemyTextDuration = enemyText.length * CHAR_SPEED + ENEMY_READ_PAUSE;
     schedule(() => {
       setBattleLine('');
       setTurnPhase('player');
