@@ -443,8 +443,8 @@ const BattleModal = ({
           {/* Boss HP Bar */}
           <div className="mb-2">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm uppercase tracking-widest" style={{ color: '#CD7F32' }}>Enemy HP</span>
-              <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
+              <span className="text-base uppercase tracking-widest font-bold" style={{ color: '#CD7F32' }}>Enemy HP</span>
+              <span className="text-lg font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
             </div>
             <div className="h-7 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
