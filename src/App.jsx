@@ -44,6 +44,8 @@ const FantasyStudyQuest = () => {
   const [isDying, setIsDying] = useState(false);
   const [asiPending, setAsiPending] = useState(null); // { newLevel }
   const [chargedCritRoll, setChargedCritRoll] = useState(null); // { roll, multiplier, attackName }
+  const [dayBannerOverlay, setDayBannerOverlay] = useState(null); // { day, theme }
+  const [curseOverlay, setCurseOverlay] = useState(null); // { level, name, isFinal }
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -1396,7 +1398,11 @@ if (tasks.length === 0) {
     }
     
     addLog("The day's trials await...");
-    
+
+    const dayTheme = GAME_CONSTANTS.DAY_NAMES[currentDay]?.theme || '';
+    setDayBannerOverlay({ day: currentDay, theme: dayTheme });
+    setTimeout(() => setDayBannerOverlay(null), 2400);
+
     setHasStarted(true);
     setIsDayActive(true);
     
@@ -5165,18 +5171,21 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // 4th curse level = actual permadeath
       const completedTasks = tasks.filter(t => t.done).length;
       const totalTasks = tasks.length;
-      
-      setGraveyard(prev => [...prev, { 
-        ...hero, 
-        day: currentDay, 
+
+      setGraveyard(prev => [...prev, {
+        ...hero,
+        day: currentDay,
         lvl: level,
         xp: xp,
-        tasks: completedTasks, 
+        tasks: completedTasks,
         total: totalTasks,
         skipCount: skipCount
       }]);
-      
-      addLog('☠️ FOUR CURSES. The abyss claims your soul...');
+
+      setCurseOverlay({ level: 4, name: 'THE ABYSS CLAIMS YOUR SOUL', isFinal: true });
+      setTimeout(() => setCurseOverlay(null), 3000);
+
+      addLog('FOUR CURSES. The abyss claims your soul...');
       
       const newHero = makeName();
       setHero(newHero);
@@ -5229,13 +5238,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setCurseLevel(newCurseLevel);
       setHp(getMaxHp());
       setStamina(getMaxStamina());
-      
+
       const curseNames = ['CURSED', 'DEEPLY CURSED', 'CONDEMNED'];
-      addLog(`💀 You have fallen... The abyss marks you.`);
-      addLog(`🌑 ${curseNames[newCurseLevel - 1]}! (Curse Level ${newCurseLevel}/3)`);
-      
+      const curseName = curseNames[newCurseLevel - 1];
+      setCurseOverlay({ level: newCurseLevel, name: curseName, isFinal: false });
+      setTimeout(() => setCurseOverlay(null), 2600);
+
+      addLog(`You have fallen... The abyss marks you.`);
+      addLog(`${curseName}! (Curse Level ${newCurseLevel}/3)`);
+
       if (newCurseLevel === 3) {
-        addLog('⚠️ WARNING: One more death and your soul is forfeit.');
+        addLog('WARNING: One more death and your soul is forfeit.');
       }
     }
   };
@@ -5505,6 +5518,42 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }
         .fade-in {
           animation: fade-in 0.4s ease-out;
+        }
+        @keyframes day-banner-bg {
+          0% { opacity: 0; }
+          15% { opacity: 1; }
+          70% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes day-banner-slam {
+          0% { opacity: 0; transform: scale(2.2); filter: blur(12px); }
+          30% { opacity: 1; filter: blur(0); }
+          70% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(0.95); }
+        }
+        @keyframes day-banner-sub {
+          0%, 20% { opacity: 0; transform: translateY(14px); }
+          40% { opacity: 1; transform: translateY(0); }
+          75% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes curse-bg {
+          0% { opacity: 0; }
+          12% { opacity: 1; }
+          72% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes curse-slam {
+          0% { opacity: 0; transform: scale(1.8) skewX(-4deg); filter: blur(8px); }
+          25% { opacity: 1; filter: blur(0); }
+          65% { opacity: 1; transform: scale(1) skewX(0deg); }
+          100% { opacity: 0; transform: scale(0.92); }
+        }
+        @keyframes curse-sub {
+          0%, 22% { opacity: 0; transform: translateY(10px); }
+          40% { opacity: 1; transform: translateY(0); }
+          70% { opacity: 1; }
+          100% { opacity: 0; }
         }
       `}</style>
 
@@ -6464,6 +6513,92 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           newLevel={asiPending.newLevel}
           onClose={handleASIConfirm}
         />
+      )}
+
+      {/* Day-start banner */}
+      {dayBannerOverlay && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 190, pointerEvents: 'none',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          background: 'radial-gradient(ellipse at center, rgba(15,10,5,0.97) 0%, rgba(5,3,0,0.98) 100%)',
+          animation: 'day-banner-bg 2.4s ease-in-out forwards',
+        }}>
+          {/* Ornament line */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px',
+            animation: 'day-banner-sub 2.4s ease-in-out forwards' }}>
+            <div style={{ width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.6))' }} />
+            <span style={{ color: 'rgba(212,175,55,0.5)', fontSize: '9px', letterSpacing: '0.5em' }}>DAY {dayBannerOverlay.day}</span>
+            <div style={{ width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.6))' }} />
+          </div>
+          {/* Day number slam */}
+          <div style={{
+            fontFamily: "'Cinzel', serif", fontWeight: 900,
+            fontSize: 'clamp(4rem, 16vw, 9rem)',
+            letterSpacing: '0.08em', lineHeight: 1,
+            color: '#F5F5DC',
+            textShadow: '0 0 30px rgba(212,175,55,0.9), 0 0 70px rgba(180,130,0,0.5), 0 4px 8px rgba(0,0,0,1)',
+            animation: 'day-banner-slam 2.4s cubic-bezier(0.16,1,0.3,1) forwards',
+          }}>
+            {String(dayBannerOverlay.day).padStart(2, '0')}
+          </div>
+          {/* Theme quote */}
+          {dayBannerOverlay.theme && (
+            <p style={{
+              fontFamily: "'Cinzel', serif", fontSize: '0.8rem',
+              letterSpacing: '0.25em', textTransform: 'uppercase',
+              color: 'rgba(210,170,100,0.8)', marginTop: '22px', maxWidth: '480px', textAlign: 'center',
+              animation: 'day-banner-sub 2.4s ease-in-out forwards',
+            }}>
+              "{dayBannerOverlay.theme}"
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Curse / death overlay */}
+      {curseOverlay && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 190, pointerEvents: 'none',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          background: curseOverlay.isFinal
+            ? 'radial-gradient(ellipse at center, rgba(20,0,30,0.98) 0%, rgba(0,0,0,0.99) 100%)'
+            : 'radial-gradient(ellipse at center, rgba(30,0,0,0.97) 0%, rgba(5,0,10,0.98) 100%)',
+          animation: `curse-bg ${curseOverlay.isFinal ? '3s' : '2.6s'} ease-in-out forwards`,
+        }}>
+          {/* Level badge */}
+          {!curseOverlay.isFinal && (
+            <p style={{
+              fontFamily: "'Cinzel', serif", fontSize: '0.7rem', letterSpacing: '0.5em',
+              textTransform: 'uppercase', color: 'rgba(180,80,80,0.8)', marginBottom: '12px',
+              animation: 'curse-sub 2.6s ease-in-out forwards',
+            }}>
+              CURSE LEVEL {curseOverlay.level} / 3
+            </p>
+          )}
+          {/* Main title */}
+          <div style={{
+            fontFamily: "'Cinzel', serif", fontWeight: 900,
+            fontSize: curseOverlay.isFinal ? 'clamp(2.2rem, 8vw, 5rem)' : 'clamp(3rem, 12vw, 7rem)',
+            letterSpacing: '0.1em', lineHeight: 1.1, textAlign: 'center',
+            color: curseOverlay.isFinal ? '#C084FC' : '#EF4444',
+            textShadow: curseOverlay.isFinal
+              ? '0 0 25px rgba(192,132,252,0.9), 0 0 60px rgba(150,80,220,0.5), 0 4px 8px rgba(0,0,0,1)'
+              : '0 0 25px rgba(239,68,68,0.9), 0 0 60px rgba(180,0,0,0.5), 0 4px 8px rgba(0,0,0,1)',
+            animation: `curse-slam ${curseOverlay.isFinal ? '3s' : '2.6s'} cubic-bezier(0.16,1,0.3,1) forwards`,
+            maxWidth: '600px', padding: '0 24px',
+          }}>
+            {curseOverlay.name}
+          </div>
+          {/* Subtitle */}
+          <p style={{
+            fontFamily: "'Cinzel', serif", fontSize: '0.72rem', letterSpacing: '0.3em',
+            textTransform: 'uppercase', marginTop: '20px', textAlign: 'center',
+            color: curseOverlay.isFinal ? 'rgba(192,132,252,0.6)' : 'rgba(239,68,68,0.55)',
+            animation: `curse-sub ${curseOverlay.isFinal ? '3s' : '2.6s'} ease-in-out forwards`,
+          }}>
+            {curseOverlay.isFinal ? 'A new soul must take up the burden...' : 'You have fallen. The abyss marks you.'}
+          </p>
+        </div>
       )}
 
     </div>
