@@ -5190,16 +5190,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               letterSpacing: '0.12em',
               lineHeight: 1.05,
               marginBottom: '0.1em',
-              background: 'linear-gradient(to bottom, #ffffff 0%, #FF8080 30%, #CC0000 65%, #7a0000 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              filter: [
-                'drop-shadow(0 0 8px rgba(255, 80, 80, 0.95))',
-                'drop-shadow(0 0 25px rgba(255, 30, 30, 0.75))',
-                'drop-shadow(0 0 60px rgba(180, 0, 0, 0.55))',
-                'drop-shadow(0 3px 6px rgba(0,0,0,0.95))'
-              ].join(' '),
+              color: '#FF5555',
+              textShadow: [
+                '0 0 15px rgba(255, 80, 80, 1)',
+                '0 0 40px rgba(255, 40, 40, 0.85)',
+                '0 0 80px rgba(220, 0, 0, 0.65)',
+                '0 0 120px rgba(180, 0, 0, 0.4)',
+                '0 3px 6px rgba(0, 0, 0, 1)'
+              ].join(', '),
               animation: 'pulse-glow 4s ease-in-out infinite',
             }}>
               CURSE OF KNOWLEDGE
