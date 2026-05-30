@@ -5955,7 +5955,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               inPhase2={inPhase2} inPhase3={inPhase3}
               phase2DamageStacks={phase2DamageStacks} shadowAdds={shadowAdds}
               aoeWarning={aoeWarning} showDodgeButton={showDodgeButton}
-              showTauntBoxes={showTauntBoxes} enemyDialogue={enemyDialogue}
+              showTauntBoxes={showTauntBoxes} enemyDialogue={enemyDialogue} setEnemyDialogue={setEnemyDialogue}
               enemyTauntResponse={enemyTauntResponse} playerTaunt={playerTaunt}
               isTauntAvailable={isTauntAvailable}
               hp={hp} getMaxHp={getMaxHp} stamina={stamina} getMaxStamina={getMaxStamina}

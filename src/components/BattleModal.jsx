@@ -5,30 +5,66 @@ import { COLORS, GAME_CONSTANTS } from '../constants';
 // ─── Enemy move pools by battle type ─────────────────────────────────────────
 const ENEMY_MOVES = {
   regular: [
-    { name: 'Strike',      desc: 'lunges at you with reckless force!' },
-    { name: 'Slam',        desc: 'slams down with crushing weight!' },
-    { name: 'Rend',        desc: 'tears into you with savage claws!' },
-    { name: 'Bash',        desc: 'bashes you with brute force!' },
+    { name: 'Strike',      desc: 'lunges at you with reckless force!',       taunt: "Is that hesitation I smell?" },
+    { name: 'Slam',        desc: 'slams down with crushing weight!',          taunt: "Feel that? There's more where that came from." },
+    { name: 'Rend',        desc: 'tears into you with savage claws!',         taunt: "Your defenses crumble like paper." },
+    { name: 'Bash',        desc: 'bashes you with brute force!',              taunt: "Stay down. It's easier." },
   ],
   elite: [
-    { name: 'Tormented Strike',    desc: 'channels its torment into a vicious strike!' },
-    { name: 'Soul Rend',           desc: 'tears at the threads of your soul!' },
-    { name: 'Exhausting Assault',  desc: 'unleashes a relentless, draining assault!' },
-    { name: 'Cursed Slash',        desc: 'slashes with a curse-infused blade!' },
-    { name: 'Double Strike',       desc: 'strikes twice in rapid, brutal succession!' },
+    { name: 'Tormented Strike',    desc: 'channels its torment into a vicious strike!',   taunt: "My pain becomes your pain." },
+    { name: 'Soul Rend',           desc: 'tears at the threads of your soul!',             taunt: "I can feel your resolve weakening." },
+    { name: 'Exhausting Assault',  desc: 'unleashes a relentless, draining assault!',      taunt: "Exhaustion is just the beginning." },
+    { name: 'Cursed Slash',        desc: 'slashes with a curse-infused blade!',            taunt: "The curse runs deeper than you know." },
+    { name: 'Double Strike',       desc: 'strikes twice in rapid, brutal succession!',     taunt: "Too slow. Always too slow." },
   ],
   wave: [
-    { name: 'Frenzied Strike', desc: 'attacks in a frenzied rush!' },
-    { name: 'Overwhelming Blow', desc: 'overwhelms you with sheer numbers!' },
-    { name: 'Coordinated Assault', desc: 'coordinates a devastating group assault!' },
+    { name: 'Frenzied Strike',     desc: 'attacks in a frenzied rush!',               taunt: "We don't tire. You do." },
+    { name: 'Overwhelming Blow',   desc: 'overwhelms you with sheer numbers!',         taunt: "Numbers always win in the end." },
+    { name: 'Coordinated Assault', desc: 'coordinates a devastating group assault!',   taunt: "No one fights alone against us." },
   ],
   final: [
-    { name: 'Curse Slam',           desc: 'brings the full weight of the curse crashing down!' },
-    { name: 'Abyssal Strike',       desc: 'strikes from the depths of the abyss!' },
-    { name: 'Void Drain',           desc: 'reaches into your being and drains your will to fight!' },
-    { name: 'Shadow Barrage',       desc: 'erupts in a relentless barrage of shadow strikes!' },
-    { name: 'Wrath of the Undying', desc: 'is consumed by ancient, undying wrath!' },
-    { name: 'Abyss Awakens',        desc: 'channels the roaring void into a single devastating blow!' },
+    { name: 'Curse Slam',           desc: 'brings the full weight of the curse crashing down!',      taunt: "The curse IS me. And I am eternal." },
+    { name: 'Abyssal Strike',       desc: 'strikes from the depths of the abyss!',                   taunt: "The abyss has swallowed greater heroes." },
+    { name: 'Void Drain',           desc: 'reaches into your being and drains your will to fight!',   taunt: "I don't just damage you. I hollow you out." },
+    { name: 'Shadow Barrage',       desc: 'erupts in a relentless barrage of shadow strikes!',        taunt: "Shadows have no weakness. Unlike you." },
+    { name: 'Wrath of the Undying', desc: 'is consumed by ancient, undying wrath!',                   taunt: "I cannot die. I can only be... delayed." },
+    { name: 'Abyss Awakens',        desc: 'channels the roaring void into a single devastating blow!', taunt: "Even the void hungers for your failure." },
+  ],
+};
+
+const MID_COMBAT_TAUNTS = {
+  regular: [
+    "Is that the best you've got?",
+    "You're already slowing down.",
+    "Keep fighting. It won't matter.",
+    "Your hesitation costs you.",
+    "I've broken stronger heroes than you.",
+    "Every second you waste, I grow stronger.",
+  ],
+  elite: [
+    "Your strength means nothing here.",
+    "Every strike only delays the inevitable.",
+    "I have endured far worse than you.",
+    "You fight well... for someone who's losing.",
+    "The curse has broken better heroes than you.",
+    "Feel that? That's your hope leaving.",
+  ],
+  wave: [
+    "There are more of us. Always more.",
+    "Cut one down, two more rise.",
+    "You tire. We do not.",
+    "Your resolve weakens with every wave.",
+    "How many can you fight before you break?",
+  ],
+  final: [
+    "The curse does not end with me.",
+    "You have come so far... only to fall here.",
+    "Every day you delayed brought you to this moment.",
+    "I am everything you have been running from.",
+    "Your progress means nothing against eternity.",
+    "This is where heroes learn humility.",
+    "The weight of your failures empowers me.",
+    "Did you truly think you could break the curse?",
   ],
 };
 
@@ -142,6 +178,7 @@ const BattleModal = ({
   victoryLoot,
   // Battle log
   log,
+  setEnemyDialogue,
   // Callbacks
   attack,
   useCrushingBlow,
@@ -166,6 +203,7 @@ const BattleModal = ({
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const turnTimers = useRef([]);
+  const turnCountRef = useRef(0);
   const logRef = useRef(null);
   const prevBossHp = useRef(bossHp);
   const prevPlayerHp = useRef(hp);
@@ -267,6 +305,7 @@ const BattleModal = ({
     // Show enemy text at the exact moment enemy damage fires
     schedule(() => {
       setBattleLine(enemyText);
+      if (move.taunt && setEnemyDialogue) setEnemyDialogue(move.taunt);
     }, enemyActDelay);
 
     // After enemy text finishes typing, return control to player
@@ -274,6 +313,11 @@ const BattleModal = ({
     schedule(() => {
       setBattleLine('');
       setTurnPhase('player');
+      turnCountRef.current++;
+      if (turnCountRef.current % 3 === 0 && setEnemyDialogue) {
+        const pool = MID_COMBAT_TAUNTS[isFinalBoss ? 'final' : (battleType || 'regular')];
+        setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
+      }
     }, enemyActDelay + enemyTextDuration);
   };
 
@@ -503,22 +547,29 @@ const BattleModal = ({
             </motion.div>
           )}
 
-          {/* Enemy Dialogue */}
+          {/* Enemy Dialogue — Speech Bubble */}
           <AnimatePresence>
-            {(showTauntBoxes || enemyDialogue) && (
-              <motion.div
-                key={showTauntBoxes ? 'taunt' : 'dialogue'}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="rounded p-3 relative"
-                style={{ backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(139, 0, 0, 0.4)' }}
-              >
-                <p className="text-base italic text-center" style={{ color: 'rgba(245,245,220,0.85)' }}>
-                  "{showTauntBoxes ? (enemyTauntResponse || '...') : enemyDialogue}"
-                </p>
-              </motion.div>
-            )}
+            {(showTauntBoxes || enemyDialogue) && (() => {
+              const borderColor = isFinalBoss ? 'rgba(160,40,200,0.7)' : battleType === 'elite' ? 'rgba(220,120,0,0.7)' : battleType === 'wave' ? 'rgba(30,120,220,0.7)' : 'rgba(180,20,20,0.7)';
+              const glowColor   = isFinalBoss ? 'rgba(160,40,200,0.2)' : battleType === 'elite' ? 'rgba(220,120,0,0.15)' : battleType === 'wave' ? 'rgba(30,120,220,0.15)' : 'rgba(180,20,20,0.15)';
+              const dialogueText = showTauntBoxes ? (enemyTauntResponse || '...') : enemyDialogue;
+              return (
+                <motion.div
+                  key={dialogueText}
+                  initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.22 }}
+                  className="rounded-lg px-5 py-4 relative mt-2"
+                  style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid ' + borderColor, boxShadow: '0 0 24px ' + glowColor + ', inset 0 1px 0 rgba(255,255,255,0.04)' }}
+                >
+                  <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid ' + borderColor }} />
+                  <p className="text-xl italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'Cinzel, serif' }}>
+                    "<TypewriterText key={dialogueText} text={dialogueText} speed={20} />"
+                  </p>
+                </motion.div>
+              );
+            })()}
           </AnimatePresence>
         </div>
 
