@@ -5190,13 +5190,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               letterSpacing: '0.12em',
               lineHeight: 1.05,
               marginBottom: '0.1em',
-              color: '#FFB0B0',
+              color: '#FFF0F0',
               textShadow: [
-                '0 0 10px rgba(255, 200, 200, 1)',
-                '0 0 25px rgba(255, 100, 100, 1)',
-                '0 0 60px rgba(255, 50, 50, 0.9)',
-                '0 0 120px rgba(220, 0, 0, 0.7)',
-                '0 3px 6px rgba(0, 0, 0, 1)'
+                '0 0 8px rgba(255, 255, 255, 0.9)',
+                '0 0 20px rgba(255, 160, 160, 1)',
+                '0 0 45px rgba(255, 60, 60, 1)',
+                '0 0 90px rgba(255, 20, 20, 0.85)',
+                '0 0 150px rgba(200, 0, 0, 0.6)',
+                '0 4px 8px rgba(0, 0, 0, 1)'
               ].join(', '),
               animation: 'pulse-glow 4s ease-in-out infinite',
             }}>
