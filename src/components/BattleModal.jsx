@@ -888,8 +888,9 @@ const BattleModal = ({
                       {hero?.class?.name === 'Knight' && (() => {
                         const cd = onCooldown(knightCrushingBlowCooldown);
                         const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill;
+                        if (locked) return null;
                         const noSP = stamina < 17;
-                        const unavail = locked || noSP || cd;
+                        const unavail = noSP || cd;
                         return (
                           <button onClick={() => handlePlayerAction(useCrushingBlow, 'Crushing Blow')} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
@@ -898,9 +899,7 @@ const BattleModal = ({
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
                             <div className="text-base uppercase tracking-wide">Crushing Blow</div>
                             <div className="text-sm mt-0.5 opacity-70">
-                              {locked ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
-                                : cd ? <span className="text-yellow-300">⏳ On Cooldown</span>
-                                : '17 SP'}
+                              {cd ? <span className="text-yellow-300">⏳ On Cooldown</span> : '17 SP'}
                             </div>
                           </button>
                         );
@@ -910,7 +909,8 @@ const BattleModal = ({
                       {hero?.class?.name === 'Crusader' && (() => {
                         const cd = onCooldown(crusaderSmiteCooldown);
                         const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill;
-                        const unavail = locked || stamina < 15 || cd;
+                        if (locked) return null;
+                        const unavail = stamina < 15 || cd;
                         return (
                           <button onClick={() => handlePlayerAction(useSmite, 'Smite')} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
@@ -919,9 +919,7 @@ const BattleModal = ({
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
                             <div className="text-base uppercase tracking-wide">Smite</div>
                             <div className="text-sm mt-0.5 opacity-70">
-                              {locked ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}</span>
-                                : cd ? <span className="text-yellow-300">⏳ On Cooldown</span>
-                                : '15 SP'}
+                              {cd ? <span className="text-yellow-300">⏳ On Cooldown</span> : '15 SP'}
                             </div>
                           </button>
                         );
@@ -931,8 +929,9 @@ const BattleModal = ({
                       {hero?.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (() => {
                         const spec = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name];
                         const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special;
+                        if (locked) return null;
                         const cd = (hero.class.name === 'Wizard' && wizardTemporalCooldown) || (hero.class.name === 'Crusader' && crusaderJudgmentCooldown);
-                        const unavail = locked || stamina < spec.cost || (spec.hpCost && hp <= spec.hpCost) || cd;
+                        const unavail = stamina < spec.cost || (spec.hpCost && hp <= spec.hpCost) || cd;
                         return (
                           <button onClick={() => handlePlayerAction(specialAttack, spec.name)} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
@@ -941,9 +940,7 @@ const BattleModal = ({
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
                             <div className="text-base uppercase tracking-wide">{spec.name}</div>
                             <div className="text-sm mt-0.5 opacity-70">
-                              {locked ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}</span>
-                                : cd ? <span className="text-yellow-300">⏳ On Cooldown</span>
-                                : <>{spec.cost} SP{spec.hpCost ? ` · ${spec.hpCost + (recklessStacks * 10)} HP` : ''}</>}
+                              {cd ? <span className="text-yellow-300">⏳ On Cooldown</span> : <>{spec.cost} SP{spec.hpCost ? ` · ${spec.hpCost + (recklessStacks * 10)} HP` : ''}</>}
                             </div>
                           </button>
                         );
@@ -953,11 +950,12 @@ const BattleModal = ({
                       {hero?.class && GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name] && (() => {
                         const tac = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name];
                         const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical;
+                        if (locked) return null;
                         const cd = (hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
                           (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
                           (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
                           (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown);
-                        const unavail = locked || stamina < tac.cost || cd;
+                        const unavail = stamina < tac.cost || cd;
                         return (
                           <button onClick={() => handlePlayerAction(useTacticalSkill, tac.name)} disabled={unavail}
                             className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
@@ -966,9 +964,7 @@ const BattleModal = ({
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
                             <div className="text-base uppercase tracking-wide">{tac.name}</div>
                             <div className="text-sm mt-0.5 opacity-70">
-                              {locked ? <span className="text-red-400">🔒 Lvl {GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}</span>
-                                : cd ? <span className="text-yellow-300">⏳ On Cooldown</span>
-                                : <>{tac.cost} SP</>}
+                              {cd ? <span className="text-yellow-300">⏳ On Cooldown</span> : <>{tac.cost} SP</>}
                             </div>
                           </button>
                         );
