@@ -842,7 +842,7 @@ const BattleModal = ({
                     <motion.p key="idle"
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                       className="text-sm uppercase tracking-[0.3em] w-full text-center"
-                      style={{ color: 'rgba(212,175,55,0.6)' }}>
+                      style={{ color: '#FFFFFF' }}>
                       What will {hero?.name || 'you'} do?
                     </motion.p>
                   )}
