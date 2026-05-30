@@ -46,6 +46,7 @@ const FantasyStudyQuest = () => {
   const [chargedCritRoll, setChargedCritRoll] = useState(null); // { roll, multiplier, attackName }
   const [dayBannerOverlay, setDayBannerOverlay] = useState(null); // { day, theme }
   const [curseOverlay, setCurseOverlay] = useState(null); // { level, name, isFinal }
+  const [levelUpOverlay, setLevelUpOverlay] = useState(null); // { level, className, primaryAbility, skillUnlocked }
   const [currentDay, setCurrentDay] = useState(1);
   const [hasStarted, setHasStarted] = useState(false);
   const [hero, setHero] = useState(null);
@@ -1276,35 +1277,51 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       sounds.levelUp();
       addLog(`The hero has grown stronger! Now level ${newLevel}`);
       setHp(h => Math.min(getMaxHp(), h + 20));
+
       // Grow ability scores — primary auto-increments; even levels open ASI choice modal
+      let primaryAbility = null;
       if (hero?.class?.name) {
-        const primary = PRIMARY_ABILITY[hero.class.name];
+        primaryAbility = PRIMARY_ABILITY[hero.class.name];
         setHero(prev => {
           const ab = { ...(prev.abilities || STARTING_ABILITIES[hero.class.name] || STARTING_ABILITIES.Knight) };
-          ab[primary] = (ab[primary] || 10) + 1;
+          ab[primaryAbility] = (ab[primaryAbility] || 10) + 1;
           return { ...prev, abilities: ab };
         });
-        addLog(`${PRIMARY_ABILITY[hero.class.name].toUpperCase()} increased!`);
+        addLog(`${primaryAbility.toUpperCase()} increased!`);
         if (newLevel % 2 === 0) setAsiPending({ newLevel });
       }
-      
+
       // Skill unlock notifications
+      let skillUnlocked = null;
       if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill && hero?.class) {
         const skillName = GAME_CONSTANTS.BASIC_SKILLS[hero.class.name]?.name;
         if (skillName) {
-          addLog(`⚔️ NEW SKILL UNLOCKED: ${skillName}!`);
+          skillUnlocked = { label: 'SKILL UNLOCKED', name: skillName };
+          addLog(`SKILL UNLOCKED: ${skillName}!`);
         }
       } else if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special && hero?.class) {
         const skillName = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name]?.name;
         if (skillName) {
-          addLog(`✨ SPECIAL ATTACK UNLOCKED: ${skillName}!`);
+          skillUnlocked = { label: 'SPECIAL ATTACK UNLOCKED', name: skillName };
+          addLog(`SPECIAL ATTACK UNLOCKED: ${skillName}!`);
         }
       } else if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical && hero?.class) {
         const skillName = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name]?.name;
         if (skillName) {
-          addLog(`🛡️ TACTICAL SKILL UNLOCKED: ${skillName}!`);
+          skillUnlocked = { label: 'TACTICAL SKILL UNLOCKED', name: skillName };
+          addLog(`TACTICAL SKILL UNLOCKED: ${skillName}!`);
         }
       }
+
+      // Trigger level-up cinematic
+      const overlayDuration = skillUnlocked ? 3200 : 2600;
+      setLevelUpOverlay({
+        level: newLevel,
+        className: hero?.class?.name || '',
+        primaryAbility,
+        skillUnlocked,
+      });
+      setTimeout(() => setLevelUpOverlay(null), overlayDuration);
     }
   }, [xp, level, addLog, getMaxHp, hero]);
   
@@ -5555,6 +5572,42 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           70% { opacity: 1; }
           100% { opacity: 0; }
         }
+        @keyframes levelup-bg {
+          0% { opacity: 0; }
+          10% { opacity: 1; }
+          72% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes levelup-burst {
+          0% { opacity: 0; transform: scale(0.4); }
+          30% { opacity: 0.35; transform: scale(1.1); }
+          65% { opacity: 0.18; transform: scale(1); }
+          100% { opacity: 0; }
+        }
+        @keyframes levelup-label {
+          0% { opacity: 0; transform: translateY(-8px) scale(0.9); }
+          18% { opacity: 1; transform: translateY(0) scale(1); }
+          72% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes levelup-number {
+          0% { opacity: 0; transform: scale(2.4); filter: blur(14px); }
+          28% { opacity: 1; filter: blur(0); }
+          68% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(0.94); }
+        }
+        @keyframes levelup-sub {
+          0%, 26% { opacity: 0; transform: translateY(12px); }
+          42% { opacity: 1; transform: translateY(0); }
+          72% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+        @keyframes levelup-skill {
+          0%, 40% { opacity: 0; transform: translateY(8px); }
+          55% { opacity: 1; transform: translateY(0); }
+          75% { opacity: 1; }
+          100% { opacity: 0; }
+        }
       `}</style>
 
       {/* ── Intro cinematic overlay ── */}
@@ -6554,6 +6607,76 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           )}
         </div>
       )}
+
+      {/* Level-up cinematic */}
+      {levelUpOverlay && (() => {
+        const dur = levelUpOverlay.skillUnlocked ? '3.2s' : '2.6s';
+        return (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 190, pointerEvents: 'none',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            background: 'radial-gradient(ellipse at center, rgba(10,8,2,0.97) 0%, rgba(3,2,0,0.98) 100%)',
+            animation: `levelup-bg ${dur} ease-in-out forwards`,
+          }}>
+            {/* Radial gold burst */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'radial-gradient(ellipse at center, rgba(212,175,55,0.45) 0%, rgba(180,130,0,0.15) 40%, transparent 70%)',
+              animation: `levelup-burst ${dur} ease-out forwards`,
+            }} />
+            {/* LEVEL UP label */}
+            <p style={{
+              fontFamily: "'Cinzel', serif", fontWeight: 700,
+              fontSize: '0.75rem', letterSpacing: '0.55em', textTransform: 'uppercase',
+              color: 'rgba(212,175,55,0.85)', marginBottom: '10px',
+              animation: `levelup-label ${dur} ease-out forwards`,
+            }}>LEVEL UP</p>
+            {/* Level number */}
+            <div style={{
+              fontFamily: "'Cinzel', serif", fontWeight: 900,
+              fontSize: 'clamp(5rem, 18vw, 10rem)',
+              letterSpacing: '0.06em', lineHeight: 1,
+              color: '#F5F5DC',
+              textShadow: '0 0 30px rgba(212,175,55,1), 0 0 80px rgba(180,130,0,0.7), 0 0 140px rgba(140,100,0,0.35), 0 4px 10px rgba(0,0,0,1)',
+              animation: `levelup-number ${dur} cubic-bezier(0.16,1,0.3,1) forwards`,
+            }}>
+              {String(levelUpOverlay.level).padStart(2, '0')}
+            </div>
+            {/* Class + stat line */}
+            <p style={{
+              fontFamily: "'Cinzel', serif", fontSize: '0.78rem',
+              letterSpacing: '0.3em', textTransform: 'uppercase',
+              color: 'rgba(210,175,90,0.75)', marginTop: '18px',
+              animation: `levelup-sub ${dur} ease-out forwards`,
+            }}>
+              {[levelUpOverlay.className, levelUpOverlay.primaryAbility ? `${levelUpOverlay.primaryAbility.toUpperCase()} +1` : null]
+                .filter(Boolean).join('  ·  ')}
+            </p>
+            {/* Skill unlock banner */}
+            {levelUpOverlay.skillUnlocked && (
+              <div style={{
+                marginTop: '22px', padding: '10px 28px',
+                border: '1px solid rgba(212,175,55,0.5)',
+                borderRadius: '6px',
+                background: 'rgba(0,0,0,0.4)',
+                textAlign: 'center',
+                animation: `levelup-skill ${dur} ease-out forwards`,
+              }}>
+                <p style={{
+                  fontFamily: "'Cinzel', serif", fontSize: '0.6rem',
+                  letterSpacing: '0.45em', textTransform: 'uppercase',
+                  color: 'rgba(212,175,55,0.65)', marginBottom: '4px',
+                }}>{levelUpOverlay.skillUnlocked.label}</p>
+                <p style={{
+                  fontFamily: "'Cinzel', serif", fontWeight: 700,
+                  fontSize: '0.95rem', letterSpacing: '0.1em',
+                  color: '#F5F5DC',
+                }}>{levelUpOverlay.skillUnlocked.name}</p>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Curse / death overlay */}
       {curseOverlay && (
