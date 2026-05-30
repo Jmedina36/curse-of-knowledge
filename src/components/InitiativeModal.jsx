@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import DiceD20 from './DiceD20';
 
 const InitiativeModal = ({ data, onClose }) => {
   const { roll, dexMod, total, playerFirst } = data;
 
   useEffect(() => {
-    const t = setTimeout(onClose, 2400);
+    const t = setTimeout(onClose, 2600);
     return () => clearTimeout(t);
   }, [onClose]);
 
@@ -35,23 +36,9 @@ const InitiativeModal = ({ data, onClose }) => {
           textTransform: 'uppercase', color: 'rgba(245,245,220,0.38)', marginBottom: '14px',
         }}>⚔ Initiative Roll</p>
 
-        <motion.div
-          initial={{ rotate: -180, scale: 0 }}
-          animate={{ rotate: 0, scale: 1 }}
-          transition={{ duration: 0.5, type: 'spring', bounce: 0.45 }}
-          style={{
-            width: '84px', height: '84px', margin: '0 auto 14px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'rgba(0,0,0,0.45)',
-            border: `3px solid ${color}`, borderRadius: '50%',
-            boxShadow: `0 0 20px ${glow}, inset 0 0 16px ${glow.replace(/[\d.]+\)$/, '0.18)')}`,
-          }}
-        >
-          <span style={{
-            fontFamily: 'Cinzel, serif', fontWeight: 900,
-            fontSize: '2.1rem', color, textShadow: `0 0 10px ${glow}`, lineHeight: 1,
-          }}>{roll}</span>
-        </motion.div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '14px' }}>
+          <DiceD20 roll={roll} color={color} glow={glow} size={88} rolling />
+        </div>
 
         {dexMod !== 0 && (
           <p style={{
@@ -66,7 +53,7 @@ const InitiativeModal = ({ data, onClose }) => {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.45 }}
+          transition={{ delay: 0.5 }}
           style={{
             fontFamily: 'Cinzel, serif', fontSize: '0.95rem', fontWeight: 900,
             letterSpacing: '0.1em', color, textShadow: `0 0 14px ${glow}`,

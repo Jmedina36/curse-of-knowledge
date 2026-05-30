@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import DiceD20 from './DiceD20';
 
 const rollOne = (conMod) => {
   const roll = Math.ceil(Math.random() * 20);
@@ -15,7 +16,6 @@ const DeathSaveModal = ({ conMod, onClose }) => {
   const [survived, setSurvived] = useState(false);
 
   useEffect(() => {
-    // Pre-compute all rolls immediately so the outcome is deterministic
     const rolls = [];
     let successes = 0, failures = 0, terminated = false;
 
@@ -31,7 +31,6 @@ const DeathSaveModal = ({ conMod, onClose }) => {
 
     const finalSurvived = rolls.some(r => r.nat20) || successes >= 3;
 
-    // Reveal with staggered animation
     rolls.forEach((r, i) => {
       setTimeout(() => setRevealed(prev => [...prev, r]), 500 + i * 950);
     });
@@ -42,6 +41,9 @@ const DeathSaveModal = ({ conMod, onClose }) => {
   }, [conMod]);
 
   const SLOTS = 3;
+
+  const dieColor = (r) => r.nat20 ? '#F59E0B' : r.success ? '#34D399' : '#EF4444';
+  const dieGlow  = (r) => r.nat20 ? 'rgba(245,158,11,0.6)' : r.success ? 'rgba(52,211,153,0.6)' : 'rgba(239,68,68,0.6)';
 
   return (
     <div
@@ -76,45 +78,48 @@ const DeathSaveModal = ({ conMod, onClose }) => {
           </p>
         </div>
 
-        {/* Dice slots */}
+        {/* Dice row */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '14px', marginBottom: '22px' }}>
           {Array.from({ length: SLOTS }).map((_, i) => {
             const r = revealed[i];
             if (!r) {
               return (
                 <div key={i} style={{
-                  width: '70px', height: '70px', borderRadius: '50%',
-                  border: '2px solid rgba(245,245,220,0.1)',
-                  background: 'rgba(0,0,0,0.3)',
+                  width: '72px', height: '72px',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  opacity: 0.3,
                 }}>
-                  <span style={{ color: 'rgba(245,245,220,0.12)', fontSize: '1.5rem' }}>?</span>
+                  {/* Ghost D20 outline */}
+                  <svg viewBox="0 0 100 100" width={72} height={72} style={{ overflow: 'visible' }}>
+                    <polygon
+                      points="50,4 91,27 96,63 74,93 26,93 4,63 9,27"
+                      fill="none"
+                      stroke="rgba(245,245,220,0.2)"
+                      strokeWidth="2"
+                    />
+                    <text x="50" y="55" textAnchor="middle" dominantBaseline="middle"
+                      fill="rgba(245,245,220,0.15)" fontFamily="Cinzel,serif" fontWeight="900" fontSize="22">?</text>
+                  </svg>
                 </div>
               );
             }
 
-            const color = r.nat20 ? '#F59E0B' : r.success ? '#34D399' : '#EF4444';
-            const glow  = r.nat20 ? 'rgba(245,158,11,0.55)' : r.success ? 'rgba(52,211,153,0.55)' : 'rgba(239,68,68,0.55)';
-            const icon  = r.nat20 ? '⚡' : r.nat1 ? '☠' : r.success ? '✓' : '✗';
-
             return (
-              <motion.div
-                key={i}
-                initial={{ scale: 0, rotate: -90 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', bounce: 0.5, duration: 0.5 }}
-                style={{
-                  width: '70px', height: '70px', borderRadius: '50%',
-                  border: `2px solid ${color}`,
-                  background: 'rgba(0,0,0,0.5)',
-                  boxShadow: `0 0 16px ${glow}`,
-                  display: 'flex', flexDirection: 'column',
-                  alignItems: 'center', justifyContent: 'center', gap: '1px',
-                }}
-              >
-                <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.25rem', color, lineHeight: 1 }}>{r.roll}</span>
-                <span style={{ fontSize: '0.9rem', lineHeight: 1 }}>{icon}</span>
-              </motion.div>
+              <div key={i}>
+                <DiceD20
+                  roll={r.roll}
+                  color={dieColor(r)}
+                  glow={dieGlow(r)}
+                  size={72}
+                  rolling={false}
+                />
+                <p style={{
+                  fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700,
+                  color: dieColor(r), marginTop: '4px', lineHeight: 1,
+                }}>
+                  {r.nat20 ? '⚡ CRIT!' : r.nat1 ? '☠ x2' : r.success ? '✓' : '✗'}
+                </p>
+              </div>
             );
           })}
         </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import DiceD20 from './DiceD20';
 
 const ROLL_CONFIG = {
   fumble: {
@@ -65,10 +66,10 @@ const ROLL_CONFIG = {
 };
 
 const getConfig = (roll) => {
-  if (roll === 1) return ROLL_CONFIG.fumble;
-  if (roll <= 9) return ROLL_CONFIG.low;
-  if (roll <= 14) return ROLL_CONFIG.mid;
-  if (roll <= 19) return ROLL_CONFIG.high;
+  if (roll === 1)  return ROLL_CONFIG.fumble;
+  if (roll <= 9)   return ROLL_CONFIG.low;
+  if (roll <= 14)  return ROLL_CONFIG.mid;
+  if (roll <= 19)  return ROLL_CONFIG.high;
   return ROLL_CONFIG.nat20;
 };
 
@@ -78,7 +79,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, onClose }) => {
   const [showBonus, setShowBonus] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setShowBonus(true), 700);
+    const t = setTimeout(() => setShowBonus(true), 800);
     return () => clearTimeout(t);
   }, []);
 
@@ -102,36 +103,16 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, onClose }) => {
           boxShadow: `0 0 25px ${config.glow}, 0 0 60px ${config.glow.replace(/[\d.]+\)$/, '0.25)')}`,
         }}
       >
-        {/* D20 face */}
-        <motion.div
-          initial={{ rotate: -180, scale: 0 }}
-          animate={{ rotate: 0, scale: 1 }}
-          transition={{ duration: 0.55, type: 'spring', bounce: 0.45 }}
-          style={{
-            width: '96px', height: '96px',
-            margin: '0 auto 16px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: config.bg,
-            border: `3px solid ${config.color}`,
-            borderRadius: '50%',
-            boxShadow: `0 0 20px ${config.glow}, inset 0 0 20px ${config.glow.replace(/[\d.]+\)$/, '0.2)')}`,
-          }}
-        >
-          <span style={{
-            fontFamily: 'Cinzel, serif',
-            fontWeight: 900,
-            fontSize: roll === 20 || roll === 1 ? '2.2rem' : '2.8rem',
-            color: config.color,
-            textShadow: `0 0 12px ${config.glow}`,
-            lineHeight: 1,
-          }}>{roll}</span>
-        </motion.div>
+        {/* D20 die */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+          <DiceD20 roll={roll} color={config.color} glow={config.glow} size={100} rolling />
+        </div>
 
         {/* Label */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.45 }}
           style={{
             fontFamily: 'Cinzel, serif',
             fontSize: '1rem',
