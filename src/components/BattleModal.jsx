@@ -479,7 +479,7 @@ const BattleModal = ({
                   : '0 0 60px rgba(255,60,60,1), 0 0 120px rgba(200,0,0,0.5)',
               }}
             >
-              {bossName}
+              {battleType === 'wave' ? 'WAVE ASSAULT' : bossName}
             </motion.h1>
 
             {/* Battle type subtitle */}
@@ -490,7 +490,7 @@ const BattleModal = ({
               className="uppercase text-sm font-bold mt-4 tracking-[0.4em]"
               style={{ color: 'rgba(245,245,220,0.5)', fontFamily: 'Cinzel, serif' }}
             >
-              {isFinalBoss ? '— Final Confrontation —' : battleType === 'elite' ? '— Elite Trial —' : battleType === 'wave' ? '— Wave Assault —' : '— Battle —'}
+              {isFinalBoss ? '— Final Confrontation —' : battleType === 'elite' ? '— Elite Trial —' : battleType === 'wave' ? `— ${bossName} —` : '— Battle —'}
             </motion.p>
 
             {/* Bottom flash — pulses once then fades */}
