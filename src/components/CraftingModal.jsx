@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -128,6 +128,8 @@ const CraftingModal = ({
 }) => {
   const isPotionsTab = merchantTab === 'buy' || merchantTab === 'sellPotions';
   const isEquipmentTab = merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment';
+
+  const [sellConfirm, setSellConfirm] = useState(null); // { label, price, rarityColor, onConfirm }
 
   // Sub-tab config (Buy = gold, Sell = green) — reused for both Potions and Equipment panels
   const subTabCfg = (buyKey, sellKey) => [
@@ -303,7 +305,7 @@ const CraftingModal = ({
                           <p className="text-sm font-bold" style={{ color: '#FF6B6B' }}>Health Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {healthPots}</p>
                         </div>
-                        <SellBtn onClick={() => sellPotion('healthPotion')}>
+                        <SellBtn onClick={() => setSellConfirm({ label: 'Health Potion', price: Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7), onConfirm: () => sellPotion('healthPotion') })}>
                           Sell: {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
                         </SellBtn>
                       </div>
@@ -314,7 +316,7 @@ const CraftingModal = ({
                           <p className="text-sm font-bold" style={{ color: '#6BB6FF' }}>Stamina Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {staminaPots}</p>
                         </div>
-                        <SellBtn onClick={() => sellPotion('staminaPotion')}>
+                        <SellBtn onClick={() => setSellConfirm({ label: 'Stamina Potion', price: Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7), onConfirm: () => sellPotion('staminaPotion') })}>
                           Sell: {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
                         </SellBtn>
                       </div>
@@ -325,7 +327,7 @@ const CraftingModal = ({
                           <p className="text-sm font-bold" style={{ color: '#B794F4' }}>Cleanse Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {cleansePots}</p>
                         </div>
-                        <SellBtn onClick={() => sellPotion('cleansePotion')}>
+                        <SellBtn onClick={() => setSellConfirm({ label: 'Cleanse Potion', price: Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7), onConfirm: () => sellPotion('cleansePotion') })}>
                           Sell: {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
                         </SellBtn>
                       </div>
@@ -451,6 +453,7 @@ const CraftingModal = ({
                         <div className="space-y-2">
                           {items.map(item => {
                             const color = getRarityColor(item.rarity || 'common');
+                            const price = calculateSellPrice(item, sellType);
                             return (
                               <div key={item.id} className="rounded-lg p-2 border flex justify-between items-center"
                                 style={{ background: 'rgba(0,0,0,0.3)', borderColor: color }}>
@@ -463,8 +466,8 @@ const CraftingModal = ({
                                     </p>
                                   )}
                                 </div>
-                                <SellBtn onClick={() => onSell(item)}>
-                                  Sell: {calculateSellPrice(item, sellType)} Gold
+                                <SellBtn onClick={() => setSellConfirm({ label: item.name, price, rarityColor: color, onConfirm: () => onSell(item) })}>
+                                  Sell: {price} Gold
                                 </SellBtn>
                               </div>
                             );
@@ -480,6 +483,52 @@ const CraftingModal = ({
         })()}
 
       </motion.div>
+
+      {/* ── Sell Confirmation Overlay ── */}
+      {sellConfirm && (
+        <div
+          className="fixed inset-0 z-[55] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.65)' }}
+          onClick={() => setSellConfirm(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.88 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-xl p-6 text-center max-w-xs w-full border-2"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(12,8,2,0.99), rgba(6,4,1,0.99))',
+              borderColor: sellConfirm.rarityColor || 'rgba(212,175,55,0.5)',
+              boxShadow: `0 0 28px ${sellConfirm.rarityColor ? sellConfirm.rarityColor + '33' : 'rgba(212,175,55,0.15)'}`,
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
+              CONFIRM SALE
+            </p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: sellConfirm.rarityColor || '#F5F5DC', marginBottom: '4px' }}>
+              {sellConfirm.label}
+            </p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.3rem', color: '#D4AF37', marginBottom: '22px' }}>
+              {sellConfirm.price} Gold
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => setSellConfirm(null)}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { sellConfirm.onConfirm(); setSellConfirm(null); }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
+              >
+                Sell
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
