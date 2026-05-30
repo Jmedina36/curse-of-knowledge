@@ -53,6 +53,20 @@ const InventoryModal = ({
   useHealth,
   useCleanse,
 }) => {
+  // Comparison helpers
+  const weaponEffective = (wpn) => (wpn?.attack || 0) + Math.floor(wpn?.affixes?.flatDamage || 0);
+  const armorEffective  = (piece) => (piece?.defense || 0) + Math.floor(piece?.affixes?.flatArmor || 0);
+
+  const Delta = ({ value, label }) => {
+    if (value === 0) return null;
+    const up = value > 0;
+    return (
+      <p style={{ fontSize: '0.7rem', fontWeight: 700, color: up ? '#34D399' : '#EF4444', margin: '2px 0 0' }}>
+        {up ? '▲' : '▼'} {up ? '+' : ''}{value} {label}
+      </p>
+    );
+  };
+
   return (
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowInventoryModal(false)}>
               <motion.div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
@@ -329,7 +343,10 @@ const InventoryModal = ({
                                   {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
                                 </p>
                               )}
-                              <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{wpn.attack} Attack</p>
+                              <p className="text-sm text-center mb-1" style={{color: '#68D391'}}>+{wpn.attack} Attack</p>
+                              <div className="text-center mb-2">
+                                <Delta value={weaponEffective(wpn) - weaponEffective(equippedWeapon)} label="vs equipped" />
+                              </div>
                               {wpn.affixes && Object.keys(wpn.affixes).length > 0 && (
                                 <>
                                   <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -502,9 +519,17 @@ const InventoryModal = ({
                     </div>
                     
                     <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
-                      <p className="text-sm" style={{color: COLORS.silver}}>
-                        Total Defense: <span className="font-bold text-lg" style={{color: COLORS.gold}}>{getBaseDefense()}</span>
-                      </p>
+                      {(() => {
+                        const dr  = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.percentDR || 0), 0);
+                        const hp  = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.flatHP   || 0), 0);
+                        return (
+                          <p className="text-sm" style={{color: COLORS.silver}}>
+                            Total Defense: <span className="font-bold text-lg" style={{color: COLORS.gold}}>{getBaseDefense()}</span>
+                            {dr > 0 && <span> · <span style={{color: '#68D391', fontWeight: 700}}>{Math.floor(dr)}% DR</span></span>}
+                            {hp > 0 && <span> · <span style={{color: '#FF6B6B', fontWeight: 700}}>+{Math.floor(hp)} HP</span></span>}
+                          </p>
+                        );
+                      })()}
                     </div>
                   </div>
                   
@@ -533,7 +558,10 @@ const InventoryModal = ({
                                         {GAME_CONSTANTS.RARITY_TIERS[piece.rarity].name}
                                       </p>
                                     )}
-                                    <p className="text-sm text-center mb-2" style={{color: '#68D391'}}>+{piece.defense} Defense</p>
+                                    <p className="text-sm text-center mb-1" style={{color: '#68D391'}}>+{piece.defense} Defense</p>
+                                    <div className="text-center mb-2">
+                                      <Delta value={armorEffective(piece) - armorEffective(equippedArmor[slot])} label="vs equipped" />
+                                    </div>
                                     {piece.affixes && Object.keys(piece.affixes).length > 0 && (
                                       <>
                                         <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
@@ -664,6 +692,7 @@ const InventoryModal = ({
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
                               <p className="text-xs" style={{color: '#68D391'}}>+{pend.hp} Health</p>
+                              <Delta value={pend.hp - (equippedPendant?.hp || 0)} label="vs equipped" />
                               {pend.rarity && (
                                 <p className="text-xs italic" style={{color: getRarityColor(pend.rarity)}}>
                                   {GAME_CONSTANTS.RARITY_TIERS[pend.rarity].name}
@@ -720,6 +749,7 @@ const InventoryModal = ({
                             <div>
                               <p className="text-sm font-bold" style={{color: getRarityColor(rng.rarity || 'common')}}>{rng.name}</p>
                               <p className="text-xs" style={{color: '#4FC3F7'}}>+{rng.stamina} STA</p>
+                              <Delta value={rng.stamina - (equippedRing?.stamina || 0)} label="vs equipped" />
                               {rng.rarity && (
                                 <p className="text-xs italic" style={{color: getRarityColor(rng.rarity)}}>
                                   {GAME_CONSTANTS.RARITY_TIERS[rng.rarity].name}
