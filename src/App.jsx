@@ -483,11 +483,6 @@ const [customClass, setCustomClass] = useState(null);
   const [armorPolishActive, setArmorPolishActive] = useState(false);
   const [luckyCharmActive, setLuckyCharmActive] = useState(false);
   const [enemyDialogue, setEnemyDialogue] = useState('');
-  const [playerTaunt, setPlayerTaunt] = useState('');
-  const [enemyTauntResponse, setEnemyTauntResponse] = useState('');
-  const [showTauntBoxes, setShowTauntBoxes] = useState(false);
-  const [isTauntAvailable, setIsTauntAvailable] = useState(false);
-  const [hasTriggeredLowHpTaunt, setHasTriggeredLowHpTaunt] = useState(false);
   const [enragedTurns, setEnragedTurns] = useState(0);
   const [log, setLog] = useState([]);
   const [graveyard, setGraveyard] = useState([]);
@@ -2407,13 +2402,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   const randomDialogue = dialoguePool[Math.floor(Math.random() * dialoguePool.length)];
   setEnemyDialogue(randomDialogue);
   
-  // Reset taunt state
-  setIsTauntAvailable(false);
-  setHasTriggeredLowHpTaunt(false);
   setEnragedTurns(0);
-  setPlayerTaunt('');
-  setEnemyTauntResponse('');
-  setShowTauntBoxes(false);
   setHasFled(false); // Reset fled status
   
   if (isWave) {
@@ -2484,13 +2473,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Reset charges at start of each battle
     setChargeStacks(0);
     
-    // Reset taunt state
-    setIsTauntAvailable(false);
-    setHasTriggeredLowHpTaunt(false);
     setEnragedTurns(0);
-    setPlayerTaunt('');
-    setEnemyTauntResponse('');
-    setShowTauntBoxes(false);
     setHasFled(false); // Reset fled status
     
     // Set cycling boss dialogue (day 1-7 repeating)
@@ -2633,13 +2616,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setChargeStacks(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
 
-    // Reset taunt state
-    setIsTauntAvailable(false);
-    setHasTriggeredLowHpTaunt(false);
     setEnragedTurns(0);
-    setPlayerTaunt('');
-    setEnemyTauntResponse('');
-    setShowTauntBoxes(false);
     setHasFled(false); // Reset fled status
     
     // Reset Phase 3 states
@@ -2676,46 +2653,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       addLog(`⚔️ THE GAUNTLET STRIKES FIRST! -${_openDmg} HP`);
     }, 2600);
   }
-  };
-  
-  const taunt = () => {
-    if (!battling || !isTauntAvailable) return;
-    
-    // Get appropriate taunt pool
-    let tauntPool;
-    if (battleType === 'elite' || battleType === 'final') {
-      const dayKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
-      tauntPool = GAME_CONSTANTS.BOSS_DIALOGUE[dayKey].TAUNTS;
-    } else if (battleType === 'wave') {
-      tauntPool = GAME_CONSTANTS.ENEMY_DIALOGUE.TAUNTS.WAVE;
-    } else {
-      tauntPool = GAME_CONSTANTS.ENEMY_DIALOGUE.TAUNTS.REGULAR;
-    }
-    
-    // Pick random taunt
-    const randomTaunt = tauntPool[Math.floor(Math.random() * tauntPool.length)];
-    
-    // Show both dialogue boxes immediately
-    setShowTauntBoxes(true);
-    
-    // Player text appears immediately
-    setPlayerTaunt(randomTaunt.player);
-    setEnemyTauntResponse(''); // Clear enemy text initially
-    addLog(`The hero declares: "${randomTaunt.player}"`);
-    
-    // Delay enemy response (text appears after 1 second)
-    setTimeout(() => {
-      setEnemyTauntResponse(randomTaunt.enemy);
-      addLog(`😡 ${bossName}: "${randomTaunt.enemy}"`);
-      setEnemyDialogue(randomTaunt.enemy);
-      
-      // Apply ENRAGED status
-      setEnragedTurns(3); // Lasts 3 turns
-      addLog(`The enemy flies into a rage! It takes more damage but strikes harder and with less precision for 3 turns.`);
-    }, 1000);
-    
-    // Consume taunt
-    setIsTauntAvailable(false);
   };
   
   const attack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
@@ -3032,21 +2969,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       }
     }
     
-    // Context-based taunt triggers
-    if (!isTauntAvailable && newBossHp > 0) {
-      // Trigger 1: Enemy drops below 50% HP (one time only)
-      if (hpPercent <= 0.5 && !hasTriggeredLowHpTaunt) {
-        setIsTauntAvailable(true);
-        setHasTriggeredLowHpTaunt(true);
-        addLog(`💬 [TAUNT AVAILABLE]`);
-      }
-      // Trigger 2: Deal 30+ damage in one hit (15% chance)
-      else if (finalDamage >= 30 && Math.random() < 0.15) {
-        setIsTauntAvailable(true);
-        addLog(`The enemy's rage is building... an opportunity to provoke!`);
-      }
-    }
-    
     if (bossDebuffs.poisonTurns > 0 || enragedTurns > 0) {
       addLog(`The hero strikes with ${damage} base damage`);
       bonusMessages.forEach(msg => addLog(msg));
@@ -3289,19 +3211,11 @@ if (enragedTurns > 0) {
     setEnragedTurns(prev => {
       const newTurns = prev - 1;
       if (newTurns === 0) {
-        addLog(`😤 Enemy is no longer ENRAGED`);
-        setPlayerTaunt('');
-        setEnemyTauntResponse('');
-        setShowTauntBoxes(false);
+        addLog('Enemy is no longer ENRAGED');
       }
       return newTurns;
     });
     
-    // Taunt becomes available on enemy miss
-    if (!isTauntAvailable) {
-      setIsTauntAvailable(true);
-      addLog(`💬 [TAUNT AVAILABLE] - Enemy missed! Opening spotted!`);
-    }
     return; // Skip damage entirely
   }
 }
@@ -3405,21 +3319,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       });
       addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
       
-      // Taunt trigger: 25% chance after taking damage
-      if (!isTauntAvailable && bossDamage > 0 && Math.random() < 0.25) {
-        setIsTauntAvailable(true);
-        addLog(`💬 [TAUNT AVAILABLE] - Enemy left an opening!`);
-      }
-      
       // Decrement enraged turns
       if (enragedTurns > 0) {
         setEnragedTurns(prev => {
           const newTurns = prev - 1;
           if (newTurns === 0) {
-            addLog(`😤 Enemy is no longer ENRAGED`);
-            setPlayerTaunt(''); // Clear taunt dialogue when enraged expires
-            setEnemyTauntResponse('');
-            setShowTauntBoxes(false);
+            addLog('Enemy is no longer ENRAGED');
           }
           return newTurns;
         });
@@ -3868,21 +3773,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       }
     }
     
-    // Context-based taunt triggers
-    if (!isTauntAvailable && newBossHp > 0) {
-      // Trigger 1: Enemy drops below 50% HP (one time only)
-      if (hpPercent <= 0.5 && !hasTriggeredLowHpTaunt) {
-        setIsTauntAvailable(true);
-        setHasTriggeredLowHpTaunt(true);
-        addLog(`💬 [TAUNT AVAILABLE]`);
-      }
-      // Trigger 2: Deal 30+ damage in one hit (15% chance)
-      else if (damage >= 30 && Math.random() < 0.15) {
-        setIsTauntAvailable(true);
-        addLog(`💬 [TAUNT AVAILABLE]`);
-      }
-    }
-    
     let damageLog = `⚡ ${special.name}! Dealt ${damage} damage!`;
     let bonusMessages = [];
     
@@ -4165,19 +4055,11 @@ if (enragedTurns > 0) {
     setEnragedTurns(prev => {
       const newTurns = prev - 1;
       if (newTurns === 0) {
-        addLog(`😤 Enemy is no longer ENRAGED`);
-        setPlayerTaunt('');
-        setEnemyTauntResponse('');
-        setShowTauntBoxes(false);
+        addLog('Enemy is no longer ENRAGED');
       }
       return newTurns;
     });
     
-    // Taunt becomes available on enemy miss
-    if (!isTauntAvailable) {
-      setIsTauntAvailable(true);
-      addLog(`💬 [TAUNT AVAILABLE] - Enemy missed! Opening spotted!`);
-    }
     return; // Skip damage entirely
   }
 }
@@ -4246,21 +4128,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         });
         addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
         
-        // Taunt trigger: 25% chance after taking damage
-        if (!isTauntAvailable && bossDamage > 0 && Math.random() < 0.25) {
-          setIsTauntAvailable(true);
-          addLog(`💬 [TAUNT AVAILABLE] - Enemy left an opening!`);
-        }
-        
         // Decrement enraged turns
         if (enragedTurns > 0) {
           setEnragedTurns(prev => {
             const newTurns = prev - 1;
             if (newTurns === 0) {
-              addLog(`😤 Enemy is no longer ENRAGED`);
-              setPlayerTaunt(''); // Clear taunt dialogue when enraged expires
-              setEnemyTauntResponse('');
-              setShowTauntBoxes(false);
+              addLog('Enemy is no longer ENRAGED');
             }
             return newTurns;
           });
@@ -4640,17 +4513,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           setEnragedTurns(prev => {
             const newTurns = prev - 1;
             if (newTurns === 0) {
-              addLog(`😤 Enemy is no longer ENRAGED`);
-              setPlayerTaunt('');
-              setEnemyTauntResponse('');
-              setShowTauntBoxes(false);
+              addLog('Enemy is no longer ENRAGED');
             }
             return newTurns;
           });
-          if (!isTauntAvailable) {
-            setIsTauntAvailable(true);
-            addLog(`💬 [TAUNT AVAILABLE] - Enemy missed! Opening spotted!`);
-          }
           return;
         }
       }
@@ -4714,10 +4580,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         setEnragedTurns(prev => {
           const newTurns = prev - 1;
           if (newTurns === 0) {
-            addLog(`😤 Enemy is no longer ENRAGED`);
-            setPlayerTaunt('');
-            setEnemyTauntResponse('');
-            setShowTauntBoxes(false);
+            addLog('Enemy is no longer ENRAGED');
           }
           return newTurns;
         });
@@ -6208,13 +6071,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setCurrentWaveEnemy(0);
                     setTotalWaveEnemies(1);
                     
-                    // Reset taunt system
                     setEnemyDialogue('');
-                    setPlayerTaunt('');
-                    setEnemyTauntResponse('');
-                    setShowTauntBoxes(false);
-                    setIsTauntAvailable(false);
-                    setHasTriggeredLowHpTaunt(false);
                     setEnragedTurns(0);
                     
                     setLog([]);
@@ -6489,9 +6346,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               inPhase2={inPhase2} inPhase3={inPhase3}
               phase2DamageStacks={phase2DamageStacks} shadowAdds={shadowAdds}
               aoeWarning={aoeWarning} showDodgeButton={showDodgeButton}
-              showTauntBoxes={showTauntBoxes} enemyDialogue={enemyDialogue} setEnemyDialogue={setEnemyDialogue}
-              enemyTauntResponse={enemyTauntResponse} playerTaunt={playerTaunt}
-              isTauntAvailable={isTauntAvailable}
+              enemyDialogue={enemyDialogue} setEnemyDialogue={setEnemyDialogue}
               hp={hp} getMaxHp={getMaxHp} stamina={stamina} getMaxStamina={getMaxStamina}
               level={level} hero={hero} gold={gold}
               healthPots={healthPots} staminaPots={staminaPots} curseLevel={curseLevel}
@@ -6511,7 +6366,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}
-              flee={flee} dodge={dodge} taunt={taunt} advance={advance} die={die}
+              flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}
             />

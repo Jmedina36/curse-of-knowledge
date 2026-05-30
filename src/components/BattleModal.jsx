@@ -5,68 +5,33 @@ import { COLORS, GAME_CONSTANTS } from '../constants';
 // ─── Enemy move pools by battle type ─────────────────────────────────────────
 const ENEMY_MOVES = {
   regular: [
-    { name: 'Strike',      desc: 'lunges at you with reckless force!',       taunt: "Is that hesitation I smell?" },
-    { name: 'Slam',        desc: 'slams down with crushing weight!',          taunt: "Feel that? There's more where that came from." },
-    { name: 'Rend',        desc: 'tears into you with savage claws!',         taunt: "Your defenses crumble like paper." },
-    { name: 'Bash',        desc: 'bashes you with brute force!',              taunt: "Stay down. It's easier." },
+    { name: 'Strike',      desc: 'lunges at you with reckless force!' },
+    { name: 'Slam',        desc: 'slams down with crushing weight!' },
+    { name: 'Rend',        desc: 'tears into you with savage claws!' },
+    { name: 'Bash',        desc: 'bashes you with brute force!' },
   ],
   elite: [
-    { name: 'Tormented Strike',    desc: 'channels its torment into a vicious strike!',   taunt: "My pain becomes your pain." },
-    { name: 'Soul Rend',           desc: 'tears at the threads of your soul!',             taunt: "I can feel your resolve weakening." },
-    { name: 'Exhausting Assault',  desc: 'unleashes a relentless, draining assault!',      taunt: "Exhaustion is just the beginning." },
-    { name: 'Cursed Slash',        desc: 'slashes with a curse-infused blade!',            taunt: "The curse runs deeper than you know." },
-    { name: 'Double Strike',       desc: 'strikes twice in rapid, brutal succession!',     taunt: "Too slow. Always too slow." },
+    { name: 'Tormented Strike',    desc: 'channels its torment into a vicious strike!' },
+    { name: 'Soul Rend',           desc: 'tears at the threads of your soul!' },
+    { name: 'Exhausting Assault',  desc: 'unleashes a relentless, draining assault!' },
+    { name: 'Cursed Slash',        desc: 'slashes with a curse-infused blade!' },
+    { name: 'Double Strike',       desc: 'strikes twice in rapid, brutal succession!' },
   ],
   wave: [
-    { name: 'Frenzied Strike',     desc: 'attacks in a frenzied rush!',               taunt: "We don't tire. You do." },
-    { name: 'Overwhelming Blow',   desc: 'overwhelms you with sheer numbers!',         taunt: "Numbers always win in the end." },
-    { name: 'Coordinated Assault', desc: 'coordinates a devastating group assault!',   taunt: "No one fights alone against us." },
+    { name: 'Frenzied Strike',     desc: 'attacks in a frenzied rush!' },
+    { name: 'Overwhelming Blow',   desc: 'overwhelms you with sheer numbers!' },
+    { name: 'Coordinated Assault', desc: 'coordinates a devastating group assault!' },
   ],
   final: [
-    { name: 'Curse Slam',           desc: 'brings the full weight of the curse crashing down!',      taunt: "The curse IS me. And I am eternal." },
-    { name: 'Abyssal Strike',       desc: 'strikes from the depths of the abyss!',                   taunt: "The abyss has swallowed greater heroes." },
-    { name: 'Void Drain',           desc: 'reaches into your being and drains your will to fight!',   taunt: "I don't just damage you. I hollow you out." },
-    { name: 'Shadow Barrage',       desc: 'erupts in a relentless barrage of shadow strikes!',        taunt: "Shadows have no weakness. Unlike you." },
-    { name: 'Wrath of the Undying', desc: 'is consumed by ancient, undying wrath!',                   taunt: "I cannot die. I can only be... delayed." },
-    { name: 'Abyss Awakens',        desc: 'channels the roaring void into a single devastating blow!', taunt: "Even the void hungers for your failure." },
+    { name: 'Curse Slam',           desc: 'brings the full weight of the curse crashing down!' },
+    { name: 'Abyssal Strike',       desc: 'strikes from the depths of the abyss!' },
+    { name: 'Void Drain',           desc: 'reaches into your being and drains your will to fight!' },
+    { name: 'Shadow Barrage',       desc: 'erupts in a relentless barrage of shadow strikes!' },
+    { name: 'Wrath of the Undying', desc: 'is consumed by ancient, undying wrath!' },
+    { name: 'Abyss Awakens',        desc: 'channels the roaring void into a single devastating blow!' },
   ],
 };
 
-const MID_COMBAT_TAUNTS = {
-  regular: [
-    "Is that the best you've got?",
-    "You're already slowing down.",
-    "Keep fighting. It won't matter.",
-    "Your hesitation costs you.",
-    "I've broken stronger heroes than you.",
-    "Every second you waste, I grow stronger.",
-  ],
-  elite: [
-    "Your strength means nothing here.",
-    "Every strike only delays the inevitable.",
-    "I have endured far worse than you.",
-    "You fight well... for someone who's losing.",
-    "The curse has broken better heroes than you.",
-    "Feel that? That's your hope leaving.",
-  ],
-  wave: [
-    "There are more of us. Always more.",
-    "Cut one down, two more rise.",
-    "You tire. We do not.",
-    "Your resolve weakens with every wave.",
-    "How many can you fight before you break?",
-  ],
-  final: [
-    "The curse does not end with me.",
-    "You have come so far... only to fall here.",
-    "Every day you delayed brought you to this moment.",
-    "I am everything you have been running from.",
-    "Your progress means nothing against eternity.",
-    "This is where heroes learn humility.",
-    "The weight of your failures empowers me.",
-    "Did you truly think you could break the curse?",
-  ],
-};
 
 const pickMove = (isFinalBoss, battleType) => {
   const pool = isFinalBoss ? ENEMY_MOVES.final
@@ -140,12 +105,8 @@ const BattleModal = ({
   shadowAdds,
   aoeWarning,
   showDodgeButton,
-  // Dialogue / taunt state
-  showTauntBoxes,
+  // Dialogue state
   enemyDialogue,
-  enemyTauntResponse,
-  playerTaunt,
-  isTauntAvailable,
   // Player state
   playerFlash,
   playerDebuffs,
@@ -192,7 +153,6 @@ const BattleModal = ({
   useHealth,
   flee,
   dodge,
-  taunt,
   advance,
   die,
   addLog,
@@ -360,7 +320,6 @@ const BattleModal = ({
     // Show enemy text at the exact moment enemy damage fires
     schedule(() => {
       setBattleLine(enemyText);
-      if (move.taunt && setEnemyDialogue) setEnemyDialogue(move.taunt);
     }, enemyActDelay);
 
     // After enemy text finishes typing, return control to player
@@ -369,10 +328,6 @@ const BattleModal = ({
       setBattleLine('');
       setTurnPhase('player');
       turnCountRef.current++;
-      if (turnCountRef.current % 3 === 0 && setEnemyDialogue) {
-        const pool = MID_COMBAT_TAUNTS[isFinalBoss ? 'final' : (battleType || 'regular')];
-        setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
-      }
     }, enemyActDelay + enemyTextDuration);
   };
 
@@ -856,10 +811,10 @@ const BattleModal = ({
 
           {/* Enemy Dialogue — Speech Bubble */}
           <AnimatePresence>
-            {(showTauntBoxes || enemyDialogue) && (() => {
+            {enemyDialogue && (() => {
               const borderColor = isFinalBoss ? 'rgba(160,40,200,0.7)' : battleType === 'elite' ? 'rgba(220,120,0,0.7)' : battleType === 'wave' ? 'rgba(30,120,220,0.7)' : 'rgba(180,20,20,0.7)';
               const glowColor   = isFinalBoss ? 'rgba(160,40,200,0.2)' : battleType === 'elite' ? 'rgba(220,120,0,0.15)' : battleType === 'wave' ? 'rgba(30,120,220,0.15)' : 'rgba(180,20,20,0.15)';
-              const dialogueText = showTauntBoxes ? (enemyTauntResponse || '...') : enemyDialogue;
+              const dialogueText = enemyDialogue;
               return (
                 <motion.div
                   key={dialogueText}
@@ -987,13 +942,6 @@ const BattleModal = ({
             </div>
           )}
 
-          {/* Player Taunt */}
-          {showTauntBoxes && playerTaunt && (
-            <div className="rounded p-2 mb-3" style={{ backgroundColor: 'rgba(0,0,0,0.5)', border: '1px solid rgba(59, 130, 246, 0.4)' }}>
-              <p className="text-base" style={{ color: '#F5F5DC' }}>"{playerTaunt}"</p>
-            </div>
-          )}
-
           {/* ══════════════════════════════════════════════════════════════════ */}
           {/*  BATTLE ACTIONS                                                   */}
           {/* ══════════════════════════════════════════════════════════════════ */}
@@ -1038,13 +986,6 @@ const BattleModal = ({
                       )}
                     </div>
 
-                    {isTauntAvailable && (
-                      <button onClick={() => handlePlayerAction(taunt, 'Taunt')}
-                        className="w-full py-3 rounded font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
-                        style={{ background: 'linear-gradient(to right, rgba(180, 60, 0, 0.6), rgba(220, 90, 0, 0.6), rgba(180, 60, 0, 0.6))', border: '1px solid rgba(220, 90, 0, 0.5)', color: '#FB923C', fontSize: '1rem', letterSpacing: '0.25em' }}>
-                        Taunt Enemy (Enrage)
-                      </button>
-                    )}
                   </motion.div>
                 )}
 
