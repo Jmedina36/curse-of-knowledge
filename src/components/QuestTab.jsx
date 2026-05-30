@@ -103,155 +103,94 @@ const QuestTab = ({
                 };
                 return colorMap[hero.class.color] || colorMap.yellow;
               })(),
-              border: '2px solid rgba(0, 0, 0, 0.5)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 50px rgba(0, 0, 0, 0.3)'
+              border: (() => { const m={red:'rgba(180,30,30,0.5)',blue:'rgba(59,130,246,0.4)',green:'rgba(30,80,140,0.4)',white:'rgba(200,200,200,0.35)',purple:'rgba(139,92,246,0.4)',yellow:'rgba(212,175,55,0.4)',amber:'rgba(34,197,94,0.4)'}; return '2px solid '+(m[hero.class.color]||m.yellow); })(),
+              boxShadow: (() => { const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(30,80,140,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'}; const g=m[hero.class.color]||m.yellow; return '0 4px 30px '+g+', 0 0 60px '+g+', inset 0 0 50px rgba(0,0,0,0.4)'; })()
             }}>
-              
+
               {heroCardCollapsed ? (
                 // Collapsed state - minimal medieval theme
                 <div className="relative">
                   {/* Large watermark emblem in center background */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '8rem', lineHeight: 1, opacity: 0.05, color: '#F5F5DC'}}>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '7rem', lineHeight: 1, opacity: 0.06, color: '#F5F5DC'}}>
                     {getCardStyle(hero.class, currentDay).emblem}
                   </div>
-                  
-                  {/* Level badge in top right corner */}
-                  <div className="absolute top-2 right-2 px-3 py-1 rounded-lg border-2" style={{
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    borderColor: 'rgba(212, 175, 55, 0.6)',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
-                  }}>
-                    <span className="text-xs font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LVL {level}</span>
-                  </div>
-                  
-                  <div className="relative z-10 py-1">
-                    {/* Hero name - large and prominent in beige */}
-                    <div className="text-center mb-1">
-                      <h3 className="text-3xl font-black" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>{hero.name}</h3>
-                      <p className="text-sm mt-1" style={{color: COLORS.silver}}>{hero.class.name}</p>
-                    </div>
-                    
-                    {/* HP and Stamina side-by-side */}
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      {/* HP Bar */}
-                      <div className="rounded-lg p-2" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(139, 0, 0, 0.3)'}}>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>HP</span>
-                          <span className="text-xs font-bold" style={{color: hp <= 10 ? '#DC2626' : '#F5F5DC'}}>{hp}/{getMaxHp()}</span>
-                        </div>
-                        <div className="rounded-full h-1.5 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
-                          <div 
-                            className="h-1.5 rounded-full transition-all" 
-                            style={{
-                              width: `${(hp / getMaxHp()) * 100}%`,
-                              background: hp <= 10 ? 'linear-gradient(to right, #5A0E15, #8B1A28)' : 'linear-gradient(to right, #6B1318, #9B1B30)'
-                            }}
-                          />
-                        </div>
+
+                  <div className="relative z-10">
+                    {/* Header: name left, level right */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <h3 className="font-black uppercase" style={{fontFamily:'Cinzel,serif',fontSize:'clamp(1.4rem,4vw,1.9rem)',letterSpacing:'0.06em',color:'#F5F5DC',textShadow:(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(220,220,220,0.4)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return '0 0 20px '+(m[hero.class.color]||m.yellow);})()}}>{hero.name}</h3>
+                        <p className="text-xs uppercase tracking-widest mt-0.5" style={{color:'rgba(245,245,220,0.45)',fontFamily:'Cinzel,serif'}}>{hero.title} {hero.class.name}</p>
                       </div>
-                      
-                      {/* Stamina Bar */}
-                      <div className="rounded-lg p-2" style={{background: 'rgba(0, 0, 0, 0.3)', border: '1px solid rgba(30, 58, 95, 0.3)'}}>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs uppercase tracking-wide" style={{color: COLORS.silver}}>SP</span>
-                          <span className="text-xs font-bold" style={{color: '#93C5FD'}}>{stamina}/{getMaxStamina()}</span>
+                      <div className="text-right">
+                        <div className="px-3 py-1 rounded border" style={{background:'rgba(0,0,0,0.5)',borderColor:'rgba(212,175,55,0.4)'}}>
+                          <span className="text-xs font-bold" style={{color:'#D4AF37',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level}</span>
                         </div>
-                        <div className="rounded-full h-1.5 overflow-hidden" style={{background: 'rgba(0, 0, 0, 0.5)'}}>
-                          <div 
-                            className="h-1.5 rounded-full transition-all" 
-                            style={{
-                              width: `${(stamina / getMaxStamina()) * 100}%`,
-                              background: 'linear-gradient(to right, #0C4A6E, #0EA5E9)'
-                            }}
-                          />
-                        </div>
+                        <p className="text-xs mt-1" style={{color:'rgba(245,245,220,0.4)'}}>Day {currentDay}</p>
                       </div>
                     </div>
-                    
-                    {/* Curse Status - Collapsed View */}
+
+                    {/* HP Bar */}
+                    <div className="mb-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs uppercase tracking-widest font-bold" style={{color:'#FF6B6B'}}>HP</span>
+                        <span className="text-xs font-bold" style={{color:hp/getMaxHp()<0.25?'#EF4444':'#F5F5DC'}}>{hp} / {getMaxHp()}</span>
+                      </div>
+                      <div className="rounded h-2.5 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(139,0,0,0.4)'}}>
+                        <div className="h-full rounded transition-all duration-300" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'linear-gradient(to right,#7F1D1D,#DC2626)':'linear-gradient(to right,#7f1d1d,#b91c1c,#dc2626)'}}/>
+                      </div>
+                    </div>
+                    {/* SP Bar */}
+                    <div className="mb-3">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs uppercase tracking-widest font-bold" style={{color:'#60A5FA'}}>SP</span>
+                        <span className="text-xs font-bold" style={{color:'#93C5FD'}}>{stamina} / {getMaxStamina()}</span>
+                      </div>
+                      <div className="rounded h-2.5 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(30,58,140,0.4)'}}>
+                        <div className="h-full rounded transition-all duration-300" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb,#3b82f6)'}}/>
+                      </div>
+                    </div>
+
                     {curseLevel > 0 && (
-                      <div 
-                        className={`rounded-lg p-2 mb-2 border ${curseLevel === 3 ? 'animate-pulse' : ''}`}
-                        style={{
-                          backgroundColor: 'rgba(107, 44, 145, 0.3)',
-                          borderColor: curseLevel === 3 ? 'rgba(220, 38, 38, 0.6)' : 'rgba(138, 59, 181, 0.5)',
-                          boxShadow: curseLevel === 3 ? '0 0 15px rgba(220, 38, 38, 0.3)' : '0 0 10px rgba(138, 59, 181, 0.2)'
-                        }}
-                      >
+                      <div className={`rounded p-2 mb-3 ${curseLevel===3?'animate-pulse':''}`} style={{background:'rgba(107,44,145,0.25)',border:`1px solid ${curseLevel===3?'rgba(220,38,38,0.6)':'rgba(138,59,181,0.45)'}`}}>
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span style={{fontSize: '1rem'}}>
-                              {curseLevel === 1 ? '🌑' : curseLevel === 2 ? '🌑🌑' : '☠️'}
-                            </span>
-                            <p className="text-xs font-bold uppercase" style={{color: curseLevel === 3 ? '#FF6B6B' : '#B794F4'}}>
-                              {curseLevel === 1 ? 'CURSED' : curseLevel === 2 ? 'DEEPLY CURSED' : 'CONDEMNED'}
-                            </p>
-                          </div>
-                          <p className="text-xs" style={{color: '#B794F4'}}>
-                            {curseLevel}/3
-                          </p>
+                          <p className="text-xs font-bold uppercase" style={{color:curseLevel===3?'#FF6B6B':'#B794F4',fontFamily:'Cinzel,serif'}}>{curseLevel===1?'Cursed':curseLevel===2?'Deeply Cursed':'Condemned'}</p>
+                          <p className="text-xs" style={{color:'#B794F4'}}>{curseLevel}/3</p>
                         </div>
                       </div>
                     )}
-                    
-                    {/* Expand Button - Centered */}
-                    <div className="flex justify-center">
-                      <button
-                        onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
-                        className="px-3 py-1 rounded transition-all border-2 hover:scale-105"
-                        style={{
-                          background: 'rgba(0, 0, 0, 0.5)',
-                          borderColor: 'rgba(212, 175, 55, 0.4)',
-                          color: '#D4AF37',
-                          fontSize: '0.7rem',
-                          letterSpacing: '0.1em'
-                        }}
-                      >
-                        ▼ EXPAND HERO CARD
-                      </button>
-                    </div>
+
+                    <button onClick={() => setHeroCardCollapsed(false)} className="w-full py-1.5 rounded text-xs uppercase tracking-widest transition-all hover:opacity-80" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(212,175,55,0.25)',color:'rgba(212,175,55,0.6)',fontFamily:'Cinzel,serif'}}>
+                      ▼ Show Full Card
+                    </button>
                   </div>
                 </div>
               ) : (
                 // Expanded state - full hero card
                 <>
               {/* Large watermark emblem in center background */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1, opacity: 0.05, color: '#F5F5DC'}}>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1, opacity: 0.04, color: '#F5F5DC'}}>
                 {getCardStyle(hero.class, currentDay).emblem}
               </div>
-              
-              {/* Day badge in top left corner */}
-              <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg border-2 z-20" style={{
-                background: 'rgba(0, 0, 0, 0.5)',
-                borderColor: 'rgba(212, 175, 55, 0.4)',
-                borderTop: 'none',
-                borderLeft: 'none'
-              }}>
-                <span className="text-xs font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DAY {currentDay}</span>
+
+              {/* Corner badges */}
+              <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg z-20" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(212,175,55,0.3)',borderTop:'none',borderLeft:'none'}}>
+                <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
               </div>
-              
-              {/* Level badge in top right corner */}
-              <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg border-2 z-20" style={{
-                background: 'rgba(0, 0, 0, 0.5)',
-                borderColor: 'rgba(212, 175, 55, 0.4)',
-                borderTop: 'none',
-                borderRight: 'none'
-              }}>
-                <span className="text-xs font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LVL {level}</span>
+              <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg z-20" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(212,175,55,0.3)',borderTop:'none',borderRight:'none'}}>
+                <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level}</span>
               </div>
-              
+
               <div className="relative z-10">
-                {/* Hero name and title */}
-                <div className="text-center mb-3 pt-6">
-                  <h2 className="text-4xl font-bold mb-1 uppercase" style={{color: '#F5F5DC', letterSpacing: '0.1em'}}>{hero.name}</h2>
-                  <p className="text-sm uppercase tracking-wide" style={{color: '#F5F5DC'}}>{hero.title} {hero.class.name}</p>
+                {/* Hero name — cinematic */}
+                <div className="text-center mb-4 pt-7">
+                  <h2 className="font-black uppercase" style={{fontFamily:'Cinzel,serif',fontSize:'clamp(2rem,5vw,3.2rem)',letterSpacing:'0.1em',lineHeight:1.1,color:'#F5F5DC',textShadow:(()=>{const m={red:'rgba(220,50,50,0.7)',blue:'rgba(96,165,250,0.7)',green:'rgba(59,130,246,0.7)',white:'rgba(220,220,220,0.6)',purple:'rgba(167,139,250,0.7)',yellow:'rgba(212,175,55,0.7)',amber:'rgba(34,197,94,0.7)'};const c=m[hero.class.color]||m.yellow;return `0 0 30px ${c}, 0 0 60px ${c.replace('0.7','0.3')}, 0 2px 0 rgba(0,0,0,0.9)`;})()}}>{hero.name}</h2>
+                  <p className="text-xs uppercase tracking-[0.35em] mt-1.5" style={{color:'rgba(245,245,220,0.45)',fontFamily:'Cinzel,serif'}}>{hero.title} {hero.class.name}</p>
                   <div className="flex items-center justify-center gap-2 mt-2">
-                    <div style={{width: '40px', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
-                    <span style={{color: 'rgba(245, 245, 220, 0.5)', fontSize: '8px'}}>◆</span>
-                    <div style={{width: '40px', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                    {(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(200,200,200,0.4)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};const c=m[hero.class.color]||m.yellow;return(<><div style={{width:'60px',height:'1px',background:`linear-gradient(to right,transparent,${c})`}}></div><span style={{color:c,fontSize:'8px'}}>◆</span><div style={{width:'60px',height:'1px',background:`linear-gradient(to left,transparent,${c})`}}></div></>);})()}
                   </div>
                 </div>
-                
+
                 {/* Experience bar */}
                 <div className="mb-3 rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.35)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
                   <div className="flex justify-between text-sm mb-1" style={{color: '#D4AF37'}}>
@@ -301,76 +240,46 @@ const QuestTab = ({
                     return xpNeeded - currentLevelXp;
                   })()} XP TO NEXT LEVEL</p>
                 </div>
-                
+
                 {/* Combat Stats Header */}
                 <div className="flex items-center justify-center gap-3 mb-3">
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                   <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Combat Stats</p>
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                 </div>
-                
+
                 {/* Combat stats 2x2 grid */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   {/* HP */}
-                  <div className="rounded-lg p-2 text-center" style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                    border: '2px solid rgba(0, 0, 0, 0.3)',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                  }}>
-                    <div className="flex justify-center mb-1">
-                      <HeartPulse size={20} style={{color: '#FF6B6B'}}/>
-                    </div>
-                    <p className="text-xl font-bold mb-1" style={{color: '#F5F5DC'}}>{hp}/{getMaxHp()}</p>
-                    <div className="rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-                      <div className="h-2 rounded-full transition-all duration-300" style={{backgroundColor: '#DC2626', width: `${(hp / getMaxHp()) * 100}%`}}></div>
-                    </div>
+                  <div className="rounded-lg p-3" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(139,0,0,0.5)',boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
+                    <div className="flex justify-between items-center mb-1.5"><div className="flex items-center gap-1.5"><HeartPulse size={14} style={{color:'#FF6B6B'}}/><span className="text-xs font-bold uppercase tracking-widest" style={{color:'#FF6B6B'}}>HP</span></div><span className="text-sm font-bold" style={{color:hp/getMaxHp()<0.25?'#EF4444':'#F5F5DC'}}>{hp}/{getMaxHp()}</span></div>
+                    <div className="rounded h-3 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(139,0,0,0.3)'}}><div className="h-full rounded transition-all duration-300" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'linear-gradient(to right,#7F1D1D,#DC2626)':'linear-gradient(to right,#7f1d1d,#b91c1c,#ef4444)'}}/></div>
                   </div>
-                  
+
                   {/* Stamina */}
-                  <div className="rounded-lg p-2 text-center" style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                    border: '2px solid rgba(0, 0, 0, 0.3)',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                  }}>
-                    <div className="flex justify-center mb-1">
-                      <Sparkles size={20} style={{color: '#3B82F6'}}/>
-                    </div>
-                    <p className="text-xl font-bold mb-1" style={{color: '#F5F5DC'}}>{stamina}/{getMaxStamina()}</p>
-                    <div className="rounded-full h-2 overflow-hidden" style={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
-                      <div className="h-2 rounded-full transition-all duration-300" style={{backgroundColor: '#3B82F6', width: `${(stamina / getMaxStamina()) * 100}%`}}></div>
-                    </div>
+                  <div className="rounded-lg p-3" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(30,58,140,0.5)',boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
+                    <div className="flex justify-between items-center mb-1.5"><div className="flex items-center gap-1.5"><Sparkles size={14} style={{color:'#60A5FA'}}/><span className="text-xs font-bold uppercase tracking-widest" style={{color:'#60A5FA'}}>SP</span></div><span className="text-sm font-bold" style={{color:'#93C5FD'}}>{stamina}/{getMaxStamina()}</span></div>
+                    <div className="rounded h-3 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(30,58,140,0.3)'}}><div className="h-full rounded transition-all duration-300" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb,#3b82f6)'}}/></div>
                   </div>
-                  
+
                   {/* Attack */}
-                  <div className="rounded-lg p-2 text-center" style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                    border: '2px solid rgba(0, 0, 0, 0.3)',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                  }}>
-                    <div className="flex justify-center mb-1">
-                      <Swords size={20} style={{color: '#F59E0B'}}/>
-                    </div>
-                    <p className="text-xl font-bold mb-1" style={{color: '#F5F5DC'}}>{getBaseAttack()}</p>
-                    <p className="text-xs uppercase" style={{color: '#F5F5DC'}}>Damage Per Hit</p>
+                  <div className="rounded-lg p-3 text-center" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(180,100,0,0.4)',boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
+                    <Swords size={18} style={{color:'#F59E0B',margin:'0 auto 6px'}}/>
+                    <p className="text-2xl font-black" style={{color:'#F5F5DC',fontFamily:'Cinzel,serif',lineHeight:1}}>{getBaseAttack()}</p>
+                    <p className="text-xs uppercase tracking-widest mt-1" style={{color:'rgba(245,245,220,0.45)'}}>Attack</p>
                   </div>
-                  
+
                   {/* Defense */}
-                  <div className="rounded-lg p-2 text-center" style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.35)',
-                    border: '2px solid rgba(0, 0, 0, 0.3)',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)'
-                  }}>
-                    <div className="flex justify-center mb-1">
-                      <ShieldCheck size={20} style={{color: '#F5F5DC'}}/>
-                    </div>
-                    <p className="text-2xl font-bold mb-1" style={{color: '#F5F5DC'}}>{Math.floor((getBaseDefense() / (getBaseDefense() + 50)) * 100)}%</p>
-                    <p className="text-xs uppercase" style={{color: '#F5F5DC'}}>Damage Resist</p>
+                  <div className="rounded-lg p-3 text-center" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(100,120,160,0.4)',boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
+                    <ShieldCheck size={18} style={{color:'#94A3B8',margin:'0 auto 6px'}}/>
+                    <p className="text-2xl font-black" style={{color:'#F5F5DC',fontFamily:'Cinzel,serif',lineHeight:1}}>{Math.floor((getBaseDefense() / (getBaseDefense() + 50)) * 100)}%</p>
+                    <p className="text-xs uppercase tracking-widest mt-1" style={{color:'rgba(245,245,220,0.45)'}}>Defense</p>
                   </div>
                 </div>
-                
+
                 {/* Curse Status Display */}
                 {curseLevel > 0 && (
-                  <div 
+                  <div
                     className={`rounded-lg p-2 mb-3 border-2 ${curseLevel === 3 ? 'animate-pulse' : ''}`}
                     style={{
                       backgroundColor: 'rgba(107, 44, 145, 0.3)',
@@ -401,11 +310,11 @@ const QuestTab = ({
                     </div>
                   </div>
                 )}
-                
+
                 {/* Customize button */}
                 {canCustomize && (
                   <div className="mb-3">
-                    <button 
+                    <button
                       onClick={() => setShowCustomizeModal(true)}
                       className="w-full py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
                       style={{backgroundColor: 'rgba(184, 134, 11, 0.6)', border: '2px solid #B8860B', color: '#F5F5DC'}}
@@ -424,17 +333,17 @@ const QuestTab = ({
                     </button>
                   </div>
                 )}
-                
+
                 {/* Decorative divider with text */}
                 <div className="flex items-center justify-center gap-3 mb-4 mt-4">
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                   <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Equipment</p>
                   <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
                 </div>
-                
+
                 {/* Supplies and Merchant buttons */}
                 <div className="grid grid-cols-2 gap-2">
-                  <button 
+                  <button
                     onClick={() => {
                       setSuppliesTab('potions');
                       setShowInventoryModal(true);
@@ -454,7 +363,7 @@ const QuestTab = ({
                   >
                     Supplies
                   </button>
-                  <button 
+                  <button
                     onClick={() => setShowCraftingModal(true)}
                     className="py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
                     style={{backgroundColor: 'rgba(120, 53, 15, 0.7)', border: '2px solid #92400E', color: '#F5F5DC'}}
@@ -472,7 +381,7 @@ const QuestTab = ({
                     Merchant
                   </button>
                 </div>
-                
+
                 {/* Collapse Button - Centered at bottom */}
                 <div className="flex justify-center mt-4">
                   <button
@@ -486,7 +395,7 @@ const QuestTab = ({
                       letterSpacing: '0.1em'
                     }}
                   >
-                    {heroCardCollapsed ? '▼ EXPAND HERO CARD' : '▲ COLLAPSE HERO CARD'}
+                    ▲ Collapse
                   </button>
                 </div>
               </div>
@@ -501,14 +410,14 @@ const QuestTab = ({
                   borderStyle: 'solid',
                   boxShadow: '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)'
                 }}>
-                  
+
                   {/* Decorative divider above */}
                   <div className="flex items-center justify-center gap-2 mb-4">
                     <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                     <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
                     <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   </div>
-                  
+
                   {/* Date Section */}
                   <h2 className="text-3xl font-bold mb-2 uppercase" style={{
                     color: '#D4AF37',
@@ -521,39 +430,39 @@ const QuestTab = ({
                   <p className="text-base mb-2" style={{color: 'rgba(156, 163, 175, 0.8)'}}>
                     {new Date().toLocaleDateString('en-US', { year: 'numeric' })}
                   </p>
-                  
+
                   {/* Decorative divider */}
                   <div className="flex items-center justify-center gap-2 mb-4">
                     <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                     <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
                     <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   </div>
-                  
+
                   <p className="text-sm italic mb-3" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
                   <p className="text-xs italic mb-6" style={{color: '#DAA520'}}>
                     "{GAME_CONSTANTS.DAY_NAMES[currentDay].theme}"
                   </p>
-                  
-                  <button 
-                    onClick={start} 
-                    className="px-8 py-3 rounded-lg font-bold text-xl transition-all" 
+
+                  <button
+                    onClick={start}
+                    className="px-8 py-3 rounded-lg font-bold text-xl transition-all"
                     style={{
                       backgroundColor: COLORS.gold,
                       color: COLORS.obsidian.base,
                       boxShadow: '0 4px 12px rgba(212, 175, 55, 0.4)'
-                    }} 
+                    }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = '#FFD700';
                       e.currentTarget.style.transform = 'translateY(-2px)';
                       e.currentTarget.style.boxShadow = '0 6px 16px rgba(212, 175, 55, 0.5)';
-                    }} 
+                    }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.backgroundColor = COLORS.gold;
                       e.currentTarget.style.transform = 'translateY(0)';
                       e.currentTarget.style.boxShadow = '0 4px 12px rgba(212, 175, 55, 0.4)';
                     }}
                   >START DAY</button>
-                  
+
                   {/* Decorative divider below */}
                   <div className="flex items-center justify-center gap-2 mt-6">
                     <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
@@ -574,19 +483,19 @@ const QuestTab = ({
                       </div>
                     </div>
                     {tasks.length > 0 && (
-                    
+
                       <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
                     )}
                     <div className="flex gap-3 justify-center mb-6">
-                      <button 
-                        onClick={() => setShowImportModal(true)} 
-                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" 
-                        style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}} 
+                      <button
+                        onClick={() => setShowImportModal(true)}
+                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold"
+                        style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)';
                           e.currentTarget.style.transform = 'translateY(-2px)';
                           e.currentTarget.style.boxShadow = '0 4px 12px rgba(120, 53, 15, 0.4)';
-                        }} 
+                        }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)';
                           e.currentTarget.style.transform = 'translateY(0)';
@@ -595,15 +504,15 @@ const QuestTab = ({
                       >
                         <Calendar size={18}/>Import from Planner
                       </button>
-                      <button 
-                        onClick={() => setShowModal(true)} 
-                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold" 
-                        style={{backgroundColor: COLORS.amber.base, borderColor: COLORS.amber.border, color: '#1C1C1C'}} 
+                      <button
+                        onClick={() => setShowModal(true)}
+                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold"
+                        style={{backgroundColor: COLORS.amber.base, borderColor: COLORS.amber.border, color: '#1C1C1C'}}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = 'rgba(234, 179, 8, 0.9)';
                           e.currentTarget.style.transform = 'translateY(-2px)';
                           e.currentTarget.style.boxShadow = '0 4px 12px rgba(234, 179, 8, 0.4)';
-                        }} 
+                        }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor = COLORS.amber.base;
                           e.currentTarget.style.transform = 'translateY(0)';
@@ -613,7 +522,7 @@ const QuestTab = ({
                         <Plus size={18}/>Accept Trial
                       </button>
                     </div>
-                    
+
                     {tasks.length === 0 ? (
                       <div className="text-center py-8">
                         <p className="text-base font-semibold tracking-wide" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>Your journey begins here.</p>
@@ -624,13 +533,13 @@ const QuestTab = ({
   // Incomplete tasks first, completed tasks last
   if (!a.done && b.done) return -1;
   if (a.done && !b.done) return 1;
-  
+
   // Among incomplete tasks: overdue first, then important, then routine
   if (!a.done && !b.done) {
     // Overdue tasks always come first
     if (a.overdue && !b.overdue) return -1;
     if (!a.overdue && b.overdue) return 1;
-    
+
     // If both overdue or both not overdue, sort by priority
     if (a.priority === 'important' && b.priority !== 'important') return -1;
     if (a.priority !== 'important' && b.priority === 'important') return 1;
@@ -640,8 +549,8 @@ const QuestTab = ({
 .filter(task => !hideCompletedTasks || !task.done)
 .map(t => (
   <div key={t.id} className={`rounded-lg p-4 border-2 ${
-    t.done 
-      ? 'opacity-60' 
+    t.done
+      ? 'opacity-60'
       : t.overdue
         ? 'bg-red-900/20 border-red-600 opacity-80'
       : t.priority === 'important'
@@ -649,15 +558,15 @@ const QuestTab = ({
         : 'bg-gradient-to-r from-blue-900/30 to-gray-800 border-blue-500'
   }`}
   style={{
-    backgroundColor: t.done 
-      ? 'rgba(30, 41, 59, 0.4)' 
-      : t.overdue 
-        ? undefined 
-        : t.priority === 'important' 
-          ? undefined 
+    backgroundColor: t.done
+      ? 'rgba(30, 41, 59, 0.4)'
+      : t.overdue
+        ? undefined
+        : t.priority === 'important'
+          ? undefined
           : undefined,
-    borderColor: t.done 
-      ? 'rgba(34, 197, 94, 0.6)' 
+    borderColor: t.done
+      ? 'rgba(34, 197, 94, 0.6)'
       : t.overdue
         ? undefined
         : t.priority === 'important'
@@ -665,8 +574,8 @@ const QuestTab = ({
           : 'rgba(59, 130, 246, 0.5)',
     position: 'relative',
     overflow: 'hidden',
-    animation: t.overdue && !t.done 
-      ? 'pulse-red-border 2s ease-in-out infinite' 
+    animation: t.overdue && !t.done
+      ? 'pulse-red-border 2s ease-in-out infinite'
       : undefined,
     boxShadow: t.priority === 'important' && !t.done && !t.overdue
       ? `0 0 20px ${COLORS.gold}99`
@@ -718,10 +627,10 @@ const QuestTab = ({
           {t.priority === 'important' ? 'IMPORTANT • 1.25x XP' : 'ROUTINE • 1.0x XP'}
         </p>
       </div>
-      
+
       {!t.done && (
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={() => {
               setPomodoroTask(t);
               setShowPomodoro(true);
@@ -730,13 +639,13 @@ const QuestTab = ({
               setIsBreak(false);
               setPomodoroRunning(true);
               addLog(`Starting focus session: ${t.title}`);
-            }} 
+            }}
             className="px-3 py-1 rounded transition-all flex items-center gap-1 border-2" style={{backgroundColor: COLORS.amethyst.base, borderColor: COLORS.amethyst.border, color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.amethyst.hover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.amethyst.base}
           >
             Focus
           </button>
-          <button 
-            onClick={() => complete(t.id)} 
+          <button
+            onClick={() => complete(t.id)}
             className="px-3 py-1 rounded font-bold transition-all flex items-center gap-1 border-2" style={{backgroundColor: COLORS.emerald.base, borderColor: COLORS.emerald.border, color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.hover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.base}
           >
             Complete
@@ -745,23 +654,23 @@ const QuestTab = ({
       )}
     </div>
   </div>
-))}   
+))}
                       </div>
                     )}
-                    
+
                     {/* Hide completed tasks toggle - at bottom */}
                     {tasks.length > 0 && tasks.some(t => t.done) && (
                       <div className="flex items-center justify-center gap-2 py-3 mt-4">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           id="hideCompleted"
                           checked={hideCompletedTasks}
                           onChange={(e) => setHideCompletedTasks(e.target.checked)}
                           className="w-4 h-4 cursor-pointer"
                           style={{accentColor: '#D4AF37'}}
                         />
-                        <label 
-                          htmlFor="hideCompleted" 
+                        <label
+                          htmlFor="hideCompleted"
                           className="text-sm cursor-pointer"
                           style={{color: '#C0C0C0'}}
                         >
@@ -770,14 +679,14 @@ const QuestTab = ({
                       </div>
                     )}
                   </div>
-                  
+
                   {/* Elite Boss Warning - State Machine with Emotional Feedback */}
                   {isDayActive && !eliteBossDefeatedToday && (() => {
                     const currentHour = new Date().getHours();
                     const hasEnoughXP = xp >= 200;
-                    
+
                     let state;
-                    
+
                     // Use debug state if set, otherwise calculate normally
                     if (debugWarningState) {
                       state = debugWarningState;
@@ -792,7 +701,7 @@ const QuestTab = ({
                         state = 'finalhour'; // Critical window
                       }
                     }
-                    
+
                     const stateConfig = {
                       locked: {
                         bg: 'rgba(0, 0, 0, 0.5)',
@@ -827,13 +736,13 @@ const QuestTab = ({
                         message: 'Final hour. Defeat the Darkness.'
                       }
                     };
-                    
+
                     const config = stateConfig[state];
-                    
+
                     if (!config) return null;
-                    
+
                     return (
-                      <div 
+                      <div
                         className={`rounded-lg p-4 mb-4 border-2 ${config.animate ? 'animate-pulse' : ''}`}
                         style={{
                           backgroundColor: config.bg,
@@ -849,11 +758,11 @@ const QuestTab = ({
                       </div>
                     );
                   })()}
-                  
+
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
-                    <button 
-  onClick={miniBoss} 
-  disabled={!isDayActive || eliteBossDefeatedToday || xp < 150} 
+                    <button
+  onClick={miniBoss}
+  disabled={!isDayActive || eliteBossDefeatedToday || xp < 150}
   className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
   <div className="text-center">
@@ -869,9 +778,9 @@ const QuestTab = ({
     )}
   </div>
 </button>
-                    <button 
-  onClick={finalBoss} 
-  disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length} 
+                    <button
+  onClick={finalBoss}
+  disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length}
   className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 0.5 : 1}} onMouseEnter={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
   <div className="text-center">
@@ -882,7 +791,7 @@ const QuestTab = ({
   </div>
 </button>
                   </div>
-                  
+
                   <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
                     {/* Section header with decorative divider */}
                     <div className="text-center mb-4">
