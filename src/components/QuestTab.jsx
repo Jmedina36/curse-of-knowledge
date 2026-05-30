@@ -120,7 +120,7 @@ const QuestTab = ({
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h3 className="font-black uppercase" style={{fontFamily:'Cinzel,serif',fontSize:'clamp(1.4rem,4vw,1.9rem)',letterSpacing:'0.06em',color:'#F5F5DC',textShadow:(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(220,220,220,0.4)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return '0 0 20px '+(m[hero.class.color]||m.yellow);})()}}>{hero.name}</h3>
-                        <p className="text-xs uppercase tracking-widest mt-0.5" style={{color:'rgba(245,245,220,0.45)',fontFamily:'Cinzel,serif'}}>{hero.title} {hero.class.name}</p>
+                        <p className="text-xs uppercase tracking-widest mt-0.5" style={{color:(()=>{const m={red:'rgba(220,50,50,0.75)',blue:'rgba(96,165,250,0.75)',green:'rgba(59,130,246,0.75)',white:'rgba(200,200,200,0.75)',purple:'rgba(167,139,250,0.75)',yellow:'rgba(212,175,55,0.75)',amber:'rgba(34,197,94,0.75)'};return m[hero.class.color]||m.yellow;})(),fontFamily:'Cinzel,serif'}}>{hero.title} • {hero.class.name}</p>
                       </div>
                       <div className="text-right">
                         <div className="px-3 py-1 rounded border" style={{background:'rgba(0,0,0,0.5)',borderColor:'rgba(212,175,55,0.4)'}}>
@@ -185,7 +185,7 @@ const QuestTab = ({
                 {/* Hero name — cinematic */}
                 <div className="text-center mb-4 pt-7">
                   <h2 className="font-black uppercase" style={{fontFamily:'Cinzel,serif',fontSize:'clamp(2rem,5vw,3.2rem)',letterSpacing:'0.1em',lineHeight:1.1,color:'#F5F5DC',textShadow:(()=>{const m={red:'rgba(220,50,50,0.7)',blue:'rgba(96,165,250,0.7)',green:'rgba(59,130,246,0.7)',white:'rgba(220,220,220,0.6)',purple:'rgba(167,139,250,0.7)',yellow:'rgba(212,175,55,0.7)',amber:'rgba(34,197,94,0.7)'};const c=m[hero.class.color]||m.yellow;return `0 0 30px ${c}, 0 0 60px ${c.replace('0.7','0.3')}, 0 2px 0 rgba(0,0,0,0.9)`;})()}}>{hero.name}</h2>
-                  <p className="text-xs uppercase tracking-[0.35em] mt-1.5" style={{color:'rgba(245,245,220,0.45)',fontFamily:'Cinzel,serif'}}>{hero.title} {hero.class.name}</p>
+                  <p className="text-xs uppercase tracking-[0.35em] mt-1.5" style={{color:(()=>{const m={red:'rgba(220,50,50,0.8)',blue:'rgba(96,165,250,0.8)',green:'rgba(59,130,246,0.8)',white:'rgba(200,200,200,0.8)',purple:'rgba(167,139,250,0.8)',yellow:'rgba(212,175,55,0.8)',amber:'rgba(34,197,94,0.8)'};return m[hero.class.color]||m.yellow;})(),fontFamily:'Cinzel,serif'}}>{hero.title} • {hero.class.name}</p>
                   <div className="flex items-center justify-center gap-2 mt-2">
                     {(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(200,200,200,0.4)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};const c=m[hero.class.color]||m.yellow;return(<><div style={{width:'60px',height:'1px',background:`linear-gradient(to right,transparent,${c})`}}></div><span style={{color:c,fontSize:'8px'}}>◆</span><div style={{width:'60px',height:'1px',background:`linear-gradient(to left,transparent,${c})`}}></div></>);})()}
                   </div>
@@ -194,7 +194,7 @@ const QuestTab = ({
                 {/* Experience bar */}
                 <div className="mb-3 rounded-lg p-2" style={{backgroundColor: 'rgba(0, 0, 0, 0.35)', border: '2px solid rgba(0, 0, 0, 0.3)'}}>
                   <div className="flex justify-between text-sm mb-1" style={{color: '#D4AF37'}}>
-                    <span className="font-bold uppercase tracking-wide">Experience</span>
+                    <span className="font-bold uppercase tracking-wide" style={{color:(()=>{const m={red:'rgba(220,50,50,1)',blue:'rgba(96,165,250,1)',green:'rgba(59,130,246,1)',white:'rgba(200,200,200,1)',purple:'rgba(167,139,250,1)',yellow:'rgba(212,175,55,1)',amber:'rgba(34,197,94,1)'};return m[hero.class.color]||m.yellow;})()}}>Experience</span>
                     <span className="font-bold">{(() => {
                       let xpSpent = 0;
                       for (let i = 1; i < level; i++) {
@@ -243,9 +243,9 @@ const QuestTab = ({
 
                 {/* Combat Stats Header */}
                 <div className="flex items-center justify-center gap-3 mb-3">
-                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
-                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Combat Stats</p>
-                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
+                  <div style={{flex:'1',height:'1px',background:`linear-gradient(to right,transparent,${(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(200,200,200,0.5)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return m[hero.class.color]||m.yellow;})()})`}}></div>
+                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color:(()=>{const m={red:'rgba(220,50,50,0.85)',blue:'rgba(96,165,250,0.85)',green:'rgba(59,130,246,0.85)',white:'rgba(200,200,200,0.85)',purple:'rgba(167,139,250,0.85)',yellow:'rgba(212,175,55,0.85)',amber:'rgba(34,197,94,0.85)'};return m[hero.class.color]||m.yellow;})()}}>Combat Stats</p>
+                  <div style={{flex:'1',height:'1px',background:`linear-gradient(to left,transparent,${(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(200,200,200,0.5)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return m[hero.class.color]||m.yellow;})()})`}}></div>
                 </div>
 
                 {/* Combat stats 2x2 grid */}
@@ -263,15 +263,15 @@ const QuestTab = ({
                   </div>
 
                   {/* Attack */}
-                  <div className="rounded-lg p-3 text-center" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(180,100,0,0.4)',boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
-                    <Swords size={18} style={{color:'#F59E0B',margin:'0 auto 6px'}}/>
+                  <div className="rounded-lg p-3 text-center" style={{background:'rgba(0,0,0,0.4)',border:`1px solid ${(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(200,200,200,0.5)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return m[hero.class.color]||m.yellow;})()}`,boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
+                    <Swords size={18} style={{color:(()=>{const m={red:'rgba(220,50,50,1)',blue:'rgba(96,165,250,1)',green:'rgba(59,130,246,1)',white:'rgba(200,200,200,1)',purple:'rgba(167,139,250,1)',yellow:'rgba(212,175,55,1)',amber:'rgba(34,197,94,1)'};return m[hero.class.color]||m.yellow;})(),margin:'0 auto 6px'}}/>
                     <p className="text-2xl font-black" style={{color:'#F5F5DC',fontFamily:'Cinzel,serif',lineHeight:1}}>{getBaseAttack()}</p>
                     <p className="text-xs uppercase tracking-widest mt-1" style={{color:'rgba(245,245,220,0.45)'}}>Attack</p>
                   </div>
 
                   {/* Defense */}
-                  <div className="rounded-lg p-3 text-center" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(100,120,160,0.4)',boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
-                    <ShieldCheck size={18} style={{color:'#94A3B8',margin:'0 auto 6px'}}/>
+                  <div className="rounded-lg p-3 text-center" style={{background:'rgba(0,0,0,0.4)',border:`1px solid ${(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(59,130,246,0.5)',white:'rgba(200,200,200,0.5)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return m[hero.class.color]||m.yellow;})()}`,boxShadow:'inset 0 2px 6px rgba(0,0,0,0.4)'}}>
+                    <ShieldCheck size={18} style={{color:(()=>{const m={red:'rgba(220,50,50,1)',blue:'rgba(96,165,250,1)',green:'rgba(59,130,246,1)',white:'rgba(200,200,200,1)',purple:'rgba(167,139,250,1)',yellow:'rgba(212,175,55,1)',amber:'rgba(34,197,94,1)'};return m[hero.class.color]||m.yellow;})(),margin:'0 auto 6px'}}/>
                     <p className="text-2xl font-black" style={{color:'#F5F5DC',fontFamily:'Cinzel,serif',lineHeight:1}}>{Math.floor((getBaseDefense() / (getBaseDefense() + 50)) * 100)}%</p>
                     <p className="text-xs uppercase tracking-widest mt-1" style={{color:'rgba(245,245,220,0.45)'}}>Defense</p>
                   </div>
