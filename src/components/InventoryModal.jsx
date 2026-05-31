@@ -4,6 +4,21 @@ import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
 
+// Armor sprite assignment — slot-specific, 5 variants each
+const ARMOR_SPRITES = {
+  helmet: ['/armor/helmet1.png','/armor/helmet2.png','/armor/helmet3.png','/armor/helmet4.png','/armor/helmet5.png'],
+  chest:  ['/armor/chest1.png', '/armor/chest2.png', '/armor/chest3.png', '/armor/chest4.png', '/armor/chest5.png'],
+  gloves: ['/armor/gloves1.png','/armor/gloves2.png','/armor/gloves3.png','/armor/gloves4.png','/armor/gloves5.png'],
+  boots:  ['/armor/boots1.png', '/armor/boots2.png', '/armor/boots3.png', '/armor/boots4.png', '/armor/boots5.png'],
+};
+const getArmorSprite = (piece, slot) => {
+  if (!piece || !ARMOR_SPRITES[slot]) return null;
+  let seed = 0;
+  if (piece?.id != null) seed = typeof piece.id === 'number' ? piece.id : String(piece.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  else if (piece?.name) seed = piece.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return ARMOR_SPRITES[slot][Math.abs(seed) % ARMOR_SPRITES[slot].length];
+};
+
 // Weapon sprite assignment — same hash as ArmoryScene
 const WEAPON_SPRITES = [
   '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
@@ -161,6 +176,9 @@ const InventoryModal = ({
               border: `1px solid ${getRarityColor(piece.rarity || 'common')}44`,
               background: VISUAL_STYLES.card.default,
             }}>
+              <img src={getArmorSprite(piece, key)} alt={piece.name}
+                style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
+                  filter: `drop-shadow(0 0 4px ${getRarityColor(piece.rarity || 'common')}60)` }}/>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ color: getRarityColor(piece.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{piece.name}</p>
                 <p style={{ color: '#68D391', fontSize: '11px' }}>+{piece.defense} Defense</p>
@@ -378,6 +396,9 @@ const InventoryModal = ({
                     <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{icon} {label.toUpperCase()}</p>
                     {item ? (
                       <>
+                        <img src={getArmorSprite(item, key)} alt={item.name}
+                          style={{ width: 36, height: 36, objectFit: 'contain', marginBottom: '4px',
+                            filter: `drop-shadow(0 0 5px ${getRarityColor(item.rarity || 'common')}70)` }}/>
                         <p style={{ color: getRarityColor(item.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
                         <p style={{ color: '#68D391', fontSize: '10px' }}>+{item.defense} Def</p>
                         {item.affixes?.percentDR > 0 && <p style={{ color: '#68D391', fontSize: '9px' }}>{Math.floor(item.affixes.percentDR)}% DR</p>}
