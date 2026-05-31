@@ -32,7 +32,7 @@ const ArmoryScene = ({ weapons = [], equippedWeaponId }) => {
     return () => clearInterval(t);
   }, []);
   return (
-  <div style={{ position: 'relative', overflow: 'hidden' }}>
+  <div style={{ position: 'relative', overflow: 'hidden', height: '100%' }}>
     <style>{`
       @keyframes ar_flameOuter {
         0%,100%{opacity:.88;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
@@ -86,7 +86,7 @@ const ArmoryScene = ({ weapons = [], equippedWeaponId }) => {
       }
     `}</style>
 
-    <svg viewBox="0 0 600 220" width="100%" style={{ display: 'block' }}>
+    <svg viewBox="0 0 600 220" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style={{ display: 'block', position: 'absolute', top: 0, left: 0 }}>
       <defs>
         <radialGradient id="ar_wall" cx="50%" cy="18%" r="76%">
           <stop offset="0%" stopColor="#24212e"/>

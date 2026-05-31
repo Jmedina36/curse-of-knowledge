@@ -106,7 +106,7 @@ const InventoryModal = ({
                 </button>
                 
                 {/* Armory scene — fills top half of screen */}
-                <div style={{ flexShrink: 0, overflow: 'hidden', maxHeight: '52vh', minHeight: '220px' }}>
+                <div style={{ flexShrink: 0, overflow: 'hidden', height: '45vh', minHeight: '220px' }}>
                   <ArmoryScene
                     weapons={[...(equippedWeapon ? [equippedWeapon] : []), ...weaponInventory]}
                     equippedWeaponId={equippedWeapon?.id}
