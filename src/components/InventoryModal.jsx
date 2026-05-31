@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import ArmoryScene from './ArmoryScene';
 
 const InventoryModal = ({
   // Display state
@@ -91,15 +92,7 @@ const InventoryModal = ({
                   <X size={20}/>
                 </button>
                 
-                <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold mb-2" style={{color: COLORS.gold, letterSpacing: '0.1em'}}>SUPPLIES</h2>
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))`}}></div>
-                    <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
-                    <div style={{width: '120px', height: '1px', background: `linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))`}}></div>
-                  </div>
-                  <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"What keeps you alive in the darkness..."</p>
-                </div>
+                <ArmoryScene />
                 
                 {/* Tabs */}
                 <div className="grid grid-cols-4 gap-2 mb-6">
