@@ -346,35 +346,30 @@ const QuestTab = ({
                 onClick={() => { setSuppliesTab('potions'); setShowInventoryModal(true); }}
                 style={{
                   width: '100%', position: 'relative', overflow: 'hidden',
-                  padding: '22px 24px', borderRadius: '6px', cursor: 'pointer',
-                  background: 'linear-gradient(110deg, #1a0505 0%, #2a0808 40%, #1a0a0a 100%)',
-                  border: '1px solid rgba(160,30,30,0.45)',
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)',
-                  transition: 'all 0.25s', textAlign: 'left',
+                  padding: '24px', borderRadius: '6px', cursor: 'pointer',
+                  background: 'linear-gradient(110deg, #3d0c0c 0%, #5a1010 50%, #3d0c0c 100%)',
+                  border: '1px solid rgba(200,60,50,0.55)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+                  transition: 'all 0.25s', textAlign: 'center',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(220,60,50,0.65)';
-                  e.currentTarget.style.boxShadow = '0 6px 32px rgba(180,20,20,0.35), inset 0 0 40px rgba(0,0,0,0.2)';
+                  e.currentTarget.style.background = 'linear-gradient(110deg, #4e1010 0%, #6e1414 50%, #4e1010 100%)';
+                  e.currentTarget.style.borderColor = 'rgba(240,80,60,0.75)';
+                  e.currentTarget.style.boxShadow = '0 6px 28px rgba(180,30,20,0.45), inset 0 1px 0 rgba(255,255,255,0.07)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(160,30,30,0.45)';
-                  e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)';
+                  e.currentTarget.style.background = 'linear-gradient(110deg, #3d0c0c 0%, #5a1010 50%, #3d0c0c 100%)';
+                  e.currentTarget.style.borderColor = 'rgba(200,60,50,0.55)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                {/* Background watermark */}
-                <div style={{position:'absolute',right:'-10px',top:'50%',transform:'translateY(-50%)',fontSize:'7rem',opacity:0.04,color:'#FF6B6B',pointerEvents:'none',lineHeight:1}}>
-                  ⚔︎
-                </div>
-                {/* Torch glow top-right */}
-                <div style={{position:'absolute',top:0,right:0,width:'160px',height:'100%',background:'radial-gradient(ellipse at 100% 50%, rgba(180,40,20,0.12) 0%, transparent 70%)',pointerEvents:'none'}} />
                 <div style={{position:'relative',zIndex:1}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'6px'}}>
-                    <span style={{fontSize:'1.4rem',lineHeight:1}}>&#x2694;&#xfe0e;</span>
-                    <span style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2.5vw,1.25rem)',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(230,170,160,0.95)'}}>The Armory</span>
-                  </div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.68rem',letterSpacing:'0.15em',color:'rgba(180,110,100,0.65)',textTransform:'uppercase'}}>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1.05rem,2.5vw,1.3rem)',letterSpacing:'0.25em',textTransform:'uppercase',color:'rgba(255,190,180,1)',marginBottom:'5px',textShadow:'0 0 20px rgba(220,60,50,0.6)'}}>
+                    The Armory
+                  </p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.65rem',letterSpacing:'0.18em',color:'rgba(220,150,140,0.7)',textTransform:'uppercase'}}>
                     Potions • Provisions • Equipment
                   </p>
                 </div>
@@ -385,35 +380,30 @@ const QuestTab = ({
                 onClick={() => setShowCraftingModal(true)}
                 style={{
                   width: '100%', position: 'relative', overflow: 'hidden',
-                  padding: '22px 24px', borderRadius: '6px', cursor: 'pointer',
-                  background: 'linear-gradient(110deg, #0e0900 0%, #1e1400 40%, #130e00 100%)',
-                  border: '1px solid rgba(140,100,20,0.45)',
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)',
-                  transition: 'all 0.25s', textAlign: 'left',
+                  padding: '24px', borderRadius: '6px', cursor: 'pointer',
+                  background: 'linear-gradient(110deg, #2e1e00 0%, #4a3000 50%, #2e1e00 100%)',
+                  border: '1px solid rgba(200,155,30,0.55)',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+                  transition: 'all 0.25s', textAlign: 'center',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(212,175,55,0.65)';
-                  e.currentTarget.style.boxShadow = '0 6px 32px rgba(180,140,20,0.25), inset 0 0 40px rgba(0,0,0,0.2)';
+                  e.currentTarget.style.background = 'linear-gradient(110deg, #3a2600 0%, #5c3c00 50%, #3a2600 100%)';
+                  e.currentTarget.style.borderColor = 'rgba(212,175,55,0.85)';
+                  e.currentTarget.style.boxShadow = '0 6px 28px rgba(180,140,20,0.35), inset 0 1px 0 rgba(255,255,255,0.07)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(140,100,20,0.45)';
-                  e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)';
+                  e.currentTarget.style.background = 'linear-gradient(110deg, #2e1e00 0%, #4a3000 50%, #2e1e00 100%)';
+                  e.currentTarget.style.borderColor = 'rgba(200,155,30,0.55)';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                {/* Background watermark */}
-                <div style={{position:'absolute',right:'-10px',top:'50%',transform:'translateY(-50%)',fontSize:'7rem',opacity:0.05,color:'#D4AF37',pointerEvents:'none',lineHeight:1}}>
-                  ★
-                </div>
-                {/* Candlelight glow */}
-                <div style={{position:'absolute',top:0,right:0,width:'160px',height:'100%',background:'radial-gradient(ellipse at 100% 50%, rgba(180,130,20,0.12) 0%, transparent 70%)',pointerEvents:'none'}} />
                 <div style={{position:'relative',zIndex:1}}>
-                  <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'6px'}}>
-                    <span style={{fontSize:'1.4rem',lineHeight:1}}>★</span>
-                    <span style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2.5vw,1.25rem)',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(212,175,55,0.95)'}}>The Merchant</span>
-                  </div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.68rem',letterSpacing:'0.15em',color:'rgba(160,130,50,0.65)',textTransform:'uppercase'}}>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1.05rem,2.5vw,1.3rem)',letterSpacing:'0.25em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'5px',textShadow:'0 0 20px rgba(212,175,55,0.65)'}}>
+                    The Merchant
+                  </p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.65rem',letterSpacing:'0.18em',color:'rgba(200,165,70,0.75)',textTransform:'uppercase'}}>
                     Forge • Craft • Trade your gold for power
                   </p>
                 </div>
