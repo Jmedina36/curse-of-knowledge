@@ -1256,7 +1256,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   // ── Battle music / title music ────────────────────────────────────────────────
   useEffect(() => {
     if (battling) {
-      const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : TRACKS.battle;
+      const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : battleType === 'regular' ? TRACKS.unholyKnight : TRACKS.battle;
       audioManager.play(track);
     } else if (hasStarted) {
       audioManager.play(TRACKS.midnightTale);
