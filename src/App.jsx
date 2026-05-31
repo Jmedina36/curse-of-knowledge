@@ -34,7 +34,7 @@ const FantasyStudyQuest = () => {
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
-  const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'revealed' | 'fading' | 'done'
+  const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'revealed' | 'confirm' | 'fading' | 'done'
   const introTimers = useRef([]);
   const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
@@ -5671,6 +5671,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             opacity: introPhase === 'fading' ? 0 : 1,
             transition: 'opacity 0.8s ease-in-out',
             cursor: introPhase === 'visible' ? 'pointer' : 'default',
+            pointerEvents: introPhase === 'fading' ? 'none' : 'auto',
             userSelect: 'none',
           }}
         >
@@ -5717,9 +5718,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             animation: 'intro-fade-up 0.6s ease-out 1.4s both',
           }}>Study or be consumed by the abyss</p>
 
-          {/* Bottom slot — hint OR buttons, never both */}
-          <div style={{ marginTop: '48px', minHeight: '140px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          {/* Bottom slot — cycles through: hint → menu → confirm */}
+          <div style={{ marginTop: '48px', minHeight: '160px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
 
+            {/* Hint */}
             {introPhase === 'visible' && (
               <p style={{
                 fontFamily: "'Cinzel', serif",
@@ -5731,6 +5733,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }}>✦ press enter or tap to begin ✦</p>
             )}
 
+            {/* Continue / New Adventure */}
             {(introPhase === 'revealed' || introPhase === 'fading') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', animation: 'intro-fade-up 0.45s ease-out both' }}>
                 <button
@@ -5761,12 +5764,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 </div>
 
                 <button
-                  onClick={() => {
-                    introTimers.current.forEach(clearTimeout);
-                    setIntroPhase('fading');
-                    const t = setTimeout(() => setIntroPhase('done'), 800);
-                    introTimers.current = [t];
-                  }}
+                  onClick={() => setIntroPhase('confirm')}
                   style={{
                     fontFamily: "'Cinzel', serif", fontWeight: 600,
                     fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', letterSpacing: '0.25em',
@@ -5780,6 +5778,124 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 >
                   New Adventure
                 </button>
+              </div>
+            )}
+
+            {/* Confirmation */}
+            {introPhase === 'confirm' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', animation: 'intro-fade-up 0.35s ease-out both' }}>
+                <p style={{
+                  fontFamily: "'Cinzel', serif",
+                  fontSize: 'clamp(0.75rem, 2vw, 0.9rem)',
+                  letterSpacing: '0.15em',
+                  textAlign: 'center',
+                  color: 'rgba(210,160,160,0.8)',
+                  maxWidth: '340px',
+                  lineHeight: 1.7,
+                }}>
+                  Your current chronicle will be<br />erased forever. Are you certain?
+                </p>
+
+                <div style={{ display: 'flex', gap: '32px', alignItems: 'center' }}>
+                  <button
+                    onClick={() => {
+                      // Full reset
+                      const newHero = makeName();
+                      setHero(newHero);
+                      setCanCustomize(true);
+                      setCurrentDay(1);
+                      setHasStarted(false);
+                      setHp(GAME_CONSTANTS.MAX_HP);
+                      setStamina(GAME_CONSTANTS.MAX_STAMINA);
+                      setXp(0);
+                      setLevel(1);
+                      setGold(0);
+                      setCurrency(0);
+                      setHealthPots(0);
+                      setStaminaPots(0);
+                      setCleansePots(0);
+                      setWeapon(0);
+                      setArmor(0);
+                      setEquippedWeapon(null);
+                      setWeaponInventory([]);
+                      setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
+                      setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
+                      setEquippedPendant(null);
+                      setEquippedRing(null);
+                      setPendantInventory([]);
+                      setRingInventory([]);
+                      setTasks([]);
+                      setActiveTask(null);
+                      setTimer(0);
+                      setRunning(false);
+                      setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
+                      setCalendarTasks({});
+                      setCalendarFocus({});
+                      setCalendarEvents({});
+                      setShowBoss(false);
+                      setBattling(false);
+                      setBattleMode(false);
+                      setBossHp(0);
+                      setBossMax(0);
+                      setBattleType('regular');
+                      setBattleMenu('main');
+                      setIsFinalBoss(false);
+                      setBossName('');
+                      setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+                      setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+                      setRecklessStacks(0);
+                      setLog([]);
+                      setGraveyard([]);
+                      setHeroes([]);
+                      setSkipCount(0);
+                      setConsecutiveDays(0);
+                      setLastPlayedDate(null);
+                      setMiniBossCount(0);
+                      setCurseLevel(0);
+                      setEliteBossDefeatedToday(false);
+                      setIsDayActive(false);
+                      setFlashcardDecks([]);
+                      setAchievementStats({ tasksCompleted: 0, studyMinutes: 0, deepWorkSessions: 0, perfectDays: 0, bossesDefeated: 0, eliteBossesDefeated: 0, battlesFled: 0, battlesWon: 0, cardsStudied: 0, consecutiveDays: 0 });
+                      setUnlockedAchievements([]);
+                      localStorage.removeItem('fantasyStudyQuest');
+                      // Fade out, then go to game and open hero customization
+                      introTimers.current.forEach(clearTimeout);
+                      setIntroPhase('fading');
+                      const t = setTimeout(() => {
+                        setIntroPhase('done');
+                        setShowCustomizeModal(true);
+                      }, 800);
+                      introTimers.current = [t];
+                    }}
+                    style={{
+                      fontFamily: "'Cinzel', serif", fontWeight: 700,
+                      fontSize: 'clamp(0.95rem, 2.5vw, 1.15rem)', letterSpacing: '0.2em',
+                      textTransform: 'uppercase', color: '#F5F5DC',
+                      background: 'none', border: 'none', padding: '12px 40px',
+                      cursor: 'pointer', transition: 'all 0.25s',
+                      textShadow: '0 0 14px rgba(200,30,30,0.6)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.textShadow = '0 0 24px rgba(220,50,50,1)'; e.currentTarget.style.transform = 'scale(1.06)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = '#F5F5DC'; e.currentTarget.style.textShadow = '0 0 14px rgba(200,30,30,0.6)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                  >
+                    Begin Fresh
+                  </button>
+
+                  <button
+                    onClick={() => setIntroPhase('revealed')}
+                    style={{
+                      fontFamily: "'Cinzel', serif", fontWeight: 500,
+                      fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', letterSpacing: '0.15em',
+                      textTransform: 'uppercase', color: 'rgba(180,180,180,0.5)',
+                      background: 'none', border: 'none', padding: '12px 40px',
+                      cursor: 'pointer', transition: 'all 0.25s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.color = 'rgba(220,220,220,0.85)'; e.currentTarget.style.transform = 'scale(1.04)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(180,180,180,0.5)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                  >
+                    ← Go Back
+                  </button>
+                </div>
               </div>
             )}
 
