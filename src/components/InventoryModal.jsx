@@ -288,18 +288,18 @@ const InventoryModal = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
 
-      {/* Blacksmith — left of modal, centered vertically */}
+      {/* Blacksmith — left of modal, centered horizontally and vertically */}
       <motion.div
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginRight: '20px', flexShrink: 0 }}
+        style={{ width: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px', flexShrink: 0, height: '90vh' }}
         onClick={e => e.stopPropagation()}
       >
         <img src="/npcs/blacksmith.png" alt="Grimdar"
-          style={{ width: 140, height: 140, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 28px rgba(201,169,97,0.55), 0 0 60px rgba(201,169,97,0.2)' }}/>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '11px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>GRIMDAR</p>
-        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-8px' }}>Master Smith</p>
+          style={{ width: 170, height: 170, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 32px rgba(201,169,97,0.6), 0 0 80px rgba(201,169,97,0.2)' }}/>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>GRIMDAR</p>
+        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
       </motion.div>
 
       <motion.div
