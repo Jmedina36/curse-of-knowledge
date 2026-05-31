@@ -1,16 +1,6 @@
 // ── SFX file player ──────────────────────────────────────────────────────────
-// Drop .mp3 files into /public/sounds/sfx/ and they'll be used automatically.
-// If a file is missing, the synthesized fallback plays instead.
-//
-// Files to add (all free, no attribution required — get them from mixkit.co
-// or pixabay.com/sound-effects):
-//
-//   sword-swing.mp3    — metal slash / sword swing (played on basic attack)
-//   sword-clash.mp3    — metal clang on impact (boss takes damage)
-//   player-hurt.mp3    — heavy thud / grunt (player takes damage)
-//   crit-impact.mp3    — powerful heavy hit (critical)
-//   power-strike.mp3   — charged/special ability whoosh + hit
-//
+// Audio files are loaded from /public/sounds/sfx/.
+// Synthesized bass/sub layers are kept underneath for physical feel.
 const SFX_DIR = '/sounds/sfx/';
 const _sfxCache = {};
 
@@ -116,130 +106,101 @@ const noise = (dur, vol = 0.2, delay = 0, hpFreq = 0, lpFreq = 8000) => {
 
 export const sounds = {
 
-  // ── Boss takes damage: sword clash ──────────────────────────────────────────
+  // ── Enemy takes damage: medieval sword strike ───────────────────────────────
   bossDamage: () => {
-    sfxPlay('sword-clash.mp3', 0.75);
-    // Synthesized fallback (also layered under the sfx for body)
-    sweep(140, 55, 0.2, 'sine', 0.18, 0.02);
+    sfxPlay('mixkit-sword-blade-attack-in-medieval-battle-2762.wav', 0.75);
+    sweep(140, 55, 0.2, 'sine', 0.15, 0.02); // sub thump underneath
   },
 
-  // ── Player takes damage: heavy impact ───────────────────────────────────────
+  // ── Player takes damage: blow impact ────────────────────────────────────────
   playerDamage: () => {
-    sfxPlay('player-hurt.mp3', 0.8);
-    // Low sub thump underneath
-    noise(0.08, 0.25, 0, 60, 500);
-    sweep(90, 40, 0.22, 'sine', 0.2, 0.01);
+    sfxPlay('mixkit-impact-of-a-blow-2150.wav', 0.8);
+    noise(0.08, 0.2, 0, 60, 500);
+    sweep(90, 40, 0.22, 'sine', 0.18, 0.01);
   },
 
-  // ── Critical hit: power hit ──────────────────────────────────────────────────
+  // ── Critical hit: metal hit whoosh ──────────────────────────────────────────
   critHit: () => {
-    sfxPlay('crit-impact.mp3', 0.85);
-    // Extra low end punch
-    sweep(200, 50, 0.28, 'sine', 0.22, 0.03);
+    sfxPlay('mixkit-metal-hit-woosh-1485.wav', 0.85);
+    sweep(200, 50, 0.28, 'sine', 0.2, 0.03);
   },
 
-  // ── Charged Strike: power strike ────────────────────────────────────────────
+  // ── Charged Strike: quick saber cut ─────────────────────────────────────────
   chargedStrike: () => {
-    sfxPlay('power-strike.mp3', 0.9);
-    // Electric buildup stays synthesized
-    noise(0.06, 0.18, 0, 2500, 9000);
-    sweep(600, 2400, 0.12, 'sawtooth', 0.22);
-    // Sub boom on impact
-    sweep(80, 30, 0.4, 'sine', 0.3, 0.1);
+    sfxPlay('mixkit-quick-saber-cut-2158.mp3', 0.9);
+    noise(0.06, 0.15, 0, 2500, 9000); // electric crackle buildup
+    sweep(80, 30, 0.4, 'sine', 0.28, 0.08);
   },
 
-  // ── Charge gained: subtle electric tick ─────────────────────────────────────
+  // ── Charge gained: magic sparkle tick ───────────────────────────────────────
   chargeGain: () => {
-    sweep(380, 580, 0.07, 'sine', 0.14);
-    noise(0.04, 0.08, 0, 2000, 6000);
+    sfxPlay('mixkit-magic-sparkle-whoosh-2350.wav', 0.35);
   },
 
-  // ── Charges full: electric shimmer alert ────────────────────────────────────
+  // ── Charges full: magic sparkle shimmer ─────────────────────────────────────
   chargeFull: () => {
-    [700, 900, 1100, 1500].forEach((f, i) => tone(f, 0.13, 'sine', 0.16, i * 0.045));
-    sweep(500, 1800, 0.28, 'sine', 0.22, 0.12);
-    noise(0.14, 0.12, 0.12, 2800, 8000);
+    sfxPlay('mixkit-magic-sparkle-whoosh-2350.wav', 0.6);
+    [700, 900, 1100, 1500].forEach((f, i) => tone(f, 0.12, 'sine', 0.12, i * 0.045));
   },
 
-  // ── Special attack: class ability whoosh ────────────────────────────────────
+  // ── Special attack: sword blade swish ───────────────────────────────────────
   specialAttack: () => {
-    sfxPlay('sword-swing.mp3', 0.7);
-    sweep(300, 1100, 0.22, 'sine', 0.18);
-    noise(0.14, 0.18, 0.08, 600, 4500);
+    sfxPlay('mixkit-sword-blade-swish-1506.wav', 0.75);
+    sweep(300, 1100, 0.18, 'sine', 0.14);
   },
 
   // ── Boss / enemy entrance: deep cinematic boom ──────────────────────────────
   bossEntrance: () => {
-    // Sub boom
     sweep(130, 38, 0.55, 'sine', 0.38);
     noise(0.35, 0.28, 0, 20, 250);
-    // Rising swell
     [200, 260, 330].forEach((f, i) => sweep(f * 0.4, f, 0.65, 'sawtooth', 0.12, i * 0.09));
-    // Impact crack
     noise(0.08, 0.38, 0.3, 500, 3500);
     sweep(400, 90, 0.2, 'sawtooth', 0.3, 0.3);
   },
 
-  // ── Battle victory: triumphant resolved fanfare ──────────────────────────────
+  // ── Battle victory ───────────────────────────────────────────────────────────
   victory: () => {
-    // Opening chord
-    [523, 659, 784].forEach((f, i) => tone(f, 0.28, 'sine', 0.22, i * 0.04));
-    // Rise
-    setTimeout(() => [659, 784, 1047].forEach((f, i) => tone(f, 0.32, 'sine', 0.24, i * 0.04)), 260);
-    // Triumphant peak
-    setTimeout(() => {
-      tone(1319, 0.65, 'sine', 0.3);
-      tone(1047, 0.55, 'sine', 0.18, 0.04);
-      tone(784, 0.55, 'sine', 0.14, 0.08);
-      noise(0.08, 0.1, 0, 1500, 7000);
-    }, 560);
+    sfxPlay('mixkit-video-game-win-2016.wav', 0.7);
   },
 
-  // ── Task completed: two-tone success chime ──────────────────────────────────
+  // ── Task completed ───────────────────────────────────────────────────────────
   taskComplete: () => {
-    tone(660, 0.14, 'sine', 0.22);
-    tone(880, 0.22, 'sine', 0.2, 0.1);
-    tone(1100, 0.18, 'sine', 0.14, 0.2);
+    sfxPlay('mixkit-completion-of-a-level-2063.wav', 0.65);
   },
 
-  // ── Level up: ascending arpeggio ────────────────────────────────────────────
+  // ── Level up ─────────────────────────────────────────────────────────────────
   levelUp: () => {
-    [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.24, 'sine', 0.28, i * 0.09));
-    setTimeout(() => noise(0.12, 0.1, 0, 1000, 6000), 480);
+    sfxPlay('mixkit-game-level-completed-2059.wav', 0.75);
   },
 
-  // ── Potion use: upward glug sweep ───────────────────────────────────────────
+  // ── Potion use: magic wand sparkle ───────────────────────────────────────────
   potionUse: () => {
-    sweep(300, 700, 0.28, 'sine', 0.2);
-    sweep(400, 900, 0.2, 'sine', 0.12, 0.1);
+    sfxPlay('mixkit-magic-wand-sparkle-3062.wav', 0.65);
   },
 
-  // ── Gold earned: bright coin ping ───────────────────────────────────────────
+  // ── Gold earned: treasure coin ───────────────────────────────────────────────
   goldEarned: () => {
-    tone(1400, 0.07, 'sine', 0.18);
-    tone(1800, 0.12, 'sine', 0.14, 0.06);
-    tone(2200, 0.08, 'sine', 0.08, 0.12);
+    sfxPlay('mixkit-game-treasure-coin-2038.wav', 0.6);
   },
 
-  // ── Achievement unlocked: fanfare ───────────────────────────────────────────
+  // ── Achievement unlocked: treasure fanfare ───────────────────────────────────
   achievementUnlock: () => {
-    [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.28, 'triangle', 0.22, i * 0.07));
-    tone(1319, 0.55, 'sine', 0.28, 0.34);
-    setTimeout(() => noise(0.1, 0.08, 0, 1000, 5000), 420);
+    sfxPlay('mixkit-video-game-treasure-2066.wav', 0.75);
   },
 
-  // ── Flee: descending shame tones ────────────────────────────────────────────
+  // ── Flee: dagger whoosh ───────────────────────────────────────────────────────
   flee: () => {
-    [380, 300, 220, 160, 110].forEach((f, i) => tone(f, 0.16, 'sawtooth', 0.16, i * 0.1));
+    sfxPlay('mixkit-dagger-woosh-1487.wav', 0.7);
   },
 
-  // ── Curse cleanse: mystical sweep ───────────────────────────────────────────
+  // ── Curse cleanse: magic sparkle ─────────────────────────────────────────────
   cleanse: () => {
-    sweep(200, 900, 0.42, 'sine', 0.22);
-    sweep(400, 1300, 0.32, 'sine', 0.14, 0.16);
-    noise(0.25, 0.1, 0.1, 1500, 6000);
+    sfxPlay('mixkit-magic-wand-sparkle-3062.wav', 0.8);
+    sweep(200, 900, 0.42, 'sine', 0.14);
   },
 
-  // ── Open modal: soft click ───────────────────────────────────────────────────
-  openModal: () => tone(700, 0.08, 'sine', 0.12),
+  // ── Open modal: soft UI click ────────────────────────────────────────────────
+  openModal: () => {
+    sfxPlay('mixkit-typewriter-soft-click-1125.wav', 0.4);
+  },
 };
