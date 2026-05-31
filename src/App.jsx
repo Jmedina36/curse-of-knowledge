@@ -92,6 +92,7 @@ const FantasyStudyQuest = () => {
   }); // Dynamic market prices (1.0 = normal, 1.5 = 50% bonus, etc.)
   const [lastMarketUpdateDay, setLastMarketUpdateDay] = useState(0); // Track last day market was updated
   const pityCounterRef = useRef(0); // Fights without a rare+ drop (pity timer)
+  const pendingBattleSpawnRef = useRef(null); // Spawn deferred until D20 modal closes
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
   const [showShop, setShowShop] = useState(false); // Shop modal visibility
   const [daysSinceShop, setDaysSinceShop] = useState(0); // Track shop refresh
@@ -2095,21 +2096,18 @@ if (task.overdue) {
     
     addLog(completionMsg);
 
-// Always spawn enemy after task completion
-setTimeout(() => {
-  // 20% chance for wave attack
+// Store spawn — fires when the player closes the D20 modal
+pendingBattleSpawnRef.current = () => {
   const waveRoll = Math.random();
   if (waveRoll < 0.2) {
-    // Wave attack: 2-4 enemies
-    const numEnemies = Math.floor(Math.random() * 2) + 2; // 2 or 3
+    const numEnemies = Math.floor(Math.random() * 2) + 2;
     setWaveCount(numEnemies);
     addLog(`Wave incoming! ${numEnemies} enemies detected!`);
     setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
   } else {
-    // Regular single enemy
     spawnRegularEnemy(false, 0, 1);
   }
-}, 1000);
+};
   }
 
 }, [tasks, currentDay, addLog, consecutiveDays, skipCount, curseLevel, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask]);
@@ -7095,7 +7093,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       {diceRoll && introPhase === 'done' && (
         <DiceRollModal
           roll={diceRoll.roll} bonusXP={diceRoll.bonusXP} bonusGold={diceRoll.bonusGold}
-          onClose={() => setDiceRoll(null)}
+          onClose={() => {
+            setDiceRoll(null);
+            if (pendingBattleSpawnRef.current) {
+              const spawn = pendingBattleSpawnRef.current;
+              pendingBattleSpawnRef.current = null;
+              setTimeout(spawn, 300);
+            }
+          }}
         />
       )}
       {currentEncounter && introPhase === 'done' && (
