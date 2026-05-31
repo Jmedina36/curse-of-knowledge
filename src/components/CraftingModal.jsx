@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import ShopScene from './ShopScene';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -159,18 +160,8 @@ const CraftingModal = ({
           <X size={20} />
         </button>
 
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold mb-2" style={{ color: '#D4AF37', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em', textShadow: '0 0 20px rgba(212,175,55,0.3)' }}>
-            THE MERCHANT
-          </h2>
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div style={{ width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5))' }} />
-            <span style={{ color: 'rgba(212,175,55,0.6)', fontSize: '8px' }}>◆</span>
-            <div style={{ width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))' }} />
-          </div>
-          <p className="text-sm mt-2 italic" style={{ color: COLORS.silver }}>"{getMerchantDialogue()}"</p>
-        </div>
+        {/* Shop Scene */}
+        <ShopScene dialogue={getMerchantDialogue()} gold={gold} />
 
         {/* Main Tabs: Potions / Equipment */}
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -240,14 +231,6 @@ const CraftingModal = ({
             </div>
           </div>
         )}
-
-        {/* Gold display */}
-        <div className="rounded-lg p-4 mb-6 border-2" style={{ background: 'rgba(184,134,11,0.2)', borderColor: 'rgba(212,175,55,0.4)' }}>
-          <p className="text-center text-lg">
-            <span style={{ color: COLORS.silver }}>Current Gold:</span>
-            <span className="font-bold text-2xl ml-2" style={{ color: '#D4AF37' }}>{gold}</span>
-          </p>
-        </div>
 
         {/* ── Buy Potions ── */}
         {merchantTab === 'buy' && (() => {
