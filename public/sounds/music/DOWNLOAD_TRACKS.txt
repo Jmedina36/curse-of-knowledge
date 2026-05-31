@@ -1,0 +1,33 @@
+Place your music files here. The game expects these three filenames:
+
+  battle.mp3   — Regular enemy / wave battles
+  boss.mp3     — Elite boss and Final Gauntlet battles
+  ambient.mp3  — (optional) Idle / menu music (not yet wired)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+FREE RECOMMENDED TRACKS (all CC BY — credit Kevin MacLeod at incompetech.com)
+
+BATTLE MUSIC (energetic, looping):
+  "Clash Defiant"       https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100764
+  "Killers"             https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100189
+  "Covert Affair"       https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100196
+
+BOSS MUSIC (intense, dramatic):
+  "Volatile Reaction"   https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100230
+  "Dark Times"          https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100241
+  "Investigations"      https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100175
+
+Bulk search: https://incompetech.filmmusic.io/search/?genres=6 (Action/Epic)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ALTERNATIVE FREE SOURCE:
+  https://opengameart.org/content/battle-theme-a
+  https://opengameart.org/content/boss-battle-theme
+
+STEPS:
+  1. Download your chosen tracks as MP3
+  2. Rename to battle.mp3 and boss.mp3
+  3. Drop them in this folder
+  4. Refresh the game — music will start automatically when battle begins

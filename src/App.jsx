@@ -4,6 +4,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
+import { audioManager, TRACKS } from './audioManager';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
 import QuestTab from './components/QuestTab';
@@ -1233,6 +1234,16 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   useEffect(() => {
     setDailyQuestCompleted(false);
   }, [currentDay]);
+
+  // ── Battle music ─────────────────────────────────────────────────────────────
+  useEffect(() => {
+    if (battling) {
+      const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : TRACKS.battle;
+      audioManager.play(track);
+    } else {
+      audioManager.stop();
+    }
+  }, [battling, battleType, isFinalBoss]);
   
   // Refresh shop inventory on merchant open if it's a refresh day
   useEffect(() => {

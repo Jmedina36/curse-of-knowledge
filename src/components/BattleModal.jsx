@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
+import { audioManager } from '../audioManager';
 
 // ─── Enemy move pools by battle type ─────────────────────────────────────────
 const ENEMY_MOVES = {
@@ -164,6 +165,7 @@ const BattleModal = ({
   // ── Local effect state ──────────────────────────────────────────────────────
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [shaking, setShaking] = useState(false);
+  const [musicMuted, setMusicMuted] = useState(() => audioManager.muted);
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
   const [enemySpecialAnim, setEnemySpecialAnim] = useState(null); // 'bleed' | 'armorBreak' | 'overwhelmingForce'
@@ -669,6 +671,25 @@ const BattleModal = ({
       </AnimatePresence>
 
       <div className="relative flex flex-col min-h-screen" style={{ zIndex: 2 }}>
+
+        {/* Music mute toggle */}
+        <button
+          onClick={() => {
+            const next = !musicMuted;
+            setMusicMuted(next);
+            audioManager.setMuted(next);
+          }}
+          title={musicMuted ? 'Unmute music' : 'Mute music'}
+          style={{
+            position: 'absolute', top: 12, right: 12, zIndex: 10,
+            background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(255,255,255,0.12)',
+            borderRadius: '6px', padding: '5px 8px', cursor: 'pointer',
+            color: musicMuted ? 'rgba(245,245,220,0.3)' : 'rgba(245,245,220,0.65)',
+            fontSize: '0.85rem', lineHeight: 1,
+          }}
+        >
+          {musicMuted ? '🔇' : '🎵'}
+        </button>
 
         {/* ══════════════════════════════════════════════════════════════════ */}
         {/*  ENEMY SECTION                                                    */}
