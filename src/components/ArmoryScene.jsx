@@ -1,4 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+const BLACKSMITH_QUOTES = [
+  "Finest steel in the realm. Don't chip it on a goblin.",
+  "A dull blade insults the ore that made it.",
+  "Every weapon here was forged in fire. Like its owner should be.",
+  "Sharpness fades. Craftsmanship doesn't.",
+  "That armor's seen more battles than most men twice your age.",
+  "Come back when ye've got gold worth spending.",
+  "I don't make weapons for cowards. Good thing ye're still breathin'.",
+  "A warrior without proper steel is just a fool with bad odds.",
+];
 
 const WEAPON_SPRITES = [
   '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
@@ -15,6 +26,11 @@ const getSprite = (wpn, idx) => {
 
 const ArmoryScene = ({ weapons = [], equippedWeaponId }) => {
   const displayWeapons = weapons.slice(0, HOOK_X.length);
+  const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * BLACKSMITH_QUOTES.length));
+  useEffect(() => {
+    const t = setInterval(() => setQuoteIdx(i => (i + 1) % BLACKSMITH_QUOTES.length), 6000);
+    return () => clearInterval(t);
+  }, []);
   return (
   <div style={{ position: 'relative', overflow: 'hidden' }}>
     <style>{`
@@ -384,6 +400,50 @@ const ArmoryScene = ({ weapons = [], equippedWeaponId }) => {
       <rect x="0" y="168" width="600" height="52" fill="url(#ar_fade)" pointerEvents="none"/>
     </svg>
 
+    {/* Blacksmith dialogue */}
+    <div style={{
+      position: 'absolute', bottom: '10px', left: '10px', right: '10px',
+      display: 'flex', alignItems: 'flex-end', gap: '10px',
+      pointerEvents: 'none',
+    }}>
+      {/* Portrait */}
+      <img src="/npcs/blacksmith.png" alt="Blacksmith"
+        style={{
+          width: 62, height: 62, borderRadius: '50%', flexShrink: 0,
+          objectFit: 'cover', objectPosition: 'top center',
+          border: '2px solid rgba(192,160,80,0.7)',
+          boxShadow: '0 0 12px rgba(255,140,0,0.35)',
+          background: '#1a0f05',
+        }}/>
+      {/* Speech bubble */}
+      <div style={{
+        flex: 1,
+        background: 'rgba(8,6,14,0.90)',
+        border: '1px solid rgba(192,160,80,0.48)',
+        borderRadius: '8px',
+        padding: '7px 12px 8px',
+        position: 'relative',
+      }}>
+        {/* Pointer triangle */}
+        <div style={{
+          position: 'absolute', left: -7, bottom: 18,
+          width: 0, height: 0,
+          borderTop: '7px solid transparent',
+          borderBottom: '7px solid transparent',
+          borderRight: '7px solid rgba(192,160,80,0.48)',
+        }}/>
+        <p style={{
+          fontFamily: 'Cinzel, serif', fontSize: '10px',
+          color: '#D4AF37', fontWeight: 700,
+          letterSpacing: '0.1em', margin: '0 0 4px',
+        }}>GRIMDAR IRONFORGE</p>
+        <p style={{
+          fontFamily: 'Cinzel, serif', fontSize: '11px',
+          color: 'rgba(225,215,195,0.92)', fontStyle: 'italic',
+          lineHeight: 1.45, margin: 0,
+        }}>"{BLACKSMITH_QUOTES[quoteIdx]}"</p>
+      </div>
+    </div>
   </div>
   );
 };
