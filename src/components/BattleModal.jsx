@@ -1099,23 +1099,27 @@ const BattleModal = ({
                       <>
                         <div className="grid grid-cols-2 gap-3 mb-3">
                           <button
+                            disabled={hasBeggedThisBattle}
                             onClick={() => {
-                              if (turnPhase !== 'player') return;
+                              if (turnPhase !== 'player' || hasBeggedThisBattle) return;
                               setHeroDialogue("I am not ready. Not here, not like this... There is still so much left unfinished. Please.");
                               setHasBeggedThisBattle(true);
-                              const result = negotiate('persuade');
-                              if (result?.success) {
-                                setNegotiateOutcome('success');
-                              } else {
-                                setNegotiateOutcome('fail');
-                                setTimeout(() => {
-                                  setBattleMenu('main');
-                                  setNegotiatePhase('idle');
-                                  setNegotiateOutcome(null);
-                                }, 2500);
-                              }
+                              // Wait for hero text to finish before enemy responds
+                              setTimeout(() => {
+                                const result = negotiate('persuade');
+                                if (result?.success) {
+                                  setNegotiateOutcome('success');
+                                } else {
+                                  setNegotiateOutcome('fail');
+                                  setTimeout(() => {
+                                    setBattleMenu('main');
+                                    setNegotiatePhase('idle');
+                                    setNegotiateOutcome(null);
+                                  }, 4000);
+                                }
+                              }, 2200);
                             }}
-                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
+                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed"
                             style={{ background: 'linear-gradient(to bottom, rgba(30,60,100,0.9), rgba(15,35,60,0.9))', border: '2px solid rgba(96,165,250,0.5)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
                           >
                             Persuade
@@ -1124,23 +1128,27 @@ const BattleModal = ({
                             </div>
                           </button>
                           <button
+                            disabled={hasBeggedThisBattle}
                             onClick={() => {
-                              if (turnPhase !== 'player') return;
+                              if (turnPhase !== 'player' || hasBeggedThisBattle) return;
                               setHeroDialogue("Take the gold. All of it. I want nothing but my life — is that not worth more to you?");
                               setHasBeggedThisBattle(true);
-                              const result = negotiate('bribe', bribeCost);
-                              if (result?.success) {
-                                setNegotiateOutcome('success');
-                              } else {
-                                setNegotiateOutcome('fail');
-                                setTimeout(() => {
-                                  setBattleMenu('main');
-                                  setNegotiatePhase('idle');
-                                  setNegotiateOutcome(null);
-                                }, 2500);
-                              }
+                              // Wait for hero text to finish before enemy responds
+                              setTimeout(() => {
+                                const result = negotiate('bribe', bribeCost);
+                                if (result?.success) {
+                                  setNegotiateOutcome('success');
+                                } else {
+                                  setNegotiateOutcome('fail');
+                                  setTimeout(() => {
+                                    setBattleMenu('main');
+                                    setNegotiatePhase('idle');
+                                    setNegotiateOutcome(null);
+                                  }, 4000);
+                                }
+                              }, 2200);
                             }}
-                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
+                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed"
                             style={{ background: 'linear-gradient(to bottom, rgba(100,70,10,0.9), rgba(60,40,5,0.9))', border: '2px solid rgba(180,140,30,0.5)', color: '#FCD34D', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
                           >
                             Bribe
