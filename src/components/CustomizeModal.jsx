@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, HERO_CLASSES } from '../constants';
+import { sounds } from '../sounds';
 
 const CustomizeModal = ({
   setShowCustomizeModal,
@@ -18,7 +19,7 @@ const CustomizeModal = ({
     <motion.div className="rounded-xl p-6 max-w-md w-full border-2 my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
-          onClick={() => setShowCustomizeModal(false)} 
+          onClick={() => { sounds.click(); setShowCustomizeModal(false); }}
           className="absolute -top-2 -right-2 p-2 rounded-lg border-2 transition-all"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -71,7 +72,7 @@ const CustomizeModal = ({
             <button
               key={cls.name}
               type="button"
-              onClick={() => setCustomClass(cls)}
+              onClick={() => { sounds.click(); setCustomClass(cls); }}
               className="p-4 rounded-lg border-2 transition-all"
               style={{
                 backgroundColor: customClass?.name === cls.name ? 'rgba(212, 175, 55, 0.15)' : 'rgba(0, 0, 0, 0.3)',
@@ -98,6 +99,7 @@ const CustomizeModal = ({
       <div className="flex gap-2">
         <button 
           onClick={() => {
+            sounds.click();
             if (customName.trim() || customClass) {
               setHero(prev => ({
                 ...prev,
@@ -119,6 +121,7 @@ const CustomizeModal = ({
         </button>
         <button 
           onClick={() => {
+            sounds.click();
             setCustomName('');
             setCustomClass(null);
             setShowCustomizeModal(false);

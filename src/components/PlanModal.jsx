@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { COLORS } from '../constants';
+import { sounds } from '../sounds';
 
 const PlanModal = ({
   selectedDay,
@@ -48,7 +49,7 @@ const PlanModal = ({
         <div className="grid grid-cols-2 gap-3">
           <button 
             type="button" 
-            onClick={() => setNewPlanItem({...newPlanItem, priority: 'important'})} 
+            onClick={() => { sounds.click(); setNewPlanItem({...newPlanItem, priority: 'important'}); }}
             className="p-4 rounded-lg border-2 transition-all"
             style={{
               backgroundColor: newPlanItem.priority === 'important' ? 'rgba(194, 144, 21, 0.35)' : 'rgba(0, 0, 0, 0.3)',
@@ -63,7 +64,7 @@ const PlanModal = ({
           
           <button 
             type="button" 
-            onClick={() => setNewPlanItem({...newPlanItem, priority: 'routine'})} 
+            onClick={() => { sounds.click(); setNewPlanItem({...newPlanItem, priority: 'routine'}); }}
             className="p-4 rounded-lg border-2 transition-all"
             style={{
               backgroundColor: newPlanItem.priority === 'routine' ? 'rgba(30, 58, 95, 0.3)' : 'rgba(0, 0, 0, 0.3)',
@@ -79,7 +80,7 @@ const PlanModal = ({
       
       <div className="flex gap-2">
         <button 
-          onClick={addPlanTask}
+          onClick={() => { sounds.click(); addPlanTask(); }}
           disabled={!newPlanItem.title} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{
@@ -95,9 +96,10 @@ const PlanModal = ({
           Add Task
         </button>
         <button 
-          onClick={() => { 
-            setShowPlanModal(false); 
-            setNewPlanItem({ title: '', priority: 'routine' }); 
+          onClick={() => {
+            sounds.click();
+            setShowPlanModal(false);
+            setNewPlanItem({ title: '', priority: 'routine' });
           }} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{backgroundColor: COLORS.slate.base, borderColor: COLORS.slate.border, color: '#F5F5DC'}}

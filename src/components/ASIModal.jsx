@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { sounds } from '../sounds';
 
 const STAT_INFO = {
   str: { short: 'STR', desc: 'Attack damage (+1 per mod)' },
@@ -79,7 +80,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
           ].map(({ key, label }) => (
             <button
               key={key}
-              onClick={() => { setMode(key); setSelected([]); }}
+              onClick={() => { sounds.click(); setMode(key); setSelected([]); }}
               style={{
                 flex: 1, fontFamily: 'Cinzel, serif', fontSize: '0.6rem',
                 letterSpacing: '0.1em', padding: '7px 4px', borderRadius: '6px', cursor: 'pointer',
@@ -101,7 +102,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
               <motion.button
                 key={key}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => handleStatClick(key)}
+                onClick={() => { sounds.click(); handleStatClick(key); }}
                 style={{
                   textAlign: 'left', padding: '10px 12px', borderRadius: '8px', cursor: 'pointer',
                   background: isSelected ? 'rgba(212,175,55,0.14)' : 'rgba(0,0,0,0.35)',
@@ -137,7 +138,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
 
         {/* Confirm */}
         <button
-          onClick={handleConfirm}
+          onClick={() => { sounds.click(); handleConfirm(); }}
           disabled={!canConfirm}
           style={{
             width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.72rem',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 const ProgressTab = ({ unlockedAchievements, achievementStats, selectedCategory, setSelectedCategory }) => {
   return (
@@ -33,7 +34,7 @@ const ProgressTab = ({ unlockedAchievements, achievementStats, selectedCategory,
                 {Object.entries(GAME_CONSTANTS.ACHIEVEMENT_CATEGORIES).map(([key, cat]) => (
                   <button
                     key={key}
-                    onClick={() => setSelectedCategory(key)}
+                    onClick={() => { sounds.click(); setSelectedCategory(key); }}
                     className="px-4 py-2 rounded-lg transition-all border-2 text-sm font-bold uppercase"
                     style={{
                       backgroundColor: selectedCategory === key ? 'rgba(212, 175, 55, 0.3)' : 'rgba(0, 0, 0, 0.3)',

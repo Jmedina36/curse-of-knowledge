@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, GripVertical, Plus, X } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 const PlannerTab = ({
   weeklyPlan,
@@ -43,7 +44,7 @@ const PlannerTab = ({
               {/* Sub-navigation tabs */}
               <div className="flex gap-2 justify-center mb-6">
                 <button 
-                  onClick={() => setPlannerSubTab('weekly')}
+                  onClick={() => { sounds.click(); setPlannerSubTab('weekly'); }}
                   className="px-4 py-2 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: plannerSubTab === 'weekly' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
@@ -54,7 +55,7 @@ const PlannerTab = ({
                   Weekly Plan
                 </button>
                 <button 
-                  onClick={() => setPlannerSubTab('calendar')}
+                  onClick={() => { sounds.click(); setPlannerSubTab('calendar'); }}
                   className="px-4 py-2 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: plannerSubTab === 'calendar' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
@@ -199,7 +200,7 @@ const PlannerTab = ({
                       </div>
                       
                       <button 
-                        onClick={() => { setSelectedDay(day); setShowPlanModal(true); }} 
+                        onClick={() => { sounds.click(); setSelectedDay(day); setShowPlanModal(true); }}
                         className="px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ml-4" 
                         style={{
                           background: isToday
@@ -319,6 +320,7 @@ const PlannerTab = ({
         <div className="flex gap-2">
           <button 
             onClick={() => {
+              sounds.click();
               const today = new Date();
               const todayDayName = today.toLocaleDateString('en-US', { weekday: 'long' });
               const isToday = day === todayDayName;
@@ -387,7 +389,7 @@ const PlannerTab = ({
               {plannerSubTab === 'calendar' && (
               <div>
               <div className="flex justify-between items-center mb-6">
-                <button onClick={() => { if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
+                <button onClick={() => { sounds.click(); if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
                   background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))',
                   borderColor: 'rgba(100, 116, 139, 0.6)',
                   color: '#F5F5DC',
@@ -402,7 +404,7 @@ const PlannerTab = ({
                   ← PREV
                 </button>
                 <h3 className="text-2xl font-bold uppercase tracking-wider" style={{color: '#F5F5DC'}}>{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }).toUpperCase()} {currentYear}</h3>
-                <button onClick={() => { if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
+                <button onClick={() => { sounds.click(); if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
                   background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))',
                   borderColor: 'rgba(100, 116, 139, 0.6)',
                   color: '#F5F5DC',
@@ -473,7 +475,7 @@ const PlannerTab = ({
                       days.push(
                         <button 
                           key={day} 
-                          onClick={() => { setSelectedDate(dateKey); setShowCalendarModal(true); }} 
+                          onClick={() => { sounds.click(); setSelectedDate(dateKey); setShowCalendarModal(true); }} 
                           className="aspect-square rounded-lg p-2 transition-all hover:scale-105 relative flex flex-col items-center justify-center"
                           style={{
                             backgroundColor: bgColor, 

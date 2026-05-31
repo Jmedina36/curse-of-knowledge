@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { sounds } from '../sounds';
 
 const RARITY_STYLES = {
   common:   { label: 'Common Encounter',   color: '#9CA3AF', glow: 'rgba(156,163,175,0.3)' },
@@ -107,7 +108,7 @@ const EncounterModal = ({ encounter, onAccept }) => {
 
           {/* Accept button */}
           <button
-            onClick={onAccept}
+            onClick={() => { sounds.click(); onAccept(); }}
             className="w-full py-3 rounded-lg transition-opacity hover:opacity-85"
             style={{
               background: `linear-gradient(to right, rgba(0,0,0,0.6), ${rarity.glow.replace(/[\d.]+\)$/, '0.25)')}, rgba(0,0,0,0.6))`,

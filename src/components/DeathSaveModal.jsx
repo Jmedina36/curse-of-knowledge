@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
+import { sounds } from '../sounds';
 
 const rollOne = (conMod) => {
   const roll = Math.ceil(Math.random() * 20);
@@ -143,7 +144,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
               {survived ? 'Restored to 1 HP. Fight on, hero.' : 'The curse grows stronger.'}
             </p>
             <button
-              onClick={() => onClose(survived)}
+              onClick={() => { sounds.click(); onClose(survived); }}
               style={{
                 fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.22em',
                 textTransform: 'uppercase',
