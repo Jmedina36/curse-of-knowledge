@@ -172,6 +172,8 @@ const BattleModal = ({
   const [critAnim, setCritAnim] = useState(false);
   const [negotiatePhase, setNegotiatePhase] = useState('idle'); // 'idle'|'open'|'result'
   const [negotiateResult, setNegotiateResult] = useState(null); // {success,enraged}
+  const [hasBeggedThisBattle, setHasBeggedThisBattle] = useState(false);
+  const [heroDialogue, setHeroDialogue] = useState('');
   // Bribe cost fixed per battle — CHA lowers the price
   const [bribeCost] = useState(() => {
     const chaMod = Math.floor(((hero?.abilities?.cha || 10) - 10) / 2);
@@ -988,6 +990,29 @@ const BattleModal = ({
             </div>
           )}
 
+          {/* Hero Dialogue — Speech Bubble */}
+          <AnimatePresence>
+            {heroDialogue && (
+              <motion.div
+                key={heroDialogue}
+                initial={{ opacity: 0, y: 10, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.22 }}
+                className="rounded-lg px-5 py-4 relative mb-3"
+                style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid rgba(104,211,145,0.6)', boxShadow: '0 0 20px rgba(104,211,145,0.12), inset 0 1px 0 rgba(255,255,255,0.04)' }}
+              >
+                <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid rgba(104,211,145,0.6)' }} />
+                <p className="text-base italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'Cinzel, serif' }}>
+                  "<TypewriterText key={heroDialogue} text={heroDialogue} speed={22} />"
+                </p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'rgba(104,211,145,0.55)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
+                  — {hero?.name}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* ══════════════════════════════════════════════════════════════════ */}
           {/*  BATTLE ACTIONS                                                   */}
           {/* ══════════════════════════════════════════════════════════════════ */}
@@ -1046,7 +1071,7 @@ const BattleModal = ({
                         Items
                       </button>
 
-                      {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && (
+                      {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && !hasBeggedThisBattle && (
                         <button onClick={() => { setEnemyDialogue(shadowOpening); setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
@@ -1086,6 +1111,8 @@ const BattleModal = ({
                           <button
                             onClick={() => {
                               if (turnPhase !== 'player') return;
+                              setHeroDialogue("I am not ready. Not here, not like this... There is still so much left unfinished. Please.");
+                              setHasBeggedThisBattle(true);
                               const result = negotiate('persuade');
                               if (result && result.enraged) {
                                 setNegotiateResult({ success: false, enraged: true });
@@ -1108,9 +1135,11 @@ const BattleModal = ({
                           <button
                             onClick={() => {
                               if (turnPhase !== 'player') return;
+                              setHeroDialogue("Take the gold. All of it. I want nothing but my life — is that not worth more to you?");
+                              setHasBeggedThisBattle(true);
                               const result = negotiate('bribe', bribeCost);
                               if (result && !result.success) {
-                                // Can't afford — just go back, no penalty
+                                // Can't afford — go back, already locked from retrying
                                 setBattleMenu('main');
                                 setNegotiatePhase('idle');
                               }
@@ -1124,7 +1153,7 @@ const BattleModal = ({
                             </div>
                           </button>
                         </div>
-                        <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); }}
+                        <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); setHeroDialogue(''); setEnemyDialogue(''); }}
                           className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
                           style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(80,80,80,0.3)', color: 'rgba(180,180,180,0.6)', fontFamily: 'Cinzel, serif' }}>
                           ← Back
