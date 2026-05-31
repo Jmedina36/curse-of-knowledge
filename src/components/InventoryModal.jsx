@@ -286,26 +286,26 @@ const InventoryModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center overflow-hidden" onClick={() => setShowInventoryModal(false)}>
 
-      {/* Blacksmith — left of modal, centered horizontally and vertically */}
+      {/* Blacksmith — fills all space left of modal, centered within it */}
       <motion.div
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
-        style={{ width: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px', flexShrink: 0, height: '90vh' }}
+        style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px', height: '100%' }}
         onClick={e => e.stopPropagation()}
       >
         <img src="/npcs/blacksmith.png" alt="Grimdar"
-          style={{ width: 170, height: 170, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 32px rgba(201,169,97,0.6), 0 0 80px rgba(201,169,97,0.2)' }}/>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>GRIMDAR</p>
-        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
+          style={{ width: 280, height: 280, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>GRIMDAR</p>
+        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
       </motion.div>
 
       <motion.div
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          flex: 1, maxWidth: '1000px', height: '90vh',
+          width: '78vw', height: '90vh',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
