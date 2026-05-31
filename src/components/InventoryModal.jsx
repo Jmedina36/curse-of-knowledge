@@ -283,23 +283,27 @@ const InventoryModal = ({
       >
         {/* ── HEADER ── */}
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 20px', flexShrink: 0,
+          display: 'flex', alignItems: 'center',
+          padding: '16px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(212,175,55,0.3)`,
           background: 'rgba(0,0,0,0.25)',
+          position: 'relative',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <img src="/npcs/blacksmith.png" alt="Grimdar"
-              style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-                border: `2px solid ${COLORS.gold}`, boxShadow: '0 0 12px rgba(201,169,97,0.35)' }}/>
-            <div>
-              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '17px', color: COLORS.gold, letterSpacing: '0.12em', lineHeight: 1 }}>THE ARMORY</p>
-              <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', marginTop: '3px' }}>Grimdar Ironforge · Master Smith</p>
-            </div>
+          {/* Blacksmith portrait — left */}
+          <img src="/npcs/blacksmith.png" alt="Grimdar"
+            style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+              border: `2px solid ${COLORS.gold}`, boxShadow: '0 0 18px rgba(201,169,97,0.45)', flexShrink: 0 }}/>
+
+          {/* Title — centered absolutely */}
+          <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
+            <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>Grimdar Ironforge · Master Smith</p>
           </div>
+
+          {/* Close — right */}
           <button
             onClick={() => { sounds.click(); setShowInventoryModal(false); }}
-            style={{ background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(212,175,55,0.4)`, borderRadius: '8px', padding: '8px', color: COLORS.gold, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            style={{ marginLeft: 'auto', background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(212,175,55,0.4)`, borderRadius: '8px', padding: '8px', color: COLORS.gold, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
           >
             <X size={18}/>
           </button>
