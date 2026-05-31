@@ -384,37 +384,6 @@ const ArmoryScene = ({ weapons = [], equippedWeaponId }) => {
       <rect x="0" y="168" width="600" height="52" fill="url(#ar_fade)" pointerEvents="none"/>
     </svg>
 
-    {/* Title overlay */}
-    <div style={{
-      position: 'absolute',
-      top: '10px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      textAlign: 'center',
-      pointerEvents: 'none',
-      whiteSpace: 'nowrap',
-    }}>
-      <div style={{
-        fontFamily: 'Cinzel, serif',
-        fontWeight: 900,
-        fontSize: '20px',
-        letterSpacing: '0.18em',
-        color: '#C0C8D8',
-        textShadow: '0 0 16px rgba(140,160,200,.55), 0 2px 4px rgba(0,0,0,.95)',
-      }}>
-        THE ARMORY
-      </div>
-      <div style={{
-        fontFamily: 'Cinzel, serif',
-        fontSize: '10px',
-        color: 'rgba(180,192,216,.52)',
-        fontStyle: 'italic',
-        marginTop: '3px',
-        letterSpacing: '0.07em',
-      }}>
-        "What keeps you alive in the darkness..."
-      </div>
-    </div>
   </div>
   );
 };
