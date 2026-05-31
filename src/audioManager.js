@@ -11,9 +11,10 @@
 //   ambient.mp3   — Kevin MacLeod "Mystical Theme" (quiet menu/idle loop)
 
 export const TRACKS = {
-  battle:  '/sounds/music/battle.mp3',
-  boss:    '/sounds/music/boss.mp3',
-  ambient: '/sounds/music/ambient.mp3',
+  nightVigil: '/sounds/music/Night Vigil.mp3',
+  battle:     '/sounds/music/battle.mp3',
+  boss:       '/sounds/music/boss.mp3',
+  ambient:    '/sounds/music/ambient.mp3',
 };
 
 const FADE_IN_MS  = 1400;

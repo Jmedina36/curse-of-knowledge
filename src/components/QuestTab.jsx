@@ -447,6 +447,26 @@ const QuestTab = ({
                   boxShadow: '0 0 30px rgba(212, 175, 55, 0.3), inset 0 0 60px rgba(212, 175, 55, 0.1)'
                 }}>
 
+                  {/* Game Title */}
+                  <h1 style={{
+                    fontFamily: 'Cinzel, serif',
+                    fontSize: 'clamp(1.8rem, 5vw, 3.2rem)',
+                    fontWeight: 900,
+                    letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                    color: '#D4AF37',
+                    textShadow: '0 0 28px rgba(212,175,55,0.85), 0 0 60px rgba(212,175,55,0.3)',
+                    marginBottom: '0.3rem',
+                  }}>Curse of Knowledge</h1>
+                  <p style={{
+                    fontFamily: 'Cinzel, serif',
+                    fontSize: '0.6rem',
+                    letterSpacing: '0.5em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(245,245,220,0.35)',
+                    marginBottom: '1.5rem',
+                  }}>A Fantasy Study Quest</p>
+
                   {/* Decorative divider above */}
                   <div className="flex items-center justify-center gap-2 mb-4">
                     <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>

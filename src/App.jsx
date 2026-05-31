@@ -1235,15 +1235,24 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     setDailyQuestCompleted(false);
   }, [currentDay]);
 
+  // ── Title screen music (Night Vigil) ─────────────────────────────────────────
+  useEffect(() => {
+    if (!hasStarted) {
+      audioManager.play(TRACKS.nightVigil);
+    } else {
+      audioManager.stop();
+    }
+  }, [hasStarted]);
+
   // ── Battle music ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (battling) {
       const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : TRACKS.battle;
       audioManager.play(track);
-    } else {
+    } else if (hasStarted) {
       audioManager.stop();
     }
-  }, [battling, battleType, isFinalBoss]);
+  }, [battling, battleType, isFinalBoss, hasStarted]);
   
   // Refresh shop inventory on merchant open if it's a refresh day
   useEffect(() => {
