@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { audioManager } from '../audioManager';
+import { sounds } from '../sounds';
 
 // ─── Enemy move pools by battle type ─────────────────────────────────────────
 const ENEMY_MOVES = {
@@ -1048,13 +1049,13 @@ const BattleModal = ({
                     })()}
 
                     <div className={`grid gap-3 mb-3 ${(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 ? 'grid-cols-3' : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                      <button onClick={() => setBattleMenu('fight')}
+                      <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Fight
                       </button>
 
-                      <button onClick={() => setBattleMenu('items')}
+                      <button onClick={() => { sounds.click(); setBattleMenu('items'); }}
                         disabled={healthPots === 0 && staminaPots === 0}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1062,7 +1063,7 @@ const BattleModal = ({
                       </button>
 
                       {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && !hasBeggedThisBattle && (
-                        <button onClick={() => { setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
+                        <button onClick={() => { sounds.negotiateOpen(); setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
                           Beg

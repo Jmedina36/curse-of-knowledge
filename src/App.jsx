@@ -2414,7 +2414,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
-  sounds.bossEntrance();
+  isWave ? sounds.waveEntrance() : sounds.enemyEntrance();
 
   const enemyName = makeBossName();
   setBossName(enemyName);
@@ -5242,6 +5242,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       return { success: true, enraged: false };
     } else {
       setEnemyDialogue(resultLine);
+      sounds.negotiateFail();
       return { success: false, enraged: true };
     }
   };
