@@ -48,6 +48,11 @@ const ArmoryScene = () => (
         84%{opacity:.38;transform:translateX(0)    rotate(-18deg)}
         92%{opacity:0;  transform:translateX(90px) rotate(-18deg)}
       }
+      @keyframes ar_bladeGleam {
+        0%,80%,100%{opacity:.88}
+        87%{opacity:1}
+        93%{opacity:.85}
+      }
     `}</style>
 
     <svg viewBox="0 0 600 220" width="100%" style={{ display: 'block' }}>
@@ -130,35 +135,16 @@ const ArmoryScene = () => (
           fill="none" stroke="#6A6A7E" strokeWidth="2.5"/>
       ))}
 
-      {/* Sword 1 — x=52 */}
-      <circle cx="52" cy="104" r="5.5" fill="#8888A8"/>
-      <circle cx="52" cy="104" r="3" fill="#6868A0"/>
-      <rect x="49" y="104" width="6" height="22" rx="1" fill="#7B5228"/>
-      <rect x="40" y="124" width="24" height="5" rx="1" fill="#9292B2"/>
-      <path d="M50,128 L54,128 L53.2,170 L52,173 L50.8,170 Z" fill="#C0C8D8"/>
-      <line x1="52" y1="128" x2="52" y2="173" stroke="rgba(255,255,255,.28)" strokeWidth="1"/>
-      <line x1="40" y1="126.5" x2="64" y2="126.5" stroke="#B0B0C8" strokeWidth=".6" opacity=".5"/>
-
-      {/* Sword 2 — x=96 */}
-      <circle cx="96" cy="102" r="5.5" fill="#9898A8"/>
-      <circle cx="96" cy="102" r="3" fill="#7878A0"/>
-      <rect x="93" y="102" width="6" height="18" rx="1" fill="#5C3A1E"/>
-      <rect x="85" y="118" width="22" height="5" rx="1" fill="#A8A8C0"/>
-      <path d="M94,122 L98,122 L97.2,160 L96,163 L94.8,160 Z" fill="#B8C0D0"/>
-      <line x1="96" y1="122" x2="96" y2="163" stroke="rgba(255,255,255,.25)" strokeWidth="1"/>
-
-      {/* Axe — x=140 */}
-      <path key="hook140" d="M137,87 L137,96 Q140,100 143,96 L143,87"
-        fill="none" stroke="#6A6A7E" strokeWidth="2.5"/>
-      <rect x="138" y="96" width="4" height="62" rx="1" fill="#6B4226"/>
-      <line x1="138" y1="100" x2="142" y2="100" stroke="#9B7248" strokeWidth="1.2"/>
-      <line x1="138" y1="110" x2="142" y2="110" stroke="#9B7248" strokeWidth="1.2"/>
-      <line x1="138" y1="120" x2="142" y2="120" stroke="#9B7248" strokeWidth="1.2"/>
-      {/* Axe head */}
-      <path d="M131,96 L148,100 L144,120 L131,118 Z" fill="#9292B2"/>
-      <path d="M131,96 L148,100 L147,97 L131,93 Z" fill="#A8A8C0"/>
-      <line x1="131" y1="96" x2="131" y2="118" stroke="#C0C8D8" strokeWidth="1" opacity=".5"/>
-      <line x1="133" y1="96" x2="133" y2="118" stroke="rgba(255,255,255,.15)" strokeWidth="1"/>
+      {/* Weapons — real PNG sprites, rotated -45° to hang vertically from hooks */}
+      <image href="/weapons/sword1.png" x="20" y="98" width="64" height="64"
+        transform="rotate(-45, 52, 130)"
+        style={{animation:'ar_bladeGleam 9s ease-in-out infinite'}}/>
+      <image href="/weapons/sword2.png" x="64" y="96" width="64" height="64"
+        transform="rotate(-45, 96, 128)"
+        style={{animation:'ar_bladeGleam 9s ease-in-out infinite 3s'}}/>
+      <image href="/weapons/dagger1.png" x="110" y="100" width="60" height="60"
+        transform="rotate(-45, 140, 130)"
+        style={{animation:'ar_bladeGleam 9s ease-in-out infinite 6s'}}/>
 
       {/* ═══════════ RIGHT — SHIELD + SPEAR ═══════════ */}
       {/* Shield wall hook */}

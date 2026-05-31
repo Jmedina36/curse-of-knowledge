@@ -50,6 +50,11 @@ const ShopScene = ({ dialogue, gold }) => (
         70%{opacity:.05;transform:translateY(-38px) scale(1.55) translateX(5px)}
         100%{opacity:0;transform:translateY(-60px) scale(2)}
       }
+      @keyframes sg_bladeGleam {
+        0%,80%,100%{opacity:.9}
+        87%{opacity:1}
+        93%{opacity:.86}
+      }
     `}</style>
 
     <svg viewBox="0 0 600 224" width="100%" style={{ display: 'block' }}>
@@ -160,11 +165,9 @@ const ShopScene = ({ dialogue, gold }) => (
       <circle cx="483" cy="50" r="2.5" fill="#032828"/>
       <ellipse cx="481" cy="58" rx="2" ry="3" fill="rgba(0,220,200,.32)"/>
 
-      {/* Sword */}
-      <rect x="498" y="43" width="4" height="26" rx="1" fill="#C8C0C0"/>
-      <rect x="492" y="54.5" width="16" height="3.5" rx="1" fill="#A89090"/>
-      <rect x="498" y="68" width="4" height="6" rx="1" fill="#7B5500"/>
-      <rect x="499" y="43" width="1.5" height="24" fill="rgba(255,255,255,.3)"/>
+      {/* Sword for sale — real PNG */}
+      <image href="/weapons/sword3.png" x="488" y="30" width="52" height="52"
+        style={{animation:'sg_bladeGleam 9s ease-in-out infinite 1.5s'}}/>
 
       {/* Scroll */}
       <rect x="516" y="48" width="26" height="20" rx="3" fill="#D4B896"/>
