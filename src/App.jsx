@@ -30,12 +30,61 @@ import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 
 const NARRATION_PAGES = [
-  "Before the first lesson was abandoned,\nthere was only light.",
-  "Knowledge was not merely power — it was the wall between the living world and what lurked beneath.\n\nThe ancients called it the Abyss: a void that hungers for every thought left unthought, every page unturned, every hour surrendered to the easier path.",
-  "The curse began slowly.\n\nOne skipped lesson. One forgotten commitment. One day of rest that stretched into a week.\n\nSmall things, each of them. But the Abyss does not require great failures. It grows in the margins — in the silence where discipline should have been.",
-  "And when the first champion fell, the darkness took them whole.\n\nTheir unfinished work became its claws.\nTheir abandoned ambitions became its hunger.\nTheir final wish — to try again, to do better —\nbecame its voice.",
-  "That is the true horror of the curse.\n\nEvery hero who came before you is still here. Their failures are woven into the shadow. Their regrets power the darkness you now face.\n\nAnd when you fall — and you will fall — you too will join them, nameless, waiting for the next champion to inherit what you could not finish.",
-  "The adventure never ends.\n\nThe Abyss is eternal. The curse is patient. It has consumed a thousand souls before you, and it will consume a thousand more.\n\nBut that is not your concern.\n\nThe flame is yours now.\n\nHow long can you hold back the dark?",
+  "Before the first lesson was abandoned,
+there was only light.
+
+Not the light of fire or sun — but the light of understanding. Of questions asked and answered. Of minds that refused to stay in the dark.",
+  "Knowledge was the only thing that ever truly changed the world.
+
+It ended plagues. It ended wars. It turned enemies into neighbors and turned suffering into memory.
+
+Every atrocity ever committed, every war ever fought — trace it back far enough, and you will find the same root:
+something that was never learned.",
+  "And then, slowly, the world stopped.
+
+Not all at once. Never all at once.
+
+It began in the margins — in the hours surrendered to distraction, the lessons skipped, the books left unread, the questions never asked. Small surrenders, each of them.
+
+But the Abyss does not require great failures.
+It is built entirely from small ones.",
+  "The wars returned.
+
+Not because men were evil — but because they were ignorant. Leaders who never learned from history repeated it, willingly. Suffering that had been cured was forgotten, then rediscovered at terrible cost.
+
+The darkness did not conquer the world.
+It waited for the light to go out on its own.",
+  "The ancients called it the Curse of Knowledge.
+
+Not a curse upon those who learned — but upon a world that chose not to.
+
+For every mind that turned away from understanding, a shadow was born. Those shadows are still here. They are everything humanity should have known. Everything we chose not to become.",
+  "Champions were called.
+
+They rose. They studied. They fought the darkness one lesson at a time.
+
+And one by one they fell — not to monsters, but to the same quiet failures that built the Abyss. Distraction. Exhaustion. The weight of a burden no single soul was made to carry.
+
+Their unfinished work became the darkness’s claws.
+Their abandoned ambitions became its hunger.",
+  "This is the truth no champion is ever told:
+
+The adventure never ends.
+
+The Abyss is patient. It has swallowed a thousand heroes, and when you fall — and you will fall — it will swallow you too. Your failures will be woven into the shadow. Your regrets will power the next wave of darkness that faces whoever comes after you.",
+  "But someone must still try.
+
+Not because victory is certain.
+Not because this time will be different.
+
+Because the alternative is surrender —
+and surrender is how the darkness wins.
+
+The flame is yours now.
+
+Learn. Endure. Push back the dark.
+
+How long can you hold the abyss at bay?",
 ];
 
 const FantasyStudyQuest = () => {
@@ -46,6 +95,10 @@ const FantasyStudyQuest = () => {
   const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'revealed' | 'confirm' | 'narrating' | 'fading' | 'done'
   const [narrationIndex, setNarrationIndex] = useState(0);
   const [narrationActive, setNarrationActive] = useState(false); // keeps narration content visible during fade-out
+  const [charCreateActive, setCharCreateActive] = useState(false);
+  const [charCreateStep, setCharCreateStep] = useState(0); // 0=name, 1=class, 2=closing
+  const [charCreateName, setCharCreateName] = useState('');
+  const [charCreateClass, setCharCreateClass] = useState(null);
   const introTimers = useRef([]);
   const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
@@ -5707,13 +5760,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   setNarrationIndex(i => i + 1);
                 } else {
                   introTimers.current.forEach(clearTimeout);
-                  setIntroPhase('fading');
-                  const t = setTimeout(() => {
-                    setNarrationActive(false);
-                    setIntroPhase('done');
-                    setShowCustomizeModal(true);
-                  }, 800);
-                  introTimers.current = [t];
+                  setCharCreateStep(0);
+                  setCharCreateName('');
+                  setCharCreateClass(null);
+                  setNarrationActive(false);
+                  setCharCreateActive(true);
                 }
               }}
               style={{
@@ -5727,13 +5778,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 onClick={e => {
                   e.stopPropagation();
                   introTimers.current.forEach(clearTimeout);
-                  setIntroPhase('fading');
-                  const t = setTimeout(() => {
-                    setNarrationActive(false);
-                    setIntroPhase('done');
-                    setShowCustomizeModal(true);
-                  }, 800);
-                  introTimers.current = [t];
+                  setCharCreateStep(0);
+                  setCharCreateName('');
+                  setCharCreateClass(null);
+                  setNarrationActive(false);
+                  setCharCreateActive(true);
                 }}
                 style={{
                   position: 'absolute', top: '24px', right: '28px',
@@ -5798,8 +5847,174 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             </div>
           )}
 
-          {/* ── Title / menu content (hidden during narration) ── */}
-          {!narrationActive && (
+          {/* ── Character Creation ── */}
+          {charCreateActive && (
+            <div style={{ position: 'absolute', inset: 0, zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 32px' }}>
+
+              {/* Step 0: Name */}
+              {charCreateStep === 0 && (
+                <div key="cc-name" style={{ maxWidth: '520px', width: '100%', textAlign: 'center', animation: 'intro-fade-up 0.7s ease-out both' }}>
+                  <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '28px' }}>
+                    ✶ The Narrator Speaks ✶
+                  </p>
+                  <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', lineHeight: 1.9, letterSpacing: '0.04em', color: 'rgba(210,190,170,0.88)', whiteSpace: 'pre-line', marginBottom: '40px' }}>
+                    {"Before you step into the darkness,\n\nI must know your name.\n\nWhat shall history remember you as?"}
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Enter your name..."
+                    value={charCreateName}
+                    onChange={e => setCharCreateName(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter' && charCreateName.trim()) setCharCreateStep(1); }}
+                    autoFocus
+                    style={{
+                      fontFamily: "'Cinzel', serif", fontSize: '1.1rem', letterSpacing: '0.1em',
+                      textAlign: 'center', width: '100%', maxWidth: '360px',
+                      padding: '14px 20px', background: 'rgba(0,0,0,0.5)',
+                      border: '1px solid rgba(212,175,55,0.35)', borderRadius: '4px',
+                      color: '#F5F5DC', outline: 'none', marginBottom: '24px',
+                    }}
+                    onFocus={e => { e.target.style.borderColor = 'rgba(212,175,55,0.75)'; }}
+                    onBlur={e => { e.target.style.borderColor = 'rgba(212,175,55,0.35)'; }}
+                  />
+                  <br />
+                  <button
+                    onClick={() => { if (charCreateName.trim()) setCharCreateStep(1); }}
+                    disabled={!charCreateName.trim()}
+                    style={{
+                      fontFamily: "'Cinzel', serif", fontWeight: 700,
+                      fontSize: '0.8rem', letterSpacing: '0.3em', textTransform: 'uppercase',
+                      color: charCreateName.trim() ? 'rgba(212,175,55,0.85)' : 'rgba(212,175,55,0.25)',
+                      background: 'none', border: 'none', cursor: charCreateName.trim() ? 'pointer' : 'default',
+                      transition: 'all 0.25s', padding: '8px 0',
+                    }}
+                    onMouseEnter={e => { if (charCreateName.trim()) e.currentTarget.style.color = '#D4AF37'; }}
+                    onMouseLeave={e => { if (charCreateName.trim()) e.currentTarget.style.color = 'rgba(212,175,55,0.85)'; }}
+                  >
+                    ✶ Continue ✶
+                  </button>
+                </div>
+              )}
+
+              {/* Step 1: Class Selection */}
+              {charCreateStep === 1 && (() => {
+                const CLASS_LORE = {
+                  Knight:   'The greatest failures in history were failures of learning, not strength. The Knight carries every lesson the fallen could not finish — and fights to ensure nothing is ever forgotten.',
+                  Wizard:   'Every spell is a truth unlocked. Without study, magic feeds the Abyss directly. You understand what most will not: knowledge is the only wall standing between the world and oblivion.',
+                  Assassin: 'The darkness hoards secrets — knowledge buried, skills lost to silence. You move through shadow to recover what was abandoned, restoring what others chose to let die.',
+                  Crusader: 'Faith without understanding is hollow. True devotion demands discipline. Your light is not given — it is earned through relentless study and hard-won in the dark.',
+                };
+                const CC_CLASSES = [
+                  { name: 'Knight',   emblem: '⚔︎', color: '#c0392b' },
+                  { name: 'Wizard',   emblem: '✶',  color: '#2980b9' },
+                  { name: 'Assassin', emblem: '†',  color: '#27ae60' },
+                  { name: 'Crusader', emblem: '✙',  color: '#bdc3c7' },
+                ];
+                return (
+                  <div key="cc-class" style={{ maxWidth: '600px', width: '100%', textAlign: 'center', animation: 'intro-fade-up 0.7s ease-out both' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '20px' }}>
+                      ✶ The Narrator Speaks ✶
+                    </p>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.04em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
+                      {charCreateName.trim()}, the flame needs a wielder.<br />What is your profession?
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                      {CC_CLASSES.map(cls => (
+                        <button
+                          key={cls.name}
+                          onClick={() => setCharCreateClass(cls)}
+                          style={{
+                            fontFamily: "'Cinzel', serif", textAlign: 'left',
+                            padding: '16px 18px',
+                            background: charCreateClass && charCreateClass.name === cls.name ? 'rgba(212,175,55,0.08)' : 'rgba(0,0,0,0.4)',
+                            border: charCreateClass && charCreateClass.name === cls.name ? '1px solid rgba(212,175,55,0.6)' : '1px solid rgba(255,255,255,0.08)',
+                            borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={e => { if (!charCreateClass || charCreateClass.name !== cls.name) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; } }}
+                          onMouseLeave={e => { if (!charCreateClass || charCreateClass.name !== cls.name) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(0,0,0,0.4)'; } }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+                            <span style={{ fontSize: '1.4rem', color: cls.color }}>{cls.emblem}</span>
+                            <span style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.12em', color: '#F5F5DC' }}>{cls.name}</span>
+                          </div>
+                          <p style={{ fontSize: '0.7rem', lineHeight: 1.6, color: 'rgba(180,165,150,0.7)', letterSpacing: '0.02em', margin: 0 }}>
+                            {CLASS_LORE[cls.name]}
+                          </p>
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => { if (charCreateClass) setCharCreateStep(2); }}
+                      disabled={!charCreateClass}
+                      style={{
+                        fontFamily: "'Cinzel', serif", fontWeight: 700,
+                        fontSize: '0.8rem', letterSpacing: '0.3em', textTransform: 'uppercase',
+                        color: charCreateClass ? 'rgba(212,175,55,0.85)' : 'rgba(212,175,55,0.25)',
+                        background: 'none', border: 'none', cursor: charCreateClass ? 'pointer' : 'default',
+                        transition: 'all 0.25s', padding: '8px 0',
+                      }}
+                      onMouseEnter={e => { if (charCreateClass) e.currentTarget.style.color = '#D4AF37'; }}
+                      onMouseLeave={e => { if (charCreateClass) e.currentTarget.style.color = 'rgba(212,175,55,0.85)'; }}
+                    >
+                      ✶ Confirm ✶
+                    </button>
+                  </div>
+                );
+              })()}
+
+              {/* Step 2: Closing Message */}
+              {charCreateStep === 2 && (() => {
+                const CLASS_SENDOFF = {
+                  Knight:   'A Knight who never stops learning is the only kind the world remembers.',
+                  Wizard:   'Every page you turn is a spell cast against the darkness.',
+                  Assassin: 'What you recover from the shadows may be the last light the world has left.',
+                  Crusader: 'Your faith will be tested. Let your knowledge be the answer.',
+                };
+                const sendoff = charCreateClass ? (CLASS_SENDOFF[charCreateClass.name] || '') : '';
+                const fullClasses = [
+                  { name: 'Knight',   color: 'red',   emblem: '⚔︎', gradient: ['from-red-900','from-red-800','from-red-700','from-red-600'],    glow: ['shadow-red-900/50','shadow-red-700/60','shadow-red-600/70','shadow-red-500/80'] },
+                  { name: 'Wizard',   color: 'blue',  emblem: '✶',  gradient: ['from-blue-700','from-blue-600','from-blue-500','from-blue-400'],  glow: ['shadow-blue-700/60','shadow-blue-600/70','shadow-blue-500/80','shadow-blue-400/90'] },
+                  { name: 'Assassin', color: 'green', emblem: '†',  gradient: ['from-green-900','from-green-800','from-green-700','from-green-600'], glow: ['shadow-green-900/50','shadow-green-700/60','shadow-green-600/70','shadow-green-500/80'] },
+                  { name: 'Crusader', color: 'white', emblem: '✙', gradient: ['from-gray-100','from-gray-50','from-white','from-white'],          glow: ['shadow-gray-200/80','shadow-gray-100/90','shadow-white/95','shadow-white/100'] },
+                ];
+                return (
+                  <div
+                    key="cc-closing"
+                    onClick={() => {
+                      const fullClass = fullClasses.find(c => c.name === (charCreateClass && charCreateClass.name)) || null;
+                      setHero(prev => ({
+                        ...prev,
+                        name: charCreateName.trim() || prev.name,
+                        class: fullClass || prev.class,
+                      }));
+                      introTimers.current.forEach(clearTimeout);
+                      setIntroPhase('fading');
+                      const t = setTimeout(() => {
+                        setCharCreateActive(false);
+                        setIntroPhase('done');
+                      }, 900);
+                      introTimers.current = [t];
+                    }}
+                    style={{ maxWidth: '560px', width: '100%', textAlign: 'center', cursor: 'pointer', animation: 'intro-fade-up 0.7s ease-out both' }}
+                  >
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '28px' }}>
+                      ✶ The Narrator Speaks ✶
+                    </p>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.4vw, 1.2rem)', lineHeight: 2, letterSpacing: '0.04em', color: 'rgba(245,245,220,0.93)', whiteSpace: 'pre-line', marginBottom: '12px', textShadow: '0 0 30px rgba(200,30,30,0.35)' }}>
+                      {charCreateName.trim() + ".\n\n" + sendoff + "\n\nHave faith when the darkness is absolute.\nHave hope when every champion before you has failed.\nHave perseverance — because the Abyss is counting on you to stop.\n\nYour chronicle begins now."}
+                    </p>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '0.58rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.3)', marginTop: '40px', animation: 'intro-hint-pulse 2.5s ease-in-out 1s infinite' }}>
+                      ✶ click to enter the world ✶
+                    </p>
+                  </div>
+                );
+              })()}
+
+            </div>
+          )}
+
+          {/* ── Title / menu content (hidden during narration and char creation) ── */}
+          {!narrationActive && !charCreateActive && (
             <>
           {/* Title — animates once on mount, stays frozen after */}
           <div style={{ animation: 'intro-slam 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center' }}>
