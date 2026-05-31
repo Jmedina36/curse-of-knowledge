@@ -269,7 +269,7 @@ const InventoryModal = ({
   // ── RIGHT PANEL helpers ──
   const slotBox = (item) => ({
     padding: '10px', borderRadius: '8px', minHeight: '68px',
-    display: 'flex', flexDirection: 'column', justifyContent: 'center',
+    display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center',
     border: `1px solid ${item ? getRarityColor(item.rarity || 'common') + '60' : 'rgba(192,192,192,0.12)'}`,
     background: item ? VISUAL_STYLES.card.elevated : VISUAL_STYLES.card.subtle,
     boxShadow: item ? `0 0 8px ${getRarityColor(item.rarity || 'common')}18` : 'none',
@@ -367,20 +367,18 @@ const InventoryModal = ({
             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
             {/* Weapon slot */}
-            <div style={{ ...slotBox(equippedWeapon), flexDirection: 'row', alignItems: 'center', gap: '12px', marginBottom: '10px', minHeight: '86px' }}>
-              <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, writingMode: 'vertical-lr', transform: 'rotate(180deg)', letterSpacing: '0.12em', flexShrink: 0 }}>WEAPON</p>
+            <div style={{ ...slotBox(equippedWeapon), marginBottom: '10px', minHeight: '100px', gap: '6px' }}>
+              <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.12em' }}>WEAPON</p>
               {equippedWeapon ? (
                 <>
                   <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}
-                    style={{ width: 58, height: 58, objectFit: 'contain', flexShrink: 0,
+                    style={{ width: 58, height: 58, objectFit: 'contain',
                       filter: `drop-shadow(0 0 7px ${getRarityColor(equippedWeapon.rarity || 'common')}90)` }}/>
-                  <div style={{ minWidth: 0 }}>
-                    <p style={{ color: getRarityColor(equippedWeapon.rarity || 'common'), fontWeight: 700, fontSize: '12px', marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedWeapon.name}</p>
-                    <p style={{ color: '#68D391', fontSize: '11px', marginBottom: '2px' }}>+{equippedWeapon.attack} Attack</p>
-                    {equippedWeapon.affixes?.flatDamage  > 0 && <p style={{ color: '#90EE90', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Flat Damage</p>}
-                    {equippedWeapon.affixes?.critChance  > 0 && <p style={{ color: '#FFD700', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.critChance)}% Crit Chance</p>}
-                    {equippedWeapon.affixes?.poisonChance > 0 && <p style={{ color: '#9370DB', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison</p>}
-                  </div>
+                  <p style={{ color: getRarityColor(equippedWeapon.rarity || 'common'), fontWeight: 700, fontSize: '12px', marginBottom: '2px' }}>{equippedWeapon.name}</p>
+                  <p style={{ color: '#68D391', fontSize: '11px' }}>+{equippedWeapon.attack} Attack</p>
+                  {equippedWeapon.affixes?.flatDamage  > 0 && <p style={{ color: '#90EE90', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Flat Damage</p>}
+                  {equippedWeapon.affixes?.critChance  > 0 && <p style={{ color: '#FFD700', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.critChance)}% Crit Chance</p>}
+                  {equippedWeapon.affixes?.poisonChance > 0 && <p style={{ color: '#9370DB', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison</p>}
                 </>
               ) : (
                 <p style={{ color: COLORS.silver, fontStyle: 'italic', fontSize: '12px', opacity: 0.4 }}>Empty slot</p>
@@ -451,7 +449,7 @@ const InventoryModal = ({
                   { label: 'HP',       value: `${hp} / ${getMaxHp()}`,      color: '#FF6B6B' },
                   { label: 'Stamina',  value: `${stamina} / ${getMaxStamina()}`, color: '#6BB6FF' },
                 ].map(({ label, value, color }) => (
-                  <div key={label} style={{ background: VISUAL_STYLES.card.default, borderRadius: '6px', padding: '7px 10px', border: `1px solid rgba(155,139,126,0.2)` }}>
+                  <div key={label} style={{ background: VISUAL_STYLES.card.default, borderRadius: '6px', padding: '7px 10px', border: `1px solid rgba(155,139,126,0.2)`, textAlign: 'center' }}>
                     <p style={{ fontSize: '9px', color: COLORS.silver, marginBottom: '3px' }}>{label}</p>
                     <p style={{ fontSize: '15px', fontWeight: 700, color, lineHeight: 1 }}>{value}</p>
                   </div>
