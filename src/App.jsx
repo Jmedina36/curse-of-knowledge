@@ -810,6 +810,7 @@ const getDateKey = useCallback((date) => {
   // Intro cinematic on mount
   useEffect(() => {
     const advance = () => {
+      audioManager.play(TRACKS.nightVigil);
       setIntroPhase('fading');
       const t = setTimeout(() => setIntroPhase('done'), 800);
       introTimers.current = [t];
@@ -1235,16 +1236,23 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     setDailyQuestCompleted(false);
   }, [currentDay]);
 
-  // ── Battle music ─────────────────────────────────────────────────────────────
+  // ── Battle music / title music ────────────────────────────────────────────────
   useEffect(() => {
     if (battling) {
       const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : TRACKS.battle;
       audioManager.play(track);
     } else if (hasStarted) {
-      // Stop battle music when not in battle (Night Vigil is handled by QuestTab)
+      // Stop Night Vigil (or battle music) once the game is active
       audioManager.stop();
     }
   }, [battling, battleType, isFinalBoss, hasStarted]);
+
+  // Stop Night Vigil for returning users (hasStarted already true) once intro is dismissed
+  useEffect(() => {
+    if (introPhase === 'done' && hasStarted && !battling) {
+      audioManager.stop();
+    }
+  }, [introPhase]);
   
   // Refresh shop inventory on merchant open if it's a refresh day
   useEffect(() => {
@@ -5654,6 +5662,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       {introPhase !== 'done' && (
         <div
           onClick={() => {
+            audioManager.play(TRACKS.nightVigil);
             introTimers.current.forEach(clearTimeout);
             setIntroPhase('fading');
             const t = setTimeout(() => setIntroPhase('done'), 800);

@@ -1,7 +1,6 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { Calendar, GripVertical, HeartPulse, Plus, ShieldCheck, Sparkles, Swords } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
-import { audioManager, TRACKS } from '../audioManager';
 
 const QuestTab = ({
   // Hero / player state
@@ -89,15 +88,6 @@ const QuestTab = ({
   // Helpers
   addLog,
 }) => {
-  // Start Night Vigil on first mouse interaction (bypasses browser autoplay block)
-  const nightVigilStarted = useRef(false);
-  const startNightVigil = () => {
-    if (!hasStarted && !nightVigilStarted.current) {
-      nightVigilStarted.current = true;
-      audioManager.play(TRACKS.nightVigil);
-    }
-  };
-
   return (
             <div className="space-y-4">
             <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
@@ -451,8 +441,6 @@ const QuestTab = ({
               {!hasStarted ? (
                 <div
                   className="rounded-xl p-8 text-center"
-                  onMouseMove={startNightVigil}
-                  onClick={startNightVigil}
                   style={{
                     background: 'linear-gradient(to bottom, rgba(42, 36, 28, 0.97), rgba(26, 22, 18, 0.97))',
                     borderColor: '#D4AF37',
