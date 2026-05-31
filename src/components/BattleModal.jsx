@@ -174,6 +174,7 @@ const BattleModal = ({
   const [negotiateResult, setNegotiateResult] = useState(null); // {success,enraged}
   const [hasBeggedThisBattle, setHasBeggedThisBattle] = useState(false);
   const [heroDialogue, setHeroDialogue] = useState('');
+  const [negotiateOutcome, setNegotiateOutcome] = useState(null); // null | 'success' | 'fail'
   // Bribe cost fixed per battle — CHA lowers the price
   const [bribeCost] = useState(() => {
     const chaMod = Math.floor(((hero?.abilities?.cha || 10) - 10) / 2);
@@ -1103,14 +1104,15 @@ const BattleModal = ({
                               setHeroDialogue("I am not ready. Not here, not like this... There is still so much left unfinished. Please.");
                               setHasBeggedThisBattle(true);
                               const result = negotiate('persuade');
-                              if (result && result.enraged) {
-                                setNegotiateResult({ success: false, enraged: true });
-                                setNegotiatePhase('result');
+                              if (result?.success) {
+                                setNegotiateOutcome('success');
+                              } else {
+                                setNegotiateOutcome('fail');
                                 setTimeout(() => {
                                   setBattleMenu('main');
                                   setNegotiatePhase('idle');
-                                  setNegotiateResult(null);
-                                }, 1500);
+                                  setNegotiateOutcome(null);
+                                }, 2500);
                               }
                             }}
                             className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
@@ -1127,10 +1129,15 @@ const BattleModal = ({
                               setHeroDialogue("Take the gold. All of it. I want nothing but my life — is that not worth more to you?");
                               setHasBeggedThisBattle(true);
                               const result = negotiate('bribe', bribeCost);
-                              if (result && !result.success) {
-                                // Can't afford — go back, already locked from retrying
-                                setBattleMenu('main');
-                                setNegotiatePhase('idle');
+                              if (result?.success) {
+                                setNegotiateOutcome('success');
+                              } else {
+                                setNegotiateOutcome('fail');
+                                setTimeout(() => {
+                                  setBattleMenu('main');
+                                  setNegotiatePhase('idle');
+                                  setNegotiateOutcome(null);
+                                }, 2500);
                               }
                             }}
                             className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
@@ -1142,19 +1149,12 @@ const BattleModal = ({
                             </div>
                           </button>
                         </div>
-                        <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); setHeroDialogue(''); setEnemyDialogue(''); }}
+                        <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); setHeroDialogue(''); setEnemyDialogue(''); setNegotiateOutcome(null); }}
                           className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
                           style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(80,80,80,0.3)', color: 'rgba(180,180,180,0.6)', fontFamily: 'Cinzel, serif' }}>
                           ← Back
                         </button>
                       </>
-                    )}
-                    {negotiatePhase === 'result' && negotiateResult && !negotiateResult.success && (
-                      <div style={{ background: 'rgba(80,10,10,0.6)', border: '1px solid rgba(200,50,50,0.5)', borderRadius: '8px', padding: '16px', textAlign: 'center' }}>
-                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', color: '#FCA5A5', letterSpacing: '0.05em', lineHeight: 1.7 }}>
-                          The shadow rejects your words and attacks with renewed fury!
-                        </p>
-                      </div>
                     )}
                   </motion.div>
                 )}
@@ -1318,6 +1318,20 @@ const BattleModal = ({
                       className="text-2xl leading-relaxed"
                       style={{ color: '#F5F5DC' }}>
                       <TypewriterText text={battleLine} speed={25} />
+                    </motion.p>
+                  ) : battleMenu === 'negotiate' && negotiateOutcome === 'fail' ? (
+                    <motion.p key="beg-fail"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="text-base uppercase tracking-[0.2em] w-full text-center"
+                      style={{ color: '#FCA5A5', fontFamily: 'Cinzel, serif' }}>
+                      ✗ The shadow refuses. Brace yourself...
+                    </motion.p>
+                  ) : battleMenu === 'negotiate' ? (
+                    <motion.p key="beg-event"
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      className="text-base uppercase tracking-[0.25em] w-full text-center animate-pulse"
+                      style={{ color: '#FCA5A5', fontFamily: 'Cinzel, serif' }}>
+                      ⚠ {hero?.name || 'The hero'} begs for mercy...
                     </motion.p>
                   ) : (
                     <motion.p key="idle"
