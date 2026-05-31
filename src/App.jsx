@@ -5743,28 +5743,46 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
           }} />
 
-          {/* Title (smaller) */}
-          <div style={{ textAlign: 'center', marginBottom: '8px', animation: 'intro-slam 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
+          {/* Radial red glow behind title */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse at 50% 38%, rgba(140,0,0,0.22) 0%, transparent 60%)',
+          }} />
+
+          {/* Title — full size, same as slam screen */}
+          <div style={{ textAlign: 'center', animation: 'intro-slam 0.7s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
             <h1 style={{
               fontFamily: "'Cinzel', serif",
               fontWeight: 900,
-              fontSize: 'clamp(2rem, 7vw, 4rem)',
+              fontSize: 'clamp(3.5rem, 12vw, 8rem)',
               letterSpacing: '0.12em',
               lineHeight: 1,
               color: '#F5F5DC',
-              textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 3px 6px rgba(0,0,0,1)',
+              textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 0 110px rgba(140,0,0,0.45), 0 3px 6px rgba(0,0,0,1)',
+              animation: 'title-pulse 3s ease-in-out infinite',
             }}>CURSE OF KNOWLEDGE</h1>
           </div>
 
-          {/* Ornament */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '52px', animation: 'intro-fade-up 0.5s ease-out 0.2s both' }}>
-            <div style={{ width: '140px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,60,60,0.5))' }} />
-            <span style={{ color: 'rgba(255,60,60,0.5)', fontSize: '8px', letterSpacing: '0.4em' }}>✦ ✦ ✦</span>
-            <div style={{ width: '140px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255,60,60,0.5))' }} />
+          {/* Ornament lines — same as slam screen */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 16px', animation: 'intro-fade-up 0.6s ease-out 0.15s both' }}>
+            <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,60,60,0.7))' }} />
+            <span style={{ color: 'rgba(255,60,60,0.7)', fontSize: '10px', letterSpacing: '0.4em' }}>✦ ✦ ✦</span>
+            <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255,60,60,0.7))' }} />
           </div>
 
-          {/* Buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', animation: 'intro-fade-up 0.5s ease-out 0.35s both' }}>
+          {/* Tagline */}
+          <p style={{
+            fontFamily: "'Cinzel', serif",
+            fontSize: '0.85rem',
+            letterSpacing: '0.3em',
+            textTransform: 'uppercase',
+            color: 'rgba(210,160,160,0.85)',
+            marginBottom: '56px',
+            animation: 'intro-fade-up 0.6s ease-out 0.25s both',
+          }}>Study or be consumed by the abyss</p>
+
+          {/* Menu buttons — no borders, just glow and weight */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', animation: 'intro-fade-up 0.6s ease-out 0.4s both' }}>
             <button
               onClick={() => {
                 introTimers.current.forEach(clearTimeout);
@@ -5775,25 +5793,31 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               style={{
                 fontFamily: "'Cinzel', serif",
                 fontWeight: 700,
-                fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
-                letterSpacing: '0.2em',
+                fontSize: 'clamp(1.1rem, 3vw, 1.5rem)',
+                letterSpacing: '0.25em',
                 textTransform: 'uppercase',
                 color: '#F5F5DC',
-                background: 'linear-gradient(to bottom, rgba(139,0,0,0.75), rgba(80,0,0,0.75))',
-                border: '2px solid rgba(200,30,30,0.6)',
-                borderRadius: '6px',
-                padding: '16px 56px',
+                background: 'none',
+                border: 'none',
+                padding: '18px 64px',
                 cursor: 'pointer',
-                minWidth: '280px',
-                transition: 'all 0.2s',
-                boxShadow: '0 0 20px rgba(200,30,30,0.2)',
+                minWidth: '300px',
+                transition: 'all 0.25s',
+                textShadow: '0 0 16px rgba(200,30,30,0.6)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(180,0,0,0.9), rgba(120,0,0,0.9))'; e.currentTarget.style.boxShadow = '0 0 30px rgba(200,30,30,0.5)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(139,0,0,0.75), rgba(80,0,0,0.75))'; e.currentTarget.style.boxShadow = '0 0 20px rgba(200,30,30,0.2)'; }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.textShadow = '0 0 28px rgba(220,50,50,1), 0 0 60px rgba(180,0,0,0.7)'; e.currentTarget.style.transform = 'scale(1.06)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = '#F5F5DC'; e.currentTarget.style.textShadow = '0 0 16px rgba(200,30,30,0.6)'; e.currentTarget.style.transform = 'scale(1)'; }}
             >
               Continue
             </button>
 
+            {/* Divider between buttons */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '240px' }}>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.25))' }} />
+              <span style={{ color: 'rgba(212,175,55,0.3)', fontSize: '7px' }}>◆</span>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.25))' }} />
+            </div>
+
             <button
               onClick={() => {
                 introTimers.current.forEach(clearTimeout);
@@ -5803,21 +5827,21 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }}
               style={{
                 fontFamily: "'Cinzel', serif",
-                fontWeight: 700,
-                fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
-                letterSpacing: '0.2em',
+                fontWeight: 600,
+                fontSize: 'clamp(1rem, 2.5vw, 1.3rem)',
+                letterSpacing: '0.25em',
                 textTransform: 'uppercase',
-                color: 'rgba(212,175,55,0.75)',
-                background: 'transparent',
-                border: '2px solid rgba(212,175,55,0.3)',
-                borderRadius: '6px',
-                padding: '16px 56px',
+                color: 'rgba(212,175,55,0.65)',
+                background: 'none',
+                border: 'none',
+                padding: '18px 64px',
                 cursor: 'pointer',
-                minWidth: '280px',
-                transition: 'all 0.2s',
+                minWidth: '300px',
+                transition: 'all 0.25s',
+                textShadow: '0 0 12px rgba(212,175,55,0.3)',
               }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.7)'; e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.background = 'rgba(212,175,55,0.08)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.3)'; e.currentTarget.style.color = 'rgba(212,175,55,0.75)'; e.currentTarget.style.background = 'transparent'; }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.textShadow = '0 0 28px rgba(212,175,55,0.9), 0 0 60px rgba(180,140,0,0.5)'; e.currentTarget.style.transform = 'scale(1.06)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(212,175,55,0.65)'; e.currentTarget.style.textShadow = '0 0 12px rgba(212,175,55,0.3)'; e.currentTarget.style.transform = 'scale(1)'; }}
             >
               New Adventure
             </button>
