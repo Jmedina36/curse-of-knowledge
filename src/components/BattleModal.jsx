@@ -182,17 +182,6 @@ const BattleModal = ({
     return Math.max(5, Math.floor(base * Math.max(0.5, 1 - chaMod * 0.1)));
   });
 
-  const SHADOW_OPENINGS = [
-    "Why do you resist? We are made of the same silence.",
-    "I don't want to die. Not yet. There must be another way.",
-    "You remind me of the one who abandoned me. Perhaps... we can deal.",
-    "Your knowledge is pathetic. But I am tired of fighting.",
-    "Give me what I want, and I'll let you live.",
-    "I am everything you chose not to learn. Does that not earn your mercy?",
-    "Fight me and I'll tear your soul to pieces. Or... we could talk.",
-    "The Abyss sent me. But it doesn't mean I want to die for it.",
-  ];
-  const [shadowOpening] = useState(() => SHADOW_OPENINGS[Math.floor(Math.random() * SHADOW_OPENINGS.length)]);
 
   const [enemySpecialAnim, setEnemySpecialAnim] = useState(null); // 'bleed' | 'armorBreak' | 'overwhelmingForce'
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
@@ -1072,7 +1061,7 @@ const BattleModal = ({
                       </button>
 
                       {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && !hasBeggedThisBattle && (
-                        <button onClick={() => { setEnemyDialogue(shadowOpening); setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
+                        <button onClick={() => { setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
                           Beg
