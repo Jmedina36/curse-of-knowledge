@@ -6271,7 +6271,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               ].map(t => (
                 <button 
                   key={t.id} 
-                  onClick={() => setActiveTab(t.id)} 
+                  onClick={() => { sounds.click(); setActiveTab(t.id); }}
                   className="flex flex-col items-center gap-2 px-8 py-3 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: activeTab === t.id ? 'rgba(184, 134, 11, 0.3)' : 'transparent',
