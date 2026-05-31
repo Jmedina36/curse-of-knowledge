@@ -2378,7 +2378,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
-  
+  sounds.bossEntrance();
+
   const enemyName = makeBossName();
   setBossName(enemyName);
   setBossHp(enemyHp);
@@ -2449,7 +2450,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
-    
+    sounds.bossEntrance();
+
     const bossNameGenerated = makeBossName();
     setBossName(bossNameGenerated);
     setBossHp(bossHealth);
@@ -2588,7 +2590,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
-    
+    sounds.bossEntrance();
+
     const bossNameGenerated = makeBossName();
     setBossName(bossNameGenerated);
     setBossHp(bossHealth);
@@ -2790,8 +2793,9 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     if (isCrit) {
       bonusMessages.push(`💥 CRITICAL HIT! (${actualCritMultiplier.toFixed(1)}x damage)`);
+      sounds.critHit();
     }
-    
+
     // Check for poison proc from weapon affixes
     if (equippedWeapon && equippedWeapon.affixes && equippedWeapon.affixes.poisonChance) {
       const poisonProcRoll = Math.random() * 100;
@@ -2878,7 +2882,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
       setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
       if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-        addLog(`⚡ SPECIAL CHARGED! (Next special deals +25% damage)`);
+        addLog(`⚡ CHARGED STRIKE READY!`);
+        sounds.chargeFull();
+      } else {
+        sounds.chargeGain();
       }
     }
     
@@ -3564,7 +3571,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
-    
+    sounds.specialAttack();
+
     // Get enemy defense based on battle type
     let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
     if (battleType === 'elite') {
@@ -3572,7 +3580,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else if (battleType === 'final' || isFinalBoss) {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
-    
+
     // Calculate base damage with special multiplier
     const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
     
@@ -4245,6 +4253,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
+    sounds.chargedStrike();
 
     // Enemy defense
     let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
@@ -4492,7 +4501,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
       setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
       if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-        addLog(`⚡ SPECIAL CHARGED! (Next special deals +25% damage)`);
+        addLog(`⚡ CHARGED STRIKE READY!`);
+        sounds.chargeFull();
+      } else {
+        sounds.chargeGain();
       }
     }
     
