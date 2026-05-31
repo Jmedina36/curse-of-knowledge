@@ -1258,15 +1258,14 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : TRACKS.battle;
       audioManager.play(track);
     } else if (hasStarted) {
-      // Stop Night Vigil (or battle music) once the game is active
-      audioManager.stop();
+      audioManager.play(TRACKS.ancientWinds);
     }
   }, [battling, battleType, isFinalBoss, hasStarted]);
 
-  // Stop Night Vigil for returning users (hasStarted already true) once intro is dismissed
+  // Play Ancient Winds for returning users once intro is dismissed
   useEffect(() => {
     if (introPhase === 'done' && hasStarted && !battling) {
-      audioManager.stop();
+      audioManager.play(TRACKS.ancientWinds);
     }
   }, [introPhase]);
   
@@ -5941,6 +5940,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         class: fullClass || prev.class,
                       }));
                       introTimers.current.forEach(clearTimeout);
+                      audioManager.play(TRACKS.ancientWinds);
                       setIntroPhase('fading');
                       const t = setTimeout(() => {
                         setCharCreateActive(false);
@@ -6021,6 +6021,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 <button
                   onClick={() => {
                     introTimers.current.forEach(clearTimeout);
+                    audioManager.play(TRACKS.ancientWinds);
                     setIntroPhase('fading');
                     const t = setTimeout(() => setIntroPhase('done'), 800);
                     introTimers.current = [t];

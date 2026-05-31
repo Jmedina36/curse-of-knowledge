@@ -11,7 +11,8 @@
 //   ambient.mp3   — Kevin MacLeod "Mystical Theme" (quiet menu/idle loop)
 
 export const TRACKS = {
-  nightVigil: '/sounds/music/Night Vigil.mp3',
+  nightVigil:   '/sounds/music/Night Vigil.mp3',
+  ancientWinds: '/sounds/music/Ancient Winds.mp3',
   battle:     '/sounds/music/battle.mp3',
   boss:       '/sounds/music/boss.mp3',
   ambient:    '/sounds/music/ambient.mp3',
