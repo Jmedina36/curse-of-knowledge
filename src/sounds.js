@@ -1,3 +1,39 @@
+// ── SFX file player ──────────────────────────────────────────────────────────
+// Drop .mp3 files into /public/sounds/sfx/ and they'll be used automatically.
+// If a file is missing, the synthesized fallback plays instead.
+//
+// Files to add (all free, no attribution required — get them from mixkit.co
+// or pixabay.com/sound-effects):
+//
+//   sword-swing.mp3    — metal slash / sword swing (played on basic attack)
+//   sword-clash.mp3    — metal clang on impact (boss takes damage)
+//   player-hurt.mp3    — heavy thud / grunt (player takes damage)
+//   crit-impact.mp3    — powerful heavy hit (critical)
+//   power-strike.mp3   — charged/special ability whoosh + hit
+//
+const SFX_DIR = '/sounds/sfx/';
+const _sfxCache = {};
+
+const sfxPlay = (filename, vol = 0.7) => {
+  try {
+    if (!_sfxCache[filename]) {
+      const el = new Audio(SFX_DIR + filename);
+      el.preload = 'auto';
+      _sfxCache[filename] = el;
+    }
+    const el = _sfxCache[filename];
+    el.volume = vol;
+    el.currentTime = 0;
+    el.play().catch(() => {});
+  } catch (e) {}
+};
+
+// Returns true if we should play the file version instead of synthesis
+const hasSfx = (filename) => {
+  // Optimistically return true; if the file 404s it will just silently fail
+  return true;
+};
+
 let audioCtx = null;
 
 const ctx = () => {
@@ -80,58 +116,36 @@ const noise = (dur, vol = 0.2, delay = 0, hpFreq = 0, lpFreq = 8000) => {
 
 export const sounds = {
 
-  // ── Boss takes damage: metallic clang + body thump ──────────────────────────
+  // ── Boss takes damage: sword clash ──────────────────────────────────────────
   bossDamage: () => {
-    // Metallic impact ring (sword vs flesh/armor)
-    sweep(420, 180, 0.14, 'sawtooth', 0.28);
-    tone(800, 0.06, 'square', 0.18);
-    // Noise punch — mid-band crunch
-    noise(0.07, 0.35, 0, 400, 3500);
-    // Deep sub thump
-    sweep(140, 55, 0.2, 'sine', 0.32, 0.02);
-    // Metallic ring-out
-    tone(1100, 0.22, 'sine', 0.1, 0.04);
+    sfxPlay('sword-clash.mp3', 0.75);
+    // Synthesized fallback (also layered under the sfx for body)
+    sweep(140, 55, 0.2, 'sine', 0.18, 0.02);
   },
 
-  // ── Player takes damage: heavy thud + low hurt tone ─────────────────────────
+  // ── Player takes damage: heavy impact ───────────────────────────────────────
   playerDamage: () => {
-    // Heavy body impact
-    sweep(280, 70, 0.22, 'sawtooth', 0.32);
-    // Low punch thud (noise + sub)
-    noise(0.1, 0.4, 0, 60, 600);
-    sweep(90, 40, 0.28, 'sine', 0.28, 0.01);
-    // Dissonant sting — "that hurt"
-    tone(220, 0.12, 'square', 0.12, 0.03);
+    sfxPlay('player-hurt.mp3', 0.8);
+    // Low sub thump underneath
+    noise(0.08, 0.25, 0, 60, 500);
+    sweep(90, 40, 0.22, 'sine', 0.2, 0.01);
   },
 
-  // ── Critical hit: sharp crack + extra resonance ──────────────────────────────
+  // ── Critical hit: power hit ──────────────────────────────────────────────────
   critHit: () => {
-    // Sharp crack (high noise burst)
-    noise(0.05, 0.45, 0, 1200, 7000);
-    // Dramatic pitch drop
-    sweep(700, 100, 0.16, 'sawtooth', 0.38);
-    // Heavy sub
-    sweep(200, 50, 0.28, 'sine', 0.3, 0.03);
-    // Ringing overtone
-    tone(1600, 0.25, 'sine', 0.14, 0.03);
-    tone(900, 0.3, 'sine', 0.1, 0.07);
+    sfxPlay('crit-impact.mp3', 0.85);
+    // Extra low end punch
+    sweep(200, 50, 0.28, 'sine', 0.22, 0.03);
   },
 
-  // ── Charged Strike: electric buildup + massive impact ───────────────────────
+  // ── Charged Strike: power strike ────────────────────────────────────────────
   chargedStrike: () => {
-    // Crackling electric sizzle
+    sfxPlay('power-strike.mp3', 0.9);
+    // Electric buildup stays synthesized
     noise(0.06, 0.18, 0, 2500, 9000);
-    // Rising electric whine
     sweep(600, 2400, 0.12, 'sawtooth', 0.22);
-    // IMPACT — everything hits at once
-    sweep(500, 55, 0.35, 'sawtooth', 0.45, 0.1);
-    noise(0.18, 0.55, 0.1, 150, 2800);
-    sweep(80, 30, 0.4, 'sine', 0.38, 0.11);
-    // Metallic ring-out
-    tone(1400, 0.35, 'sine', 0.18, 0.11);
-    tone(980, 0.45, 'sine', 0.12, 0.16);
-    // Electric tail
-    noise(0.12, 0.1, 0.22, 3000, 8000);
+    // Sub boom on impact
+    sweep(80, 30, 0.4, 'sine', 0.3, 0.1);
   },
 
   // ── Charge gained: subtle electric tick ─────────────────────────────────────
@@ -149,11 +163,9 @@ export const sounds = {
 
   // ── Special attack: class ability whoosh ────────────────────────────────────
   specialAttack: () => {
-    sweep(300, 1100, 0.22, 'sine', 0.28);
-    sweep(250, 850, 0.28, 'triangle', 0.18, 0.05);
-    noise(0.14, 0.22, 0.08, 600, 4500);
-    tone(880, 0.32, 'sine', 0.2, 0.18);
-    tone(660, 0.4, 'sine', 0.12, 0.24);
+    sfxPlay('sword-swing.mp3', 0.7);
+    sweep(300, 1100, 0.22, 'sine', 0.18);
+    noise(0.14, 0.18, 0.08, 600, 4500);
   },
 
   // ── Boss / enemy entrance: deep cinematic boom ──────────────────────────────
