@@ -5212,24 +5212,25 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const chance = Math.max(0.05, 0.30 + wisMod * 0.08);
       success = Math.random() < chance;
       resultLine = success
-        ? `"...You remind me of something I once knew. Go. Before I change my mind."`
-        : `"Mercy is for the living. You are already dead." It attacks!`;
+        ? `...You remind me of something I once knew. Go. Before I change my mind.`
+        : `Mercy is for the living. You are already dead.`;
     } else if (method === 'bribe') {
       if (gold < bribeAmount) {
         addLog(`Not enough gold. The shadow demands ${bribeAmount}g.`);
+        setEnemyDialogue(`Gold? You insult me with empty hands.`);
         return { success: false, enraged: false };
       }
       setGold(g => g - bribeAmount);
       success = true;
-      resultLine = `"Gold. How predictable. But... acceptable." It retreats into the dark.`;
+      resultLine = `Gold. How predictable. But... acceptable.`;
     }
 
     if (success) {
       const loot = method === 'bribe'
         ? [`-${bribeAmount} Gold`, 'Shadow Dismissed', '✓ Survived']
         : ['Shadow Dismissed', '✓ Survived'];
+      setEnemyDialogue(resultLine);
       addLog(`You survived by ${method === 'bribe' ? 'gold' : 'words'}.`);
-      addLog(`💬 ${bossName}: ${resultLine}`);
       setVictoryLoot(loot);
       setBossHp(0);
       setBattling(false);
@@ -5240,7 +5241,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setRecklessStacks(0);
       return { success: true, enraged: false };
     } else {
-      addLog(`💬 ${bossName}: ${resultLine}`);
+      setEnemyDialogue(resultLine);
       return { success: false, enraged: true };
     }
   };
