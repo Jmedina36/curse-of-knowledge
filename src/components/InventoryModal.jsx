@@ -291,7 +291,9 @@ const InventoryModal = ({
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
           width: '95vw', maxWidth: '1100px', height: '90vh',
-          background: VISUAL_STYLES.modal.paper,
+          backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           borderColor: COLORS.silver,
           boxShadow: VISUAL_STYLES.shadow.elevated,
         }}
@@ -304,7 +306,7 @@ const InventoryModal = ({
           display: 'flex', alignItems: 'center',
           padding: '16px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(212,175,55,0.3)`,
-          background: 'rgba(0,0,0,0.25)',
+          background: 'rgba(0,0,0,0.55)',
           position: 'relative',
         }}>
           {/* Blacksmith portrait — left */}
@@ -331,7 +333,7 @@ const InventoryModal = ({
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
           {/* LEFT — Collected items */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.2)`, overflow: 'hidden', background: 'transparent' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.2)`, overflow: 'hidden', background: 'rgba(0,0,0,0.45)' }}>
 
             {/* Category filter */}
             <div style={{ display: 'flex', gap: '6px', padding: '10px 16px 8px', flexShrink: 0, background: 'rgba(0,0,0,0.2)', borderBottom: `1px solid rgba(212,175,55,0.2)` }}>
@@ -362,7 +364,7 @@ const InventoryModal = ({
           </div>
 
           {/* RIGHT — Equipped gear */}
-          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
+          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(0,0,0,0.5)', flexShrink: 0 }}>
 
             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
