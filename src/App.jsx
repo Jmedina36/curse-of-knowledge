@@ -6217,7 +6217,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.3)'
         }}>
           {[
-                {id:'quest', icon:Sword, label:'Quests'},
+                {id:'quest', icon:Sword, label:'Guild'},
                 {id:'planner', icon:Calendar, label:'Planner'},
                 {id:'study', icon:Hammer, label:'Forge'},
                 {id:'legacy', icon:Skull, label:'Legacy'},

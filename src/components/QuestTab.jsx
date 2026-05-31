@@ -2,6 +2,16 @@ import React from 'react';
 import { Calendar, GripVertical, HeartPulse, Plus, ShieldCheck, Sparkles, Swords } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 
+const GUILD_RANKS = [
+  { min: 1,  max: 2,  name: 'Initiate',    color: 'rgba(180,180,180,0.75)' },
+  { min: 3,  max: 4,  name: 'Apprentice',  color: 'rgba(180,180,180,0.85)' },
+  { min: 5,  max: 6,  name: 'Journeyman',  color: 'rgba(180,160,100,0.9)'  },
+  { min: 7,  max: 9,  name: 'Adept',       color: 'rgba(212,175,55,0.95)'  },
+  { min: 10, max: 14, name: 'Master',       color: 'rgba(230,200,80,1)'     },
+  { min: 15, max: 999,name: 'Grand Master', color: 'rgba(255,220,100,1)'    },
+];
+const getGuildRank = (level) => GUILD_RANKS.find(r => level >= r.min && level <= r.max) || GUILD_RANKS[0];
+
 const QuestTab = ({
   // Hero / player state
   hero,
@@ -124,6 +134,9 @@ const QuestTab = ({
                         <div className="px-3 py-1 rounded border" style={{background:'rgba(0,0,0,0.5)',borderColor:'rgba(212,175,55,0.4)'}}>
                           <span className="text-xs font-bold" style={{color:'#D4AF37',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level}</span>
                         </div>
+                        <div className="px-2 py-0.5 rounded mt-1" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(212,175,55,0.2)'}}>
+                          <span className="text-xs" style={{color:getGuildRank(level).color,letterSpacing:'0.08em',fontFamily:'Cinzel,serif'}}>{getGuildRank(level).name}</span>
+                        </div>
                         <p className="text-xs mt-1" style={{color:'rgba(245,245,220,0.4)'}}>Day {currentDay}</p>
                       </div>
                     </div>
@@ -176,7 +189,7 @@ const QuestTab = ({
                 <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
               </div>
               <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg z-20" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(212,175,55,0.3)',borderTop:'none',borderRight:'none'}}>
-                <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level}</span>
+                <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level} • {getGuildRank(level).name}</span>
               </div>
 
               <div className="relative z-10">
@@ -507,63 +520,50 @@ const QuestTab = ({
                 </div>
               ) : (
                 <>
-                  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
-                    {/* Section header with decorative divider */}
-                    <div className="text-center mb-4">
-                      <h2 className="text-4xl font-bold mb-4" style={{color: COLORS.gold, letterSpacing: '0.15em'}}>TRIALS OF THE CURSED</h2>
-                      <div className="flex items-center justify-center gap-2">
-                        <div style={VISUAL_STYLES.divider.gold('80px').left}></div>
-                        <span style={VISUAL_STYLES.divider.gold().diamond}>◆</span>
-                        <div style={VISUAL_STYLES.divider.gold('80px').right}></div>
+                  <div className="rounded-xl p-5 border-2" style={{
+                    background: 'linear-gradient(160deg, #1c1007 0%, #130d05 60%, #0e0a03 100%)',
+                    borderColor: 'rgba(101,67,33,0.7)',
+                    boxShadow: '0 4px 32px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.4)'
+                  }}>
+                    {/* Board header */}
+                    <div className="text-center mb-5">
+                      <div className="flex items-center justify-center gap-3 mb-2">
+                        <div style={{flex:1,height:'2px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.8))'}}></div>
+                        <h2 style={{fontFamily:'Cinzel,serif',fontSize:'clamp(1rem,3vw,1.3rem)',fontWeight:900,letterSpacing:'0.3em',color:'rgba(212,175,55,0.9)',textShadow:'0 0 20px rgba(212,175,55,0.4)'}}>GUILD NOTICE BOARD</h2>
+                        <div style={{flex:1,height:'2px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.8))'}}></div>
                       </div>
+                      {tasks.length > 0 && (
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',letterSpacing:'0.2em',color:'rgba(180,155,100,0.5)',textTransform:'uppercase'}}>Post a contract • complete your trials • earn your keep</p>
+                      )}
                     </div>
-                    {tasks.length > 0 && (
-
-                      <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Complete your trials or be consumed by the curse..."</p>
-                    )}
-                    <div className="flex gap-3 justify-center mb-6">
+                    <div className="flex gap-3 justify-center mb-5">
                       <button
                         onClick={() => setShowImportModal(true)}
-                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold"
-                        style={{backgroundColor: 'rgba(120, 53, 15, 0.6)', borderColor: '#92400E', color: '#F5F5DC'}}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.8)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(120, 53, 15, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.6)';
-                          e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = '';
-                        }}
+                        className="flex items-center gap-2 px-5 py-2 rounded transition-all uppercase text-xs font-bold"
+                        style={{background:'rgba(60,35,10,0.7)',border:'1px solid rgba(101,67,33,0.6)',color:'rgba(200,170,100,0.8)',fontFamily:'Cinzel,serif',letterSpacing:'0.15em'}}
+                        onMouseEnter={(e) => { e.currentTarget.style.background='rgba(80,50,15,0.8)'; e.currentTarget.style.color='rgba(212,175,55,1)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background='rgba(60,35,10,0.7)'; e.currentTarget.style.color='rgba(200,170,100,0.8)'; }}
                       >
-                        <Calendar size={18}/>Import from Planner
+                        <Calendar size={14}/>Import from Planner
                       </button>
                       <button
                         onClick={() => setShowModal(true)}
-                        className="flex items-center gap-2 px-8 py-3 rounded-lg transition-all border-2 uppercase text-sm font-bold"
-                        style={{backgroundColor: COLORS.amber.base, borderColor: COLORS.amber.border, color: '#1C1C1C'}}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = 'rgba(234, 179, 8, 0.9)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(234, 179, 8, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = COLORS.amber.base;
-                          e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = '';
-                        }}
+                        className="flex items-center gap-2 px-5 py-2 rounded transition-all uppercase text-xs font-bold"
+                        style={{background:'rgba(80,55,10,0.8)',border:'1px solid rgba(180,140,40,0.5)',color:'rgba(212,175,55,0.95)',fontFamily:'Cinzel,serif',letterSpacing:'0.15em'}}
+                        onMouseEnter={(e) => { e.currentTarget.style.background='rgba(100,70,15,0.9)'; e.currentTarget.style.borderColor='rgba(212,175,55,0.8)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.background='rgba(80,55,10,0.8)'; e.currentTarget.style.borderColor='rgba(180,140,40,0.5)'; }}
                       >
-                        <Plus size={18}/>Accept Trial
+                      >
+                        <Plus size={14}/>Post Contract
                       </button>
                     </div>
 
                     {tasks.length === 0 ? (
-                      <div className="text-center py-8">
-                        <p className="text-base font-semibold tracking-wide" style={{color: '#F5F5DC', letterSpacing: '0.08em'}}>Your journey begins here.</p>
+                      <div className="text-center py-10">
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.8rem',letterSpacing:'0.2em',color:'rgba(160,135,80,0.5)',textTransform:'uppercase'}}>The board is bare. Post a contract to begin.</p>
                       </div>
                     ) : (
-                      <div className="space-y-3">
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))',gap:'16px',padding:'4px 2px'}}>
                         {[...tasks].sort((a, b) => {
   // Incomplete tasks first, completed tasks last
   if (!a.done && b.done) return -1;
@@ -583,111 +583,119 @@ const QuestTab = ({
 })
 .filter(task => !hideCompletedTasks || !task.done)
 .map(t => (
-  <div key={t.id} className={`rounded-lg p-4 border-2 ${
-    t.done
-      ? 'opacity-60'
-      : t.overdue
-        ? 'bg-red-900/20 border-red-600 opacity-80'
-      : t.priority === 'important'
-        ? `bg-gradient-to-r from-yellow-900/30 to-gray-800`
-        : 'bg-gradient-to-r from-blue-900/30 to-gray-800 border-blue-500'
-  }`}
-  style={{
-    backgroundColor: t.done
-      ? 'rgba(30, 41, 59, 0.4)'
-      : t.overdue
-        ? undefined
-        : t.priority === 'important'
-          ? undefined
-          : undefined,
-    borderColor: t.done
-      ? 'rgba(34, 197, 94, 0.6)'
-      : t.overdue
-        ? undefined
-        : t.priority === 'important'
-          ? COLORS.gold
-          : 'rgba(59, 130, 246, 0.5)',
-    position: 'relative',
-    overflow: 'hidden',
-    animation: t.overdue && !t.done
-      ? 'pulse-red-border 2s ease-in-out infinite'
-      : undefined,
-    boxShadow: t.priority === 'important' && !t.done && !t.overdue
-      ? `0 0 20px ${COLORS.gold}99`
-      : t.done
-        ? '0 1px 3px rgba(0, 0, 0, 0.1)'
-        : '0 2px 4px rgba(0, 0, 0, 0.2)'
-  }}
-  draggable={!t.done}
-  onDragStart={(e) => handleDragStart(e, t)}
-  onDragEnd={handleDragEnd}
-  onDragOver={handleDragOver}
-  onDrop={(e) => handleDrop(e, t)}
+  <div
+    key={t.id}
+    draggable={!t.done}
+    onDragStart={(e) => handleDragStart(e, t)}
+    onDragEnd={handleDragEnd}
+    onDragOver={handleDragOver}
+    onDrop={(e) => handleDrop(e, t)}
+    style={{
+      position: 'relative',
+      background: t.done
+        ? 'linear-gradient(160deg,#1a1a12,#141410)'
+        : t.overdue
+          ? 'linear-gradient(160deg,#2a0a08,#1c0806)'
+          : t.priority === 'important'
+            ? 'linear-gradient(160deg,#2a2008,#1c1605)'
+            : 'linear-gradient(160deg,#1e1a0e,#16130a)',
+      border: t.done
+        ? '1px solid rgba(80,100,60,0.45)'
+        : t.overdue
+          ? '1px solid rgba(180,40,30,0.6)'
+          : t.priority === 'important'
+            ? '1px solid rgba(180,145,40,0.6)'
+            : '1px solid rgba(101,82,40,0.45)',
+      borderRadius: '4px',
+      padding: '14px 14px 12px',
+      boxShadow: t.overdue && !t.done
+        ? '0 2px 16px rgba(180,30,20,0.25), inset 0 0 20px rgba(0,0,0,0.4)'
+        : t.priority === 'important' && !t.done
+          ? '0 2px 16px rgba(180,145,40,0.2), inset 0 0 20px rgba(0,0,0,0.4)'
+          : 'inset 0 0 20px rgba(0,0,0,0.35), 0 1px 6px rgba(0,0,0,0.4)',
+      cursor: t.done ? 'default' : 'grab',
+      transition: 'transform 0.15s, box-shadow 0.15s',
+      opacity: t.done ? 0.65 : 1,
+      animation: t.overdue && !t.done ? 'pulse-red-border 2s ease-in-out infinite' : undefined,
+    }}
   >
-    {/* OVERDUE watermark - centered from left edge to Focus button */}
-    {t.overdue && !t.done && (
-      <div className="absolute left-0 inset-y-0 flex items-center pointer-events-none" style={{zIndex: 0, right: '180px', justifyContent: 'center'}}>
-        <span style={{
-          fontSize: '3rem',
-          fontWeight: 900,
-          color: '#DC2626',
-          opacity: 0.08,
-          letterSpacing: '0.2em'
-        }}>OVERDUE</span>
-      </div>
-    )}
-    {/* COMPLETED watermark - centered horizontally */}
-    {t.done && (
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{zIndex: 0}}>
-        <span style={{
-          fontSize: '3rem',
-          fontWeight: 900,
-          color: '#22C55E',
-          opacity: 0.15,
-          letterSpacing: '0.2em'
-        }}>COMPLETED</span>
-      </div>
-    )}
-    <div className="flex items-center gap-3" style={{position: 'relative', zIndex: 1}}>
-      {!t.done && (
-        <div style={{opacity: 0.3, cursor: 'grab'}} onMouseEnter={(e) => e.currentTarget.style.opacity = 0.7} onMouseLeave={(e) => e.currentTarget.style.opacity = 0.3}>
-          <GripVertical size={20} style={{color: '#C0C0C0'}}/>
-        </div>
-      )}
-      <div className="flex-1">
-        <p className={t.done ? 'line-through text-gray-500' : t.overdue ? 'text-red-300 font-medium text-lg' : 'text-white font-medium text-lg'}>
-          {t.title}
-        </p>
-        <p className="text-sm mt-1" style={{color: t.priority === 'important' ? COLORS.gold : '#9CA3AF'}}>
-          {t.priority === 'important' ? 'IMPORTANT • 1.25x XP' : 'ROUTINE • 1.0x XP'}
-        </p>
-      </div>
+    {/* Push-pin */}
+    <div style={{
+      position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
+      width: '12px', height: '12px', borderRadius: '50%',
+      background: t.done ? 'rgba(80,120,60,0.8)' : t.overdue ? 'rgba(180,40,30,0.9)' : t.priority === 'important' ? 'rgba(180,145,40,0.9)' : 'rgba(120,90,40,0.8)',
+      border: '1px solid rgba(255,255,255,0.15)',
+      boxShadow: '0 1px 4px rgba(0,0,0,0.5)',
+    }} />
 
+    {/* Difficulty tag */}
+    <div style={{marginBottom:'8px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+      <span style={{
+        fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.2em',
+        textTransform:'uppercase', padding:'2px 6px', borderRadius:'2px',
+        background: t.done ? 'rgba(60,90,40,0.4)' : t.overdue ? 'rgba(140,30,20,0.4)' : t.priority === 'important' ? 'rgba(120,95,20,0.4)' : 'rgba(60,50,20,0.4)',
+        border: t.done ? '1px solid rgba(80,120,60,0.4)' : t.overdue ? '1px solid rgba(180,40,30,0.5)' : t.priority === 'important' ? '1px solid rgba(180,145,40,0.5)' : '1px solid rgba(101,82,40,0.35)',
+        color: t.done ? 'rgba(120,180,80,0.8)' : t.overdue ? 'rgba(220,80,60,0.9)' : t.priority === 'important' ? 'rgba(212,175,55,0.9)' : 'rgba(160,135,80,0.7)',
+      }}>
+        {t.done ? '✓ Sealed' : t.overdue ? '⚠ Overdue' : t.priority === 'important' ? '★ Elite' : '▦ Common'}
+      </span>
       {!t.done && (
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              setPomodoroTask(t);
-              setShowPomodoro(true);
-              setPomodoroTimer(25 * 60);
-              setPomodorosCompleted(0);
-              setIsBreak(false);
-              setPomodoroRunning(true);
-              addLog(`Starting focus session: ${t.title}`);
-            }}
-            className="px-3 py-1 rounded transition-all flex items-center gap-1 border-2" style={{backgroundColor: COLORS.amethyst.base, borderColor: COLORS.amethyst.border, color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.amethyst.hover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.amethyst.base}
-          >
-            Focus
-          </button>
-          <button
-            onClick={() => complete(t.id)}
-            className="px-3 py-1 rounded font-bold transition-all flex items-center gap-1 border-2" style={{backgroundColor: COLORS.emerald.base, borderColor: COLORS.emerald.border, color: '#F5F5DC'}} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.hover} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = COLORS.emerald.base}
-          >
-            Complete
-          </button>
-        </div>
+        <span style={{fontSize:'0.62rem',color:'rgba(140,115,60,0.6)',fontFamily:'Cinzel,serif'}}>
+          {t.priority === 'important' ? '1.25x XP' : '1.0x XP'}
+        </span>
       )}
     </div>
+
+    {/* Contract title */}
+    <p style={{
+      fontFamily:'Cinzel,serif',
+      fontSize:'0.88rem',
+      fontWeight:600,
+      letterSpacing:'0.04em',
+      lineHeight:1.45,
+      color: t.done ? 'rgba(160,155,130,0.6)' : t.overdue ? 'rgba(230,150,130,0.95)' : 'rgba(220,205,165,0.95)',
+      textDecoration: t.done ? 'line-through' : 'none',
+      marginBottom:'10px',
+      wordBreak:'break-word',
+    }}>
+      {t.title}
+    </p>
+
+    {/* Actions */}
+    {!t.done && (
+      <div style={{display:'flex',gap:'6px',justifyContent:'flex-end'}}>
+        <button
+          onClick={() => {
+            setPomodoroTask(t);
+            setShowPomodoro(true);
+            setPomodoroTimer(25 * 60);
+            setPomodorosCompleted(0);
+            setIsBreak(false);
+            setPomodoroRunning(true);
+            addLog(`Starting focus session: ${t.title}`);
+          }}
+          style={{
+            fontFamily:'Cinzel,serif',fontSize:'0.62rem',letterSpacing:'0.15em',
+            padding:'4px 10px',borderRadius:'2px',
+            background:'rgba(60,30,80,0.6)',border:'1px solid rgba(120,80,160,0.5)',
+            color:'rgba(180,140,220,0.85)',cursor:'pointer',transition:'all 0.2s',
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.background='rgba(80,40,110,0.8)';e.currentTarget.style.color='rgba(200,170,240,1)';}}
+          onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,30,80,0.6)';e.currentTarget.style.color='rgba(180,140,220,0.85)';}}
+        >Focus</button>
+        <button
+          onClick={() => complete(t.id)}
+          style={{
+            fontFamily:'Cinzel,serif',fontSize:'0.62rem',letterSpacing:'0.15em',
+            padding:'4px 10px',borderRadius:'2px',
+            background:'rgba(20,60,30,0.6)',border:'1px solid rgba(40,120,60,0.5)',
+            color:'rgba(100,200,120,0.85)',cursor:'pointer',transition:'all 0.2s',
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.background='rgba(25,80,40,0.8)';e.currentTarget.style.color='rgba(130,220,150,1)';}}
+          onMouseLeave={e=>{e.currentTarget.style.background='rgba(20,60,30,0.6)';e.currentTarget.style.color='rgba(100,200,120,0.85)';}}
+        >Complete</button>
+      </div>
+    )}
   </div>
 ))}
                       </div>
