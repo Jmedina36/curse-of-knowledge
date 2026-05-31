@@ -34,7 +34,7 @@ const FantasyStudyQuest = () => {
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
-  const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'fading' | 'done'
+  const [introPhase, setIntroPhase] = useState('menu'); // 'menu' | 'fading' | 'done'
   const introTimers = useRef([]);
   const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
@@ -5659,72 +5659,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }
       `}</style>
 
-      {/* ── Intro cinematic overlay ── */}
-      {introPhase === 'visible' && (
-        <div
-          onClick={() => {
-            audioManager.play(TRACKS.nightVigil);
-            introTimers.current.forEach(clearTimeout);
-            setIntroPhase('menu');
-          }}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 200,
-            background: 'radial-gradient(ellipse at center, #1a0000 0%, #0d0000 45%, #000000 100%)',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer',
-            userSelect: 'none',
-          }}
-        >
-          {/* Atmospheric scanlines */}
-          <div style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
-            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
-          }} />
-
-          {/* Title slam */}
-          <div style={{ animation: 'intro-slam 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center' }}>
-            <h1 style={{
-              fontFamily: "'Cinzel', serif",
-              fontWeight: 900,
-              fontSize: 'clamp(3.5rem, 12vw, 8rem)',
-              letterSpacing: '0.12em',
-              lineHeight: 1,
-              color: '#F5F5DC',
-              textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 0 110px rgba(140,0,0,0.45), 0 3px 6px rgba(0,0,0,1)',
-              animation: 'title-pulse 3s ease-in-out infinite',
-            }}>CURSE OF KNOWLEDGE</h1>
-          </div>
-
-          {/* Ornament lines */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 16px', animation: 'intro-fade-up 0.6s ease-out 1.1s both' }}>
-            <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,60,60,0.7))' }} />
-            <span style={{ color: 'rgba(255,60,60,0.7)', fontSize: '10px', letterSpacing: '0.4em' }}>✦ ✦ ✦</span>
-            <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255,60,60,0.7))' }} />
-          </div>
-
-          {/* Tagline */}
-          <p style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: '0.85rem',
-            letterSpacing: '0.3em',
-            textTransform: 'uppercase',
-            color: 'rgba(210,160,160,0.85)',
-            animation: 'intro-fade-up 0.6s ease-out 1.4s both',
-          }}>Study or be consumed by the abyss</p>
-
-          {/* Tap to begin */}
-          <p style={{
-            fontFamily: "'Cinzel', serif",
-            fontSize: 'clamp(0.95rem, 2.5vw, 1.2rem)',
-            letterSpacing: '0.35em',
-            textTransform: 'uppercase',
-            color: 'rgba(212,175,55,0.75)',
-            marginTop: '48px',
-            animation: 'intro-fade-up 0.5s ease-out 2.8s both, intro-hint-pulse 2s ease-in-out 3.3s infinite',
-          }}>✦ press enter or tap to begin ✦</p>
-        </div>
-      )}
-
       {/* ── Main menu overlay (New Adventure / Continue) ── */}
       {(introPhase === 'menu' || introPhase === 'fading') && (
         <div
@@ -5785,6 +5719,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center', animation: 'intro-fade-up 0.6s ease-out 0.4s both' }}>
             <button
               onClick={() => {
+                audioManager.play(TRACKS.nightVigil);
                 introTimers.current.forEach(clearTimeout);
                 setIntroPhase('fading');
                 const t = setTimeout(() => setIntroPhase('done'), 800);
@@ -5820,6 +5755,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
             <button
               onClick={() => {
+                audioManager.play(TRACKS.nightVigil);
                 introTimers.current.forEach(clearTimeout);
                 setIntroPhase('fading');
                 const t = setTimeout(() => setIntroPhase('done'), 800);
