@@ -30,61 +30,14 @@ import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 
 const NARRATION_PAGES = [
-  "Before the first lesson was abandoned,
-there was only light.
-
-Not the light of fire or sun — but the light of understanding. Of questions asked and answered. Of minds that refused to stay in the dark.",
-  "Knowledge was the only thing that ever truly changed the world.
-
-It ended plagues. It ended wars. It turned enemies into neighbors and turned suffering into memory.
-
-Every atrocity ever committed, every war ever fought — trace it back far enough, and you will find the same root:
-something that was never learned.",
-  "And then, slowly, the world stopped.
-
-Not all at once. Never all at once.
-
-It began in the margins — in the hours surrendered to distraction, the lessons skipped, the books left unread, the questions never asked. Small surrenders, each of them.
-
-But the Abyss does not require great failures.
-It is built entirely from small ones.",
-  "The wars returned.
-
-Not because men were evil — but because they were ignorant. Leaders who never learned from history repeated it, willingly. Suffering that had been cured was forgotten, then rediscovered at terrible cost.
-
-The darkness did not conquer the world.
-It waited for the light to go out on its own.",
-  "The ancients called it the Curse of Knowledge.
-
-Not a curse upon those who learned — but upon a world that chose not to.
-
-For every mind that turned away from understanding, a shadow was born. Those shadows are still here. They are everything humanity should have known. Everything we chose not to become.",
-  "Champions were called.
-
-They rose. They studied. They fought the darkness one lesson at a time.
-
-And one by one they fell — not to monsters, but to the same quiet failures that built the Abyss. Distraction. Exhaustion. The weight of a burden no single soul was made to carry.
-
-Their unfinished work became the darkness’s claws.
-Their abandoned ambitions became its hunger.",
-  "This is the truth no champion is ever told:
-
-The adventure never ends.
-
-The Abyss is patient. It has swallowed a thousand heroes, and when you fall — and you will fall — it will swallow you too. Your failures will be woven into the shadow. Your regrets will power the next wave of darkness that faces whoever comes after you.",
-  "But someone must still try.
-
-Not because victory is certain.
-Not because this time will be different.
-
-Because the alternative is surrender —
-and surrender is how the darkness wins.
-
-The flame is yours now.
-
-Learn. Endure. Push back the dark.
-
-How long can you hold the abyss at bay?",
+  "Before the first lesson was abandoned,\nthere was only light.\n\nNot the light of fire or sun — but the light of understanding. Of questions asked and answered. Of minds that refused to stay in the dark.",
+  "Knowledge was the only thing that ever truly changed the world.\n\nIt ended plagues. It ended wars. It turned enemies into neighbors and turned suffering into memory.\n\nEvery atrocity ever committed, every war ever fought — trace it back far enough, and you will find the same root:\nsomething that was never learned.",
+  "And then, slowly, the world stopped.\n\nNot all at once. Never all at once.\n\nIt began in the margins — in the hours surrendered to distraction, the lessons skipped, the books left unread, the questions never asked. Small surrenders, each of them.\n\nBut the Abyss does not require great failures.\nIt is built entirely from small ones.",
+  "The wars returned.\n\nNot because men were evil — but because they were ignorant. Leaders who never learned from history repeated it, willingly. Suffering that had been cured was forgotten, then rediscovered at terrible cost.\n\nThe darkness did not conquer the world.\nIt waited for the light to go out on its own.",
+  "The ancients called it the Curse of Knowledge.\n\nNot a curse upon those who learned — but upon a world that chose not to.\n\nFor every mind that turned away from understanding, a shadow was born. Those shadows are still here. They are everything humanity should have known. Everything we chose not to become.",
+  "Champions were called.\n\nThey rose. They studied. They fought the darkness one lesson at a time.\n\nAnd one by one they fell — not to monsters, but to the same quiet failures that built the Abyss. Distraction. Exhaustion. The weight of a burden no single soul was made to carry.\n\nTheir unfinished work became the darkness’s claws.\nTheir abandoned ambitions became its hunger.",
+  "This is the truth no champion is ever told:\n\nThe adventure never ends.\n\nThe Abyss is patient. It has swallowed a thousand heroes, and when you fall — and you will fall — it will swallow you too. Your failures will be woven into the shadow. Your regrets will power the next wave of darkness that faces whoever comes after you.",
+  "But someone must still try.\n\nNot because victory is certain.\nNot because this time will be different.\n\nBecause the alternative is surrender —\nand surrender is how the darkness wins.\n\nThe flame is yours now.\n\nLearn. Endure. Push back the dark.\n\nHow long can you hold the abyss at bay?",
 ];
 
 const FantasyStudyQuest = () => {
