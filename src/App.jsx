@@ -8,6 +8,7 @@ import { audioManager, TRACKS } from './audioManager';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
 import QuestTab from './components/QuestTab';
+import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
 import ForgeTab from './components/ForgeTab';
 import ProgressTab from './components/ProgressTab';
@@ -6218,6 +6219,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }}>
           {[
                 {id:'quest', icon:Sword, label:'Guild'},
+                {id:'contracts', icon:Calendar, label:'Contracts'},
                 {id:'planner', icon:Calendar, label:'Planner'},
                 {id:'study', icon:Hammer, label:'Forge'},
                 {id:'legacy', icon:Skull, label:'Legacy'},
@@ -6741,7 +6743,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {activeTab === 'quest' && (
             <QuestTab
               hero={hero} hp={hp} stamina={stamina} xp={xp} level={level} gold={gold}
-              currentDay={currentDay} curseLevel={curseLevel} hasStarted={hasStarted}
+              currentDay={currentDay} curseLevel={curseLevel}
               isDayActive={isDayActive} timeUntilMidnight={timeUntilMidnight}
               consecutiveDays={consecutiveDays} skipCount={skipCount} miniBossCount={miniBossCount}
               gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
@@ -6752,19 +6754,30 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive} luckyCharmActive={luckyCharmActive}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
+              setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
+              setShowCraftingModal={setShowCraftingModal}
+            />
+          )}
+
+          {activeTab === 'contracts' && (
+            <ContractsTab
+              hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
+              xp={xp} level={level}
+              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
+              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
               tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
               newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
               timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
               overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
               setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
-              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd} handleDragOver={handleDragOver} handleDrop={handleDrop}
+              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
+              handleDragOver={handleDragOver} handleDrop={handleDrop}
               setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
               setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
               setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
               start={start} miniBoss={miniBoss} finalBoss={finalBoss}
-              setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
-              setShowCraftingModal={setShowCraftingModal} setShowImportModal={setShowImportModal}
-              log={log} studyStats={studyStats} addLog={addLog}
+              setShowImportModal={setShowImportModal}
+              log={log} addLog={addLog}
             />
           )}
 
