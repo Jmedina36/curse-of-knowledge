@@ -288,12 +288,14 @@ const InventoryModal = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
       <motion.div
-        className="relative flex flex-col overflow-hidden"
+        className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          width: '100vw', height: '100vh',
+          width: '95vw', maxWidth: '1100px', height: '90vh',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          borderColor: COLORS.silver,
+          boxShadow: VISUAL_STYLES.shadow.elevated,
         }}
         initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
