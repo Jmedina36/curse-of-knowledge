@@ -55,6 +55,19 @@ const InventoryModal = ({
   useHealth,
   useCleanse,
 }) => {
+  // Weapon sprite assignment — deterministic, matches ArmoryScene
+  const WEAPON_SPRITES = [
+    '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
+    '/weapons/dagger1.png', '/weapons/dagger2.png',
+    '/weapons/mace1.png', '/weapons/staff.png', '/weapons/bow1.png',
+  ];
+  const getWeaponSprite = (wpn) => {
+    let seed = 0;
+    if (wpn?.id != null) seed = typeof wpn.id === 'number' ? wpn.id : String(wpn.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    else if (wpn?.name) seed = wpn.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    return WEAPON_SPRITES[Math.abs(seed) % WEAPON_SPRITES.length];
+  };
+
   // Comparison helpers
   const weaponEffective = (wpn) => (wpn?.attack || 0) + Math.floor(wpn?.affixes?.flatDamage || 0);
   const armorEffective  = (piece) => (piece?.defense || 0) + Math.floor(piece?.affixes?.flatArmor || 0);
@@ -280,7 +293,11 @@ const InventoryModal = ({
                       boxShadow: equippedWeapon ? `0 0 15px ${getRarityColor(equippedWeapon.rarity || 'common')}50` : 'none'
                     }}>
                       {equippedWeapon ? (
-                        <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                          <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}
+                            style={{ width: 80, height: 80, objectFit: 'contain', flexShrink: 0,
+                              filter: `drop-shadow(0 0 8px ${getRarityColor(equippedWeapon.rarity || 'common')}80)` }}/>
+                          <div style={{ flex: 1 }}>
                           <p className="text-xl font-bold text-center mb-1" style={{color: getRarityColor(equippedWeapon.rarity || 'common')}}>{equippedWeapon.name}</p>
                           {equippedWeapon.rarity && (
                             <p className="text-xs italic text-center mb-2" style={{color: getRarityColor(equippedWeapon.rarity)}}>
@@ -313,6 +330,7 @@ const InventoryModal = ({
                               </div>
                             </>
                           )}
+                          </div>{/* end text col */}
                         </div>
                       ) : (
                         <p className="text-sm italic text-center" style={{color: '#95A5A6'}}>No weapon equipped</p>
@@ -336,10 +354,13 @@ const InventoryModal = ({
                         {sortByRarity(weaponInventory)
                           .map((wpn) => (
                           <div key={wpn.id} className="rounded p-3 border-2 flex justify-between items-center" style={{
-                            backgroundColor: 'rgba(0, 0, 0, 0.4)', 
+                            backgroundColor: 'rgba(0, 0, 0, 0.4)',
                             borderColor: getRarityColor(wpn.rarity || 'common'),
                             boxShadow: `0 0 10px ${getRarityColor(wpn.rarity || 'common')}40`
                           }}>
+                            <img src={getWeaponSprite(wpn)} alt={wpn.name}
+                              style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, marginRight: '10px',
+                                filter: `drop-shadow(0 0 5px ${getRarityColor(wpn.rarity || 'common')}70)` }}/>
                             <div className="flex-1">
                               <p className="text-base font-bold text-center mb-1" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
                               {wpn.rarity && (
