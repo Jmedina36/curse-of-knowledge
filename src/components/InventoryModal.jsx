@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 const InventoryModal = ({
   // Display state
@@ -71,7 +72,7 @@ const InventoryModal = ({
             <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowInventoryModal(false)}>
               <motion.div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
                 <button 
-                  onClick={() => setShowInventoryModal(false)} 
+                  onClick={() => { sounds.click(); setShowInventoryModal(false); }}
                   className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
                   style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -103,7 +104,7 @@ const InventoryModal = ({
                 {/* Tabs */}
                 <div className="grid grid-cols-4 gap-2 mb-6">
                   <button
-                    onClick={() => setSuppliesTab('potions')}
+                    onClick={() => { sounds.click(); setSuppliesTab('potions'); }}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
                       backgroundColor: suppliesTab === 'potions' ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
@@ -114,7 +115,7 @@ const InventoryModal = ({
                     Potions
                   </button>
                   <button
-                    onClick={() => setSuppliesTab('weapons')}
+                    onClick={() => { sounds.click(); setSuppliesTab('weapons'); }}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
                       backgroundColor: suppliesTab === 'weapons' ? 'rgba(192, 192, 192, 0.8)' : 'rgba(192, 192, 192, 0.3)',
@@ -125,7 +126,7 @@ const InventoryModal = ({
                     Weapons
                   </button>
                   <button
-                    onClick={() => setSuppliesTab('armor')}
+                    onClick={() => { sounds.click(); setSuppliesTab('armor'); }}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
                       backgroundColor: suppliesTab === 'armor' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(184, 134, 11, 0.3)',
@@ -136,7 +137,7 @@ const InventoryModal = ({
                     Armor
                   </button>
                   <button
-                    onClick={() => setSuppliesTab('gear')}
+                    onClick={() => { sounds.click(); setSuppliesTab('gear'); }}
                     className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
                     style={{
                       backgroundColor: suppliesTab === 'gear' ? 'rgba(75, 0, 130, 0.8)' : 'rgba(75, 0, 130, 0.3)',
@@ -162,7 +163,7 @@ const InventoryModal = ({
                       <div className="text-right">
                         <p className="text-3xl font-bold mb-2" style={{color: '#FF6B6B', opacity: 0.9}}>{healthPots}</p>
                         <button 
-                          onClick={useHealth} 
+                          onClick={() => { sounds.click(); useHealth(); }}
                           disabled={healthPots === 0 || hp >= getMaxHp()}
                           className="px-4 py-2 rounded transition-all text-sm border-2"
                           style={{
@@ -192,8 +193,9 @@ const InventoryModal = ({
                       <div className="text-right">
                         <p className="text-3xl font-bold mb-2" style={{color: '#6BB6FF', opacity: 0.9}}>{staminaPots}</p>
                         <button 
-                          onClick={() => { 
-                            if (staminaPots > 0 && stamina < getMaxStamina()) { 
+                          onClick={() => {
+                            sounds.click();
+                            if (staminaPots > 0 && stamina < getMaxStamina()) {
                               setStaminaPots(s => s - 1);
                               const maxStamina = getMaxStamina();
                               const restoreAmount = Math.max(
@@ -233,7 +235,7 @@ const InventoryModal = ({
                       <div className="text-right">
                         <p className="text-3xl font-bold mb-2" style={{color: '#B794F4', opacity: 0.9}}>{cleansePots}</p>
                         <button 
-                          onClick={useCleanse} 
+                          onClick={() => { sounds.click(); useCleanse(); }}
                           disabled={cleansePots === 0 || curseLevel === 0}
                           className="px-4 py-2 rounded transition-all text-sm border-2"
                           style={{
@@ -363,6 +365,7 @@ const InventoryModal = ({
                             </div>
                             <button
                               onClick={() => {
+                                sounds.click();
                                 const oldWeapon = equippedWeapon;
                                 setEquippedWeapon(wpn);
                                 setWeaponInventory(prev => [
@@ -575,6 +578,7 @@ const InventoryModal = ({
                                   </div>
                                   <button
                                     onClick={() => {
+                                      sounds.click();
                                       // Get the currently equipped piece (if any)
                                       const oldPiece = equippedArmor[slot];
                                       
@@ -710,6 +714,7 @@ const InventoryModal = ({
                             </div>
                             <button
                               onClick={() => {
+                                sounds.click();
                                 const oldPendant = equippedPendant;
                                 setEquippedPendant(pend);
                                 setPendantInventory(prev => [
@@ -770,6 +775,7 @@ const InventoryModal = ({
                             </div>
                             <button
                               onClick={() => {
+                                sounds.click();
                                 const oldRing = equippedRing;
                                 setEquippedRing(rng);
                                 setRingInventory(prev => [

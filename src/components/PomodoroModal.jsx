@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS } from '../constants';
+import { sounds } from '../sounds';
 
 const PomodoroModal = ({
   pomodoroTask,
@@ -27,6 +28,7 @@ const PomodoroModal = ({
       <div className="mb-6 relative">
         <button 
           onClick={() => {
+            sounds.click();
             setShowPomodoro(false);
             setPomodoroTask(null);
             setPomodoroRunning(false);
@@ -98,7 +100,7 @@ const PomodoroModal = ({
         
         <div className="flex gap-4 justify-center mb-6">
           <button 
-            onClick={() => setPomodoroRunning(!pomodoroRunning)}
+            onClick={() => { sounds.click(); setPomodoroRunning(!pomodoroRunning); }}
             className="px-8 py-3 rounded-lg font-bold text-xl transition-all border-2"
             style={{
               backgroundColor: 'rgba(139, 0, 0, 0.6)',
@@ -122,6 +124,7 @@ const PomodoroModal = ({
           {isBreak && (
             <button 
               onClick={() => {
+                sounds.click();
                 setIsBreak(false);
                 setPomodoroTimer(25 * 60);
                 setPomodoroRunning(true);

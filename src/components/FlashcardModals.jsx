@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Check } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 const FlashcardModals = ({
   // Deck modal
@@ -119,6 +120,7 @@ const FlashcardModals = ({
       <div className="flex gap-2">
         <button 
           onClick={() => {
+            sounds.click();
             if (newDeck.name.trim()) {
               setFlashcardDecks(prev => [...prev, { name: newDeck.name, cards: [] }]);
               addLog(`Created deck: ${newDeck.name}`);
@@ -142,7 +144,7 @@ const FlashcardModals = ({
           Create Deck
         </button>
         <button 
-          onClick={() => { setShowDeckModal(false); setNewDeck({name: ''}); }} 
+          onClick={() => { sounds.click(); setShowDeckModal(false); setNewDeck({name: ''}); }} 
           className="flex-1 py-2 rounded-lg transition-all border-2" 
           style={{
             backgroundColor: COLORS.slate.base,
@@ -220,8 +222,9 @@ const FlashcardModals = ({
       <div className="flex gap-2">
         <button 
           onClick={() => {
+            sounds.click();
             if (newCard.front.trim() && newCard.back.trim()) {
-              setFlashcardDecks(prev => prev.map((deck, idx) => 
+              setFlashcardDecks(prev => prev.map((deck, idx) =>
                 idx === selectedDeck 
                   ? {...deck, cards: [...deck.cards, {...newCard, mastered: false}]}
                   : deck
@@ -247,7 +250,7 @@ const FlashcardModals = ({
           Add Card
         </button>
         <button 
-          onClick={() => { setShowCardModal(false); setNewCard({front: '', back: ''}); }} 
+          onClick={() => { sounds.click(); setShowCardModal(false); setNewCard({front: '', back: ''}); }} 
           className="flex-1 py-2 rounded-lg transition-all border-2"
           style={{
             backgroundColor: COLORS.slate.base,
@@ -274,6 +277,7 @@ const FlashcardModals = ({
       <div className="mb-6 relative">
         <button 
           onClick={() => {
+            sounds.click();
             if (reviewingMistakes) {
               setShowStudyModal(false);
               setReviewingMistakes(false);
@@ -352,6 +356,7 @@ const FlashcardModals = ({
         <div className="flex gap-4">
           <button
             onClick={() => {
+              sounds.click();
               const currentCard = studyQueue[0];
               const newQueue = [...studyQueue.slice(1), currentCard];
               setStudyQueue(newQueue);
@@ -371,8 +376,9 @@ const FlashcardModals = ({
           
           <button
             onClick={() => {
+              sounds.click();
               const currentCard = studyQueue[0];
-              setFlashcardDecks(prev => prev.map((deck, idx) => 
+              setFlashcardDecks(prev => prev.map((deck, idx) =>
                 idx === selectedDeck 
                   ? {...deck, cards: deck.cards.map((card, cardIdx) => 
                       cardIdx === currentCard ? {...card, mastered: true} : card
@@ -457,6 +463,7 @@ const FlashcardModals = ({
           <div className="mb-6 relative">
             <button 
               onClick={() => {
+                sounds.click();
                 setShowQuizModal(false);
                 setSelectedDeck(null);
                 setQuizQuestions([]);
@@ -707,6 +714,7 @@ const FlashcardModals = ({
             
             <button
               onClick={() => {
+                sounds.click();
                 setShowQuizModal(false);
                 setSelectedDeck(null);
                 setQuizQuestions([]);

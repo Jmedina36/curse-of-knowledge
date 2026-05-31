@@ -1,6 +1,7 @@
 import React from 'react';
 import { Hammer, Link, Plus, Sparkles, X } from 'lucide-react';
 import { COLORS } from '../constants';
+import { sounds } from '../sounds';
 
 const ForgeTab = ({
   forgeSubTab,
@@ -52,7 +53,7 @@ const ForgeTab = ({
     {/* Sub-navigation tabs */}
     <div className="flex gap-2 justify-center mb-6">
       <button 
-        onClick={() => setForgeSubTab('flashcards')}
+        onClick={() => { sounds.click(); setForgeSubTab('flashcards'); }}
         className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
         style={{
           backgroundColor: forgeSubTab === 'flashcards' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
@@ -63,7 +64,7 @@ const ForgeTab = ({
         FLASHCARDS
       </button>
       <button 
-        onClick={() => setForgeSubTab('resources')}
+        onClick={() => { sounds.click(); setForgeSubTab('resources'); }}
         className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
         style={{
           backgroundColor: forgeSubTab === 'resources' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
@@ -84,7 +85,7 @@ const ForgeTab = ({
         <p className="text-sm" style={{color: '#95A5A6'}}>Study to earn XP and loot!</p>
       </div>
       <button 
-        onClick={() => setShowDeckModal(true)}
+        onClick={() => { sounds.click(); setShowDeckModal(true); }}
         className="px-4 py-2 rounded-lg transition-all flex items-center gap-2 border-2"
         style={{
           background: 'linear-gradient(to bottom, #B8860B, #8B6914)',
@@ -128,6 +129,7 @@ const ForgeTab = ({
               </div>
               <button
                 onClick={() => {
+                  sounds.click();
                   if (window.confirm(`Delete deck "${deck.name}"?`)) {
                     setFlashcardDecks(prev => prev.filter((_, i) => i !== idx));
                     addLog(`🗑️ Deleted deck: ${deck.name}`);
@@ -145,6 +147,7 @@ const ForgeTab = ({
             {/* Add Card Button - Top */}
             <button
               onClick={() => {
+                sounds.click();
                 setSelectedDeck(idx);
                 setShowCardModal(true);
               }}
@@ -195,6 +198,7 @@ const ForgeTab = ({
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => {
+                  sounds.click();
                   if (deck.cards.length === 0) {
                     alert('Add some cards first!');
                     return;
@@ -222,6 +226,7 @@ const ForgeTab = ({
               </button>
               <button
                 onClick={() => {
+                  sounds.click();
                   if (deck.cards.length < 4) {
                     alert('Need at least 4 cards for Match!');
                     return;
@@ -243,6 +248,7 @@ const ForgeTab = ({
               </button>
               <button
                 onClick={() => {
+                  sounds.click();
                   if (deck.cards.length < 4) {
                     alert('Need at least 4 cards for a quiz!');
                     return;
@@ -341,6 +347,7 @@ const ForgeTab = ({
           />
           <button
             onClick={(e) => {
+              sounds.click();
               if (newWebsiteName.trim() && newWebsiteUrl.trim()) {
                 // Visual feedback - golden flash
                 e.currentTarget.style.boxShadow = '0 0 30px rgba(218, 165, 32, 0.8), inset 0 0 20px rgba(218, 165, 32, 0.3)';
@@ -532,6 +539,7 @@ const ForgeTab = ({
                   {/* Delete Button */}
                   <button
                     onClick={() => {
+                      sounds.click();
                       if (window.confirm(`Destroy the "${site.name}" relic?`)) {
                         removeStudyWebsite(site.id);
                       }
