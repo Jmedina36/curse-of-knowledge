@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
+import { sounds } from '../sounds';
 
 const InitiativeModal = ({ data, onClose }) => {
   const { roll, dexMod, total, playerFirst } = data;
@@ -62,7 +63,7 @@ const InitiativeModal = ({ data, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          onClick={onClose}
+          onClick={() => { sounds.click(); onClose(); }}
           style={{
             fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700,
             letterSpacing: '0.22em', textTransform: 'uppercase',

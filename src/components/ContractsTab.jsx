@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, GripVertical, Plus } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 const ContractsTab = ({
   hasStarted,
@@ -113,7 +114,7 @@ const ContractsTab = ({
                   </p>
 
                   <button
-                    onClick={start}
+                    onClick={() => { sounds.click(); start(); }}
                     className="px-8 py-3 rounded-lg font-bold text-xl transition-all"
                     style={{
                       backgroundColor: COLORS.gold,
@@ -159,7 +160,7 @@ const ContractsTab = ({
                     </div>
                     <div className="flex gap-3 justify-center mb-5">
                       <button
-                        onClick={() => setShowImportModal(true)}
+                        onClick={() => { sounds.click(); setShowImportModal(true); }}
                         className="flex items-center gap-2 px-5 py-2 rounded transition-all uppercase text-xs font-bold"
                         style={{background:'rgba(60,35,10,0.7)',border:'1px solid rgba(101,67,33,0.6)',color:'rgba(200,170,100,0.8)',fontFamily:'Cinzel,serif',letterSpacing:'0.15em'}}
                         onMouseEnter={(e) => { e.currentTarget.style.background='rgba(80,50,15,0.8)'; e.currentTarget.style.color='rgba(212,175,55,1)'; }}
@@ -168,12 +169,11 @@ const ContractsTab = ({
                         <Calendar size={14}/>Import from Planner
                       </button>
                       <button
-                        onClick={() => setShowModal(true)}
+                        onClick={() => { sounds.click(); setShowModal(true); }}
                         className="flex items-center gap-2 px-5 py-2 rounded transition-all uppercase text-xs font-bold"
                         style={{background:'rgba(80,55,10,0.8)',border:'1px solid rgba(180,140,40,0.5)',color:'rgba(212,175,55,0.95)',fontFamily:'Cinzel,serif',letterSpacing:'0.15em'}}
                         onMouseEnter={(e) => { e.currentTarget.style.background='rgba(100,70,15,0.9)'; e.currentTarget.style.borderColor='rgba(212,175,55,0.8)'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background='rgba(80,55,10,0.8)'; e.currentTarget.style.borderColor='rgba(180,140,40,0.5)'; }}
-                      >
                       >
                         <Plus size={14}/>Post Contract
                       </button>
@@ -287,6 +287,7 @@ const ContractsTab = ({
       <div style={{display:'flex',gap:'6px',justifyContent:'flex-end'}}>
         <button
           onClick={() => {
+            sounds.click();
             setPomodoroTask(t);
             setShowPomodoro(true);
             setPomodoroTimer(25 * 60);
@@ -305,7 +306,7 @@ const ContractsTab = ({
           onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,30,80,0.6)';e.currentTarget.style.color='rgba(180,140,220,0.85)';}}
         >Focus</button>
         <button
-          onClick={() => complete(t.id)}
+          onClick={() => { sounds.click(); complete(t.id); }}
           style={{
             fontFamily:'Cinzel,serif',fontSize:'0.62rem',letterSpacing:'0.15em',
             padding:'4px 10px',borderRadius:'2px',
@@ -425,7 +426,7 @@ const ContractsTab = ({
 
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
                     <button
-  onClick={miniBoss}
+  onClick={() => { sounds.click(); miniBoss(); }}
   disabled={!isDayActive || eliteBossDefeatedToday || xp < 150}
   className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
@@ -443,7 +444,7 @@ const ContractsTab = ({
   </div>
 </button>
                     <button
-  onClick={finalBoss}
+  onClick={() => { sounds.click(); finalBoss(); }}
   disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length}
   className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 0.5 : 1}} onMouseEnter={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >

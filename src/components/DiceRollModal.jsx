@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
+import { sounds } from '../sounds';
 
 const ROLL_CONFIG = {
   fumble: {
@@ -173,7 +174,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85 }}
-          onClick={onClose}
+          onClick={() => { sounds.click(); onClose(); }}
           className="w-full py-2 rounded-lg transition-opacity hover:opacity-80"
           style={{
             background: 'rgba(0,0,0,0.4)',

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -25,7 +26,7 @@ const MarketRates = ({ entries, footer }) => (
 
 const SellBtn = ({ onClick, children }) => (
   <button
-    onClick={onClick}
+    onClick={() => { sounds.click(); onClick(); }}
     className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
     style={{
       background: 'linear-gradient(to bottom, rgba(184,134,11,0.5), rgba(139,101,8,0.55))',
@@ -149,7 +150,7 @@ const CraftingModal = ({
       >
         {/* Close */}
         <button
-          onClick={() => setShowCraftingModal(false)}
+          onClick={() => { sounds.click(); setShowCraftingModal(false); }}
           className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
           style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'rgba(212,175,55,0.4)', color: '#D4AF37' }}
           onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.7)'; e.currentTarget.style.borderColor = '#D4AF37'; }}
@@ -187,7 +188,7 @@ const CraftingModal = ({
               inactiveHover:'linear-gradient(to bottom, rgba(120,25,25,0.4), rgba(100,20,20,0.5))',
               activeBorder: '#DC2626', inactiveBorder: 'rgba(220,38,38,0.4)', glow: 'rgba(220,38,38,0.3)' },
           ].map(({ key, label, active, activeGrad, inactiveGrad, activeHover, inactiveHover, activeBorder, inactiveBorder, glow }) => (
-            <button key={key} onClick={() => setMerchantTab(key)}
+            <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
               className="py-3 rounded-lg font-bold uppercase text-sm transition-all border-2"
               style={{ background: active ? activeGrad : inactiveGrad, borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', boxShadow: active ? `0 0 15px ${glow}` : 'none' }}
               onMouseEnter={e => { e.currentTarget.style.background = active ? activeHover : inactiveHover; e.currentTarget.style.transform = 'translateY(-1px)'; }}
@@ -205,7 +206,7 @@ const CraftingModal = ({
               {subTabCfg('buy', 'sellPotions').map(({ key, label, activeGrad, hoverGrad, activeBorder, inactiveBorder }) => {
                 const active = merchantTab === key;
                 return (
-                  <button key={key} onClick={() => setMerchantTab(key)}
+                  <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
                     className="py-2 rounded-lg font-bold text-sm transition-all border-2"
                     style={{ background: active ? activeGrad : 'rgba(0,0,0,0.3)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
                     onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(40,40,40,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
@@ -226,7 +227,7 @@ const CraftingModal = ({
               {subTabCfg('buyEquipment', 'sellEquipment').map(({ key, label, activeGrad, hoverGrad, activeBorder, inactiveBorder }) => {
                 const active = merchantTab === key;
                 return (
-                  <button key={key} onClick={() => setMerchantTab(key)}
+                  <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
                     className="py-2 rounded-lg font-bold text-sm transition-all border-2"
                     style={{ background: active ? activeGrad : 'rgba(0,0,0,0.3)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
                     onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(40,40,40,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
@@ -277,7 +278,7 @@ const CraftingModal = ({
                 footer="Prices refresh daily"
               />
               <div className="grid grid-cols-3 gap-2">
-                {potions.map(p => <BuyPotionBtn key={p.key} {...p} onClick={() => craftItem(p.key)} />)}
+                {potions.map(p => <BuyPotionBtn key={p.key} {...p} onClick={() => { sounds.click(); craftItem(p.key); }} />)}
               </div>
             </div>
           );
@@ -386,7 +387,7 @@ const CraftingModal = ({
                           )}
                         </div>
                         <button
-                          onClick={() => purchaseShopItem(item)}
+                          onClick={() => { sounds.click(); purchaseShopItem(item); }}
                           disabled={!canAfford}
                           className="px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ml-3"
                           style={{
@@ -514,13 +515,13 @@ const CraftingModal = ({
             </p>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
-                onClick={() => setSellConfirm(null)}
+                onClick={() => { sounds.click(); setSellConfirm(null); }}
                 style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
               >
                 Cancel
               </button>
               <button
-                onClick={() => { sellConfirm.onConfirm(); setSellConfirm(null); }}
+                onClick={() => { sounds.click(); sellConfirm.onConfirm(); setSellConfirm(null); }}
                 style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
               >
                 Sell

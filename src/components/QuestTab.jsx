@@ -1,6 +1,7 @@
 import React from 'react';
 import { HeartPulse, ShieldCheck, Sparkles, Swords } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
+import { sounds } from '../sounds';
 
 const GUILD_RANKS = [
   { min: 1,  max: 2,  name: 'Initiate',    color: 'rgba(180,180,180,0.75)' },
@@ -128,7 +129,7 @@ const QuestTab = ({
                       </div>
                     )}
 
-                    <button onClick={() => setHeroCardCollapsed(false)} className="w-full py-1.5 rounded text-xs uppercase tracking-widest transition-all hover:opacity-80" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(212,175,55,0.25)',color:'rgba(212,175,55,0.6)',fontFamily:'Cinzel,serif'}}>
+                    <button onClick={() => { sounds.click(); setHeroCardCollapsed(false); }} className="w-full py-1.5 rounded text-xs uppercase tracking-widest transition-all hover:opacity-80" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(212,175,55,0.25)',color:'rgba(212,175,55,0.6)',fontFamily:'Cinzel,serif'}}>
                       ▼ Show Full Card
                     </button>
                   </div>
@@ -320,7 +321,7 @@ const QuestTab = ({
                 {/* Collapse Button - Centered at bottom */}
                 <div className="flex justify-center mt-4">
                   <button
-                    onClick={() => setHeroCardCollapsed(!heroCardCollapsed)}
+                    onClick={() => { sounds.click(); setHeroCardCollapsed(!heroCardCollapsed); }}
                     className="px-3 py-1 rounded transition-all border-2 hover:scale-105"
                     style={{
                       background: 'rgba(0, 0, 0, 0.5)',
@@ -343,7 +344,7 @@ const QuestTab = ({
 
               {/* Armory / Supplies */}
               <button
-                onClick={() => { setSuppliesTab('potions'); setShowInventoryModal(true); }}
+                onClick={() => { sounds.click(); setSuppliesTab('potions'); setShowInventoryModal(true); }}
                 style={{
                   width: '100%', position: 'relative', overflow: 'hidden',
                   padding: '24px', borderRadius: '6px', cursor: 'pointer',
@@ -377,7 +378,7 @@ const QuestTab = ({
 
               {/* Merchant's Den */}
               <button
-                onClick={() => setShowCraftingModal(true)}
+                onClick={() => { sounds.click(); setShowCraftingModal(true); }}
                 style={{
                   width: '100%', position: 'relative', overflow: 'hidden',
                   padding: '24px', borderRadius: '6px', cursor: 'pointer',
