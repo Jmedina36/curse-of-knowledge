@@ -1047,7 +1047,7 @@ const BattleModal = ({
                       </button>
 
                       {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && (
-                        <button onClick={() => { setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
+                        <button onClick={() => { setEnemyDialogue(shadowOpening); setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
                           Beg
@@ -1082,15 +1082,6 @@ const BattleModal = ({
                   <motion.div key="negotiate" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
                     {negotiatePhase === 'open' && (
                       <>
-                        {/* Shadow's opening line */}
-                        <div style={{ background: 'rgba(60,20,80,0.5)', border: '1px solid rgba(140,80,180,0.4)', borderRadius: '8px', padding: '14px 16px', marginBottom: '12px' }}>
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.05em', color: 'rgba(220,180,255,0.9)', lineHeight: 1.7, textAlign: 'center', fontStyle: 'italic' }}>
-                            "{shadowOpening}"
-                          </p>
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'rgba(220,100,100,0.6)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
-                            — {bossName} · You are at critical health
-                          </p>
-                        </div>
                         <div className="grid grid-cols-2 gap-3 mb-3">
                           <button
                             onClick={() => {
