@@ -1,14 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 
 const InitiativeModal = ({ data, onClose }) => {
   const { roll, dexMod, total, playerFirst } = data;
-
-  useEffect(() => {
-    const t = setTimeout(onClose, 2600);
-    return () => clearTimeout(t);
-  }, [onClose]);
 
   const color = playerFirst ? '#34D399' : '#EF4444';
   const glow  = playerFirst ? 'rgba(52,211,153,0.6)' : 'rgba(239,68,68,0.6)';
@@ -57,16 +52,28 @@ const InitiativeModal = ({ data, onClose }) => {
           style={{
             fontFamily: 'Cinzel, serif', fontSize: '0.95rem', fontWeight: 900,
             letterSpacing: '0.1em', color, textShadow: `0 0 14px ${glow}`,
-            marginBottom: '10px',
+            marginBottom: '18px',
           }}
         >
           {playerFirst ? '⚔ YOU ACT FIRST!' : '⚠ ENEMY STRIKES FIRST!'}
         </motion.p>
 
-        <p style={{
-          fontFamily: 'Cinzel, serif', fontSize: '0.58rem',
-          color: 'rgba(245,245,220,0.22)', letterSpacing: '0.15em',
-        }}>click to dismiss</p>
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+          onClick={onClose}
+          style={{
+            fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700,
+            letterSpacing: '0.22em', textTransform: 'uppercase',
+            color, background: 'rgba(0,0,0,0.4)',
+            border: `1px solid ${color}55`, padding: '8px 28px',
+            borderRadius: '6px', cursor: 'pointer',
+            animation: 'intro-hint-pulse 1.5s ease-in-out infinite',
+          }}
+        >
+          Begin Battle
+        </motion.button>
       </motion.div>
     </div>
   );
