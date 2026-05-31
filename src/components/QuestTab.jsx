@@ -317,54 +317,6 @@ const QuestTab = ({
 
 
 
-                {/* Decorative divider with text */}
-                <div className="flex items-center justify-center gap-3 mb-4 mt-4">
-                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
-                  <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color: 'rgba(245, 245, 220, 0.5)'}}>Equipment</p>
-                  <div style={{flex: '1', height: '1px', background: 'rgba(245, 245, 220, 0.3)'}}></div>
-                </div>
-
-                {/* Supplies and Merchant buttons */}
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => {
-                      setSuppliesTab('potions');
-                      setShowInventoryModal(true);
-                    }}
-                    className="py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
-                    style={{backgroundColor: 'rgba(139, 0, 0, 0.7)', border: '2px solid #8B0000', color: '#F5F5DC'}}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.9)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(139, 0, 0, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(139, 0, 0, 0.7)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    Supplies
-                  </button>
-                  <button
-                    onClick={() => setShowCraftingModal(true)}
-                    className="py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
-                    style={{backgroundColor: 'rgba(120, 53, 15, 0.7)', border: '2px solid #92400E', color: '#F5F5DC'}}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.9)';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(120, 53, 15, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'rgba(120, 53, 15, 0.7)';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                      e.currentTarget.style.boxShadow = 'none';
-                    }}
-                  >
-                    Merchant
-                  </button>
-                </div>
-
                 {/* Collapse Button - Centered at bottom */}
                 <div className="flex justify-center mt-4">
                   <button
@@ -386,36 +338,87 @@ const QuestTab = ({
               )}
             </div>
 
-            {/* ── Supplies & Merchant ── */}
-            <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
+            {/* ── Destination Cards ── */}
+            <div className="space-y-3 max-w-2xl mx-auto">
+
+              {/* Armory / Supplies */}
               <button
                 onClick={() => { setSuppliesTab('potions'); setShowInventoryModal(true); }}
                 style={{
-                  fontFamily: "'Cinzel', serif", fontWeight: 700, fontSize: '0.75rem',
-                  letterSpacing: '0.2em', textTransform: 'uppercase', padding: '12px 0',
-                  borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s',
-                  background: 'rgba(100,10,10,0.55)', border: '1px solid rgba(160,30,30,0.5)',
-                  color: 'rgba(230,160,150,0.85)',
+                  width: '100%', position: 'relative', overflow: 'hidden',
+                  padding: '22px 24px', borderRadius: '6px', cursor: 'pointer',
+                  background: 'linear-gradient(110deg, #1a0505 0%, #2a0808 40%, #1a0a0a 100%)',
+                  border: '1px solid rgba(160,30,30,0.45)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)',
+                  transition: 'all 0.25s', textAlign: 'left',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(130,15,15,0.75)'; e.currentTarget.style.color = '#F5D0CC'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(100,10,10,0.55)'; e.currentTarget.style.color = 'rgba(230,160,150,0.85)'; }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'rgba(220,60,50,0.65)';
+                  e.currentTarget.style.boxShadow = '0 6px 32px rgba(180,20,20,0.35), inset 0 0 40px rgba(0,0,0,0.2)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgba(160,30,30,0.45)';
+                  e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
-                ⚔︎ Supplies
+                {/* Background watermark */}
+                <div style={{position:'absolute',right:'-10px',top:'50%',transform:'translateY(-50%)',fontSize:'7rem',opacity:0.04,color:'#FF6B6B',pointerEvents:'none',lineHeight:1}}>
+                  ⚔︎
+                </div>
+                {/* Torch glow top-right */}
+                <div style={{position:'absolute',top:0,right:0,width:'160px',height:'100%',background:'radial-gradient(ellipse at 100% 50%, rgba(180,40,20,0.12) 0%, transparent 70%)',pointerEvents:'none'}} />
+                <div style={{position:'relative',zIndex:1}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'6px'}}>
+                    <span style={{fontSize:'1.4rem',lineHeight:1}}>&#x2694;&#xfe0e;</span>
+                    <span style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2.5vw,1.25rem)',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(230,170,160,0.95)'}}>The Armory</span>
+                  </div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.68rem',letterSpacing:'0.15em',color:'rgba(180,110,100,0.65)',textTransform:'uppercase'}}>
+                    Potions • Provisions • Equipment
+                  </p>
+                </div>
               </button>
+
+              {/* Merchant's Den */}
               <button
                 onClick={() => setShowCraftingModal(true)}
                 style={{
-                  fontFamily: "'Cinzel', serif", fontWeight: 700, fontSize: '0.75rem',
-                  letterSpacing: '0.2em', textTransform: 'uppercase', padding: '12px 0',
-                  borderRadius: '4px', cursor: 'pointer', transition: 'all 0.2s',
-                  background: 'rgba(70,40,10,0.55)', border: '1px solid rgba(130,80,20,0.5)',
-                  color: 'rgba(212,175,55,0.8)',
+                  width: '100%', position: 'relative', overflow: 'hidden',
+                  padding: '22px 24px', borderRadius: '6px', cursor: 'pointer',
+                  background: 'linear-gradient(110deg, #0e0900 0%, #1e1400 40%, #130e00 100%)',
+                  border: '1px solid rgba(140,100,20,0.45)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)',
+                  transition: 'all 0.25s', textAlign: 'left',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(90,55,15,0.75)'; e.currentTarget.style.color = '#D4AF37'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(70,40,10,0.55)'; e.currentTarget.style.color = 'rgba(212,175,55,0.8)'; }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'rgba(212,175,55,0.65)';
+                  e.currentTarget.style.boxShadow = '0 6px 32px rgba(180,140,20,0.25), inset 0 0 40px rgba(0,0,0,0.2)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgba(140,100,20,0.45)';
+                  e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.5), inset 0 0 40px rgba(0,0,0,0.3)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
-                ★ Merchant
+                {/* Background watermark */}
+                <div style={{position:'absolute',right:'-10px',top:'50%',transform:'translateY(-50%)',fontSize:'7rem',opacity:0.05,color:'#D4AF37',pointerEvents:'none',lineHeight:1}}>
+                  ★
+                </div>
+                {/* Candlelight glow */}
+                <div style={{position:'absolute',top:0,right:0,width:'160px',height:'100%',background:'radial-gradient(ellipse at 100% 50%, rgba(180,130,20,0.12) 0%, transparent 70%)',pointerEvents:'none'}} />
+                <div style={{position:'relative',zIndex:1}}>
+                  <div style={{display:'flex',alignItems:'center',gap:'10px',marginBottom:'6px'}}>
+                    <span style={{fontSize:'1.4rem',lineHeight:1}}>★</span>
+                    <span style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2.5vw,1.25rem)',letterSpacing:'0.2em',textTransform:'uppercase',color:'rgba(212,175,55,0.95)'}}>The Merchant</span>
+                  </div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.68rem',letterSpacing:'0.15em',color:'rgba(160,130,50,0.65)',textTransform:'uppercase'}}>
+                    Forge • Craft • Trade your gold for power
+                  </p>
+                </div>
               </button>
+
             </div>
             </div>
   );
