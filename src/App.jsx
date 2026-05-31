@@ -5201,6 +5201,55 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     addLog(`💬 ${bossName}: "${fleeDialogue}"`);
   };
   
+
+  const negotiate = (method) => {
+    // method: 'persuade' | 'bribe'
+    const intMod = Math.floor(((hero.abilities?.int || 10) - 10) / 2);
+    const briCost = Math.max(10, Math.min(40, currentDay * 3));
+
+    let success = false;
+    let resultLine = '';
+
+    if (method === 'persuade') {
+      const roll = Math.random();
+      const chance = 0.42 + (intMod * 0.06);
+      success = roll < chance;
+      resultLine = success
+        ? `The shadow wavers... and dissolves. Your words cut deeper than any blade.`
+        : `The shadow snarls. "Pretty words from a soon-to-be corpse." It lunges!`;
+    } else if (method === 'bribe') {
+      if (gold < briCost) {
+        addLog(`Not enough gold to bribe. (Need ${briCost})`);
+        return { success: false, enraged: false };
+      }
+      setGold(g => g - briCost);
+      success = true;
+      resultLine = `You toss ${briCost} gold into the void. The shadow takes it... and retreats.`;
+    }
+
+    if (success) {
+      const xpGain = Math.floor(Math.random() * 15) + 10;
+      const goldGain = Math.floor(Math.random() * 12) + 5;
+      setXp(x => x + xpGain);
+      setGold(g => g + goldGain);
+      addLog(`Negotiation successful! +${xpGain} XP, +${goldGain} Gold`);
+      addLog(`💬 ${bossName}: "${resultLine}"`);
+      setVictoryLoot([`+${xpGain} XP`, `+${goldGain} Gold`, 'Shadow Dismissed']);
+      setBossHp(0);
+      setBattling(false);
+      setBattleMode(false);
+      setKnightConsecutiveUses(0);
+      setKnightCrushingBlowCooldown(false);
+      setCrusaderSmiteCooldown(false);
+      setRecklessStacks(0);
+      return { success: true, enraged: false };
+    } else {
+      // Persuasion failed — shadow gets enraged, attacks with bonus damage
+      addLog(`💬 ${bossName}: "${resultLine}"`);
+      return { success: false, enraged: true };
+    }
+  };
+
   const dodge = () => {
     if (!showDodgeButton || !aoeWarning) return;
     
@@ -6985,7 +7034,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack} chargedStrike={chargedStrike}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}
-              flee={flee} dodge={dodge} advance={advance} die={die}
+              flee={flee} dodge={dodge} advance={advance} die={die} negotiate={negotiate}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}
             />

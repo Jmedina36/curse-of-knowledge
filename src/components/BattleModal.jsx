@@ -157,6 +157,7 @@ const BattleModal = ({
   dodge,
   advance,
   die,
+  negotiate,
   addLog,
   setStamina,
   setStaminaPots,
@@ -168,6 +169,21 @@ const BattleModal = ({
   const [musicMuted, setMusicMuted] = useState(() => audioManager.muted);
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
+  const [negotiatePhase, setNegotiatePhase] = useState('idle'); // 'idle'|'open'|'result'
+  const [negotiateResult, setNegotiateResult] = useState(null); // {success,enraged,line}
+
+  const SHADOW_OPENINGS = [
+    "Why do you resist? We are made of the same silence.",
+    "I don't want to die. Not yet. There must be another way.",
+    "You remind me of the one who abandoned me. Perhaps... we can deal.",
+    "Your knowledge is pathetic. But I am tired of fighting.",
+    "Give me what I want, and I'll let you live.",
+    "I am everything you chose not to learn. Does that not earn your mercy?",
+    "Fight me and I'll tear your soul to pieces. Or... we could talk.",
+    "The Abyss sent me. But it doesn't mean I want to die for it.",
+  ];
+  const [shadowOpening] = useState(() => SHADOW_OPENINGS[Math.floor(Math.random() * SHADOW_OPENINGS.length)]);
+
   const [enemySpecialAnim, setEnemySpecialAnim] = useState(null); // 'bleed' | 'armorBreak' | 'overwhelmingForce'
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
@@ -1008,7 +1024,7 @@ const BattleModal = ({
                       );
                     })()}
 
-                    <div className={`grid gap-3 mb-3 ${canFlee || showDodgeButton ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    <div className={`grid gap-3 mb-3 ${(canFlee || showDodgeButton) && battleType !== 'regular' ? 'grid-cols-3' : battleType === 'regular' ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => setBattleMenu('fight')}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1021,6 +1037,14 @@ const BattleModal = ({
                         style={{ background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Items
                       </button>
+
+                      {battleType === 'regular' && (
+                        <button onClick={() => { setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
+                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                          style={{ background: 'linear-gradient(to bottom, rgba(60,20,80,0.9), rgba(35,10,50,0.9))', border: '2px solid rgba(140,80,180,0.6)', color: '#D8B4FE', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
+                          Negotiate
+                        </button>
+                      )}
 
                       {canFlee && (
                         <button onClick={() => handlePlayerAction(flee, 'Flee', true)}
@@ -1045,7 +1069,72 @@ const BattleModal = ({
                   </motion.div>
                 )}
 
-                {/* ── Fight Submenu ── */}
+                {/* ── Negotiate Submenu ── */}
+                {turnPhase === 'player' && battleMenu === 'negotiate' && (
+                  <motion.div key="negotiate" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
+                    {negotiatePhase === 'open' && (
+                      <>
+                        {/* Shadow's opening line */}
+                        <div style={{ background: 'rgba(60,20,80,0.5)', border: '1px solid rgba(140,80,180,0.4)', borderRadius: '8px', padding: '14px 16px', marginBottom: '12px' }}>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.05em', color: 'rgba(220,180,255,0.9)', lineHeight: 1.7, textAlign: 'center', fontStyle: 'italic' }}>
+                            "{shadowOpening}"
+                          </p>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'rgba(180,140,220,0.55)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
+                            — {bossName}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 mb-3">
+                          <button
+                            onClick={() => {
+                              if (turnPhase !== 'player') return;
+                              const result = negotiate('persuade');
+                              if (result && result.enraged) {
+                                setNegotiateResult({ success: false, enraged: true });
+                                setNegotiatePhase('result');
+                                setTimeout(() => {
+                                  setBattleMenu('main');
+                                  setNegotiatePhase('idle');
+                                  setNegotiateResult(null);
+                                }, 1800);
+                              }
+                            }}
+                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
+                            style={{ background: 'linear-gradient(to bottom, rgba(30,60,100,0.9), rgba(15,35,60,0.9))', border: '2px solid rgba(96,165,250,0.5)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
+                          >
+                            Persuade
+                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>INT based · Free</div>
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (turnPhase !== 'player') return;
+                              const bribeCost = Math.max(10, Math.min(40, currentDay * 3));
+                              negotiate('bribe');
+                            }}
+                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
+                            style={{ background: 'linear-gradient(to bottom, rgba(100,70,10,0.9), rgba(60,40,5,0.9))', border: '2px solid rgba(180,140,30,0.5)', color: '#FCD34D', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
+                          >
+                            Bribe
+                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>{Math.max(10, Math.min(40, currentDay * 3))} Gold · Always works</div>
+                          </button>
+                        </div>
+                        <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); }}
+                          className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
+                          style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(80,80,80,0.3)', color: 'rgba(180,180,180,0.6)', fontFamily: 'Cinzel, serif' }}>
+                          ← Back
+                        </button>
+                      </>
+                    )}
+                    {negotiatePhase === 'result' && negotiateResult && !negotiateResult.success && (
+                      <div style={{ background: 'rgba(80,10,10,0.6)', border: '1px solid rgba(200,50,50,0.5)', borderRadius: '8px', padding: '16px', textAlign: 'center' }}>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', color: '#FCA5A5', letterSpacing: '0.05em', lineHeight: 1.7 }}>
+                          The shadow rejects your words and attacks with renewed fury!
+                        </p>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* ── Fight Submenu ── */}}
                 {turnPhase === 'player' && battleMenu === 'fight' && (
                   <motion.div key="fight" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
                     <div className="grid grid-cols-2 gap-2 mb-2">
