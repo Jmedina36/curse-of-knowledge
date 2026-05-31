@@ -811,6 +811,7 @@ const getDateKey = useCallback((date) => {
   useEffect(() => {
     const advance = () => {
       audioManager.play(TRACKS.nightVigil);
+      introTimers.current.forEach(clearTimeout);
       setIntroPhase('fading');
       const t = setTimeout(() => setIntroPhase('done'), 800);
       introTimers.current = [t];
@@ -5659,21 +5660,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       `}</style>
 
       {/* ── Intro cinematic overlay ── */}
-      {introPhase !== 'done' && (
+      {introPhase === 'visible' && (
         <div
           onClick={() => {
             audioManager.play(TRACKS.nightVigil);
             introTimers.current.forEach(clearTimeout);
-            setIntroPhase('fading');
-            const t = setTimeout(() => setIntroPhase('done'), 800);
-            introTimers.current = [t];
+            setIntroPhase('menu');
           }}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
             background: 'radial-gradient(ellipse at center, #1a0000 0%, #0d0000 45%, #000000 100%)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-            opacity: introPhase === 'fading' ? 0 : 1,
-            transition: 'opacity 0.8s ease-in-out',
             cursor: 'pointer',
             userSelect: 'none',
           }}
@@ -5718,13 +5715,113 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {/* Tap to begin */}
           <p style={{
             fontFamily: "'Cinzel', serif",
-            fontSize: '0.7rem',
-            letterSpacing: '0.4em',
+            fontSize: 'clamp(0.95rem, 2.5vw, 1.2rem)',
+            letterSpacing: '0.35em',
             textTransform: 'uppercase',
-            color: 'rgba(212,175,55,0.7)',
+            color: 'rgba(212,175,55,0.75)',
             marginTop: '48px',
             animation: 'intro-fade-up 0.5s ease-out 2.8s both, intro-hint-pulse 2s ease-in-out 3.3s infinite',
           }}>✦ press enter or tap to begin ✦</p>
+        </div>
+      )}
+
+      {/* ── Main menu overlay (New Adventure / Continue) ── */}
+      {(introPhase === 'menu' || introPhase === 'fading') && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 200,
+            background: 'radial-gradient(ellipse at center, #1a0000 0%, #0d0000 45%, #000000 100%)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            opacity: introPhase === 'fading' ? 0 : 1,
+            transition: 'opacity 0.8s ease-in-out',
+            userSelect: 'none',
+          }}
+        >
+          {/* Atmospheric scanlines */}
+          <div style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
+          }} />
+
+          {/* Title (smaller) */}
+          <div style={{ textAlign: 'center', marginBottom: '8px', animation: 'intro-slam 0.6s cubic-bezier(0.16, 1, 0.3, 1) both' }}>
+            <h1 style={{
+              fontFamily: "'Cinzel', serif",
+              fontWeight: 900,
+              fontSize: 'clamp(2rem, 7vw, 4rem)',
+              letterSpacing: '0.12em',
+              lineHeight: 1,
+              color: '#F5F5DC',
+              textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 3px 6px rgba(0,0,0,1)',
+            }}>CURSE OF KNOWLEDGE</h1>
+          </div>
+
+          {/* Ornament */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '52px', animation: 'intro-fade-up 0.5s ease-out 0.2s both' }}>
+            <div style={{ width: '140px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,60,60,0.5))' }} />
+            <span style={{ color: 'rgba(255,60,60,0.5)', fontSize: '8px', letterSpacing: '0.4em' }}>✦ ✦ ✦</span>
+            <div style={{ width: '140px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255,60,60,0.5))' }} />
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center', animation: 'intro-fade-up 0.5s ease-out 0.35s both' }}>
+            <button
+              onClick={() => {
+                introTimers.current.forEach(clearTimeout);
+                setIntroPhase('fading');
+                const t = setTimeout(() => setIntroPhase('done'), 800);
+                introTimers.current = [t];
+              }}
+              style={{
+                fontFamily: "'Cinzel', serif",
+                fontWeight: 700,
+                fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: '#F5F5DC',
+                background: 'linear-gradient(to bottom, rgba(139,0,0,0.75), rgba(80,0,0,0.75))',
+                border: '2px solid rgba(200,30,30,0.6)',
+                borderRadius: '6px',
+                padding: '16px 56px',
+                cursor: 'pointer',
+                minWidth: '280px',
+                transition: 'all 0.2s',
+                boxShadow: '0 0 20px rgba(200,30,30,0.2)',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(180,0,0,0.9), rgba(120,0,0,0.9))'; e.currentTarget.style.boxShadow = '0 0 30px rgba(200,30,30,0.5)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(139,0,0,0.75), rgba(80,0,0,0.75))'; e.currentTarget.style.boxShadow = '0 0 20px rgba(200,30,30,0.2)'; }}
+            >
+              Continue
+            </button>
+
+            <button
+              onClick={() => {
+                introTimers.current.forEach(clearTimeout);
+                setIntroPhase('fading');
+                const t = setTimeout(() => setIntroPhase('done'), 800);
+                introTimers.current = [t];
+              }}
+              style={{
+                fontFamily: "'Cinzel', serif",
+                fontWeight: 700,
+                fontSize: 'clamp(0.95rem, 2.5vw, 1.25rem)',
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: 'rgba(212,175,55,0.75)',
+                background: 'transparent',
+                border: '2px solid rgba(212,175,55,0.3)',
+                borderRadius: '6px',
+                padding: '16px 56px',
+                cursor: 'pointer',
+                minWidth: '280px',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.7)'; e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.background = 'rgba(212,175,55,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.3)'; e.currentTarget.style.color = 'rgba(212,175,55,0.75)'; e.currentTarget.style.background = 'transparent'; }}
+            >
+              New Adventure
+            </button>
+          </div>
         </div>
       )}
 
