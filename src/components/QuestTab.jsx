@@ -25,8 +25,6 @@ const QuestTab = ({
   // Hero card UI
   heroCardCollapsed,
   setHeroCardCollapsed,
-  canCustomize,
-  setShowCustomizeModal,
   // Equipment
   equippedWeapon,
   equippedArmor,
@@ -347,28 +345,7 @@ const QuestTab = ({
                   </div>
                 )}
 
-                {/* Customize button */}
-                {canCustomize && (
-                  <div className="mb-3">
-                    <button
-                      onClick={() => setShowCustomizeModal(true)}
-                      className="w-full py-2 rounded-lg transition-all duration-300 font-bold uppercase text-sm transform"
-                      style={{backgroundColor: 'rgba(184, 134, 11, 0.6)', border: '2px solid #B8860B', color: '#F5F5DC'}}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.8)';
-                        e.currentTarget.style.transform = 'translateY(-2px)';
-                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(184, 134, 11, 0.4)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.6)';
-                        e.currentTarget.style.transform = 'translateY(0)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }}
-                    >
-                      ✦ Customize Your Hero
-                    </button>
-                  </div>
-                )}
+
 
                 {/* Decorative divider with text */}
                 <div className="flex items-center justify-center gap-3 mb-4 mt-4">

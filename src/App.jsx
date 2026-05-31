@@ -6746,7 +6746,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
               eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
               heroCardCollapsed={heroCardCollapsed} setHeroCardCollapsed={setHeroCardCollapsed}
-              canCustomize={canCustomize} setShowCustomizeModal={setShowCustomizeModal}
               equippedWeapon={equippedWeapon} equippedArmor={equippedArmor}
               equippedPendant={equippedPendant} equippedRing={equippedRing}
               weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive} luckyCharmActive={luckyCharmActive}
