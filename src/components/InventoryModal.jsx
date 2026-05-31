@@ -1,847 +1,438 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
-import ArmoryScene from './ArmoryScene';
+
+// Weapon sprite assignment — same hash as ArmoryScene
+const WEAPON_SPRITES = [
+  '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
+  '/weapons/dagger1.png', '/weapons/dagger2.png',
+  '/weapons/mace1.png', '/weapons/staff.png', '/weapons/bow1.png',
+];
+const getWeaponSprite = (wpn) => {
+  let seed = 0;
+  if (wpn?.id != null) seed = typeof wpn.id === 'number' ? wpn.id : String(wpn.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  else if (wpn?.name) seed = wpn.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return WEAPON_SPRITES[Math.abs(seed) % WEAPON_SPRITES.length];
+};
+
+const ARMOR_SLOTS = [
+  { key: 'helmet', label: 'Helmet', icon: '🪖' },
+  { key: 'chest',  label: 'Chest',  icon: '🛡' },
+  { key: 'gloves', label: 'Gloves', icon: '🧤' },
+  { key: 'boots',  label: 'Boots',  icon: '👢' },
+];
+
+const CATEGORIES = [
+  { key: 'weapons',     label: 'Weapons'   },
+  { key: 'armor',       label: 'Armor'     },
+  { key: 'accessories', label: 'Gear'      },
+  { key: 'potions',     label: 'Potions'   },
+];
 
 const InventoryModal = ({
-  // Display state
-  suppliesTab,
-  setSuppliesTab,
+  // kept for compat but replaced by local state
+  suppliesTab, setSuppliesTab,
   setShowInventoryModal,
-  // Player stats
-  hp,
-  stamina,
-  level,
-  gold,
-  getMaxHp,
-  getMaxStamina,
-  getBaseAttack,
-  getBaseDefense,
-  // Consumables
-  healthPots,
-  staminaPots,
-  cleansePots,
-  setStaminaPots,
-  // Weapon equipment
-  equippedWeapon,
-  setEquippedWeapon,
-  weaponInventory,
-  setWeaponInventory,
-  // Armor equipment
-  equippedArmor,
-  setEquippedArmor,
-  armorInventory,
-  setArmorInventory,
-  // Accessory equipment
-  equippedPendant,
-  setEquippedPendant,
-  pendantInventory,
-  setPendantInventory,
-  equippedRing,
-  setEquippedRing,
-  ringInventory,
-  setRingInventory,
-  // Stamina setter (for using potions in inventory view)
+  hp, stamina, level, gold,
+  getMaxHp, getMaxStamina, getBaseAttack, getBaseDefense,
+  healthPots, staminaPots, cleansePots, setStaminaPots,
+  equippedWeapon, setEquippedWeapon, weaponInventory, setWeaponInventory,
+  equippedArmor, setEquippedArmor, armorInventory, setArmorInventory,
+  equippedPendant, setEquippedPendant, pendantInventory, setPendantInventory,
+  equippedRing, setEquippedRing, ringInventory, setRingInventory,
   setStamina,
-  // Helpers
-  curseLevel,
-  luckyCharmActive,
-  getRarityColor,
-  sortByRarity,
+  curseLevel, luckyCharmActive,
+  getRarityColor, sortByRarity,
   addLog,
-  // Potion use actions
-  useHealth,
-  useCleanse,
+  useHealth, useCleanse,
 }) => {
-  // Weapon sprite assignment — deterministic, matches ArmoryScene
-  const WEAPON_SPRITES = [
-    '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
-    '/weapons/dagger1.png', '/weapons/dagger2.png',
-    '/weapons/mace1.png', '/weapons/staff.png', '/weapons/bow1.png',
-  ];
-  const getWeaponSprite = (wpn) => {
-    let seed = 0;
-    if (wpn?.id != null) seed = typeof wpn.id === 'number' ? wpn.id : String(wpn.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-    else if (wpn?.name) seed = wpn.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-    return WEAPON_SPRITES[Math.abs(seed) % WEAPON_SPRITES.length];
-  };
+  const [category, setCategory] = useState('weapons');
 
-  // Comparison helpers
   const weaponEffective = (wpn) => (wpn?.attack || 0) + Math.floor(wpn?.affixes?.flatDamage || 0);
   const armorEffective  = (piece) => (piece?.defense || 0) + Math.floor(piece?.affixes?.flatArmor || 0);
 
-  const Delta = ({ value, label }) => {
-    if (value === 0) return null;
-    const up = value > 0;
+  // ── Equip handlers ──
+  const equipWeapon = (wpn) => {
+    const old = equippedWeapon;
+    setEquippedWeapon(wpn);
+    setWeaponInventory(prev => [...prev.filter(w => w.id !== wpn.id), ...(old ? [old] : [])]);
+    addLog(`Equipped: ${wpn.name} (+${wpn.attack} Attack)`);
+    if (old) addLog(`Unequipped: ${old.name}`);
+  };
+
+  const equipArmor = (piece, slot) => {
+    const old = equippedArmor[slot];
+    setEquippedArmor(prev => ({ ...prev, [slot]: piece }));
+    setArmorInventory(prev => ({
+      ...prev,
+      [slot]: [...prev[slot].filter(p => p.id !== piece.id), ...(old ? [old] : [])],
+    }));
+    addLog(`Equipped: ${piece.name} (+${piece.defense} Defense)`);
+    if (old) addLog(`Unequipped: ${old.name}`);
+  };
+
+  const equipPendant = (pend) => {
+    const old = equippedPendant;
+    setEquippedPendant(pend);
+    setPendantInventory(prev => [...prev.filter(p => p.id !== pend.id), ...(old ? [old] : [])]);
+    addLog(`Equipped: ${pend.name} (+${pend.hp} HP)`);
+    if (old) addLog(`Unequipped: ${old.name}`);
+  };
+
+  const equipRing = (rng) => {
+    const old = equippedRing;
+    setEquippedRing(rng);
+    setRingInventory(prev => [...prev.filter(r => r.id !== rng.id), ...(old ? [old] : [])]);
+    addLog(`Equipped: ${rng.name} (+${rng.stamina} Stamina)`);
+    if (old) addLog(`Unequipped: ${old.name}`);
+  };
+
+  // ── Shared styles ──
+  const equipBtnStyle = {
+    padding: '5px 11px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
+    border: '1px solid #3B82F6', cursor: 'pointer', flexShrink: 0,
+    background: 'linear-gradient(to bottom, rgba(59,130,246,0.7), rgba(29,78,216,0.8))',
+    color: '#F5F5DC',
+  };
+
+  const equippedBadge = {
+    padding: '4px 9px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
+    border: '1px solid rgba(212,175,55,0.5)',
+    background: 'rgba(212,175,55,0.12)', color: '#D4AF37', flexShrink: 0,
+  };
+
+  const emptyMsg = (text = 'No items found yet.') => (
+    <p style={{ color: 'rgba(192,192,192,0.35)', fontStyle: 'italic', textAlign: 'center', padding: '28px 0', fontSize: '13px' }}>
+      {text}
+    </p>
+  );
+
+  // ── LEFT PANEL renderers ──
+
+  const renderWeapons = () => {
+    const all = [
+      ...(equippedWeapon ? [{ ...equippedWeapon, _eq: true }] : []),
+      ...sortByRarity(weaponInventory),
+    ];
+    if (!all.length) return emptyMsg('No weapons found yet. Defeat enemies to find weapons.');
+    return all.map((wpn, i) => (
+      <div key={wpn.id ?? i} style={{
+        display: 'flex', alignItems: 'center', gap: '12px',
+        padding: '10px 12px', marginBottom: '8px', borderRadius: '8px',
+        border: `1px solid ${getRarityColor(wpn.rarity || 'common')}55`,
+        background: 'rgba(0,0,0,0.35)',
+      }}>
+        <img src={getWeaponSprite(wpn)} alt={wpn.name}
+          style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0,
+            filter: `drop-shadow(0 0 5px ${getRarityColor(wpn.rarity || 'common')}70)` }}/>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p style={{ color: getRarityColor(wpn.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wpn.name}</p>
+          <p style={{ color: '#68D391', fontSize: '11px', marginBottom: '2px' }}>+{wpn.attack} Attack</p>
+          {!wpn._eq && equippedWeapon && (
+            <p style={{ fontSize: '10px', color: weaponEffective(wpn) > weaponEffective(equippedWeapon) ? '#34D399' : weaponEffective(wpn) < weaponEffective(equippedWeapon) ? '#EF4444' : 'rgba(192,192,192,0.4)' }}>
+              {weaponEffective(wpn) > weaponEffective(equippedWeapon) ? `▲ +${weaponEffective(wpn) - weaponEffective(equippedWeapon)}` : weaponEffective(wpn) < weaponEffective(equippedWeapon) ? `▼ ${weaponEffective(wpn) - weaponEffective(equippedWeapon)}` : '='} vs equipped
+            </p>
+          )}
+        </div>
+        {wpn._eq
+          ? <span style={equippedBadge}>✓ Equipped</span>
+          : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipWeapon(wpn); }}>Equip</button>}
+      </div>
+    ));
+  };
+
+  const renderArmor = () => {
+    const hasAny = ARMOR_SLOTS.some(({ key }) => equippedArmor[key] || armorInventory[key]?.length > 0);
+    if (!hasAny) return emptyMsg('No armor found yet. Defeat enemies to find armor pieces.');
+    return ARMOR_SLOTS.map(({ key, label, icon }) => {
+      const equipped = equippedArmor[key];
+      const inv = sortByRarity(armorInventory[key] || []);
+      const items = [...(equipped ? [{ ...equipped, _eq: true }] : []), ...inv];
+      if (!items.length) return null;
+      return (
+        <div key={key} style={{ marginBottom: '14px' }}>
+          <p style={{ color: 'rgba(192,192,192,0.4)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{icon} {label}</p>
+          {items.map((piece, i) => (
+            <div key={piece.id ?? i} style={{
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '9px 12px', marginBottom: '6px', borderRadius: '8px',
+              border: `1px solid ${getRarityColor(piece.rarity || 'common')}55`,
+              background: 'rgba(0,0,0,0.35)',
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ color: getRarityColor(piece.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{piece.name}</p>
+                <p style={{ color: '#68D391', fontSize: '11px' }}>+{piece.defense} Defense</p>
+                {!piece._eq && equippedArmor[key] && (
+                  <p style={{ fontSize: '10px', color: armorEffective(piece) > armorEffective(equippedArmor[key]) ? '#34D399' : '#EF4444' }}>
+                    {armorEffective(piece) > armorEffective(equippedArmor[key]) ? `▲ +${armorEffective(piece) - armorEffective(equippedArmor[key])}` : `▼ ${armorEffective(piece) - armorEffective(equippedArmor[key])}`} vs equipped
+                  </p>
+                )}
+              </div>
+              {piece._eq
+                ? <span style={equippedBadge}>✓ Equipped</span>
+                : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipArmor(piece, key); }}>Equip</button>}
+            </div>
+          ))}
+        </div>
+      );
+    });
+  };
+
+  const renderAccessories = () => {
+    const allPendants = [...(equippedPendant ? [{ ...equippedPendant, _eq: true }] : []), ...sortByRarity(pendantInventory)];
+    const allRings    = [...(equippedRing    ? [{ ...equippedRing,    _eq: true }] : []), ...sortByRarity(ringInventory)];
+    if (!allPendants.length && !allRings.length) return emptyMsg('No accessories found yet. Defeat enemies to find pendants and rings.');
     return (
-      <p style={{ fontSize: '0.7rem', fontWeight: 700, color: up ? '#34D399' : '#EF4444', margin: '2px 0 0' }}>
-        {up ? '▲' : '▼'} {up ? '+' : ''}{value} {label}
-      </p>
+      <>
+        {allPendants.length > 0 && (
+          <div style={{ marginBottom: '14px' }}>
+            <p style={{ color: 'rgba(192,192,192,0.4)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>📿 Pendant</p>
+            {allPendants.map((pend, i) => (
+              <div key={pend.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(pend.rarity || 'common')}55`, background: 'rgba(0,0,0,0.35)' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ color: getRarityColor(pend.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{pend.name}</p>
+                  <p style={{ color: '#FF6B6B', fontSize: '11px' }}>+{pend.hp} HP</p>
+                </div>
+                {pend._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipPendant(pend); }}>Equip</button>}
+              </div>
+            ))}
+          </div>
+        )}
+        {allRings.length > 0 && (
+          <div>
+            <p style={{ color: 'rgba(192,192,192,0.4)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>💍 Ring</p>
+            {allRings.map((rng, i) => (
+              <div key={rng.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(rng.rarity || 'common')}55`, background: 'rgba(0,0,0,0.35)' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ color: getRarityColor(rng.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{rng.name}</p>
+                  <p style={{ color: '#6BB6FF', fontSize: '11px' }}>+{rng.stamina} Stamina</p>
+                </div>
+                {rng._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipRing(rng); }}>Equip</button>}
+              </div>
+            ))}
+          </div>
+        )}
+      </>
     );
   };
 
+  const renderPotions = () => {
+    const potionRow = ({ emoji, name, desc, count, color, border, disabled, onUse }) => (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', marginBottom: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: 'rgba(0,0,0,0.3)' }}>
+        <span style={{ fontSize: '22px' }}>{emoji}</span>
+        <div style={{ flex: 1 }}>
+          <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{name}</p>
+          <p style={{ color, fontSize: '11px' }}>{desc}</p>
+        </div>
+        <span style={{ color, fontWeight: 700, fontSize: '18px', minWidth: '28px', textAlign: 'center' }}>{count}</span>
+        <button disabled={disabled} onClick={onUse} style={{ ...equipBtnStyle, opacity: disabled ? 0.45 : 1, cursor: disabled ? 'not-allowed' : 'pointer', background: disabled ? 'rgba(60,60,60,0.5)' : equipBtnStyle.background, borderColor: disabled ? '#666' : '#3B82F6' }}>Use</button>
+      </div>
+    );
+    return (
+      <>
+        {potionRow({ emoji: '🧪', name: 'Health Potion', desc: 'Restores 30 HP', count: healthPots, color: '#FF6B6B', border: 'rgba(139,0,0,0.4)', disabled: healthPots === 0 || hp >= getMaxHp(), onUse: () => { sounds.click(); useHealth(); } })}
+        {potionRow({ emoji: '💙', name: 'Stamina Potion', desc: 'Restores 50% SP', count: staminaPots, color: '#6BB6FF', border: 'rgba(30,58,95,0.4)', disabled: staminaPots === 0 || stamina >= getMaxStamina(), onUse: () => { sounds.click(); if (staminaPots > 0 && stamina < getMaxStamina()) { setStaminaPots(s => s - 1); const max = getMaxStamina(); const amt = Math.max(GAME_CONSTANTS.STAMINA_POTION_MIN, Math.floor(max * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))); setStamina(s => Math.min(max, s + amt)); addLog(`Used Stamina Potion! +${Math.max(GAME_CONSTANTS.STAMINA_POTION_MIN, Math.floor(getMaxStamina() * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100)))} SP`); } } })}
+        {potionRow({ emoji: '🔮', name: 'Cleanse Potion', desc: 'Removes 1 curse level', count: cleansePots, color: '#B794F4', border: `rgba(107,44,145,${curseLevel > 0 ? 0.6 : 0.3})`, disabled: cleansePots === 0 || curseLevel === 0, onUse: () => { sounds.click(); useCleanse(); } })}
+        {luckyCharmActive && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(47,82,51,0.5)', background: 'rgba(47,82,51,0.1)' }}>
+            <span style={{ fontSize: '22px' }}>🍀</span>
+            <div>
+              <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>Fortune Philter</p>
+              <p style={{ color: '#68D391', fontSize: '11px' }}>2× loot from next elite boss · <span style={{ color: '#68D391', fontWeight: 700 }}>Active</span></p>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
+  // ── RIGHT PANEL helpers ──
+  const slotBox = (item) => ({
+    padding: '10px', borderRadius: '8px', minHeight: '68px',
+    display: 'flex', flexDirection: 'column', justifyContent: 'center',
+    border: `1px solid ${item ? getRarityColor(item.rarity || 'common') + '60' : 'rgba(192,192,192,0.12)'}`,
+    background: item ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.18)',
+    boxShadow: item ? `0 0 8px ${getRarityColor(item.rarity || 'common')}18` : 'none',
+  });
+
+  const totalDR      = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.percentDR || 0), 0);
+  const totalBonusHP = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.flatHP   || 0), 0) + (equippedPendant?.hp || 0);
+
+  const counts = {
+    weapons:     (equippedWeapon ? 1 : 0) + weaponInventory.length,
+    armor:       ARMOR_SLOTS.reduce((s, { key }) => s + (equippedArmor[key] ? 1 : 0) + (armorInventory[key]?.length || 0), 0),
+    accessories: (equippedPendant ? 1 : 0) + pendantInventory.length + (equippedRing ? 1 : 0) + ringInventory.length,
+    potions:     healthPots + staminaPots + cleansePots,
+  };
+
   return (
-            <div className="fixed inset-0 bg-black/95 z-50 flex flex-col overflow-hidden" onClick={() => setShowInventoryModal(false)}>
-              <motion.div className="relative flex flex-col w-full h-full" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} onClick={e => e.stopPropagation()}>
-                <button
-                  onClick={() => { sounds.click(); setShowInventoryModal(false); }}
-                  className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all z-10"
+    <div className="fixed inset-0 bg-black/95 z-50 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+      <motion.div
+        className="relative w-full h-full flex flex-col"
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* ── HEADER ── */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 20px', flexShrink: 0,
+          borderBottom: '1px solid rgba(212,175,55,0.18)',
+          background: 'rgba(8,6,16,0.85)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <img src="/npcs/blacksmith.png" alt="Grimdar"
+              style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+                border: '2px solid rgba(192,160,80,0.65)', boxShadow: '0 0 12px rgba(255,140,0,0.35)' }}/>
+            <div>
+              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '17px', color: '#D4AF37', letterSpacing: '0.12em', lineHeight: 1 }}>THE ARMORY</p>
+              <p style={{ fontSize: '10px', color: 'rgba(192,192,192,0.45)', fontStyle: 'italic', marginTop: '3px' }}>Grimdar Ironforge · Master Smith</p>
+            </div>
+          </div>
+          <button
+            onClick={() => { sounds.click(); setShowInventoryModal(false); }}
+            style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.4)', borderRadius: '8px', padding: '8px', color: '#D4AF37', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          >
+            <X size={18}/>
+          </button>
+        </div>
+
+        {/* ── MAIN SPLIT ── */}
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+
+          {/* LEFT — Collected items */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(192,192,192,0.08)', overflow: 'hidden' }}>
+
+            {/* Category filter */}
+            <div style={{ display: 'flex', gap: '4px', padding: '12px 16px 8px', flexShrink: 0, background: 'rgba(0,0,0,0.2)' }}>
+              {CATEGORIES.map(({ key, label }) => (
+                <button key={key}
+                  onClick={() => { sounds.click(); setCategory(key); }}
                   style={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                    borderColor: 'rgba(212, 175, 55, 0.4)',
-                    color: '#D4AF37'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-                    e.currentTarget.style.borderColor = '#D4AF37';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                    e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.4)';
+                    flex: 1, padding: '7px 4px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
+                    border: `1px solid ${category === key ? 'rgba(212,175,55,0.55)' : 'rgba(192,192,192,0.12)'}`,
+                    background: category === key ? 'rgba(212,175,55,0.14)' : 'rgba(0,0,0,0.3)',
+                    color: category === key ? '#D4AF37' : 'rgba(192,192,192,0.5)',
+                    cursor: 'pointer',
                   }}
                 >
-                  <X size={20}/>
+                  {label}
+                  {counts[key] > 0 && <span style={{ marginLeft: '4px', opacity: 0.65, fontSize: '10px' }}>({counts[key]})</span>}
                 </button>
-                
-                {/* Armory scene — fills top half of screen */}
-                <div style={{ flexShrink: 0, overflow: 'hidden', height: '45vh', minHeight: '220px' }}>
-                  <ArmoryScene />
-                </div>
-
-                {/* Inventory content — scrollable bottom panel */}
-                <div style={{ flex: 1, overflowY: 'auto', background: VISUAL_STYLES.modal.paper, borderTop: `1px solid ${COLORS.silver}40`, padding: '20px 24px 28px' }}>
-
-                {/* Tabs */}
-                <div className="grid grid-cols-4 gap-2 mb-6">
-                  <button
-                    onClick={() => { sounds.click(); setSuppliesTab('potions'); }}
-                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
-                    style={{
-                      backgroundColor: suppliesTab === 'potions' ? 'rgba(139, 0, 0, 0.8)' : 'rgba(139, 0, 0, 0.3)',
-                      borderColor: suppliesTab === 'potions' ? '#8B0000' : 'rgba(139, 0, 0, 0.5)',
-                      color: '#F5F5DC'
-                    }}
-                  >
-                    Potions
-                  </button>
-                  <button
-                    onClick={() => { sounds.click(); setSuppliesTab('weapons'); }}
-                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
-                    style={{
-                      backgroundColor: suppliesTab === 'weapons' ? 'rgba(192, 192, 192, 0.8)' : 'rgba(192, 192, 192, 0.3)',
-                      borderColor: suppliesTab === 'weapons' ? '#C0C0C0' : 'rgba(192, 192, 192, 0.5)',
-                      color: '#F5F5DC'
-                    }}
-                  >
-                    Weapons
-                  </button>
-                  <button
-                    onClick={() => { sounds.click(); setSuppliesTab('armor'); }}
-                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
-                    style={{
-                      backgroundColor: suppliesTab === 'armor' ? 'rgba(184, 134, 11, 0.8)' : 'rgba(184, 134, 11, 0.3)',
-                      borderColor: suppliesTab === 'armor' ? '#B8860B' : 'rgba(184, 134, 11, 0.5)',
-                      color: '#F5F5DC'
-                    }}
-                  >
-                    Armor
-                  </button>
-                  <button
-                    onClick={() => { sounds.click(); setSuppliesTab('gear'); }}
-                    className="py-2 rounded-lg font-bold uppercase text-sm transition-all border-2"
-                    style={{
-                      backgroundColor: suppliesTab === 'gear' ? 'rgba(75, 0, 130, 0.8)' : 'rgba(75, 0, 130, 0.3)',
-                      borderColor: suppliesTab === 'gear' ? '#4B0082' : 'rgba(75, 0, 130, 0.5)',
-                      color: '#F5F5DC'
-                    }}
-                  >
-                    Gear
-                  </button>
-                </div>
-                
-                <div className="space-y-4">
-                  {suppliesTab === 'potions' ? (
-                    <>
-                  {/* Health Potions */}
-                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(100, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
-                    <div className="flex justify-between items-center mb-2">
-                      <div>
-                        <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Health Potion</p>
-                        <p className="text-sm mb-1" style={{color: '#FF6B6B'}}>Restores 30 HP</p>
-                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Crimson elixir. Mends wounds."</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold mb-2" style={{color: '#FF6B6B', opacity: 0.9}}>{healthPots}</p>
-                        <button 
-                          onClick={() => { sounds.click(); useHealth(); }}
-                          disabled={healthPots === 0 || hp >= getMaxHp()}
-                          className="px-4 py-2 rounded transition-all text-sm border-2"
-                          style={{
-                            backgroundColor: (healthPots === 0 || hp >= getMaxHp()) ? '#2C3E50' : COLORS.crimson.base,
-                            borderColor: (healthPots === 0 || hp >= getMaxHp()) ? '#95A5A6' : COLORS.crimson.border,
-                            color: '#F5F5DC',
-                            cursor: (healthPots === 0 || hp >= getMaxHp()) ? 'not-allowed' : 'pointer',
-                            opacity: (healthPots === 0 || hp >= getMaxHp()) ? 0.5 : 1
-                          }}
-                          onMouseEnter={(e) => {if (!(healthPots === 0 || hp >= getMaxHp())) e.currentTarget.style.backgroundColor = COLORS.crimson.hover}}
-                          onMouseLeave={(e) => {if (!(healthPots === 0 || hp >= getMaxHp())) e.currentTarget.style.backgroundColor = COLORS.crimson.base}}
-                        >
-                          Use
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Stamina Potions */}
-                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(30, 58, 95, 0.25)', borderColor: 'rgba(30, 58, 95, 0.5)'}}>
-                    <div className="flex justify-between items-center mb-2">
-                      <div>
-                        <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Stamina Potion</p>
-                        <p className="text-sm mb-1" style={{color: '#6BB6FF'}}>Restores 50% SP</p>
-                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Azure draught. Vigor renewed."</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold mb-2" style={{color: '#6BB6FF', opacity: 0.9}}>{staminaPots}</p>
-                        <button 
-                          onClick={() => {
-                            sounds.click();
-                            if (staminaPots > 0 && stamina < getMaxStamina()) {
-                              setStaminaPots(s => s - 1);
-                              const maxStamina = getMaxStamina();
-                              const restoreAmount = Math.max(
-                                GAME_CONSTANTS.STAMINA_POTION_MIN,
-                                Math.floor(maxStamina * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))
-                              );
-                              setStamina(s => Math.min(maxStamina, s + restoreAmount)); 
-                              addLog(`Used Stamina Potion! +${restoreAmount} SP`); 
-                            } 
-                          }} 
-                          disabled={staminaPots === 0 || stamina >= getMaxStamina()}
-                          className="px-4 py-2 rounded transition-all text-sm border-2"
-                          style={{
-                            backgroundColor: (staminaPots === 0 || stamina >= getMaxStamina()) ? '#2C3E50' : COLORS.sapphire.base,
-                            borderColor: (staminaPots === 0 || stamina >= getMaxStamina()) ? '#95A5A6' : COLORS.sapphire.border,
-                            color: '#F5F5DC',
-                            cursor: (staminaPots === 0 || stamina >= getMaxStamina()) ? 'not-allowed' : 'pointer',
-                            opacity: (staminaPots === 0 || stamina >= getMaxStamina()) ? 0.5 : 1
-                          }}
-                          onMouseEnter={(e) => {if (!(staminaPots === 0 || stamina >= getMaxStamina())) e.currentTarget.style.backgroundColor = COLORS.sapphire.hover}}
-                          onMouseLeave={(e) => {if (!(staminaPots === 0 || stamina >= getMaxStamina())) e.currentTarget.style.backgroundColor = COLORS.sapphire.base}}
-                        >
-                          Use
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Cleanse Potions */}
-                  <div className={`rounded-lg p-4 border-2 ${curseLevel > 0 ? 'animate-pulse' : ''}`} style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', borderColor: curseLevel > 0 ? 'rgba(138, 59, 181, 0.6)' : 'rgba(107, 44, 145, 0.4)', boxShadow: curseLevel > 0 ? VISUAL_STYLES.shadow.glow('#8A3BB5', 0.15) : 'none'}}>
-                    <div className="flex justify-between items-center mb-2">
-                      <div>
-                        <p className="font-bold text-lg" style={{color: '#F5F5DC'}}>Cleanse Potion</p>
-                        <p className="text-sm mb-1" style={{color: '#B794F4'}}>Removes 1 curse level</p>
-                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Purifying brew. Breaks the hold."</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-3xl font-bold mb-2" style={{color: '#B794F4', opacity: 0.9}}>{cleansePots}</p>
-                        <button 
-                          onClick={() => { sounds.click(); useCleanse(); }}
-                          disabled={cleansePots === 0 || curseLevel === 0}
-                          className="px-4 py-2 rounded transition-all text-sm border-2"
-                          style={{
-                            backgroundColor: (cleansePots === 0 || curseLevel === 0) ? '#2C3E50' : COLORS.amethyst.base,
-                            borderColor: (cleansePots === 0 || curseLevel === 0) ? '#95A5A6' : COLORS.amethyst.border,
-                            color: '#F5F5DC',
-                            cursor: (cleansePots === 0 || curseLevel === 0) ? 'not-allowed' : 'pointer',
-                            opacity: (cleansePots === 0 || curseLevel === 0) ? 0.5 : 1
-                          }}
-                          onMouseEnter={(e) => {if (!(cleansePots === 0 || curseLevel === 0)) e.currentTarget.style.backgroundColor = COLORS.amethyst.hover}}
-                          onMouseLeave={(e) => {if (!(cleansePots === 0 || curseLevel === 0)) e.currentTarget.style.backgroundColor = COLORS.amethyst.base}}
-                        >
-                          Use
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Lucky Charm (if active) */}
-                  {luckyCharmActive && (
-                    <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(47, 82, 51, 0.2)', borderColor: 'rgba(47, 82, 51, 0.5)'}}>
-                      <div>
-                        <p className="font-bold text-lg mb-1" style={{color: '#F5F5DC'}}>Fortune Philter</p>
-                        <p className="text-sm mb-1" style={{color: '#68D391'}}>2x loot from next elite boss</p>
-                        <p className="text-xs italic" style={{color: COLORS.silver}}>"Fortune favors the bold."</p>
-                        <p className="text-xs mt-2" style={{color: '#68D391'}}>Active</p>
-                      </div>
-                    </div>
-                  )}
-                    </>
-                  ) : suppliesTab === 'weapons' ? (
-                    <>
-                  {/* Weapon Section */}
-                  <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(100, 0, 0, 0.2)', borderColor: 'rgba(120, 0, 0, 0.5)'}}>
-                    <h3 className="font-bold text-lg mb-3 text-center" style={{color: '#FF6B6B'}}>EQUIPPED WEAPON</h3>
-                    
-                    <div className="rounded p-4 border-2 mb-3" style={{
-                      backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-                      borderColor: equippedWeapon ? getRarityColor(equippedWeapon.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
-                      boxShadow: equippedWeapon ? `0 0 15px ${getRarityColor(equippedWeapon.rarity || 'common')}50` : 'none'
-                    }}>
-                      {equippedWeapon ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                          <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}
-                            style={{ width: 80, height: 80, objectFit: 'contain', flexShrink: 0,
-                              filter: `drop-shadow(0 0 8px ${getRarityColor(equippedWeapon.rarity || 'common')}80)` }}/>
-                          <div style={{ flex: 1 }}>
-                          <p className="text-xl font-bold text-center mb-1" style={{color: getRarityColor(equippedWeapon.rarity || 'common')}}>{equippedWeapon.name}</p>
-                          {equippedWeapon.rarity && (
-                            <p className="text-xs italic text-center mb-2" style={{color: getRarityColor(equippedWeapon.rarity)}}>
-                              {GAME_CONSTANTS.RARITY_TIERS[equippedWeapon.rarity].name}
-                            </p>
-                          )}
-                          <p className="text-base text-center mb-3" style={{color: '#68D391'}}>+{equippedWeapon.attack} Attack</p>
-                          {equippedWeapon.affixes && Object.keys(equippedWeapon.affixes).length > 0 && (
-                            <>
-                              <div className="border-t mx-6 mb-3" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                              <div className="space-y-1">
-                                {equippedWeapon.affixes.flatDamage && (
-                                  <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Attack Damage</p>
-                                )}
-                                {equippedWeapon.affixes.percentDamage && (
-                                  <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(equippedWeapon.affixes.percentDamage)}% Bonus Damage</p>
-                                )}
-                                {equippedWeapon.affixes.critChance && (
-                                  <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(equippedWeapon.affixes.critChance)}% Critical Hit Chance</p>
-                                )}
-                                {equippedWeapon.affixes.critMultiplier && (
-                                  <p className="text-xs" style={{color: '#FFD700'}}>+{equippedWeapon.affixes.critMultiplier.toFixed(1)}x Critical Hit Damage</p>
-                                )}
-                                {equippedWeapon.affixes.poisonChance && (
-                                  <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison Chance</p>
-                                )}
-                                {equippedWeapon.affixes.poisonDamage && (
-                                  <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(equippedWeapon.affixes.poisonDamage)} Poison Damage per Turn</p>
-                                )}
-                              </div>
-                            </>
-                          )}
-                          </div>{/* end text col */}
-                        </div>
-                      ) : (
-                        <p className="text-sm italic text-center" style={{color: '#95A5A6'}}>No weapon equipped</p>
-                      )}
-                    </div>
-                    
-                    <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
-                      <p className="text-sm" style={{color: COLORS.silver}}>
-                        Total Attack: <span className="font-bold text-lg" style={{color: '#68D391'}}>{getBaseAttack()}</span>
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Collected Weapons */}
-                  {weaponInventory.length > 0 ? (
-                    <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(107, 44, 145, 0.2)', borderColor: 'rgba(107, 44, 145, 0.5)'}}>
-                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#B794F4'}}>COLLECTED WEAPONS</h3>
-                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Weapons found in battle or unequipped</p>
-                      
-                      <div className="space-y-2 max-h-64 overflow-y-auto">
-                        {sortByRarity(weaponInventory)
-                          .map((wpn) => (
-                          <div key={wpn.id} className="rounded p-3 border-2 flex justify-between items-center" style={{
-                            backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                            borderColor: getRarityColor(wpn.rarity || 'common'),
-                            boxShadow: `0 0 10px ${getRarityColor(wpn.rarity || 'common')}40`
-                          }}>
-                            <img src={getWeaponSprite(wpn)} alt={wpn.name}
-                              style={{ width: 52, height: 52, objectFit: 'contain', flexShrink: 0, marginRight: '10px',
-                                filter: `drop-shadow(0 0 5px ${getRarityColor(wpn.rarity || 'common')}70)` }}/>
-                            <div className="flex-1">
-                              <p className="text-base font-bold text-center mb-1" style={{color: getRarityColor(wpn.rarity || 'common')}}>{wpn.name}</p>
-                              {wpn.rarity && (
-                                <p className="text-xs italic text-center mb-1" style={{color: getRarityColor(wpn.rarity)}}>
-                                  {GAME_CONSTANTS.RARITY_TIERS[wpn.rarity].name}
-                                </p>
-                              )}
-                              <p className="text-sm text-center mb-1" style={{color: '#68D391'}}>+{wpn.attack} Attack</p>
-                              <div className="text-center mb-2">
-                                <Delta value={weaponEffective(wpn) - weaponEffective(equippedWeapon)} label="vs equipped" />
-                              </div>
-                              {wpn.affixes && Object.keys(wpn.affixes).length > 0 && (
-                                <>
-                                  <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                                  <div className="space-y-0.5">
-                                    {wpn.affixes.flatDamage && <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(wpn.affixes.flatDamage)} Attack Damage</p>}
-                                    {wpn.affixes.percentDamage && <p className="text-xs" style={{color: '#90EE90'}}>+{Math.floor(wpn.affixes.percentDamage)}% Bonus Damage</p>}
-                                    {wpn.affixes.critChance && <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(wpn.affixes.critChance)}% Critical Hit Chance</p>}
-                                    {wpn.affixes.critMultiplier && <p className="text-xs" style={{color: '#FFD700'}}>+{wpn.affixes.critMultiplier.toFixed(1)}x Critical Hit Damage</p>}
-                                    {wpn.affixes.poisonChance && <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(wpn.affixes.poisonChance)}% Poison Chance</p>}
-                                    {wpn.affixes.poisonDamage && <p className="text-xs" style={{color: '#9370DB'}}>+{Math.floor(wpn.affixes.poisonDamage)} Poison Damage per Turn</p>}
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                            <button
-                              onClick={() => {
-                                sounds.click();
-                                const oldWeapon = equippedWeapon;
-                                setEquippedWeapon(wpn);
-                                setWeaponInventory(prev => [
-                                  ...prev.filter(w => w.id !== wpn.id),
-                                  ...(oldWeapon ? [oldWeapon] : [])
-                                ]);
-                                addLog(`Equipped: ${wpn.name} (+${wpn.attack} Attack)`);
-                                if (oldWeapon) {
-                                  addLog(`Unequipped: ${oldWeapon.name}`);
-                                }
-                              }}
-                              className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
-                              style={{
-                                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
-                                borderColor: '#3B82F6',
-                                color: '#F5F5DC',
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                              }}
-                            >
-                              Equip
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="rounded-lg p-6 border-2 text-center mb-4" style={{backgroundColor: 'rgba(107, 44, 145, 0.1)', borderColor: 'rgba(107, 44, 145, 0.3)'}}>
-                      <p className="text-sm italic" style={{color: '#95A5A6'}}>No weapons collected yet. Defeat enemies to find weapons.</p>
-                    </div>
-                  )}
-                    </>
-                  ) : suppliesTab === 'armor' ? (
-                    <>
-                  {/* Equipment Section */}
-                  <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(184, 134, 11, 0.2)', borderColor: 'rgba(184, 134, 11, 0.5)'}}>
-                    <h3 className="font-bold text-lg mb-3 text-center" style={{color: COLORS.gold}}>EQUIPPED ARMOR</h3>
-                    
-                    <div className="grid grid-cols-2 gap-3 mb-4">
-                      {/* Helmet */}
-                      <div className="rounded p-3 border-2" style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-                        borderColor: equippedArmor.helmet ? getRarityColor(equippedArmor.helmet.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
-                        boxShadow: equippedArmor.helmet ? `0 0 8px ${getRarityColor(equippedArmor.helmet.rarity || 'common')}40` : 'none'
-                      }}>
-                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Helmet</p>
-                        {equippedArmor.helmet ? (
-                          <div>
-                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.helmet.rarity || 'common')}}>{equippedArmor.helmet.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.helmet.defense} Defense</p>
-                            {equippedArmor.helmet.affixes && Object.keys(equippedArmor.helmet.affixes).length > 0 && (
-                              <>
-                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                                <div className="space-y-0.5">
-                                  {equippedArmor.helmet.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.helmet.affixes.flatArmor)} Armor</p>}
-                                  {equippedArmor.helmet.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.helmet.affixes.percentDR)}% Damage Reduction</p>}
-                                  {equippedArmor.helmet.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.helmet.affixes.flatHP)} Maximum Health</p>}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
-                        )}
-                      </div>
-                      
-                      {/* Chest */}
-                      <div className="rounded p-3 border-2" style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-                        borderColor: equippedArmor.chest ? getRarityColor(equippedArmor.chest.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
-                        boxShadow: equippedArmor.chest ? `0 0 8px ${getRarityColor(equippedArmor.chest.rarity || 'common')}40` : 'none'
-                      }}>
-                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Chest</p>
-                        {equippedArmor.chest ? (
-                          <div>
-                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.chest.rarity || 'common')}}>{equippedArmor.chest.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.chest.defense} Defense</p>
-                            {equippedArmor.chest.affixes && Object.keys(equippedArmor.chest.affixes).length > 0 && (
-                              <>
-                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                                <div className="space-y-0.5">
-                                  {equippedArmor.chest.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.chest.affixes.flatArmor)} Armor</p>}
-                                  {equippedArmor.chest.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.chest.affixes.percentDR)}% Damage Reduction</p>}
-                                  {equippedArmor.chest.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.chest.affixes.flatHP)} Maximum Health</p>}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
-                        )}
-                      </div>
-                      
-                      {/* Gloves */}
-                      <div className="rounded p-3 border-2" style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-                        borderColor: equippedArmor.gloves ? getRarityColor(equippedArmor.gloves.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
-                        boxShadow: equippedArmor.gloves ? `0 0 8px ${getRarityColor(equippedArmor.gloves.rarity || 'common')}40` : 'none'
-                      }}>
-                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Gloves</p>
-                        {equippedArmor.gloves ? (
-                          <div>
-                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.gloves.rarity || 'common')}}>{equippedArmor.gloves.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.gloves.defense} Defense</p>
-                            {equippedArmor.gloves.affixes && Object.keys(equippedArmor.gloves.affixes).length > 0 && (
-                              <>
-                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                                <div className="space-y-0.5">
-                                  {equippedArmor.gloves.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.gloves.affixes.flatArmor)} Armor</p>}
-                                  {equippedArmor.gloves.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.gloves.affixes.percentDR)}% Damage Reduction</p>}
-                                  {equippedArmor.gloves.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.gloves.affixes.flatHP)} Maximum Health</p>}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
-                        )}
-                      </div>
-                      
-                      {/* Boots */}
-                      <div className="rounded p-3 border-2" style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-                        borderColor: equippedArmor.boots ? getRarityColor(equippedArmor.boots.rarity || 'common') : 'rgba(192, 192, 192, 0.3)',
-                        boxShadow: equippedArmor.boots ? `0 0 8px ${getRarityColor(equippedArmor.boots.rarity || 'common')}40` : 'none'
-                      }}>
-                        <p className="text-xs uppercase mb-2 text-center font-bold" style={{color: COLORS.silver}}>Boots</p>
-                        {equippedArmor.boots ? (
-                          <div>
-                            <p className="text-sm font-bold text-center mb-1" style={{color: getRarityColor(equippedArmor.boots.rarity || 'common')}}>{equippedArmor.boots.name}</p>
-                            <p className="text-xs text-center mb-1" style={{color: '#68D391'}}>+{equippedArmor.boots.defense} Defense</p>
-                            {equippedArmor.boots.affixes && Object.keys(equippedArmor.boots.affixes).length > 0 && (
-                              <>
-                                <div className="border-t mx-2 mb-1 mt-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                                <div className="space-y-0.5">
-                                  {equippedArmor.boots.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.boots.affixes.flatArmor)} Armor</p>}
-                                  {equippedArmor.boots.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.boots.affixes.percentDR)}% Damage Reduction</p>}
-                                  {equippedArmor.boots.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedArmor.boots.affixes.flatHP)} Maximum Health</p>}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs italic text-center" style={{color: '#95A5A6'}}>Empty</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
-                      {(() => {
-                        const dr  = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.percentDR || 0), 0);
-                        const hp  = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.flatHP   || 0), 0);
-                        return (
-                          <p className="text-sm" style={{color: COLORS.silver}}>
-                            Total Defense: <span className="font-bold text-lg" style={{color: COLORS.gold}}>{getBaseDefense()}</span>
-                            {dr > 0 && <span> · <span style={{color: '#68D391', fontWeight: 700}}>{Math.floor(dr)}% DR</span></span>}
-                            {hp > 0 && <span> · <span style={{color: '#FF6B6B', fontWeight: 700}}>+{Math.floor(hp)} HP</span></span>}
-                          </p>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                  
-                  {/* Armor Inventory */}
-                  {(armorInventory.helmet.length > 0 || armorInventory.chest.length > 0 || armorInventory.gloves.length > 0 || armorInventory.boots.length > 0) ? (
-                    <div className="rounded-lg p-4 border-2" style={{backgroundColor: 'rgba(47, 82, 51, 0.2)', borderColor: 'rgba(47, 82, 51, 0.5)'}}>
-                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#68D391'}}>COLLECTED ARMOR</h3>
-                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Pieces found in battle or unequipped</p>
-                      
-                      <div className="space-y-3 max-h-64 overflow-y-auto">
-                        {['helmet', 'chest', 'gloves', 'boots'].map(slot => 
-                          armorInventory[slot].length > 0 ? (
-                            <div key={slot}>
-                              <p className="text-xs uppercase mb-2 font-bold" style={{color: COLORS.silver}}>{slot}s</p>
-                              {sortByRarity(armorInventory[slot])
-                                .map((piece, idx) => (
-                                <div key={piece.id} className="rounded p-3 mb-2 border-2 flex justify-between items-center" style={{
-                                  backgroundColor: 'rgba(0, 0, 0, 0.4)', 
-                                  borderColor: getRarityColor(piece.rarity || 'common'),
-                                  boxShadow: `0 0 10px ${getRarityColor(piece.rarity || 'common')}40`
-                                }}>
-                                  <div className="flex-1">
-                                    <p className="text-base font-bold text-center mb-1" style={{color: getRarityColor(piece.rarity || 'common')}}>{piece.name}</p>
-                                    {piece.rarity && (
-                                      <p className="text-xs italic text-center mb-1" style={{color: getRarityColor(piece.rarity)}}>
-                                        {GAME_CONSTANTS.RARITY_TIERS[piece.rarity].name}
-                                      </p>
-                                    )}
-                                    <p className="text-sm text-center mb-1" style={{color: '#68D391'}}>+{piece.defense} Defense</p>
-                                    <div className="text-center mb-2">
-                                      <Delta value={armorEffective(piece) - armorEffective(equippedArmor[slot])} label="vs equipped" />
-                                    </div>
-                                    {piece.affixes && Object.keys(piece.affixes).length > 0 && (
-                                      <>
-                                        <div className="border-t mx-4 mb-2" style={{borderColor: 'rgba(192, 192, 192, 0.3)'}}></div>
-                                        <div className="space-y-0.5">
-                                          {piece.affixes.flatArmor && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(piece.affixes.flatArmor)} Armor</p>}
-                                          {piece.affixes.percentDR && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(piece.affixes.percentDR)}% Damage Reduction</p>}
-                                          {piece.affixes.flatHP && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(piece.affixes.flatHP)} Maximum Health</p>}
-                                        </div>
-                                      </>
-                                    )}
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      sounds.click();
-                                      // Get the currently equipped piece (if any)
-                                      const oldPiece = equippedArmor[slot];
-                                      
-                                      // Equip the new piece
-                                      setEquippedArmor(prev => ({ ...prev, [slot]: piece }));
-                                      
-                                      // Update inventory: remove the new piece, add the old piece (if it exists)
-                                      setArmorInventory(prev => ({
-                                        ...prev,
-                                        [slot]: [
-                                          ...prev[slot].filter(p => p.id !== piece.id),
-                                          ...(oldPiece ? [oldPiece] : [])
-                                        ]
-                                      }));
-                                      
-                                      addLog(`Equipped: ${piece.name} (+${piece.defense} Defense)`);
-                                      if (oldPiece) {
-                                        addLog(`Unequipped: ${oldPiece.name}`);
-                                      }
-                                    }}
-                                    className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
-                                    style={{
-                                      background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
-                                      borderColor: '#3B82F6',
-                                      color: '#F5F5DC',
-                                      cursor: 'pointer'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
-                                      e.currentTarget.style.transform = 'translateY(-1px)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
-                                      e.currentTarget.style.transform = 'translateY(0)';
-                                    }}
-                                  >
-                                    Equip
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          ) : null
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="rounded-lg p-6 border-2 text-center" style={{backgroundColor: 'rgba(47, 82, 51, 0.1)', borderColor: 'rgba(47, 82, 51, 0.3)'}}>
-                      <p className="text-sm italic" style={{color: '#95A5A6'}}>No armor collected yet. Defeat enemies to find armor pieces.</p>
-                    </div>
-                  )}
-                    </>
-                  ) : (
-                    <>
-                  {/* Gear Section - Pendant and Ring */}
-                  <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(75, 0, 130, 0.2)', borderColor: 'rgba(75, 0, 130, 0.5)'}}>
-                    <h3 className="font-bold text-lg mb-3 text-center" style={{color: '#9370DB'}}>EQUIPPED GEAR</h3>
-                    
-                    <div className="space-y-3 mb-4">
-                      {/* Pendant */}
-                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', borderColor: 'rgba(192, 192, 192, 0.4)'}}>
-                        <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Pendant</p>
-                        {equippedPendant ? (
-                          <div>
-                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedPendant.rarity || 'common')}}>{equippedPendant.name}</p>
-                            <p className="text-xs" style={{color: '#68D391'}}>+{equippedPendant.hp} Health</p>
-                            {equippedPendant.affixes?.flatHP    && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(equippedPendant.affixes.flatHP)} Max HP</p>}
-                            {equippedPendant.affixes?.regenHP   && <p className="text-xs" style={{color: '#A78BFA'}}>+{Math.floor(equippedPendant.affixes.regenHP)} HP after combat</p>}
-                            {equippedPendant.affixes?.xpBonus   && <p className="text-xs" style={{color: '#F59E0B'}}>+{Math.floor(equippedPendant.affixes.xpBonus)}% XP gain</p>}
-                            {equippedPendant.rarity && (
-                              <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedPendant.rarity)}}>
-                                {GAME_CONSTANTS.RARITY_TIERS[equippedPendant.rarity].name}
-                              </p>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
-                        )}
-                      </div>
-                      
-                      {/* Ring */}
-                      <div className="rounded p-3 border" style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', borderColor: 'rgba(192, 192, 192, 0.4)'}}>
-                        <p className="text-xs uppercase mb-2" style={{color: COLORS.silver}}>Ring</p>
-                        {equippedRing ? (
-                          <div>
-                            <p className="text-sm font-bold" style={{color: getRarityColor(equippedRing.rarity || 'common')}}>{equippedRing.name}</p>
-                            <p className="text-xs" style={{color: '#4FC3F7'}}>+{equippedRing.stamina} STA</p>
-                            {equippedRing.affixes?.flatStamina && <p className="text-xs" style={{color: '#4FC3F7'}}>+{Math.floor(equippedRing.affixes.flatStamina)} Max STA</p>}
-                            {equippedRing.affixes?.critChance  && <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(equippedRing.affixes.critChance)}% Crit Chance</p>}
-                            {equippedRing.affixes?.goldBonus   && <p className="text-xs" style={{color: '#34D399'}}>+{Math.floor(equippedRing.affixes.goldBonus)}% Combat Gold</p>}
-                            {equippedRing.rarity && (
-                              <p className="text-xs italic mt-1" style={{color: getRarityColor(equippedRing.rarity)}}>
-                                {GAME_CONSTANTS.RARITY_TIERS[equippedRing.rarity].name}
-                              </p>
-                            )}
-                          </div>
-                        ) : (
-                          <p className="text-xs italic" style={{color: '#95A5A6'}}>Empty</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="text-center pt-2 border-t" style={{borderColor: 'rgba(192, 192, 192, 0.2)'}}>
-                      <p className="text-sm" style={{color: COLORS.silver}}>
-                        Max HP: <span className="font-bold text-lg" style={{color: '#FF6B6B', opacity: 0.95}}>{getMaxHp()}</span>
-                        {' | '}
-                        Max STA: <span className="font-bold text-lg" style={{color: '#4FC3F7', opacity: 0.95}}>{getMaxStamina()}</span>
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Collected Pendants */}
-                  {pendantInventory.length > 0 && (
-                    <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(139, 0, 0, 0.2)', borderColor: 'rgba(139, 0, 0, 0.5)'}}>
-                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#FF6B6B'}}>PENDANTS</h3>
-                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Health · Post-combat regen · XP bonus</p>
-                      
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {sortByRarity(pendantInventory)
-                          .map((pend) => (
-                          <div key={pend.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                            <div>
-                              <p className="text-sm font-bold" style={{color: getRarityColor(pend.rarity || 'common')}}>{pend.name}</p>
-                              <p className="text-xs" style={{color: '#68D391'}}>+{pend.hp} Health</p>
-                              {pend.affixes?.flatHP  && <p className="text-xs" style={{color: '#68D391'}}>+{Math.floor(pend.affixes.flatHP)} Max HP</p>}
-                              {pend.affixes?.regenHP && <p className="text-xs" style={{color: '#A78BFA'}}>+{Math.floor(pend.affixes.regenHP)} HP after combat</p>}
-                              {pend.affixes?.xpBonus && <p className="text-xs" style={{color: '#F59E0B'}}>+{Math.floor(pend.affixes.xpBonus)}% XP gain</p>}
-                              <Delta value={pend.hp - (equippedPendant?.hp || 0)} label="vs equipped" />
-                              {pend.rarity && (
-                                <p className="text-xs italic" style={{color: getRarityColor(pend.rarity)}}>
-                                  {GAME_CONSTANTS.RARITY_TIERS[pend.rarity].name}
-                                </p>
-                              )}
-                            </div>
-                            <button
-                              onClick={() => {
-                                sounds.click();
-                                const oldPendant = equippedPendant;
-                                setEquippedPendant(pend);
-                                setPendantInventory(prev => [
-                                  ...prev.filter(p => p.id !== pend.id),
-                                  ...(oldPendant ? [oldPendant] : [])
-                                ]);
-                                addLog(`Equipped: ${pend.name} (+${pend.hp} Health)`);
-                                if (oldPendant) {
-                                  addLog(`Unequipped: ${oldPendant.name}`);
-                                }
-                              }}
-                              className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
-                              style={{
-                                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
-                                borderColor: '#3B82F6',
-                                color: '#F5F5DC',
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                              }}
-                            >
-                              Equip
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Collected Rings */}
-                  {ringInventory.length > 0 && (
-                    <div className="rounded-lg p-4 border-2 mb-4" style={{backgroundColor: 'rgba(0, 150, 255, 0.2)', borderColor: 'rgba(0, 150, 255, 0.5)'}}>
-                      <h3 className="font-bold text-lg mb-2 text-center" style={{color: '#4FC3F7'}}>RINGS</h3>
-                      <p className="text-xs text-center mb-3 italic" style={{color: COLORS.silver}}>Stamina · Crit chance · Combat gold</p>
-                      
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {sortByRarity(ringInventory)
-                          .map((rng) => (
-                          <div key={rng.id} className="rounded p-2 border flex justify-between items-center" style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(192, 192, 192, 0.3)'}}>
-                            <div>
-                              <p className="text-sm font-bold" style={{color: getRarityColor(rng.rarity || 'common')}}>{rng.name}</p>
-                              <p className="text-xs" style={{color: '#4FC3F7'}}>+{rng.stamina} STA</p>
-                              {rng.affixes?.flatStamina && <p className="text-xs" style={{color: '#4FC3F7'}}>+{Math.floor(rng.affixes.flatStamina)} Max STA</p>}
-                              {rng.affixes?.critChance  && <p className="text-xs" style={{color: '#FFD700'}}>+{Math.floor(rng.affixes.critChance)}% Crit Chance</p>}
-                              {rng.affixes?.goldBonus   && <p className="text-xs" style={{color: '#34D399'}}>+{Math.floor(rng.affixes.goldBonus)}% Combat Gold</p>}
-                              <Delta value={rng.stamina - (equippedRing?.stamina || 0)} label="vs equipped" />
-                              {rng.rarity && (
-                                <p className="text-xs italic" style={{color: getRarityColor(rng.rarity)}}>
-                                  {GAME_CONSTANTS.RARITY_TIERS[rng.rarity].name}
-                                </p>
-                              )}
-                            </div>
-                            <button
-                              onClick={() => {
-                                sounds.click();
-                                const oldRing = equippedRing;
-                                setEquippedRing(rng);
-                                setRingInventory(prev => [
-                                  ...prev.filter(r => r.id !== rng.id),
-                                  ...(oldRing ? [oldRing] : [])
-                                ]);
-                                addLog(`Equipped: ${rng.name} (+${rng.stamina} STA)`);
-                                if (oldRing) {
-                                  addLog(`Unequipped: ${oldRing.name}`);
-                                }
-                              }}
-                              className="px-3 py-1 rounded-lg text-xs border-2 transition-all font-bold"
-                              style={{
-                                background: 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))',
-                                borderColor: '#3B82F6',
-                                color: '#F5F5DC',
-                                cursor: 'pointer'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(96, 165, 250, 0.8), rgba(59, 130, 246, 0.9))';
-                                e.currentTarget.style.transform = 'translateY(-1px)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.7), rgba(29, 78, 216, 0.8))';
-                                e.currentTarget.style.transform = 'translateY(0)';
-                              }}
-                            >
-                              Equip
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {pendantInventory.length === 0 && ringInventory.length === 0 && (
-                    <div className="rounded-lg p-6 border-2 text-center" style={{backgroundColor: 'rgba(75, 0, 130, 0.1)', borderColor: 'rgba(75, 0, 130, 0.3)'}}>
-                      <p className="text-sm italic" style={{color: '#95A5A6'}}>No accessories collected yet. Defeat enemies to find pendants and rings.</p>
-                    </div>
-                  )}
-                    </>
-                  )}
-                </div>
-                </div>{/* end scrollable content */}
-              </motion.div>
+              ))}
             </div>
+
+            {/* Scrollable item list */}
+            <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px 24px' }}>
+              {category === 'weapons'     && renderWeapons()}
+              {category === 'armor'       && renderArmor()}
+              {category === 'accessories' && renderAccessories()}
+              {category === 'potions'     && renderPotions()}
+            </div>
+          </div>
+
+          {/* RIGHT — Equipped gear */}
+          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(4,3,10,0.55)', flexShrink: 0 }}>
+
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: 'rgba(212,175,55,0.6)', letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
+
+            {/* Weapon slot */}
+            <div style={{ ...slotBox(equippedWeapon), flexDirection: 'row', alignItems: 'center', gap: '12px', marginBottom: '10px', minHeight: '86px' }}>
+              <p style={{ fontSize: '9px', color: 'rgba(192,192,192,0.35)', fontWeight: 700, writingMode: 'vertical-lr', transform: 'rotate(180deg)', letterSpacing: '0.12em', flexShrink: 0 }}>WEAPON</p>
+              {equippedWeapon ? (
+                <>
+                  <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}
+                    style={{ width: 58, height: 58, objectFit: 'contain', flexShrink: 0,
+                      filter: `drop-shadow(0 0 7px ${getRarityColor(equippedWeapon.rarity || 'common')}90)` }}/>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ color: getRarityColor(equippedWeapon.rarity || 'common'), fontWeight: 700, fontSize: '12px', marginBottom: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedWeapon.name}</p>
+                    <p style={{ color: '#68D391', fontSize: '11px', marginBottom: '2px' }}>+{equippedWeapon.attack} Attack</p>
+                    {equippedWeapon.affixes?.flatDamage  > 0 && <p style={{ color: '#90EE90', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Flat Damage</p>}
+                    {equippedWeapon.affixes?.critChance  > 0 && <p style={{ color: '#FFD700', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.critChance)}% Crit Chance</p>}
+                    {equippedWeapon.affixes?.poisonChance > 0 && <p style={{ color: '#9370DB', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison</p>}
+                  </div>
+                </>
+              ) : (
+                <p style={{ color: 'rgba(192,192,192,0.2)', fontStyle: 'italic', fontSize: '12px' }}>Empty slot</p>
+              )}
+            </div>
+
+            {/* Armor slots — 2×2 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
+              {ARMOR_SLOTS.map(({ key, label, icon }) => {
+                const item = equippedArmor[key];
+                return (
+                  <div key={key} style={slotBox(item)}>
+                    <p style={{ fontSize: '9px', color: 'rgba(192,192,192,0.38)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{icon} {label.toUpperCase()}</p>
+                    {item ? (
+                      <>
+                        <p style={{ color: getRarityColor(item.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                        <p style={{ color: '#68D391', fontSize: '10px' }}>+{item.defense} Def</p>
+                        {item.affixes?.percentDR > 0 && <p style={{ color: '#68D391', fontSize: '9px' }}>{Math.floor(item.affixes.percentDR)}% DR</p>}
+                        {item.affixes?.flatHP     > 0 && <p style={{ color: '#FF6B6B', fontSize: '9px' }}>+{Math.floor(item.affixes.flatHP)} HP</p>}
+                      </>
+                    ) : (
+                      <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Accessory slots — 1×2 */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+              <div style={slotBox(equippedPendant)}>
+                <p style={{ fontSize: '9px', color: 'rgba(192,192,192,0.38)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>📿 PENDANT</p>
+                {equippedPendant ? (
+                  <>
+                    <p style={{ color: getRarityColor(equippedPendant.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedPendant.name}</p>
+                    <p style={{ color: '#FF6B6B', fontSize: '10px' }}>+{equippedPendant.hp} HP</p>
+                    {equippedPendant.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '9px' }}>+{Math.floor(equippedPendant.affixes.xpBonus)}% XP</p>}
+                  </>
+                ) : (
+                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
+                )}
+              </div>
+              <div style={slotBox(equippedRing)}>
+                <p style={{ fontSize: '9px', color: 'rgba(192,192,192,0.38)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>💍 RING</p>
+                {equippedRing ? (
+                  <>
+                    <p style={{ color: getRarityColor(equippedRing.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedRing.name}</p>
+                    <p style={{ color: '#6BB6FF', fontSize: '10px' }}>+{equippedRing.stamina} STA</p>
+                    {equippedRing.affixes?.critChance > 0 && <p style={{ color: '#FFD700', fontSize: '9px' }}>+{Math.floor(equippedRing.affixes.critChance)}% Crit</p>}
+                    {equippedRing.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '9px' }}>+{Math.floor(equippedRing.affixes.goldBonus)}% Gold</p>}
+                  </>
+                ) : (
+                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
+                )}
+              </div>
+            </div>
+
+            {/* Stats summary */}
+            <div style={{ borderTop: '1px solid rgba(192,192,192,0.1)', paddingTop: '14px' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '9px', fontWeight: 700, color: 'rgba(212,175,55,0.55)', letterSpacing: '0.18em', textAlign: 'center', marginBottom: '10px' }}>TOTALS</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                {[
+                  { label: '⚔ Attack',   value: getBaseAttack(),              color: '#68D391' },
+                  { label: '🛡 Defense',  value: getBaseDefense(),             color: COLORS.gold },
+                  { label: '❤ HP',       value: `${hp} / ${getMaxHp()}`,      color: '#FF6B6B' },
+                  { label: '⚡ Stamina', value: `${stamina} / ${getMaxStamina()}`, color: '#6BB6FF' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} style={{ background: 'rgba(0,0,0,0.3)', borderRadius: '6px', padding: '7px 10px', border: '1px solid rgba(192,192,192,0.07)' }}>
+                    <p style={{ fontSize: '9px', color: 'rgba(192,192,192,0.4)', marginBottom: '3px' }}>{label}</p>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color, lineHeight: 1 }}>{value}</p>
+                  </div>
+                ))}
+              </div>
+              {totalDR      > 0 && <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '11px', color: '#68D391' }}>{Math.floor(totalDR)}% Damage Reduction</p>}
+              {totalBonusHP > 0 && <p style={{ textAlign: 'center', fontSize: '11px', color: '#FF6B6B'  }}>+{Math.floor(totalBonusHP)} Bonus HP from gear</p>}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
   );
 };
 
