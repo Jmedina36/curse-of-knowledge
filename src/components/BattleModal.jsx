@@ -1024,7 +1024,7 @@ const BattleModal = ({
                       );
                     })()}
 
-                    <div className={`grid gap-3 mb-3 ${(canFlee || showDodgeButton) && battleType !== 'regular' ? 'grid-cols-3' : battleType === 'regular' ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    <div className={`grid gap-3 mb-3 ${(battleType === 'regular' || battleType === 'wave') ? 'grid-cols-3' : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => setBattleMenu('fight')}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1038,7 +1038,7 @@ const BattleModal = ({
                         Items
                       </button>
 
-                      {battleType === 'regular' && (
+                      {(battleType === 'regular' || battleType === 'wave') && (
                         <button onClick={() => { setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
                           className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                           style={{ background: 'linear-gradient(to bottom, rgba(60,20,80,0.9), rgba(35,10,50,0.9))', border: '2px solid rgba(140,80,180,0.6)', color: '#D8B4FE', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1134,7 +1134,7 @@ const BattleModal = ({
                   </motion.div>
                 )}
 
-                {/* ── Fight Submenu ── */}}
+                {/* ── Fight Submenu ── */}
                 {turnPhase === 'player' && battleMenu === 'fight' && (
                   <motion.div key="fight" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
                     <div className="grid grid-cols-2 gap-2 mb-2">
