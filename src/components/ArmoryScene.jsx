@@ -3,13 +3,51 @@ import React from 'react';
 const ArmoryScene = () => (
   <div style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(192,192,192,0.22)' }}>
     <style>{`
-      @keyframes ar_flicker {
-        0%,100%{opacity:1;transform:scaleY(1) scaleX(1)}
-        25%{opacity:.8;transform:scaleY(.92) scaleX(1.09)}
-        58%{opacity:.88;transform:scaleY(1.08) scaleX(.93)}
-        82%{opacity:.74;transform:scaleY(.87) scaleX(1.11)}
+      @keyframes ar_flameOuter {
+        0%,100%{opacity:.88;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
+        20%{opacity:.80;transform:scaleY(.91)  scaleX(1.10) rotate(-3deg)}
+        45%{opacity:.86;transform:scaleY(1.10) scaleX(.92)  rotate(2.5deg)}
+        68%{opacity:.75;transform:scaleY(.87)  scaleX(1.12) rotate(-2.2deg)}
+        85%{opacity:.84;transform:scaleY(1.06) scaleX(.95)  rotate(1.5deg)}
+      }
+      @keyframes ar_flameMid {
+        0%,100%{opacity:.86;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
+        24%{opacity:.77;transform:scaleY(.89)  scaleX(1.12) rotate(3deg)}
+        55%{opacity:.83;transform:scaleY(1.12) scaleX(.90)  rotate(-2.5deg)}
+        80%{opacity:.71;transform:scaleY(.91)  scaleX(1.09) rotate(2deg)}
+      }
+      @keyframes ar_flameTip {
+        0%,100%{opacity:.90;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
+        30%{opacity:.80;transform:scaleY(.86)  scaleX(1.15) rotate(-4deg)}
+        65%{opacity:.86;transform:scaleY(1.14) scaleX(.88)  rotate(3.5deg)}
       }
       @keyframes ar_glow { 0%,100%{opacity:.4} 50%{opacity:.8} }
+      @keyframes ar_ember1 {
+        0%{opacity:0;transform:translate(0,0)}
+        13%{opacity:.72}
+        100%{opacity:0;transform:translate(5px,-80px)}
+      }
+      @keyframes ar_ember2 {
+        0%{opacity:0;transform:translate(0,0)}
+        17%{opacity:.60}
+        100%{opacity:0;transform:translate(-4px,-72px)}
+      }
+      @keyframes ar_ember3 {
+        0%{opacity:0;transform:translate(0,0)}
+        10%{opacity:.80}
+        100%{opacity:0;transform:translate(7px,-66px)}
+      }
+      @keyframes ar_smoke {
+        0%{opacity:0;transform:translateY(0) scale(.4)}
+        20%{opacity:.12;transform:translateY(-13px) scale(.82) translateX(-3px)}
+        68%{opacity:.04;transform:translateY(-36px) scale(1.52) translateX(5px)}
+        100%{opacity:0;transform:translateY(-58px) scale(1.95)}
+      }
+      @keyframes ar_gleam {
+        0%,78%,100%{opacity:0;transform:translateX(-90px) rotate(-18deg)}
+        84%{opacity:.38;transform:translateX(0)    rotate(-18deg)}
+        92%{opacity:0;  transform:translateX(90px) rotate(-18deg)}
+      }
     `}</style>
 
     <svg viewBox="0 0 600 220" width="100%" style={{ display: 'block' }}>
@@ -164,12 +202,22 @@ const ArmoryScene = () => (
       <line x1="65" y1="12" x2="71" y2="12" stroke="#9B7248" strokeWidth="1.3"/>
       <line x1="65" y1="16" x2="71" y2="16" stroke="#9B7248" strokeWidth="1.3"/>
       <line x1="65" y1="20" x2="71" y2="20" stroke="#9B7248" strokeWidth="1.3"/>
-      <g style={{transformOrigin:'68px 10px', animation:'ar_flicker 1.82s ease-in-out infinite'}}>
+      <g style={{transformOrigin:'68px 10px', animation:'ar_flameOuter 2.05s ease-in-out infinite'}}>
         <ellipse cx="68" cy="5.5" rx="7.5" ry="10" fill="#FF5500" opacity=".88"/>
+      </g>
+      <g style={{transformOrigin:'68px 10px', animation:'ar_flameMid 1.48s ease-in-out infinite .2s'}}>
         <ellipse cx="67.5" cy="3.5" rx="5" ry="8" fill="#FFAA00" opacity=".86"/>
+      </g>
+      <g style={{transformOrigin:'68px 10px', animation:'ar_flameTip 1.08s ease-in-out infinite .1s'}}>
         <ellipse cx="68" cy="2" rx="3" ry="6" fill="#FFEE44" opacity=".9"/>
         <ellipse cx="68" cy="1" rx="1.5" ry="3.2" fill="#FFFFFF" opacity=".72"/>
       </g>
+      {/* Embers */}
+      <circle cx="65.5" cy="2" r="1.4" fill="#FF9900" style={{animation:'ar_ember1 2.65s ease-out infinite'}}/>
+      <circle cx="71" cy="0" r="1.1" fill="#FFCC00" style={{animation:'ar_ember2 3.05s ease-out infinite .88s'}}/>
+      <circle cx="64" cy="1.5" r="1.2" fill="#FF7700" style={{animation:'ar_ember3 2.45s ease-out infinite 1.75s'}}/>
+      {/* Smoke */}
+      <circle cx="68" cy="0" r="5" fill="rgba(80,75,90,.22)" style={{animation:'ar_smoke 3.9s ease-out infinite .55s'}}/>
 
       {/* ═══════════ RIGHT TORCH ═══════════ */}
       <rect x="519" y="26" width="27" height="7" rx="2" fill="#3C3C50"/>
@@ -178,12 +226,22 @@ const ArmoryScene = () => (
       <line x1="530" y1="12" x2="536" y2="12" stroke="#9B7248" strokeWidth="1.3"/>
       <line x1="530" y1="16" x2="536" y2="16" stroke="#9B7248" strokeWidth="1.3"/>
       <line x1="530" y1="20" x2="536" y2="20" stroke="#9B7248" strokeWidth="1.3"/>
-      <g style={{transformOrigin:'533px 10px', animation:'ar_flicker 1.58s ease-in-out infinite .68s'}}>
+      <g style={{transformOrigin:'533px 10px', animation:'ar_flameOuter 1.92s ease-in-out infinite .38s'}}>
         <ellipse cx="533" cy="5.5" rx="7.5" ry="10" fill="#FF5500" opacity=".88"/>
+      </g>
+      <g style={{transformOrigin:'533px 10px', animation:'ar_flameMid 1.38s ease-in-out infinite .55s'}}>
         <ellipse cx="532.5" cy="3.5" rx="5" ry="8" fill="#FFAA00" opacity=".86"/>
+      </g>
+      <g style={{transformOrigin:'533px 10px', animation:'ar_flameTip 1.0s ease-in-out infinite .25s'}}>
         <ellipse cx="533" cy="2" rx="3" ry="6" fill="#FFEE44" opacity=".9"/>
         <ellipse cx="533" cy="1" rx="1.5" ry="3.2" fill="#FFFFFF" opacity=".72"/>
       </g>
+      {/* Embers */}
+      <circle cx="530.5" cy="2" r="1.4" fill="#FF9900" style={{animation:'ar_ember1 2.72s ease-out infinite .45s'}}/>
+      <circle cx="536" cy="0" r="1.1" fill="#FFCC00" style={{animation:'ar_ember2 3.1s ease-out infinite 1.3s'}}/>
+      <circle cx="529" cy="1.5" r="1.2" fill="#FF7700" style={{animation:'ar_ember3 2.55s ease-out infinite 2.15s'}}/>
+      {/* Smoke */}
+      <circle cx="533" cy="0" r="5" fill="rgba(80,75,90,.22)" style={{animation:'ar_smoke 4.1s ease-out infinite 1.2s'}}/>
 
       {/* ═══════════ ARMOR STAND ═══════════ */}
       {/* Stand base */}
@@ -221,6 +279,10 @@ const ArmoryScene = () => (
       <line x1="270" y1="142" x2="330" y2="142" stroke="#A8B0C0" strokeWidth="1" opacity=".38"/>
       {/* Breastplate highlight */}
       <path d="M278,97 L298,97 L295,124 L279,121 Z" fill="#B0B8C8" opacity=".42"/>
+      {/* Gleam sweep — periodic shine across the armor */}
+      <rect x="282" y="58" width="16" height="150" rx="8"
+        fill="rgba(255,255,255,.3)"
+        style={{transformOrigin:'300px 132px', animation:'ar_gleam 7s ease-in-out infinite 3.5s'}}/>
 
       {/* Pauldrons */}
       <ellipse cx="256" cy="101" rx="24" ry="14" fill="#8080A0"/>

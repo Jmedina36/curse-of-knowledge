@@ -3,16 +3,53 @@ import React from 'react';
 const ShopScene = ({ dialogue, gold }) => (
   <div style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(212,175,55,0.28)' }}>
     <style>{`
-      @keyframes sg_flicker {
-        0%,100%{opacity:1;transform:scaleY(1) scaleX(1)}
-        25%{opacity:.82;transform:scaleY(.93) scaleX(1.08)}
-        55%{opacity:.9;transform:scaleY(1.08) scaleX(.93)}
-        80%{opacity:.76;transform:scaleY(.88) scaleX(1.1)}
+      @keyframes sg_flameOuter {
+        0%,100%{opacity:.88;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
+        18%{opacity:.80;transform:scaleY(.92)  scaleX(1.10) rotate(-3.5deg)}
+        42%{opacity:.86;transform:scaleY(1.10) scaleX(.91)  rotate(2.5deg)}
+        65%{opacity:.76;transform:scaleY(.87)  scaleX(1.12) rotate(-2deg)}
+        84%{opacity:.84;transform:scaleY(1.06) scaleX(.95)  rotate(1.5deg)}
+      }
+      @keyframes sg_flameMid {
+        0%,100%{opacity:.86;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
+        22%{opacity:.78;transform:scaleY(.89)  scaleX(1.12) rotate(3.2deg)}
+        52%{opacity:.84;transform:scaleY(1.12) scaleX(.90)  rotate(-2.5deg)}
+        78%{opacity:.72;transform:scaleY(.91)  scaleX(1.09) rotate(2deg)}
+      }
+      @keyframes sg_flameTip {
+        0%,100%{opacity:.90;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
+        28%{opacity:.80;transform:scaleY(.86)  scaleX(1.15) rotate(-4.5deg)}
+        62%{opacity:.86;transform:scaleY(1.14) scaleX(.88)  rotate(3.8deg)}
       }
       @keyframes sg_glow { 0%,100%{opacity:.48} 50%{opacity:.9} }
-      @keyframes sg_float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)} }
+      @keyframes sg_float {
+        0%,100%{transform:translateY(0) rotate(0deg)}
+        33%{transform:translateY(-2.5px) rotate(.45deg)}
+        66%{transform:translateY(-1px)   rotate(-.3deg)}
+      }
       @keyframes sg_eye { 0%,100%{opacity:.6} 50%{opacity:1} }
       @keyframes sg_candleGlow { 0%,100%{opacity:.08} 50%{opacity:.18} }
+      @keyframes sg_ember1 {
+        0%{opacity:0;transform:translate(0,0)}
+        14%{opacity:.75}
+        100%{opacity:0;transform:translate(5px,-82px)}
+      }
+      @keyframes sg_ember2 {
+        0%{opacity:0;transform:translate(0,0)}
+        18%{opacity:.62}
+        100%{opacity:0;transform:translate(-4px,-74px)}
+      }
+      @keyframes sg_ember3 {
+        0%{opacity:0;transform:translate(0,0)}
+        11%{opacity:.82}
+        100%{opacity:0;transform:translate(7px,-68px)}
+      }
+      @keyframes sg_smoke {
+        0%{opacity:0;transform:translateY(0) scale(.4)}
+        22%{opacity:.13;transform:translateY(-14px) scale(.85) translateX(-3px)}
+        70%{opacity:.05;transform:translateY(-38px) scale(1.55) translateX(5px)}
+        100%{opacity:0;transform:translateY(-60px) scale(2)}
+      }
     `}</style>
 
     <svg viewBox="0 0 600 224" width="100%" style={{ display: 'block' }}>
@@ -157,13 +194,23 @@ const ShopScene = ({ dialogue, gold }) => (
       <line x1="72" y1="12" x2="78" y2="12" stroke="#9B7248" strokeWidth="1.2"/>
       <line x1="72" y1="15.5" x2="78" y2="15.5" stroke="#9B7248" strokeWidth="1.2"/>
       <line x1="72" y1="19" x2="78" y2="19" stroke="#9B7248" strokeWidth="1.2"/>
-      {/* Flame */}
-      <g style={{transformOrigin:'75px 10px', animation:'sg_flicker 1.75s ease-in-out infinite'}}>
-        <ellipse cx="75" cy="5.5" rx="7.5" ry="10" fill="#FF5500" opacity=".9"/>
-        <ellipse cx="74.5" cy="3.5" rx="5" ry="8" fill="#FFAA00" opacity=".88"/>
-        <ellipse cx="75" cy="2" rx="3" ry="6" fill="#FFEE44" opacity=".92"/>
-        <ellipse cx="75" cy="1" rx="1.4" ry="3" fill="#FFFFFF" opacity=".75"/>
+      {/* Flame — three independent layers */}
+      <g style={{transformOrigin:'75px 10px', animation:'sg_flameOuter 2s ease-in-out infinite'}}>
+        <ellipse cx="75" cy="5.5" rx="7.5" ry="10" fill="#FF5500" opacity=".88"/>
       </g>
+      <g style={{transformOrigin:'75px 10px', animation:'sg_flameMid 1.45s ease-in-out infinite .18s'}}>
+        <ellipse cx="74.5" cy="3.5" rx="5" ry="8" fill="#FFAA00" opacity=".86"/>
+      </g>
+      <g style={{transformOrigin:'75px 10px', animation:'sg_flameTip 1.05s ease-in-out infinite .08s'}}>
+        <ellipse cx="75" cy="2" rx="3" ry="6" fill="#FFEE44" opacity=".9"/>
+        <ellipse cx="75" cy="1" rx="1.4" ry="3" fill="#FFFFFF" opacity=".72"/>
+      </g>
+      {/* Embers */}
+      <circle cx="73" cy="2" r="1.4" fill="#FF9900" style={{animation:'sg_ember1 2.6s ease-out infinite'}}/>
+      <circle cx="78.5" cy="0" r="1.1" fill="#FFCC00" style={{animation:'sg_ember2 3.1s ease-out infinite .9s'}}/>
+      <circle cx="71.5" cy="1.5" r="1.2" fill="#FF7700" style={{animation:'sg_ember3 2.4s ease-out infinite 1.7s'}}/>
+      {/* Smoke */}
+      <circle cx="75" cy="0" r="5" fill="rgba(90,70,50,.2)" style={{animation:'sg_smoke 3.8s ease-out infinite .5s'}}/>
 
       {/* ═══════════ RIGHT TORCH ═══════════ */}
       <rect x="514" y="26" width="26" height="6" rx="2" fill="#4A2E12"/>
@@ -172,15 +219,25 @@ const ShopScene = ({ dialogue, gold }) => (
       <line x1="522" y1="12" x2="528" y2="12" stroke="#9B7248" strokeWidth="1.2"/>
       <line x1="522" y1="15.5" x2="528" y2="15.5" stroke="#9B7248" strokeWidth="1.2"/>
       <line x1="522" y1="19" x2="528" y2="19" stroke="#9B7248" strokeWidth="1.2"/>
-      <g style={{transformOrigin:'525px 10px', animation:'sg_flicker 1.5s ease-in-out infinite .65s'}}>
-        <ellipse cx="525" cy="5.5" rx="7.5" ry="10" fill="#FF5500" opacity=".9"/>
-        <ellipse cx="524.5" cy="3.5" rx="5" ry="8" fill="#FFAA00" opacity=".88"/>
-        <ellipse cx="525" cy="2" rx="3" ry="6" fill="#FFEE44" opacity=".92"/>
-        <ellipse cx="525" cy="1" rx="1.4" ry="3" fill="#FFFFFF" opacity=".75"/>
+      <g style={{transformOrigin:'525px 10px', animation:'sg_flameOuter 1.88s ease-in-out infinite .35s'}}>
+        <ellipse cx="525" cy="5.5" rx="7.5" ry="10" fill="#FF5500" opacity=".88"/>
       </g>
+      <g style={{transformOrigin:'525px 10px', animation:'sg_flameMid 1.38s ease-in-out infinite .52s'}}>
+        <ellipse cx="524.5" cy="3.5" rx="5" ry="8" fill="#FFAA00" opacity=".86"/>
+      </g>
+      <g style={{transformOrigin:'525px 10px', animation:'sg_flameTip 1.0s ease-in-out infinite .22s'}}>
+        <ellipse cx="525" cy="2" rx="3" ry="6" fill="#FFEE44" opacity=".9"/>
+        <ellipse cx="525" cy="1" rx="1.4" ry="3" fill="#FFFFFF" opacity=".72"/>
+      </g>
+      {/* Embers */}
+      <circle cx="522.5" cy="2" r="1.4" fill="#FF9900" style={{animation:'sg_ember1 2.7s ease-out infinite .42s'}}/>
+      <circle cx="528" cy="0" r="1.1" fill="#FFCC00" style={{animation:'sg_ember2 3.0s ease-out infinite 1.25s'}}/>
+      <circle cx="521" cy="1.5" r="1.2" fill="#FF7700" style={{animation:'sg_ember3 2.5s ease-out infinite 2.1s'}}/>
+      {/* Smoke */}
+      <circle cx="525" cy="0" r="5" fill="rgba(90,70,50,.2)" style={{animation:'sg_smoke 4s ease-out infinite 1.1s'}}/>
 
       {/* ═══════════ MERCHANT ═══════════ */}
-      <g style={{animation:'sg_float 4.6s ease-in-out infinite'}}>
+      <g style={{transformOrigin:'300px 118px', animation:'sg_float 4.6s ease-in-out infinite'}}>
         {/* Robe body */}
         <path d="M260,68 L340,68 L380,154 L220,154 Z" fill="#130602"/>
         {/* Inner robe crease shadow */}
@@ -272,10 +329,14 @@ const ShopScene = ({ dialogue, gold }) => (
       <path d="M292,150 Q288,156 290,162" stroke="#E8D8B0" strokeWidth="2.5" fill="none" opacity=".6"/>
       {/* Wick */}
       <rect x="298" y="134" width="2.5" height="7" fill="#2a2a2a" opacity=".88"/>
-      {/* Candle flame */}
-      <g style={{transformOrigin:'299px 134px', animation:'sg_flicker 2.2s ease-in-out infinite 1.1s'}}>
+      {/* Candle flame — three independent layers */}
+      <g style={{transformOrigin:'299px 136px', animation:'sg_flameOuter 2.5s ease-in-out infinite 1.1s'}}>
         <ellipse cx="299" cy="129.5" rx="5" ry="6.5" fill="#FF7700" opacity=".92"/>
+      </g>
+      <g style={{transformOrigin:'299px 136px', animation:'sg_flameMid 1.8s ease-in-out infinite 1.3s'}}>
         <ellipse cx="299" cy="128" rx="3.2" ry="5" fill="#FFCC00" opacity=".9"/>
+      </g>
+      <g style={{transformOrigin:'299px 136px', animation:'sg_flameTip 1.15s ease-in-out infinite 1.18s'}}>
         <ellipse cx="299" cy="127" rx="1.8" ry="3.2" fill="#FFFFFF" opacity=".82"/>
       </g>
       {/* Candle ambient glow */}
