@@ -122,6 +122,7 @@ const BattleModal = ({
   staminaPots,
   curseLevel,
   // Battle UI state
+  currentDay,
   battling,
   battleMenu,
   setBattleMenu,

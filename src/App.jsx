@@ -7018,7 +7018,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               hp={hp} getMaxHp={getMaxHp} stamina={stamina} getMaxStamina={getMaxStamina}
               level={level} hero={hero} gold={gold}
               healthPots={healthPots} staminaPots={staminaPots} curseLevel={curseLevel}
-              battling={battling} battleMenu={battleMenu} setBattleMenu={setBattleMenu}
+              currentDay={currentDay} battling={battling} battleMenu={battleMenu} setBattleMenu={setBattleMenu}
               canFlee={canFlee} hasFled={hasFled} setHasFled={setHasFled}
               setShowBoss={setShowBoss}
               chargeStacks={chargeStacks} recklessStacks={recklessStacks}
