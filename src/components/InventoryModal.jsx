@@ -287,10 +287,25 @@ const InventoryModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+
+      {/* Blacksmith — left of modal, centered vertically */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', marginRight: '20px', flexShrink: 0 }}
+        onClick={e => e.stopPropagation()}
+      >
+        <img src="/npcs/blacksmith.png" alt="Grimdar"
+          style={{ width: 140, height: 140, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 28px rgba(201,169,97,0.55), 0 0 60px rgba(201,169,97,0.2)' }}/>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '11px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>GRIMDAR</p>
+        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-8px' }}>Master Smith</p>
+      </motion.div>
+
       <motion.div
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          width: '95vw', maxWidth: '1100px', height: '90vh',
+          flex: 1, maxWidth: '1000px', height: '90vh',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -303,27 +318,19 @@ const InventoryModal = ({
       >
         {/* ── HEADER ── */}
         <div style={{
-          display: 'flex', alignItems: 'center',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '16px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(212,175,55,0.3)`,
           background: 'rgba(0,0,0,0.55)',
           position: 'relative',
         }}>
-          {/* Blacksmith portrait — left */}
-          <img src="/npcs/blacksmith.png" alt="Grimdar"
-            style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-              border: `2px solid ${COLORS.gold}`, boxShadow: '0 0 18px rgba(201,169,97,0.45)', flexShrink: 0 }}/>
-
-          {/* Title — centered absolutely */}
-          <div style={{ position: 'absolute', left: 0, right: 0, textAlign: 'center', pointerEvents: 'none' }}>
+          <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
             <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>Grimdar Ironforge · Master Smith</p>
           </div>
-
-          {/* Close — right */}
           <button
             onClick={() => { sounds.click(); setShowInventoryModal(false); }}
-            style={{ marginLeft: 'auto', background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(212,175,55,0.4)`, borderRadius: '8px', padding: '8px', color: COLORS.gold, cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+            style={{ position: 'absolute', right: '20px', background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(212,175,55,0.4)`, borderRadius: '8px', padding: '8px', color: COLORS.gold, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
             <X size={18}/>
           </button>
