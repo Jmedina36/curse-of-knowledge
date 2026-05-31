@@ -92,19 +92,19 @@ const InventoryModal = ({
   // ── Shared styles ──
   const equipBtnStyle = {
     padding: '5px 11px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
-    border: '1px solid rgba(100,160,255,0.75)', cursor: 'pointer', flexShrink: 0,
-    background: 'linear-gradient(to bottom, rgba(70,140,255,0.55), rgba(40,90,220,0.65))',
-    color: '#E8F0FF',
+    border: '1px solid rgba(212,175,55,0.5)', cursor: 'pointer', flexShrink: 0,
+    background: 'linear-gradient(to bottom, rgba(184,134,11,0.5), rgba(139,101,8,0.55))',
+    color: '#F5F5DC',
   };
 
   const equippedBadge = {
     padding: '4px 9px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
-    border: '1px solid rgba(212,175,55,0.7)',
-    background: 'rgba(212,175,55,0.2)', color: '#E8C96A', flexShrink: 0,
+    border: '1px solid rgba(212,175,55,0.5)',
+    background: 'rgba(212,175,55,0.15)', color: '#D4AF37', flexShrink: 0,
   };
 
   const emptyMsg = (text = 'No items found yet.') => (
-    <p style={{ color: 'rgba(200,175,120,0.5)', fontStyle: 'italic', textAlign: 'center', padding: '28px 0', fontSize: '13px' }}>
+    <p style={{ color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', padding: '28px 0', fontSize: '13px', opacity: 0.6 }}>
       {text}
     </p>
   );
@@ -121,8 +121,8 @@ const InventoryModal = ({
       <div key={wpn.id ?? i} style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '10px 12px', marginBottom: '8px', borderRadius: '8px',
-        border: `1px solid ${getRarityColor(wpn.rarity || 'common')}66`,
-        background: 'rgba(55,38,16,0.65)',
+        border: `1px solid ${getRarityColor(wpn.rarity || 'common')}44`,
+        background: VISUAL_STYLES.card.default,
       }}>
         <img src={getWeaponSprite(wpn)} alt={wpn.name}
           style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0,
@@ -153,13 +153,13 @@ const InventoryModal = ({
       if (!items.length) return null;
       return (
         <div key={key} style={{ marginBottom: '14px' }}>
-          <p style={{ color: 'rgba(210,180,110,0.7)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{icon} {label}</p>
+          <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{icon} {label}</p>
           {items.map((piece, i) => (
             <div key={piece.id ?? i} style={{
               display: 'flex', alignItems: 'center', gap: '10px',
               padding: '9px 12px', marginBottom: '6px', borderRadius: '8px',
-              border: `1px solid ${getRarityColor(piece.rarity || 'common')}66`,
-              background: 'rgba(55,38,16,0.65)',
+              border: `1px solid ${getRarityColor(piece.rarity || 'common')}44`,
+              background: VISUAL_STYLES.card.default,
             }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ color: getRarityColor(piece.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{piece.name}</p>
@@ -188,9 +188,9 @@ const InventoryModal = ({
       <>
         {allPendants.length > 0 && (
           <div style={{ marginBottom: '14px' }}>
-            <p style={{ color: 'rgba(210,180,110,0.7)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>📿 Pendant</p>
+            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>📿 Pendant</p>
             {allPendants.map((pend, i) => (
-              <div key={pend.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(pend.rarity || 'common')}66`, background: 'rgba(55,38,16,0.65)' }}>
+              <div key={pend.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(pend.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ color: getRarityColor(pend.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{pend.name}</p>
                   <p style={{ color: '#FF6B6B', fontSize: '11px' }}>+{pend.hp} HP</p>
@@ -202,9 +202,9 @@ const InventoryModal = ({
         )}
         {allRings.length > 0 && (
           <div>
-            <p style={{ color: 'rgba(210,180,110,0.7)', fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>💍 Ring</p>
+            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>💍 Ring</p>
             {allRings.map((rng, i) => (
-              <div key={rng.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(rng.rarity || 'common')}66`, background: 'rgba(55,38,16,0.65)' }}>
+              <div key={rng.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(rng.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ color: getRarityColor(rng.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{rng.name}</p>
                   <p style={{ color: '#6BB6FF', fontSize: '11px' }}>+{rng.stamina} Stamina</p>
@@ -220,14 +220,14 @@ const InventoryModal = ({
 
   const renderPotions = () => {
     const potionRow = ({ emoji, name, desc, count, color, border, disabled, onUse }) => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', marginBottom: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: 'rgba(55,38,16,0.6)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', marginBottom: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: VISUAL_STYLES.card.default }}>
         <span style={{ fontSize: '22px' }}>{emoji}</span>
         <div style={{ flex: 1 }}>
           <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{name}</p>
           <p style={{ color, fontSize: '11px' }}>{desc}</p>
         </div>
         <span style={{ color, fontWeight: 700, fontSize: '18px', minWidth: '28px', textAlign: 'center' }}>{count}</span>
-        <button disabled={disabled} onClick={onUse} style={{ ...equipBtnStyle, opacity: disabled ? 0.45 : 1, cursor: disabled ? 'not-allowed' : 'pointer', background: disabled ? 'rgba(60,60,60,0.5)' : equipBtnStyle.background, borderColor: disabled ? '#666' : '#3B82F6' }}>Use</button>
+        <button disabled={disabled} onClick={onUse} style={{ ...equipBtnStyle, opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer', background: disabled ? 'rgba(0,0,0,0.3)' : equipBtnStyle.background, borderColor: disabled ? 'rgba(155,139,126,0.3)' : 'rgba(212,175,55,0.5)' }}>Use</button>
       </div>
     );
     return (
@@ -253,7 +253,7 @@ const InventoryModal = ({
     padding: '10px', borderRadius: '8px', minHeight: '68px',
     display: 'flex', flexDirection: 'column', justifyContent: 'center',
     border: `1px solid ${item ? getRarityColor(item.rarity || 'common') + '60' : 'rgba(192,192,192,0.12)'}`,
-    background: item ? 'rgba(55,38,16,0.7)' : 'rgba(40,28,10,0.45)',
+    background: item ? VISUAL_STYLES.card.elevated : VISUAL_STYLES.card.subtle,
     boxShadow: item ? `0 0 8px ${getRarityColor(item.rarity || 'common')}18` : 'none',
   });
 
@@ -268,7 +268,7 @@ const InventoryModal = ({
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(10,7,3,0.96)', zIndex: 50, overflow: 'hidden' }} onClick={() => setShowInventoryModal(false)}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
       <motion.div
         className="relative w-full h-full flex flex-col"
         initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
@@ -279,21 +279,21 @@ const InventoryModal = ({
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 20px', flexShrink: 0,
-          borderBottom: '1px solid rgba(212,175,55,0.35)',
-          background: 'rgba(38,26,10,0.98)',
+          borderBottom: `1px solid rgba(212,175,55,0.3)`,
+          background: VISUAL_STYLES.modal.default,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src="/npcs/blacksmith.png" alt="Grimdar"
               style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-                border: '2px solid rgba(212,175,55,0.75)', boxShadow: '0 0 14px rgba(255,160,0,0.45)' }}/>
+                border: `2px solid ${COLORS.gold}`, boxShadow: '0 0 12px rgba(201,169,97,0.35)' }}/>
             <div>
-              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '17px', color: '#E8C96A', letterSpacing: '0.12em', lineHeight: 1 }}>THE ARMORY</p>
-              <p style={{ fontSize: '10px', color: 'rgba(220,200,160,0.65)', fontStyle: 'italic', marginTop: '3px' }}>Grimdar Ironforge · Master Smith</p>
+              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '17px', color: COLORS.gold, letterSpacing: '0.12em', lineHeight: 1 }}>THE ARMORY</p>
+              <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', marginTop: '3px' }}>Grimdar Ironforge · Master Smith</p>
             </div>
           </div>
           <button
             onClick={() => { sounds.click(); setShowInventoryModal(false); }}
-            style={{ background: 'rgba(60,40,15,0.8)', border: '1px solid rgba(212,175,55,0.5)', borderRadius: '8px', padding: '8px', color: '#E8C96A', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            style={{ background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(212,175,55,0.4)`, borderRadius: '8px', padding: '8px', color: COLORS.gold, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
             <X size={18}/>
           </button>
@@ -303,18 +303,18 @@ const InventoryModal = ({
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
           {/* LEFT — Collected items */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid rgba(212,175,55,0.15)', overflow: 'hidden', background: 'rgba(22,15,6,0.9)' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.15)`, overflow: 'hidden', background: VISUAL_STYLES.modal.dark }}>
 
             {/* Category filter */}
-            <div style={{ display: 'flex', gap: '6px', padding: '12px 16px 10px', flexShrink: 0, background: 'rgba(38,26,10,0.7)', borderBottom: '1px solid rgba(212,175,55,0.12)' }}>
+            <div style={{ display: 'flex', gap: '6px', padding: '12px 16px 10px', flexShrink: 0, background: VISUAL_STYLES.modal.default, borderBottom: `1px solid rgba(212,175,55,0.2)` }}>
               {CATEGORIES.map(({ key, label }) => (
                 <button key={key}
                   onClick={() => { sounds.click(); setCategory(key); }}
                   style={{
                     flex: 1, padding: '8px 4px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
-                    border: `1px solid ${category === key ? 'rgba(212,175,55,0.7)' : 'rgba(180,150,80,0.25)'}`,
-                    background: category === key ? 'rgba(212,175,55,0.22)' : 'rgba(50,35,14,0.6)',
-                    color: category === key ? '#E8C96A' : 'rgba(200,175,120,0.7)',
+                    border: `1px solid ${category === key ? 'rgba(212,175,55,0.6)' : 'rgba(155,139,126,0.25)'}`,
+                    background: category === key ? 'rgba(184,134,11,0.3)' : 'rgba(0,0,0,0.3)',
+                    color: category === key ? COLORS.gold : COLORS.silver,
                     cursor: 'pointer',
                   }}
                 >
@@ -334,13 +334,13 @@ const InventoryModal = ({
           </div>
 
           {/* RIGHT — Equipped gear */}
-          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(30,20,8,0.95)', flexShrink: 0 }}>
+          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: VISUAL_STYLES.modal.default, flexShrink: 0 }}>
 
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: 'rgba(232,201,106,0.85)', letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
             {/* Weapon slot */}
             <div style={{ ...slotBox(equippedWeapon), flexDirection: 'row', alignItems: 'center', gap: '12px', marginBottom: '10px', minHeight: '86px' }}>
-              <p style={{ fontSize: '9px', color: 'rgba(210,180,110,0.65)', fontWeight: 700, writingMode: 'vertical-lr', transform: 'rotate(180deg)', letterSpacing: '0.12em', flexShrink: 0 }}>WEAPON</p>
+              <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, writingMode: 'vertical-lr', transform: 'rotate(180deg)', letterSpacing: '0.12em', flexShrink: 0 }}>WEAPON</p>
               {equippedWeapon ? (
                 <>
                   <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}
@@ -355,7 +355,7 @@ const InventoryModal = ({
                   </div>
                 </>
               ) : (
-                <p style={{ color: 'rgba(200,175,120,0.35)', fontStyle: 'italic', fontSize: '12px' }}>Empty slot</p>
+                <p style={{ color: COLORS.silver, fontStyle: 'italic', fontSize: '12px', opacity: 0.4 }}>Empty slot</p>
               )}
             </div>
 
@@ -365,7 +365,7 @@ const InventoryModal = ({
                 const item = equippedArmor[key];
                 return (
                   <div key={key} style={slotBox(item)}>
-                    <p style={{ fontSize: '9px', color: 'rgba(210,180,110,0.65)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{icon} {label.toUpperCase()}</p>
+                    <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{icon} {label.toUpperCase()}</p>
                     {item ? (
                       <>
                         <p style={{ color: getRarityColor(item.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
@@ -374,7 +374,7 @@ const InventoryModal = ({
                         {item.affixes?.flatHP     > 0 && <p style={{ color: '#FF6B6B', fontSize: '9px' }}>+{Math.floor(item.affixes.flatHP)} HP</p>}
                       </>
                     ) : (
-                      <p style={{ color: 'rgba(200,175,120,0.35)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
+                      <p style={{ color: COLORS.silver, fontStyle: 'italic', fontSize: '11px', opacity: 0.4 }}>Empty</p>
                     )}
                   </div>
                 );
@@ -384,7 +384,7 @@ const InventoryModal = ({
             {/* Accessory slots — 1×2 */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
               <div style={slotBox(equippedPendant)}>
-                <p style={{ fontSize: '9px', color: 'rgba(210,180,110,0.65)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>📿 PENDANT</p>
+                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>📿 PENDANT</p>
                 {equippedPendant ? (
                   <>
                     <p style={{ color: getRarityColor(equippedPendant.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedPendant.name}</p>
@@ -396,7 +396,7 @@ const InventoryModal = ({
                 )}
               </div>
               <div style={slotBox(equippedRing)}>
-                <p style={{ fontSize: '9px', color: 'rgba(210,180,110,0.65)', fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>💍 RING</p>
+                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>💍 RING</p>
                 {equippedRing ? (
                   <>
                     <p style={{ color: getRarityColor(equippedRing.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedRing.name}</p>
@@ -411,8 +411,8 @@ const InventoryModal = ({
             </div>
 
             {/* Stats summary */}
-            <div style={{ borderTop: '1px solid rgba(180,150,80,0.3)', paddingTop: '14px' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '9px', fontWeight: 700, color: 'rgba(232,201,106,0.8)', letterSpacing: '0.18em', textAlign: 'center', marginBottom: '10px' }}>TOTALS</p>
+            <div style={{ borderTop: `1px solid rgba(212,175,55,0.2)`, paddingTop: '14px' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '9px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '10px' }}>TOTALS</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                 {[
                   { label: '⚔ Attack',   value: getBaseAttack(),              color: '#68D391' },
@@ -420,8 +420,8 @@ const InventoryModal = ({
                   { label: '❤ HP',       value: `${hp} / ${getMaxHp()}`,      color: '#FF6B6B' },
                   { label: '⚡ Stamina', value: `${stamina} / ${getMaxStamina()}`, color: '#6BB6FF' },
                 ].map(({ label, value, color }) => (
-                  <div key={label} style={{ background: 'rgba(55,38,16,0.6)', borderRadius: '6px', padding: '7px 10px', border: '1px solid rgba(180,150,80,0.2)' }}>
-                    <p style={{ fontSize: '9px', color: 'rgba(210,180,110,0.65)', marginBottom: '3px' }}>{label}</p>
+                  <div key={label} style={{ background: VISUAL_STYLES.card.default, borderRadius: '6px', padding: '7px 10px', border: `1px solid rgba(155,139,126,0.2)` }}>
+                    <p style={{ fontSize: '9px', color: COLORS.silver, marginBottom: '3px' }}>{label}</p>
                     <p style={{ fontSize: '15px', fontWeight: 700, color, lineHeight: 1 }}>{value}</p>
                   </div>
                 ))}
