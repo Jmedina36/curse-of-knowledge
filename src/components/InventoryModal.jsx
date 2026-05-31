@@ -268,10 +268,16 @@ const InventoryModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 overflow-hidden" onClick={() => setShowInventoryModal(false)}>
       <motion.div
-        className="relative w-full h-full flex flex-col"
-        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
+        className="relative flex flex-col rounded-xl border-2 overflow-hidden"
+        style={{
+          width: '95vw', maxWidth: '1100px', height: '90vh',
+          background: VISUAL_STYLES.modal.paper,
+          borderColor: COLORS.silver,
+          boxShadow: VISUAL_STYLES.shadow.elevated,
+        }}
+        initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
         onClick={e => e.stopPropagation()}
       >
@@ -280,7 +286,7 @@ const InventoryModal = ({
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '12px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(212,175,55,0.3)`,
-          background: VISUAL_STYLES.modal.default,
+          background: 'rgba(0,0,0,0.25)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <img src="/npcs/blacksmith.png" alt="Grimdar"
@@ -303,10 +309,10 @@ const InventoryModal = ({
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
           {/* LEFT — Collected items */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.15)`, overflow: 'hidden', background: VISUAL_STYLES.modal.dark }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.2)`, overflow: 'hidden', background: 'transparent' }}>
 
             {/* Category filter */}
-            <div style={{ display: 'flex', gap: '6px', padding: '12px 16px 10px', flexShrink: 0, background: VISUAL_STYLES.modal.default, borderBottom: `1px solid rgba(212,175,55,0.2)` }}>
+            <div style={{ display: 'flex', gap: '6px', padding: '10px 16px 8px', flexShrink: 0, background: 'rgba(0,0,0,0.2)', borderBottom: `1px solid rgba(212,175,55,0.2)` }}>
               {CATEGORIES.map(({ key, label }) => (
                 <button key={key}
                   onClick={() => { sounds.click(); setCategory(key); }}
@@ -334,7 +340,7 @@ const InventoryModal = ({
           </div>
 
           {/* RIGHT — Equipped gear */}
-          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: VISUAL_STYLES.modal.default, flexShrink: 0 }}>
+          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(0,0,0,0.2)', flexShrink: 0 }}>
 
             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
