@@ -5202,39 +5202,35 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   };
   
 
-  const negotiate = (method) => {
-    // method: 'persuade' | 'bribe'
-    const intMod = Math.floor(((hero.abilities?.int || 10) - 10) / 2);
-    const briCost = Math.max(10, Math.min(40, currentDay * 3));
+  const negotiate = (method, bribeAmount = 0) => {
+    const wisMod = Math.floor(((hero.abilities?.wis || 10) - 10) / 2);
 
     let success = false;
     let resultLine = '';
 
     if (method === 'persuade') {
-      const roll = Math.random();
-      const chance = 0.42 + (intMod * 0.06);
-      success = roll < chance;
+      const chance = Math.max(0.05, 0.30 + wisMod * 0.08);
+      success = Math.random() < chance;
       resultLine = success
-        ? `The shadow wavers... and dissolves. Your words cut deeper than any blade.`
-        : `The shadow snarls. "Pretty words from a soon-to-be corpse." It lunges!`;
+        ? `"...You remind me of something I once knew. Go. Before I change my mind."`
+        : `"Mercy is for the living. You are already dead." It attacks!`;
     } else if (method === 'bribe') {
-      if (gold < briCost) {
-        addLog(`Not enough gold to bribe. (Need ${briCost})`);
+      if (gold < bribeAmount) {
+        addLog(`Not enough gold. The shadow demands ${bribeAmount}g.`);
         return { success: false, enraged: false };
       }
-      setGold(g => g - briCost);
+      setGold(g => g - bribeAmount);
       success = true;
-      resultLine = `You toss ${briCost} gold into the void. The shadow takes it... and retreats.`;
+      resultLine = `"Gold. How predictable. But... acceptable." It retreats into the dark.`;
     }
 
     if (success) {
-      const xpGain = Math.floor(Math.random() * 15) + 10;
-      const goldGain = Math.floor(Math.random() * 12) + 5;
-      setXp(x => x + xpGain);
-      setGold(g => g + goldGain);
-      addLog(`Negotiation successful! +${xpGain} XP, +${goldGain} Gold`);
-      addLog(`💬 ${bossName}: "${resultLine}"`);
-      setVictoryLoot([`+${xpGain} XP`, `+${goldGain} Gold`, 'Shadow Dismissed']);
+      const loot = method === 'bribe'
+        ? [`-${bribeAmount} Gold`, 'Shadow Dismissed', '✓ Survived']
+        : ['Shadow Dismissed', '✓ Survived'];
+      addLog(`You survived by ${method === 'bribe' ? 'gold' : 'words'}.`);
+      addLog(`💬 ${bossName}: ${resultLine}`);
+      setVictoryLoot(loot);
       setBossHp(0);
       setBattling(false);
       setBattleMode(false);
@@ -5244,8 +5240,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setRecklessStacks(0);
       return { success: true, enraged: false };
     } else {
-      // Persuasion failed — shadow gets enraged, attacks with bonus damage
-      addLog(`💬 ${bossName}: "${resultLine}"`);
+      addLog(`💬 ${bossName}: ${resultLine}`);
       return { success: false, enraged: true };
     }
   };

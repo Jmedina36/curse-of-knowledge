@@ -171,7 +171,14 @@ const BattleModal = ({
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
   const [negotiatePhase, setNegotiatePhase] = useState('idle'); // 'idle'|'open'|'result'
-  const [negotiateResult, setNegotiateResult] = useState(null); // {success,enraged,line}
+  const [negotiateResult, setNegotiateResult] = useState(null); // {success,enraged}
+  // Bribe cost fixed per battle — CHA lowers the price
+  const [bribeCost] = useState(() => {
+    const chaMod = Math.floor(((hero?.abilities?.cha || 10) - 10) / 2);
+    const day = Math.max(1, currentDay || 1);
+    const base = Math.floor(day * 4 + Math.random() * day * 3);
+    return Math.max(5, Math.floor(base * Math.max(0.5, 1 - chaMod * 0.1)));
+  });
 
   const SHADOW_OPENINGS = [
     "Why do you resist? We are made of the same silence.",
@@ -1025,7 +1032,7 @@ const BattleModal = ({
                       );
                     })()}
 
-                    <div className={`grid gap-3 mb-3 ${(battleType === 'regular' || battleType === 'wave') ? 'grid-cols-3' : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    <div className={`grid gap-3 mb-3 ${(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 ? 'grid-cols-3' : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => setBattleMenu('fight')}
                         className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1039,11 +1046,11 @@ const BattleModal = ({
                         Items
                       </button>
 
-                      {(battleType === 'regular' || battleType === 'wave') && (
+                      {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && (
                         <button onClick={() => { setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
-                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
-                          style={{ background: 'linear-gradient(to bottom, rgba(60,20,80,0.9), rgba(35,10,50,0.9))', border: '2px solid rgba(140,80,180,0.6)', color: '#D8B4FE', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
-                          Negotiate
+                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                          style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
+                          Beg
                         </button>
                       )}
 
@@ -1080,8 +1087,8 @@ const BattleModal = ({
                           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.05em', color: 'rgba(220,180,255,0.9)', lineHeight: 1.7, textAlign: 'center', fontStyle: 'italic' }}>
                             "{shadowOpening}"
                           </p>
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'rgba(180,140,220,0.55)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
-                            — {bossName}
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'rgba(220,100,100,0.6)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
+                            — {bossName} · You are at critical health
                           </p>
                         </div>
                         <div className="grid grid-cols-2 gap-3 mb-3">
@@ -1096,26 +1103,34 @@ const BattleModal = ({
                                   setBattleMenu('main');
                                   setNegotiatePhase('idle');
                                   setNegotiateResult(null);
-                                }, 1800);
+                                }, 1500);
                               }
                             }}
                             className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
                             style={{ background: 'linear-gradient(to bottom, rgba(30,60,100,0.9), rgba(15,35,60,0.9))', border: '2px solid rgba(96,165,250,0.5)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
                           >
                             Persuade
-                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>INT based · Free</div>
+                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>
+                              WIS · {Math.round(Math.max(5, 30 + Math.floor(((hero?.abilities?.wis||10)-10)/2) * 8))}% chance
+                            </div>
                           </button>
                           <button
                             onClick={() => {
                               if (turnPhase !== 'player') return;
-                              const bribeCost = Math.max(10, Math.min(40, currentDay * 3));
-                              negotiate('bribe');
+                              const result = negotiate('bribe', bribeCost);
+                              if (result && !result.success) {
+                                // Can't afford — just go back, no penalty
+                                setBattleMenu('main');
+                                setNegotiatePhase('idle');
+                              }
                             }}
                             className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105"
                             style={{ background: 'linear-gradient(to bottom, rgba(100,70,10,0.9), rgba(60,40,5,0.9))', border: '2px solid rgba(180,140,30,0.5)', color: '#FCD34D', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
                           >
                             Bribe
-                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>{Math.max(10, Math.min(40, currentDay * 3))} Gold · Always works</div>
+                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>
+                              {bribeCost}g · CHA price
+                            </div>
                           </button>
                         </div>
                         <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); }}
