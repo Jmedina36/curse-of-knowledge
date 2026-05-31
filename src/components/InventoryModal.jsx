@@ -70,11 +70,11 @@ const InventoryModal = ({
   };
 
   return (
-            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowInventoryModal(false)}>
-              <motion.div className="rounded-xl p-6 max-w-lg w-full border-2 relative my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated}} onClick={e => e.stopPropagation()}>
-                <button 
+            <div className="fixed inset-0 bg-black/95 z-50 flex flex-col overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+              <motion.div className="relative flex flex-col w-full h-full" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} onClick={e => e.stopPropagation()}>
+                <button
                   onClick={() => { sounds.click(); setShowInventoryModal(false); }}
-                  className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
+                  className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all z-10"
                   style={{
                     backgroundColor: 'rgba(0, 0, 0, 0.5)',
                     borderColor: 'rgba(212, 175, 55, 0.4)',
@@ -92,8 +92,17 @@ const InventoryModal = ({
                   <X size={20}/>
                 </button>
                 
-                <ArmoryScene />
-                
+                {/* Armory scene — fills top half of screen */}
+                <div style={{ flexShrink: 0, overflow: 'hidden', maxHeight: '52vh', minHeight: '220px' }}>
+                  <ArmoryScene
+                    weapons={[...(equippedWeapon ? [equippedWeapon] : []), ...weaponInventory]}
+                    equippedWeaponId={equippedWeapon?.id}
+                  />
+                </div>
+
+                {/* Inventory content — scrollable bottom panel */}
+                <div style={{ flex: 1, overflowY: 'auto', background: VISUAL_STYLES.modal.paper, borderTop: `1px solid ${COLORS.silver}40`, padding: '20px 24px 28px' }}>
+
                 {/* Tabs */}
                 <div className="grid grid-cols-4 gap-2 mb-6">
                   <button
@@ -812,6 +821,7 @@ const InventoryModal = ({
                     </>
                   )}
                 </div>
+                </div>{/* end scrollable content */}
               </motion.div>
             </div>
   );

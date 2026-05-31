@@ -1,7 +1,22 @@
 import React from 'react';
 
-const ArmoryScene = () => (
-  <div style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', marginBottom: '20px', border: '1px solid rgba(192,192,192,0.22)' }}>
+const WEAPON_SPRITES = [
+  '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
+  '/weapons/dagger1.png', '/weapons/dagger2.png',
+  '/weapons/mace1.png', '/weapons/staff.png', '/weapons/bow1.png',
+];
+const HOOK_X = [135, 210, 285, 360, 435];
+const getSprite = (wpn, idx) => {
+  let seed = idx;
+  if (wpn?.id != null) seed = typeof wpn.id === 'number' ? wpn.id : String(wpn.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  else if (wpn?.name) seed = wpn.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return WEAPON_SPRITES[Math.abs(seed) % WEAPON_SPRITES.length];
+};
+
+const ArmoryScene = ({ weapons = [], equippedWeaponId }) => {
+  const displayWeapons = weapons.slice(0, HOOK_X.length);
+  return (
+  <div style={{ position: 'relative', overflow: 'hidden' }}>
     <style>{`
       @keyframes ar_flameOuter {
         0%,100%{opacity:.88;transform:scaleY(1)    scaleX(1)    rotate(0deg)}
@@ -122,29 +137,40 @@ const ArmoryScene = () => (
       <circle cx="300" cy="31" r="5.5" fill="none" stroke="rgba(212,175,55,.55)" strokeWidth="1.3"/>
       <circle cx="300" cy="31" r="2" fill="rgba(212,175,55,.4)"/>
 
-      {/* ═══════════ LEFT WEAPON RACK ═══════════ */}
+      {/* ═══════════ WEAPON RACK (full width between torches) ═══════════ */}
       {/* Wall mounts */}
-      <rect x="26" y="68" width="9" height="22" rx="1" fill="#3C3C4E"/>
-      <rect x="154" y="68" width="9" height="22" rx="1" fill="#3C3C4E"/>
+      <rect x="88" y="68" width="9" height="22" rx="1" fill="#3C3C4E"/>
+      <rect x="471" y="68" width="9" height="22" rx="1" fill="#3C3C4E"/>
       {/* Horizontal bar */}
-      <rect x="20" y="79" width="152" height="9" rx="2" fill="#5C3A1E"/>
-      <rect x="20" y="79" width="152" height="3" rx="1" fill="#7B5228"/>
-      {/* Iron ring hooks */}
-      {[52,96,140].map(x => (
+      <rect x="90" y="79" width="390" height="9" rx="2" fill="#5C3A1E"/>
+      <rect x="90" y="79" width="390" height="3" rx="1" fill="#7B5228"/>
+      {/* Iron ring hooks — always shown at all 5 positions */}
+      {HOOK_X.map(x => (
         <path key={x} d={`M${x-3},87 L${x-3},96 Q${x},100 ${x+3},96 L${x+3},87`}
           fill="none" stroke="#6A6A7E" strokeWidth="2.5"/>
       ))}
 
-      {/* Weapons — real PNG sprites, rotated -45° to hang vertically from hooks */}
-      <image href="/weapons/sword1.png" x="20" y="98" width="64" height="64"
-        transform="rotate(-45, 52, 130)"
-        style={{animation:'ar_bladeGleam 9s ease-in-out infinite'}}/>
-      <image href="/weapons/sword2.png" x="64" y="96" width="64" height="64"
-        transform="rotate(-45, 96, 128)"
-        style={{animation:'ar_bladeGleam 9s ease-in-out infinite 3s'}}/>
-      <image href="/weapons/dagger1.png" x="110" y="100" width="60" height="60"
-        transform="rotate(-45, 140, 130)"
-        style={{animation:'ar_bladeGleam 9s ease-in-out infinite 6s'}}/>
+      {/* Weapon PNGs — dynamically placed from props */}
+      {displayWeapons.map((wpn, i) => {
+        const hx = HOOK_X[i];
+        const isEquipped = wpn.id === equippedWeaponId;
+        return (
+          <g key={wpn.id ?? i}>
+            {isEquipped && (
+              <ellipse cx={hx} cy="128" rx="40" ry="40"
+                fill="rgba(212,175,55,.2)" filter="url(#ar_b7)"
+                style={{animation:'ar_glow 2.2s ease-in-out infinite'}}/>
+            )}
+            <image
+              href={getSprite(wpn, i)}
+              x={hx - 32} y={96}
+              width="64" height="64"
+              transform={`rotate(-45, ${hx}, 128)`}
+              style={{animation:`ar_bladeGleam 9s ease-in-out infinite ${i * 1.5}s`}}
+            />
+          </g>
+        );
+      })}
 
       {/* ═══════════ RIGHT — SHIELD + SPEAR ═══════════ */}
       {/* Shield wall hook */}
@@ -390,6 +416,7 @@ const ArmoryScene = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default ArmoryScene;
