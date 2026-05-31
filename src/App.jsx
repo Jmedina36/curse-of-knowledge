@@ -3576,39 +3576,21 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     // Calculate base damage with special multiplier
     const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
     
-    // Crit system — charged specials roll D20 for crit tier; uncharged use random chance
-    const isCharged = chargeStacks === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges;
-    let isCrit, critMultiplier, chargedD20 = null;
-
-    if (isCharged) {
-      chargedD20 = Math.ceil(Math.random() * 20);
-      isCrit = true;
-      if      (chargedD20 === 1)  critMultiplier = 1.5;
-      else if (chargedD20 <= 9)   critMultiplier = 2.0;
-      else if (chargedD20 <= 17)  critMultiplier = 2.5;
-      else if (chargedD20 <= 19)  critMultiplier = 3.0;
-      else                         critMultiplier = 4.0;
-      setChargedCritRoll({ roll: chargedD20, multiplier: critMultiplier, attackName: special.name });
-    } else {
-      let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
-      if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
-        critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
-      }
-      if (equippedRing?.affixes?.critChance) {
-        critChance += equippedRing.affixes.critChance;
-      }
-      isCrit = (Math.random() * 100) < critChance;
-      critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
+    // Crit system — regular crit chance (D20 charged crits belong to Charged Strike, not specials)
+    let critChance = GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance;
+    if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
+      critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
     }
-    setChargeStacks(0);
+    if (equippedRing?.affixes?.critChance) {
+      critChance += equippedRing.affixes.critChance;
+    }
+    const isCrit = (Math.random() * 100) < critChance;
+    const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
 
     const rawDamage = (baseDamage * critMultiplier) * special.damageMultiplier;
     let damage = Math.max(1, Math.floor(rawDamage - enemyDef));
 
-    if (chargedD20) {
-      const tierLabel = critMultiplier >= 4 ? 'LEGENDARY STRIKE' : critMultiplier >= 3 ? 'DEVASTATING CRIT' : critMultiplier >= 2.5 ? 'HEAVY CRIT' : critMultiplier >= 2 ? 'CRITICAL HIT' : 'GLANCING CRIT';
-      addLog(`⚡ ${tierLabel}! (${critMultiplier}x)`);
-    } else if (isCrit) {
+    if (isCrit) {
       addLog(`💥 CRITICAL ${special.name.toUpperCase()}!`);
     }
     
@@ -4256,7 +4238,157 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setBossDebuffs(prev => ({ ...prev, stunned: false }));
     }
   };
-  
+
+  // ── Charged Strike: standalone D20 crit attack powered by full charges ───────
+  const chargedStrike = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
+    if (!battling || bossHp <= 0 || chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) return;
+
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+
+    // Enemy defense
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+
+    // D20 crit roll
+    const d20 = Math.ceil(Math.random() * 20);
+    let critMult;
+    if      (d20 === 1)  critMult = 1.5;
+    else if (d20 <= 9)   critMult = 2.0;
+    else if (d20 <= 17)  critMult = 2.5;
+    else if (d20 <= 19)  critMult = 3.0;
+    else                  critMult = 4.0;
+
+    setChargedCritRoll({ roll: d20, multiplier: critMult, attackName: 'Charged Strike' });
+    setChargeStacks(0);
+
+    const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage = Math.max(1, Math.floor((baseDamage * critMult) - enemyDef));
+
+    // Poison vulnerability bonus
+    if (bossDebuffs.poisonTurns > 0 && bossDebuffs.poisonedVulnerability > 0) {
+      damage += Math.floor(damage * bossDebuffs.poisonedVulnerability);
+    }
+
+    const tierLabel = critMult >= 4 ? 'LEGENDARY STRIKE' : critMult >= 3 ? 'DEVASTATING CRIT' : critMult >= 2.5 ? 'HEAVY CRIT' : critMult >= 2 ? 'CRITICAL HIT' : 'GLANCING CRIT';
+    addLog(`⚡ CHARGED STRIKE! ${tierLabel}! (${critMult}x) — ${damage} damage!`);
+
+    const newBossHp = Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true);
+    setTimeout(() => setBossFlash(false), 200);
+
+    // Update enemy dialogue based on HP
+    const hpPct = newBossHp / bossMax;
+    if (battleType === 'elite' || battleType === 'final') {
+      const key = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
+      const dlg = GAME_CONSTANTS.BOSS_DIALOGUE[key];
+      if (dlg) {
+        if (hpPct <= 0.25 && hpPct > 0) setEnemyDialogue(dlg.LOW);
+        else if (hpPct <= 0.5) setEnemyDialogue(dlg.MID);
+      }
+    } else if ((battleType === 'regular' || battleType === 'wave') && hpPct <= 0.33 && hpPct > 0) {
+      const q = GAME_CONSTANTS.ENEMY_DIALOGUE.LOW_HP;
+      setEnemyDialogue(q[Math.floor(Math.random() * q.length)]);
+    }
+
+    if (newBossHp <= 0) {
+      setTimeout(() => { setCurrentAnimation('battle-shake'); setTimeout(() => setCurrentAnimation(null), 250); }, 100);
+      setRecklessStacks(0);
+      const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
+      const goldGain = calculateCombatGold(isFinalBoss ? 'final' : (battleType === 'elite' ? 'elite' : (battleType === 'wave' ? 'wave' : 'normal')));
+      setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
+      setGold(e => e + Math.round(goldGain * (1 + Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2)) * 0.05)));
+      if (battleType === 'wave') setWaveGoldTotal(t => t + goldGain);
+      addLog(`Victory! The hero earned +${xpGain} XP, +${goldGain} Gold`);
+      if (battleType === 'elite' || battleType === 'final') {
+        const key = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
+        const dlg = GAME_CONSTANTS.BOSS_DIALOGUE[key];
+        if (dlg) setEnemyDialogue(dlg.VICTORY_PLAYER);
+      } else {
+        const vq = GAME_CONSTANTS.ENEMY_DIALOGUE.VICTORY_PLAYER;
+        setEnemyDialogue(vq[Math.floor(Math.random() * vq.length)]);
+      }
+      setBattling(false);
+      setBattleMode(false);
+      setKnightConsecutiveUses(0);
+      setKnightCrushingBlowCooldown(false);
+      setCrusaderSmiteCooldown(false);
+      setRecklessStacks(0);
+      generateVictoryLoot(battleType, isFinalBoss, goldGain);
+      return;
+    }
+
+    // Enemy counter-attack
+    setTimeout(() => {
+      if (!battling || hp <= 0) return;
+      setBossDebuffs(prev => ({ ...prev, stunned: false }));
+      setCurrentAnimation('battle-shake');
+      setTimeout(() => setCurrentAnimation(null), 250);
+
+      let baseAtk, atkScale;
+      if (battleType === 'regular' || battleType === 'wave') { baseAtk = 16; atkScale = 1.5; }
+      else { baseAtk = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_BASE : GAME_CONSTANTS.MINI_BOSS_ATK_BASE; atkScale = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING : GAME_CONSTANTS.MINI_BOSS_ATK_SCALING; }
+
+      const rawEnemy = baseAtk + (currentDay * atkScale);
+
+      if (playerDebuffs.bleedTurns > 0) {
+        const bleedDmg = playerDebuffs.bleedDamage;
+        setHp(h => { const n = Math.max(0, h - bleedDmg); if (n <= 0) setTimeout(() => enterDyingState(), 200); return n; });
+        addLog(`Bleeding! -${bleedDmg} HP`);
+        setPlayerDebuffs(prev => ({ ...prev, bleedTurns: prev.bleedTurns - 1 }));
+      }
+      if (playerDebuffs.armorShredTurns > 0) setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: prev.armorShredTurns - 1 }));
+
+      const shredMult = playerDebuffs.armorShredTurns > 0 ? 0.65 : 1;
+      const pArmor = Math.floor((getBaseDefense() + (armorPolishActive ? 5 : 0)) * shredMult);
+      const K = GAME_CONSTANTS.ARMOR_K_CONSTANT;
+      let bDmg = Math.max(1, Math.floor(rawEnemy * (K / (K + pArmor))));
+
+      let pctDR = 0;
+      Object.values(equippedArmor).forEach(p => { if (p?.affixes?.percentDR) pctDR += p.affixes.percentDR; });
+      if (pctDR > 0) bDmg = Math.floor(bDmg * (1 - Math.min(pctDR, 40) / 100));
+
+      if (curseLevel === 2) bDmg = Math.floor(bDmg * 1.2);
+      else if (curseLevel === 3) bDmg = Math.floor(bDmg * 1.4);
+
+      const wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      if (wisMod > 0) bDmg = Math.max(1, Math.floor(bDmg * (1 - wisMod * 0.02)));
+
+      const dexMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+      if (dexMod > 0 && Math.random() < Math.min(0.20, dexMod * 0.03)) { addLog(`⚡ You dodge the attack! (DEX)`); return; }
+
+      let knightDef = 0;
+      if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') knightDef -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction;
+      if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') knightDef += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus;
+      if (knightDef > 0) bDmg = Math.max(1, bDmg - Math.floor(bDmg * knightDef));
+      else if (knightDef < 0) bDmg += Math.floor(bDmg * Math.abs(knightDef));
+
+      if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
+        const ref = Math.floor(bDmg * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReflect);
+        bDmg = Math.max(1, bDmg - Math.floor(bDmg * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReduction));
+        if (ref > 0) { setBossHp(h => Math.max(0, h - ref)); addLog(`✨ Ethereal Barrier reflects ${ref} damage!`); }
+      }
+      if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
+        bDmg = Math.max(1, bDmg - Math.floor(bDmg * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.defenseBonus));
+      }
+
+      setPlayerFlash(true);
+      sounds.playerDamage();
+      setTimeout(() => setPlayerFlash(false), 200);
+      setHp(cur => { const n = Math.max(0, cur - bDmg); if (n <= 0) setTimeout(() => { addLog('💀 You fall! Roll for death!'); enterDyingState(); }, 500); return n; });
+      addLog(`💥 Boss strikes! -${bDmg} HP`);
+
+      if (crusaderHolyEmpowerment > 0) setCrusaderHolyEmpowerment(prev => { const n = prev - 1; if (n === 0) addLog(`✙ Holy Empowerment fades...`); return n; });
+      if (knightBloodOathTurns > 0) setKnightBloodOathTurns(prev => { const n = prev - 1; if (n === 0) { addLog(`⚔️ Blood Oath fades...`); setKnightConsecutiveUses(0); } return n; });
+      if (knightRallyingRoar > 0) setKnightRallyingRoar(prev => { const n = prev - 1; if (n === 0) addLog(`⚔️ Rallying Roar fades...`); return n; });
+      if (wizardEtherealBarrier > 0) setWizardEtherealBarrier(prev => { const n = prev - 1; if (n === 0) addLog(`✨ Ethereal Barrier fades...`); return n; });
+      if (assassinMarkForDeath > 0) setAssassinMarkForDeath(prev => { const n = prev - 1; if (n === 0) addLog(`☠️ Mark for Death fades...`); return n; });
+      if (crusaderBastionOfFaith > 0) setCrusaderBastionOfFaith(prev => { const n = prev - 1; if (n === 0) addLog(`✙ Bastion of Faith fades...`); return n; });
+    }, enemyDelay);
+  };
+
   const useCrushingBlow = (enemyDelay = 1000) => {
     if (!battling || bossHp <= 0 || !hero || hero.class.name !== 'Knight') return;
     
@@ -6349,7 +6481,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               crusaderBastionOfFaithCooldown={crusaderBastionOfFaithCooldown}
               victoryLoot={victoryLoot} log={log}
               attack={attack} useCrushingBlow={useCrushingBlow}
-              useSmite={useSmite} specialAttack={specialAttack}
+              useSmite={useSmite} specialAttack={specialAttack} chargedStrike={chargedStrike}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}
               flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
