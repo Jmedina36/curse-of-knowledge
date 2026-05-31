@@ -33,10 +33,10 @@ const getWeaponSprite = (wpn) => {
 };
 
 const ARMOR_SLOTS = [
-  { key: 'helmet', label: 'Helmet', icon: '🪖' },
-  { key: 'chest',  label: 'Chest',  icon: '🛡' },
-  { key: 'gloves', label: 'Gloves', icon: '🧤' },
-  { key: 'boots',  label: 'Boots',  icon: '👢' },
+  { key: 'helmet', label: 'Helmet', icon: '' },
+  { key: 'chest',  label: 'Chest',  icon: '' },
+  { key: 'gloves', label: 'Gloves', icon: '' },
+  { key: 'boots',  label: 'Boots',  icon: '' },
 ];
 
 const CATEGORIES = [
@@ -168,7 +168,7 @@ const InventoryModal = ({
       if (!items.length) return null;
       return (
         <div key={key} style={{ marginBottom: '14px' }}>
-          <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{icon} {label}</p>
+          <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</p>
           {items.map((piece, i) => (
             <div key={piece.id ?? i} style={{
               display: 'flex', alignItems: 'center', gap: '10px',
@@ -206,7 +206,7 @@ const InventoryModal = ({
       <>
         {allPendants.length > 0 && (
           <div style={{ marginBottom: '14px' }}>
-            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>📿 Pendant</p>
+            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Pendant</p>
             {allPendants.map((pend, i) => (
               <div key={pend.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(pend.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -220,7 +220,7 @@ const InventoryModal = ({
         )}
         {allRings.length > 0 && (
           <div>
-            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>💍 Ring</p>
+            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Ring</p>
             {allRings.map((rng, i) => (
               <div key={rng.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(rng.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
@@ -393,7 +393,7 @@ const InventoryModal = ({
                 const item = equippedArmor[key];
                 return (
                   <div key={key} style={slotBox(item)}>
-                    <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{icon} {label.toUpperCase()}</p>
+                    <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{label.toUpperCase()}</p>
                     {item ? (
                       <>
                         <img src={getArmorSprite(item, key)} alt={item.name}
@@ -415,7 +415,7 @@ const InventoryModal = ({
             {/* Accessory slots — 1×2 */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
               <div style={slotBox(equippedPendant)}>
-                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>📿 PENDANT</p>
+                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>PENDANT</p>
                 {equippedPendant ? (
                   <>
                     <p style={{ color: getRarityColor(equippedPendant.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedPendant.name}</p>
@@ -427,7 +427,7 @@ const InventoryModal = ({
                 )}
               </div>
               <div style={slotBox(equippedRing)}>
-                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>💍 RING</p>
+                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>RING</p>
                 {equippedRing ? (
                   <>
                     <p style={{ color: getRarityColor(equippedRing.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedRing.name}</p>
@@ -446,10 +446,10 @@ const InventoryModal = ({
               <p style={{ fontFamily: 'Cinzel, serif', fontSize: '9px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '10px' }}>TOTALS</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                 {[
-                  { label: '⚔ Attack',   value: getBaseAttack(),              color: '#68D391' },
-                  { label: '🛡 Defense',  value: getBaseDefense(),             color: COLORS.gold },
-                  { label: '❤ HP',       value: `${hp} / ${getMaxHp()}`,      color: '#FF6B6B' },
-                  { label: '⚡ Stamina', value: `${stamina} / ${getMaxStamina()}`, color: '#6BB6FF' },
+                  { label: 'Attack',   value: getBaseAttack(),              color: '#68D391' },
+                  { label: 'Defense',  value: getBaseDefense(),             color: COLORS.gold },
+                  { label: 'HP',       value: `${hp} / ${getMaxHp()}`,      color: '#FF6B6B' },
+                  { label: 'Stamina',  value: `${stamina} / ${getMaxStamina()}`, color: '#6BB6FF' },
                 ].map(({ label, value, color }) => (
                   <div key={label} style={{ background: VISUAL_STYLES.card.default, borderRadius: '6px', padding: '7px 10px', border: `1px solid rgba(155,139,126,0.2)` }}>
                     <p style={{ fontSize: '9px', color: COLORS.silver, marginBottom: '3px' }}>{label}</p>
