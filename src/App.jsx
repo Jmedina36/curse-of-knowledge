@@ -29,12 +29,23 @@ import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 
+const NARRATION_PAGES = [
+  "Before the first lesson was abandoned,\nthere was only light.",
+  "Knowledge was not merely power — it was the wall between the living world and what lurked beneath.\n\nThe ancients called it the Abyss: a void that hungers for every thought left unthought, every page unturned, every hour surrendered to the easier path.",
+  "The curse began slowly.\n\nOne skipped lesson. One forgotten commitment. One day of rest that stretched into a week.\n\nSmall things, each of them. But the Abyss does not require great failures. It grows in the margins — in the silence where discipline should have been.",
+  "And when the first champion fell, the darkness took them whole.\n\nTheir unfinished work became its claws.\nTheir abandoned ambitions became its hunger.\nTheir final wish — to try again, to do better —\nbecame its voice.",
+  "That is the true horror of the curse.\n\nEvery hero who came before you is still here. Their failures are woven into the shadow. Their regrets power the darkness you now face.\n\nAnd when you fall — and you will fall — you too will join them, nameless, waiting for the next champion to inherit what you could not finish.",
+  "The adventure never ends.\n\nThe Abyss is eternal. The curse is patient. It has consumed a thousand souls before you, and it will consume a thousand more.\n\nBut that is not your concern.\n\nThe flame is yours now.\n\nHow long can you hold back the dark?",
+];
+
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
-  const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'revealed' | 'confirm' | 'fading' | 'done'
+  const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'revealed' | 'confirm' | 'narrating' | 'fading' | 'done'
+  const [narrationIndex, setNarrationIndex] = useState(0);
+  const [narrationActive, setNarrationActive] = useState(false); // keeps narration content visible during fade-out
   const introTimers = useRef([]);
   const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
@@ -5672,6 +5683,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             transition: 'opacity 0.8s ease-in-out',
             cursor: introPhase === 'visible' ? 'pointer' : 'default',
             pointerEvents: introPhase === 'fading' ? 'none' : 'auto',
+            overflow: 'hidden',
             userSelect: 'none',
           }}
         >
@@ -5687,6 +5699,108 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             background: 'radial-gradient(ellipse at 50% 38%, rgba(140,0,0,0.22) 0%, transparent 60%)',
           }} />
 
+          {/* ── Narration screen ── */}
+          {narrationActive && (
+            <div
+              onClick={() => {
+                if (narrationIndex < NARRATION_PAGES.length - 1) {
+                  setNarrationIndex(i => i + 1);
+                } else {
+                  introTimers.current.forEach(clearTimeout);
+                  setIntroPhase('fading');
+                  const t = setTimeout(() => {
+                    setNarrationActive(false);
+                    setIntroPhase('done');
+                    setShowCustomizeModal(true);
+                  }, 800);
+                  introTimers.current = [t];
+                }
+              }}
+              style={{
+                position: 'absolute', inset: 0, zIndex: 1,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                cursor: 'pointer', padding: '48px 32px',
+              }}
+            >
+              {/* Skip */}
+              <button
+                onClick={e => {
+                  e.stopPropagation();
+                  introTimers.current.forEach(clearTimeout);
+                  setIntroPhase('fading');
+                  const t = setTimeout(() => {
+                    setNarrationActive(false);
+                    setIntroPhase('done');
+                    setShowCustomizeModal(true);
+                  }, 800);
+                  introTimers.current = [t];
+                }}
+                style={{
+                  position: 'absolute', top: '24px', right: '28px',
+                  fontFamily: "'Cinzel', serif", fontSize: '0.65rem',
+                  letterSpacing: '0.25em', textTransform: 'uppercase',
+                  color: 'rgba(180,180,180,0.3)', background: 'none', border: 'none',
+                  cursor: 'pointer', transition: 'color 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'rgba(220,220,220,0.7)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(180,180,180,0.3)'; }}
+              >
+                Skip ›
+              </button>
+
+              {/* Narration text — key forces re-animation on each page */}
+              <div
+                key={narrationIndex}
+                style={{ maxWidth: '580px', textAlign: 'center', animation: 'intro-fade-up 0.8s ease-out both' }}
+              >
+                <p style={{
+                  fontFamily: "'Cinzel', serif",
+                  fontSize: narrationIndex === 0 || narrationIndex === NARRATION_PAGES.length - 1
+                    ? 'clamp(1.1rem, 3vw, 1.5rem)'
+                    : 'clamp(0.9rem, 2.2vw, 1.1rem)',
+                  lineHeight: 2,
+                  letterSpacing: '0.04em',
+                  color: narrationIndex === NARRATION_PAGES.length - 1
+                    ? 'rgba(245,245,220,0.95)'
+                    : 'rgba(210,190,170,0.82)',
+                  whiteSpace: 'pre-line',
+                  textShadow: narrationIndex === NARRATION_PAGES.length - 1
+                    ? '0 0 30px rgba(200,30,30,0.4)'
+                    : 'none',
+                }}>
+                  {NARRATION_PAGES[narrationIndex]}
+                </p>
+              </div>
+
+              {/* Progress dots */}
+              <div style={{ display: 'flex', gap: '7px', marginTop: '52px' }}>
+                {NARRATION_PAGES.map((_, i) => (
+                  <div key={i} style={{
+                    width: i === narrationIndex ? '18px' : '5px',
+                    height: '5px',
+                    borderRadius: '3px',
+                    background: i === narrationIndex ? 'rgba(212,175,55,0.75)' : 'rgba(255,255,255,0.12)',
+                    transition: 'all 0.4s ease',
+                  }} />
+                ))}
+              </div>
+
+              {/* Continue hint */}
+              <p style={{
+                position: 'absolute', bottom: '28px',
+                fontFamily: "'Cinzel', serif", fontSize: '0.58rem',
+                letterSpacing: '0.3em', textTransform: 'uppercase',
+                color: 'rgba(212,175,55,0.3)',
+                animation: 'intro-hint-pulse 2.5s ease-in-out 1.2s infinite',
+              }}>
+                {narrationIndex < NARRATION_PAGES.length - 1 ? '✦ click to continue ✦' : '✦ click to begin your journey ✦'}
+              </p>
+            </div>
+          )}
+
+          {/* ── Title / menu content (hidden during narration) ── */}
+          {!narrationActive && (
+            <>
           {/* Title — animates once on mount, stays frozen after */}
           <div style={{ animation: 'intro-slam 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both', textAlign: 'center' }}>
             <h1 style={{
@@ -5858,14 +5972,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       setAchievementStats({ tasksCompleted: 0, studyMinutes: 0, deepWorkSessions: 0, perfectDays: 0, bossesDefeated: 0, eliteBossesDefeated: 0, battlesFled: 0, battlesWon: 0, cardsStudied: 0, consecutiveDays: 0 });
                       setUnlockedAchievements([]);
                       localStorage.removeItem('fantasyStudyQuest');
-                      // Fade out, then go to game and open hero customization
-                      introTimers.current.forEach(clearTimeout);
-                      setIntroPhase('fading');
-                      const t = setTimeout(() => {
-                        setIntroPhase('done');
-                        setShowCustomizeModal(true);
-                      }, 800);
-                      introTimers.current = [t];
+                      // Start Night Vigil and launch the narration
+                      audioManager.play(TRACKS.nightVigil);
+                      setNarrationIndex(0);
+                      setNarrationActive(true);
+                      setIntroPhase('narrating');
                     }}
                     style={{
                       fontFamily: "'Cinzel', serif", fontWeight: 700,
@@ -5900,6 +6011,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             )}
 
           </div>
+            </>
+          )}
         </div>
       )}
 
