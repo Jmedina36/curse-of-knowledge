@@ -1235,21 +1235,13 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     setDailyQuestCompleted(false);
   }, [currentDay]);
 
-  // ── Title screen music (Night Vigil) ─────────────────────────────────────────
-  useEffect(() => {
-    if (!hasStarted) {
-      audioManager.play(TRACKS.nightVigil);
-    } else {
-      audioManager.stop();
-    }
-  }, [hasStarted]);
-
   // ── Battle music ─────────────────────────────────────────────────────────────
   useEffect(() => {
     if (battling) {
       const track = (isFinalBoss || battleType === 'elite') ? TRACKS.boss : TRACKS.battle;
       audioManager.play(track);
     } else if (hasStarted) {
+      // Stop battle music when not in battle (Night Vigil is handled by QuestTab)
       audioManager.stop();
     }
   }, [battling, battleType, isFinalBoss, hasStarted]);
