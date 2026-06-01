@@ -338,12 +338,12 @@ const InventoryModal = ({
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowInventoryModal(false)}>
       {/* Blacksmith — only shown when viewport is wide enough that it won't clip off-screen */}
       {showNPC && <motion.div
-        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, x: -20, y: '-50%' }} animate={{ opacity: 1, x: 0, y: '-50%' }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
         style={{
           position: 'absolute',
           left: 'calc(25% - min(15vw, 225px) - clamp(70px, 7.5vw, 120px))',
-          top: '50%', transform: 'translateY(-62%)',
+          top: '40%',
           width: 'clamp(140px, 15vw, 240px)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px',
           pointerEvents: 'auto',
