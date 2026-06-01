@@ -71,126 +71,111 @@ const QuestTab = ({
               boxShadow: (() => { const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'}; const g=m[hero.class.color]||m.yellow; return '0 4px 30px '+g+', 0 0 60px '+g; })()
             }}>
 
-              {/* Overlay: dark enough for light text, light enough to show scroll texture */}
-              <div style={{position:'absolute',inset:0,background:'rgba(10,5,0,0.42)',pointerEvents:'none',zIndex:0}}/>
-
-              {/* RPG Character Sheet layout */}
+              {/* RPG Character Sheet layout — ink on parchment */}
               <>
               {/* Watermark emblem */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1, opacity: 0.04, color: '#F5F5DC'}}>
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:0.06,color:'#3D1F08'}}>
                 {getCardStyle(hero.class, currentDay).emblem}
               </div>
 
               {/* Corner badges */}
-              <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg z-20" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(212,175,55,0.3)',borderTop:'none',borderLeft:'none'}}>
-                <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
+              <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderLeft:'none'}}>
+                <span className="text-xs font-bold" style={{color:'#3D1F08',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
               </div>
-              <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg z-20" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(212,175,55,0.3)',borderTop:'none',borderRight:'none'}}>
-                <span className="text-xs font-bold" style={{color:'rgba(212,175,55,0.7)',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level} • {getGuildRank(level).name}</span>
+              <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderRight:'none'}}>
+                <span className="text-xs font-bold" style={{color:'#3D1F08',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level} • {getGuildRank(level).name}</span>
               </div>
 
               <div className="relative z-10 pt-8">
-                {/* RPG Sheet: portrait left, stats right */}
                 <div style={{display:'flex',gap:'16px',alignItems:'flex-start'}}>
 
                   {/* ── LEFT: Portrait column ── */}
-                  <div style={{flexShrink:0,width:'clamp(90px,22%,130px)',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}>
-                    {/* Portrait frame */}
+                  <div style={{flexShrink:0,width:'clamp(90px,22%,130px)',display:'flex',flexDirection:'column',alignItems:'center',gap:'6px'}}>
                     <div style={{
-                      width:'100%',
-                      aspectRatio:'3/4',
-                      borderRadius:'8px',
-                      overflow:'hidden',
-                      border:`2px solid ${(()=>{const m={red:'rgba(220,50,50,0.6)',blue:'rgba(96,165,250,0.6)',green:'rgba(16,185,129,0.6)',white:'rgba(200,200,200,0.5)',purple:'rgba(167,139,250,0.6)',yellow:'rgba(212,175,55,0.6)',amber:'rgba(34,197,94,0.6)'};return m[hero.class.color]||m.yellow;})()}`,
-                      boxShadow:(()=>{const m={red:'rgba(220,50,50,0.35)',blue:'rgba(96,165,250,0.35)',green:'rgba(16,185,129,0.35)',white:'rgba(200,200,200,0.25)',purple:'rgba(167,139,250,0.35)',yellow:'rgba(212,175,55,0.35)',amber:'rgba(34,197,94,0.35)'};return `0 0 20px ${m[hero.class.color]||m.yellow}, inset 0 0 20px rgba(0,0,0,0.5)`;})(),
-                      background:'rgba(0,0,0,0.6)',
-                      position:'relative',
+                      width:'100%',aspectRatio:'3/4',borderRadius:'6px',overflow:'hidden',position:'relative',
+                      border:'2px solid rgba(80,45,15,0.6)',
+                      boxShadow:'0 2px 12px rgba(0,0,0,0.35)',
                     }}>
-                      <img
-                        src={getHeroPortrait(hero.class.name, hero.gender)}
-                        alt={hero.name}
+                      <img src={getHeroPortrait(hero.class.name, hero.gender)} alt={hero.name}
                         style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'top'}}
-                        onError={e => { e.currentTarget.style.display='none'; }}
+                        onError={e=>{e.currentTarget.style.display='none';}}
                       />
-                      {/* Vignette overlay */}
-                      <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,transparent 60%,rgba(0,0,0,0.7))',pointerEvents:'none'}}/>
+                      <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,transparent 65%,rgba(0,0,0,0.55))',pointerEvents:'none'}}/>
                     </div>
-
-                    {/* Name under portrait */}
-                    <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.65rem,1.5vw,0.8rem)',letterSpacing:'0.06em',color:'#C8C8B0',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',letterSpacing:'0.1em',color:(()=>{const m={red:'rgba(220,50,50,0.8)',blue:'rgba(96,165,250,0.8)',green:'rgba(16,185,129,0.8)',white:'rgba(200,200,200,0.8)',purple:'rgba(167,139,250,0.8)',yellow:'rgba(212,175,55,0.8)',amber:'rgba(34,197,94,0.8)'};return m[hero.class.color]||m.yellow;})(),textAlign:'center',textTransform:'uppercase',marginTop:'-4px'}}>{hero.class.name}</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.08em',color:'rgba(212,175,55,0.55)',textAlign:'center',textTransform:'uppercase',marginTop:'-4px'}}>{hero.title}</p>
-
-                    {/* Gold display */}
-                    <div style={{width:'100%',borderRadius:'6px',padding:'5px 6px',background:'rgba(0,0,0,0.5)',border:'1px solid rgba(212,175,55,0.25)',textAlign:'center',marginTop:'2px'}}>
-                      <span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',color:'rgba(212,175,55,0.5)',letterSpacing:'0.1em',display:'block',marginBottom:'2px'}}>GOLD</span>
-                      <span style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'0.9rem',color:'#D4AF37'}}>{gold}</span>
+                    <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.65rem,1.5vw,0.8rem)',letterSpacing:'0.06em',color:'#2C1A0A',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
+                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',letterSpacing:'0.1em',color:'#7A4520',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
+                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.08em',color:'#A0692A',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.title}</p>
+                    <div style={{width:'100%',borderRadius:'5px',padding:'4px 6px',background:'rgba(180,140,80,0.25)',border:'1px solid rgba(80,45,15,0.3)',textAlign:'center',marginTop:'2px'}}>
+                      <span style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',color:'#7A4520',letterSpacing:'0.1em',display:'block',marginBottom:'1px'}}>GOLD</span>
+                      <span style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'0.9rem',color:'#5C2E00'}}>{gold}</span>
                     </div>
                   </div>
 
                   {/* ── RIGHT: Stats column ── */}
-                  <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:'10px'}}>
+                  <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:'8px'}}>
 
                     {/* XP bar */}
-                    <div className="rounded-lg p-2" style={{backgroundColor:'rgba(0,0,0,0.35)',border:'1px solid rgba(0,0,0,0.3)'}}>
+                    <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.25)'}}>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="font-bold uppercase tracking-wide" style={{color:(()=>{const m={red:'rgba(220,50,50,1)',blue:'rgba(96,165,250,1)',green:'rgba(16,185,129,1)',white:'rgba(200,200,200,1)',purple:'rgba(167,139,250,1)',yellow:'rgba(212,175,55,1)',amber:'rgba(34,197,94,1)'};return m[hero.class.color]||m.yellow;})(),fontFamily:'Cinzel,serif'}}>Experience</span>
-                        <span className="font-bold" style={{color:'#F5F5DC'}}>{(() => {
-                          let s=0; for(let i=1;i<level;i++) s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));
-                          const cur=xp-s; const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));
-                          return `${cur} / ${need}`;
-                        })()}</span>
+                        <span style={{fontFamily:'Cinzel,serif',fontWeight:700,letterSpacing:'0.08em',color:'#5C2E00',textTransform:'uppercase',fontSize:'0.65rem'}}>Experience</span>
+                        <span style={{fontFamily:'Cinzel,serif',fontWeight:700,color:'#3D1F08',fontSize:'0.65rem'}}>{(()=>{let s=0;for(let i=1;i<level;i++)s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));const cur=xp-s;const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));return`${cur} / ${need}`;})()}</span>
                       </div>
-                      <div className="rounded-full h-2.5 overflow-hidden" style={{backgroundColor:'rgba(0,0,0,0.5)'}}>
+                      <div className="rounded-full h-2.5 overflow-hidden" style={{background:'rgba(80,45,15,0.2)',border:'1px solid rgba(80,45,15,0.2)'}}>
                         <div className="h-full rounded-full transition-all duration-300" style={{
-                          background:(()=>{const g={red:'linear-gradient(90deg,#8B0000,#DC143C)',blue:'linear-gradient(90deg,#2563EB,#60A5FA)',green:'linear-gradient(90deg,#064E3B,#10B981)',white:'linear-gradient(90deg,#E5E7EB,#FFFFFF)',purple:'linear-gradient(90deg,#4B0082,#9370DB)',yellow:'linear-gradient(90deg,#B8860B,#FFD700)',amber:'linear-gradient(90deg,#166534,#22C55E)'};return g[hero.class.color]||g.yellow;})(),
+                          background:(()=>{const g={red:'linear-gradient(90deg,#7F0000,#C41C1C)',blue:'linear-gradient(90deg,#1E3A8A,#2563EB)',green:'linear-gradient(90deg,#064E3B,#059669)',white:'linear-gradient(90deg,#9CA3AF,#D1D5DB)',purple:'linear-gradient(90deg,#4B0082,#7C3AED)',yellow:'linear-gradient(90deg,#92400E,#B45309)',amber:'linear-gradient(90deg,#14532D,#15803D)'};return g[hero.class.color]||g.yellow;})(),
                           width:`${(()=>{let s=0;for(let i=1;i<level;i++)s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));const cur=xp-s;const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));return(cur/need)*100;})()}%`
                         }}/>
                       </div>
                     </div>
 
                     {/* HP + SP bars */}
-                    <div style={{display:'flex',flexDirection:'column',gap:'6px'}}>
-                      <div className="rounded-lg p-2.5" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(139,0,0,0.5)'}}>
-                        <div className="flex justify-between items-center mb-1"><div className="flex items-center gap-1.5"><HeartPulse size={13} style={{color:'#FF6B6B'}}/><span className="text-xs font-bold uppercase tracking-widest" style={{color:'#FF6B6B'}}>HP</span></div><span className="text-xs font-bold" style={{color:hp/getMaxHp()<0.25?'#EF4444':'#F5F5DC'}}>{hp}/{getMaxHp()}</span></div>
-                        <div className="rounded h-2 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(139,0,0,0.3)'}}><div className="h-full rounded transition-all duration-300" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'linear-gradient(to right,#7F1D1D,#DC2626)':'linear-gradient(to right,#7f1d1d,#b91c1c,#ef4444)'}}/></div>
+                    <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
+                      <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(139,0,0,0.3)'}}>
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="flex items-center gap-1.5"><HeartPulse size={13} style={{color:'#8B0000'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',fontWeight:700,color:'#8B0000',letterSpacing:'0.1em'}}>HP</span></div>
+                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',fontWeight:700,color:hp/getMaxHp()<0.25?'#8B0000':'#2C1A0A'}}>{hp}/{getMaxHp()}</span>
+                        </div>
+                        <div className="rounded h-2 overflow-hidden" style={{background:'rgba(139,0,0,0.15)'}}><div className="h-full rounded transition-all" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'#8B0000':'linear-gradient(to right,#7f1d1d,#b91c1c)'}}/></div>
                       </div>
-                      <div className="rounded-lg p-2.5" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(30,58,140,0.5)'}}>
-                        <div className="flex justify-between items-center mb-1"><div className="flex items-center gap-1.5"><Sparkles size={13} style={{color:'#60A5FA'}}/><span className="text-xs font-bold uppercase tracking-widest" style={{color:'#60A5FA'}}>SP</span></div><span className="text-xs font-bold" style={{color:'#93C5FD'}}>{stamina}/{getMaxStamina()}</span></div>
-                        <div className="rounded h-2 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(30,58,140,0.3)'}}><div className="h-full rounded transition-all duration-300" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb,#3b82f6)'}}/></div>
+                      <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(30,58,140,0.3)'}}>
+                        <div className="flex justify-between items-center mb-1">
+                          <div className="flex items-center gap-1.5"><Sparkles size={13} style={{color:'#1E3A8A'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',fontWeight:700,color:'#1E3A8A',letterSpacing:'0.1em'}}>SP</span></div>
+                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',fontWeight:700,color:'#1E3A8A'}}>{stamina}/{getMaxStamina()}</span>
+                        </div>
+                        <div className="rounded h-2 overflow-hidden" style={{background:'rgba(30,58,140,0.15)'}}><div className="h-full rounded transition-all" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb)'}}/></div>
                       </div>
                     </div>
 
-                    {/* ATK + DEF row */}
-                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'8px'}}>
-                      {(()=>{const c=(()=>{const m={red:'rgba(220,50,50,1)',blue:'rgba(96,165,250,1)',green:'rgba(16,185,129,1)',white:'rgba(200,200,200,1)',purple:'rgba(167,139,250,1)',yellow:'rgba(212,175,55,1)',amber:'rgba(34,197,94,1)'};return m[hero.class.color]||m.yellow;})();const b=(()=>{const m={red:'rgba(220,50,50,0.5)',blue:'rgba(96,165,250,0.5)',green:'rgba(16,185,129,0.5)',white:'rgba(200,200,200,0.5)',purple:'rgba(167,139,250,0.5)',yellow:'rgba(212,175,55,0.5)',amber:'rgba(34,197,94,0.5)'};return m[hero.class.color]||m.yellow;})();return(<>
-                        <div className="rounded-lg p-2 text-center" style={{background:'rgba(0,0,0,0.4)',border:`1px solid ${b}`}}>
-                          <Swords size={15} style={{color:c,margin:'0 auto 4px'}}/>
-                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.15rem',color:'#F5F5DC',lineHeight:1}}>{getBaseAttack()}</p>
-                          <p className="text-xs uppercase tracking-widest mt-0.5" style={{color:'rgba(245,245,220,0.4)'}}>Attack</p>
+                    {/* ATK + DEF */}
+                    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'6px'}}>
+                      {(()=>{const ic=(()=>{const m={red:'#8B0000',blue:'#1E3A8A',green:'#064E3B',white:'#4B5563',purple:'#4B0082',yellow:'#92400E',amber:'#14532D'};return m[hero.class.color]||m.yellow;})();return(<>
+                        <div className="rounded p-2 text-center" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.3)'}}>
+                          <Swords size={14} style={{color:ic,margin:'0 auto 3px'}}/>
+                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.1rem',color:'#2C1A0A',lineHeight:1}}>{getBaseAttack()}</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:'#7A4520',marginTop:'2px',textTransform:'uppercase'}}>Attack</p>
                         </div>
-                        <div className="rounded-lg p-2 text-center" style={{background:'rgba(0,0,0,0.4)',border:`1px solid ${b}`}}>
-                          <ShieldCheck size={15} style={{color:c,margin:'0 auto 4px'}}/>
-                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.15rem',color:'#F5F5DC',lineHeight:1}}>{Math.floor((getBaseDefense()/(getBaseDefense()+50))*100)}%</p>
-                          <p className="text-xs uppercase tracking-widest mt-0.5" style={{color:'rgba(245,245,220,0.4)'}}>Defense</p>
+                        <div className="rounded p-2 text-center" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.3)'}}>
+                          <ShieldCheck size={14} style={{color:ic,margin:'0 auto 3px'}}/>
+                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.1rem',color:'#2C1A0A',lineHeight:1}}>{Math.floor((getBaseDefense()/(getBaseDefense()+50))*100)}%</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:'#7A4520',marginTop:'2px',textTransform:'uppercase'}}>Defense</p>
                         </div>
                       </>);})()}
                     </div>
 
                     {/* Ability Scores */}
-                    {(()=>{const m={red:'rgba(220,50,50,0.45)',blue:'rgba(96,165,250,0.45)',green:'rgba(16,185,129,0.45)',white:'rgba(200,200,200,0.4)',purple:'rgba(167,139,250,0.45)',yellow:'rgba(212,175,55,0.45)',amber:'rgba(34,197,94,0.45)'};const c=m[hero.class.color]||m.yellow;const ab=hero.abilities||{str:10,dex:10,con:10,int:10,wis:10,cha:10};const pMap={Knight:'str',Wizard:'int',Assassin:'dex',Crusader:'con'};const primary=pMap[hero.class.name]||'str';const cMap={red:'rgba(220,50,50,VAL)',blue:'rgba(96,165,250,VAL)',green:'rgba(16,185,129,VAL)',white:'rgba(200,200,200,VAL)',purple:'rgba(167,139,250,VAL)',yellow:'rgba(212,175,55,VAL)',amber:'rgba(34,197,94,VAL)'};const base=cMap[hero.class.color]||cMap.yellow;return(<>
-                      <div className="flex items-center justify-center gap-2 mb-1.5">
-                        <div style={{flex:'1',height:'1px',background:`linear-gradient(to right,transparent,${c})`}}/>
-                        <p className="text-xs uppercase tracking-wider whitespace-nowrap" style={{color:c,fontFamily:'Cinzel,serif'}}>Ability Scores</p>
-                        <div style={{flex:'1',height:'1px',background:`linear-gradient(to left,transparent,${c})`}}/>
+                    {(()=>{const ab=hero.abilities||{str:10,dex:10,con:10,int:10,wis:10,cha:10};const pMap={Knight:'str',Wizard:'int',Assassin:'dex',Crusader:'con'};const primary=pMap[hero.class.name]||'str';const ic=(()=>{const m={red:'#8B0000',blue:'#1E3A8A',green:'#064E3B',white:'#374151',purple:'#4B0082',yellow:'#92400E',amber:'#14532D'};return m[hero.class.color]||m.yellow;})();return(<>
+                      <div className="flex items-center gap-2 mb-1">
+                        <div style={{flex:'1',height:'1px',background:'rgba(80,45,15,0.3)'}}/>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.15em',color:'#7A4520',textTransform:'uppercase',whiteSpace:'nowrap'}}>Ability Scores</p>
+                        <div style={{flex:'1',height:'1px',background:'rgba(80,45,15,0.3)'}}/>
                       </div>
                       <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'4px'}}>
                         {['str','dex','con','int','wis','cha'].map(key=>{
                           const score=ab[key]||10;const mod=Math.floor((score-10)/2);const ip=key===primary;
-                          return(<div key={key} className="rounded p-1.5 text-center" style={{background:ip?base.replace('VAL','0.08'):'rgba(0,0,0,0.35)',border:`1px solid ${ip?base.replace('VAL','0.7'):'rgba(80,80,80,0.4)'}`}}>
-                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:ip?base.replace('VAL','1'):'rgba(180,180,180,0.5)',marginBottom:'1px'}}>{key.toUpperCase()}</p>
-                            <p style={{fontFamily:'Cinzel,serif',fontSize:'1rem',fontWeight:900,color:'#F5F5DC',lineHeight:1}}>{score}</p>
-                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',color:mod>=0?'#34D399':'#EF4444',marginTop:'1px'}}>{mod>=0?'+':''}{mod}</p>
+                          return(<div key={key} className="rounded text-center" style={{padding:'5px 2px',background:ip?'rgba(180,140,80,0.35)':'rgba(180,140,80,0.15)',border:`1px solid ${ip?'rgba(80,45,15,0.5)':'rgba(80,45,15,0.2)'}`}}>
+                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.48rem',letterSpacing:'0.08em',color:ip?ic:'#A0692A',marginBottom:'1px',fontWeight:ip?900:400}}>{key.toUpperCase()}</p>
+                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.95rem',fontWeight:900,color:'#2C1A0A',lineHeight:1}}>{score}</p>
+                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.52rem',color:mod>=0?'#2D5A27':'#8B0000',marginTop:'1px',fontWeight:700}}>{mod>=0?'+':''}{mod}</p>
                           </div>);
                         })}
                       </div>
@@ -198,23 +183,22 @@ const QuestTab = ({
 
                     {/* Curse status */}
                     {curseLevel > 0 && (
-                      <div className={`rounded-lg p-2 border ${curseLevel===3?'animate-pulse':''}`} style={{background:'rgba(107,44,145,0.3)',borderColor:curseLevel===3?'rgba(220,38,38,0.8)':'rgba(138,59,181,0.6)'}}>
+                      <div className={`rounded p-2 ${curseLevel===3?'animate-pulse':''}`} style={{background:'rgba(107,44,145,0.15)',border:`1px solid ${curseLevel===3?'rgba(139,0,0,0.6)':'rgba(107,44,145,0.4)'}`}}>
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <span style={{fontSize:'1.1rem'}}>{curseLevel===1?'🌑':curseLevel===2?'🌑🌑':'☠️'}</span>
+                            <span style={{fontSize:'1rem'}}>{curseLevel===1?'🌑':curseLevel===2?'🌑🌑':'☠️'}</span>
                             <div>
-                              <p className="font-bold text-xs uppercase" style={{color:curseLevel===3?'#FF6B6B':'#B794F4',fontFamily:'Cinzel,serif'}}>{curseLevel===1?'CURSED':curseLevel===2?'DEEPLY CURSED':'CONDEMNED'}</p>
-                              <p className="text-xs" style={{color:'rgba(245,245,220,0.7)'}}>{curseLevel}/3{curseLevel===3?' — One more death...':''}</p>
+                              <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'0.6rem',letterSpacing:'0.1em',textTransform:'uppercase',color:curseLevel===3?'#8B0000':'#4B0082'}}>{curseLevel===1?'CURSED':curseLevel===2?'DEEPLY CURSED':'CONDEMNED'}</p>
+                              <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',color:'#5C2E00'}}>{curseLevel}/3{curseLevel===3?' — One more death...':''}</p>
                             </div>
                           </div>
-                          <p className="text-xs" style={{color:'#B794F4'}}>{curseLevel===1?'75%':curseLevel===2?'50%':'25%'} XP</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',color:'#4B0082',fontWeight:700}}>{curseLevel===1?'75%':curseLevel===2?'50%':'25%'} XP</p>
                         </div>
                       </div>
                     )}
 
                   </div>{/* end right column */}
                 </div>{/* end sheet row */}
-
               </div>
               </>
             </div>
