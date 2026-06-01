@@ -573,7 +573,7 @@ const CraftingModal = ({
           </motion.div>
         </div>
       )}
-    </div>{/* end overlay */}
+    </div>
   );
 };
 
