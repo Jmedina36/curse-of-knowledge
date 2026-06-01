@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
-import ShopScene from './ShopScene';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -213,9 +212,6 @@ const CraftingModal = ({
         >
           <X size={20} />
         </button>
-
-        {/* Shop Scene */}
-        <ShopScene dialogue={getMerchantDialogue()} gold={gold} />
 
         {/* Main Tabs: Potions / Equipment */}
         <div className="grid grid-cols-2 gap-2 mb-4">
