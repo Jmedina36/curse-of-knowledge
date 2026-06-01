@@ -15,6 +15,7 @@ export const TRACKS = {
   ancientWinds: '/sounds/music/Ancient Winds.mp3',
   midnightTale: '/sounds/music/Midnight Tale.mp3',
   unholyKnight: '/sounds/music/Unholy Knight.mp3',
+  darkling:     '/sounds/music/Darkling.mp3',
   battle:     '/sounds/music/battle.mp3',
   boss:       '/sounds/music/boss.mp3',
   ambient:    '/sounds/music/ambient.mp3',
