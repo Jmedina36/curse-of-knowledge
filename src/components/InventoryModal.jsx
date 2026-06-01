@@ -307,7 +307,7 @@ const InventoryModal = ({
       <motion.div
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          width: '85vw', maxWidth: '1400px', height: '95vh',
+          width: '78vw', maxWidth: '1300px', height: '95vh',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
