@@ -63,7 +63,7 @@ const QuestTab = ({
   return (
             <div className="space-y-4">
             <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
-              backgroundImage: 'url(/Updated scroll.png)',
+              backgroundImage: 'url(/Updated%20scroll.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
@@ -100,7 +100,6 @@ const QuestTab = ({
                         style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'top'}}
                         onError={e=>{e.currentTarget.style.display='none';}}
                       />
-                      <div style={{position:'absolute',inset:0,background:'linear-gradient(to bottom,transparent 65%,rgba(0,0,0,0.55))',pointerEvents:'none'}}/>
                     </div>
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.65rem,1.5vw,0.8rem)',letterSpacing:'0.06em',color:'#2C1A0A',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',letterSpacing:'0.1em',color:'#7A4520',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
