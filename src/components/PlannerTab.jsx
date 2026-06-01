@@ -605,7 +605,6 @@ const PlannerTab = ({
               )}
             </div>
       </div>
-    </div>
   );
 };
 
