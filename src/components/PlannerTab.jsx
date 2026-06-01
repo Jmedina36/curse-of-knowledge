@@ -611,7 +611,6 @@ const PlannerTab = ({
               </div>
               </div>
               )}
-            </div>
         </div>
       </div>
     </div>
