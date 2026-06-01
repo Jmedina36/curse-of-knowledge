@@ -286,13 +286,15 @@ const InventoryModal = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowInventoryModal(false)}>
+      {/* Outer row — shifted left by half of Grimdar's column so the modal appears centered */}
+      <div style={{ display: 'flex', alignItems: 'center', transform: 'translateX(-160px)', gap: '20px' }} onClick={e => e.stopPropagation()}>
 
-      {/* Blacksmith — fills all space left of modal, centered within it */}
+      {/* Blacksmith — fixed width column, centered within */}
       <motion.div
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
-        style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px', height: '100%' }}
+        style={{ width: '320px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px' }}
         onClick={e => e.stopPropagation()}
       >
         <img src="/npcs/blacksmith.png" alt="Grimdar"
@@ -470,6 +472,7 @@ const InventoryModal = ({
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 };
