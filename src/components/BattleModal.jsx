@@ -172,7 +172,7 @@ const BattleModal = ({
   // ── Creature sprite helper ─────────────────────────────────────────────────
   const getCreatureImg = (name, battleType, isFinalBoss) => {
     const seed = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    if (isFinalBoss)            return `/creatures/creature${17 + (seed % 9)}.png`;
+    if (isFinalBoss)            return '/undead-king.png';
     if (battleType === 'elite') return `/creatures/creature${9  + (seed % 8)}.png`;
     return                             `/creatures/creature${1  + (seed % 8)}.png`;
   };
