@@ -59,6 +59,7 @@ const ForgeTab = ({
   addLog,
 }) => {
   const [rylanQuote, setRylanQuote] = useState(() => getRylanQuote(flashcardDecks));
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -67,56 +68,61 @@ const ForgeTab = ({
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    const fn = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+
   const totalCards = flashcardDecks.reduce((s, d) => s + d.cards.length, 0);
   const mastered   = flashcardDecks.reduce((s, d) => s + d.cards.filter(c => c.mastered).length, 0);
   useEffect(() => {
     setRylanQuote(getRylanQuote(flashcardDecks));
   }, [flashcardDecks.length, totalCards, mastered]);
 
+  const showNPC = windowWidth >= 1150;
+
   return (
-  <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{
-    borderColor: 'rgba(212, 175, 55, 0.6)'
-  }}>
+    <div style={{ position: 'relative' }}>
 
-    {/* ── Rylan the Drill Master ── */}
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: '20px',
-      padding: '16px 20px', marginBottom: '24px', borderRadius: '12px',
-      background: 'rgba(10,8,4,0.7)', border: '1px solid rgba(212,175,55,0.25)',
-      boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
-    }}>
-      <img
-        src="/npcs/warrior.png"
-        alt="Rylan"
-        style={{
-          width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-          flexShrink: 0, border: '2px solid rgba(212,175,55,0.6)',
-          boxShadow: '0 0 20px rgba(220,38,38,0.3)',
-        }}
-      />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', marginBottom: '2px' }}>RYLAN</p>
-        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginBottom: '10px' }}>Drill Master</p>
-        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(20,15,5,0.8)', border: '1px solid rgba(212,175,55,0.3)' }}>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
-            "{rylanQuote}"
-          </p>
+      {showNPC && (
+        <div style={{
+          position: 'fixed',
+          left: 'calc(25% - min(15vw, 225px) - clamp(70px, 7.5vw, 120px))',
+          top: 'calc(40% + 48px)',
+          transform: 'translateY(-50%)',
+          width: 'clamp(140px, 15vw, 240px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px',
+          zIndex: 10,
+        }}>
+          <img src="/npcs/warrior.png" alt="Rylan"
+            style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+              border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(220,38,38,0.5), 0 0 100px rgba(220,38,38,0.15)' }}/>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>RYLAN</p>
+          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Drill Master</p>
+          <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
+            background: 'rgba(20,15,5,0.85)', border: '1px solid rgba(212,175,55,0.35)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid rgba(212,175,55,0.35)' }}/>
+            <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
+              "{rylanQuote}"
+            </p>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
 
-    <div className="text-center mb-4">
-      <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRAINING GROUNDS</h2>
-      <div className="flex items-center justify-center gap-2">
-        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-        <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-        <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-      </div>
-    </div>
-    <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Sharpen your mind, temper your wisdom..."</p>
-    
-    {/* Sub-navigation tabs */}
-    <div className="flex gap-2 justify-center mb-6">
+    <div className="bg-black bg-opacity-50 rounded-xl border-2" style={{
+      borderColor: 'rgba(212, 175, 55, 0.6)',
+      width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
+      margin: '0 auto',
+      height: 'calc(100vh - 180px)',
+      display: 'flex', flexDirection: 'column', overflow: 'hidden',
+    }}>
+
+      <div style={{ flexShrink: 0, padding: '16px 24px 0' }}>
+        {/* Sub-navigation tabs */}
+        <div className="flex gap-2 justify-center mb-4">
       <button 
         onClick={() => { sounds.click(); setForgeSubTab('flashcards'); }}
         className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
@@ -140,7 +146,9 @@ const ForgeTab = ({
         RELICS
       </button>
     </div>
-    
+      </div>
+
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
     {/* Flashcards Tab Content */}
     {forgeSubTab === 'flashcards' && (
     <>
@@ -634,7 +642,9 @@ const ForgeTab = ({
     </div>
     </>
     )}
-  </div>
+      </div>
+    </div>
+    </div>
   );
 };
 

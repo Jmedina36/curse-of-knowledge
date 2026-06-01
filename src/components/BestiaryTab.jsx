@@ -66,6 +66,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
           position: 'fixed',
           left: 'calc(25% - min(15vw, 225px) - clamp(70px, 7.5vw, 120px))',
           top: 'calc(40% + 48px)',
+          transform: 'translateY(-50%)',
           width: 'clamp(140px, 15vw, 240px)',
           zIndex: 10,
           display: 'flex',
