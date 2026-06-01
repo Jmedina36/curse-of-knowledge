@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -46,6 +46,17 @@ const CATEGORIES = [
   { key: 'potions',     label: 'Potions'   },
 ];
 
+const GRIMDAR_IDLE = [
+  "...Are ye going to equip something or just stare at me?",
+  "Every second ye stand here, a goblin gets stronger.",
+  "I've forged better gear than that in me sleep.",
+  "Pick something and get out of me shop.",
+  "What are ye waitin' for? The rust to set in?",
+  "Ye smell like a dungeon. That's not a compliment.",
+  "I've seen corpses make faster decisions.",
+  "Stop browsin' and start equipping, ye time-waster.",
+];
+
 const InventoryModal = ({
   // kept for compat but replaced by local state
   suppliesTab, setSuppliesTab,
@@ -64,6 +75,23 @@ const InventoryModal = ({
   useHealth, useCleanse,
 }) => {
   const [category, setCategory] = useState('weapons');
+  const [grimdarQuote, setGrimdarQuote] = useState(() => GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)]);
+
+  // Idle rotation — changes every 7s if no recent equip
+  useEffect(() => {
+    const t = setInterval(() => {
+      setGrimdarQuote(q => {
+        // Only rotate if it's an idle quote
+        if (GRIMDAR_IDLE.includes(q)) {
+          const next = GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)];
+          return next;
+        }
+        // Reactive quote fades back to idle after one cycle
+        return GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)];
+      });
+    }, 7000);
+    return () => clearInterval(t);
+  }, []);
 
   const weaponEffective = (wpn) => (wpn?.attack || 0) + Math.floor(wpn?.affixes?.flatDamage || 0);
   const armorEffective  = (piece) => (piece?.defense || 0) + Math.floor(piece?.affixes?.flatArmor || 0);
@@ -75,6 +103,11 @@ const InventoryModal = ({
     setWeaponInventory(prev => [...prev.filter(w => w.id !== wpn.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${wpn.name} (+${wpn.attack} Attack)`);
     if (old) addLog(`Unequipped: ${old.name}`);
+    const isUpgrade = !old || weaponEffective(wpn) > weaponEffective(old);
+    const quotes = isUpgrade
+      ? ["Finally. Something worth swingin'.", "Aye, that's a proper weapon. Try not to embarrass it.", "Better. Don't waste sharp steel on rats."]
+      : ["Ye're downgradin'? Did ye take a knock to the head?", "That's worse. Congratulations on the step backward.", "I've seen farmers with better taste in iron."];
+    setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
   const equipArmor = (piece, slot) => {
@@ -86,6 +119,11 @@ const InventoryModal = ({
     }));
     addLog(`Equipped: ${piece.name} (+${piece.defense} Defense)`);
     if (old) addLog(`Unequipped: ${old.name}`);
+    const isUpgrade = !old || armorEffective(piece) > armorEffective(old);
+    const quotes = isUpgrade
+      ? ["Good. Maybe ye won't bleed out on the first hit now.", "Aye, cover yerself up. Ye were embarrassin' me.", "Defense up. Try not to walk into every axe ye see."]
+      : ["Ye swapped down in defense. Brilliant strategy.", "Less protection. Bold choice. Stupid, but bold.", "Ye'd be safer wearin' a barrel."];
+    setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
   const equipPendant = (pend) => {
@@ -94,6 +132,8 @@ const InventoryModal = ({
     setPendantInventory(prev => [...prev.filter(p => p.id !== pend.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${pend.name} (+${pend.hp} HP)`);
     if (old) addLog(`Unequipped: ${old.name}`);
+    const quotes = ["A bauble. At least yer HP's up — it ain't just pretty.", "Jewelry. Aye, very fierce.", "More HP from a necklace. I've seen worse."];
+    setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
   const equipRing = (rng) => {
@@ -102,6 +142,8 @@ const InventoryModal = ({
     setRingInventory(prev => [...prev.filter(r => r.id !== rng.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${rng.name} (+${rng.stamina} Stamina)`);
     if (old) addLog(`Unequipped: ${old.name}`);
+    const quotes = ["A ring. More stamina. Don't spend it all running away.", "Stamina up. Good. Dying tired is still dying.", "Fine. More endurance. Ye'll need it."];
+    setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
   // ── Shared styles ──
@@ -302,6 +344,19 @@ const InventoryModal = ({
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
         <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>GRIMDAR</p>
         <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
+        {/* Dialogue bubble */}
+        <div style={{
+          marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
+          background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`,
+          boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative',
+        }}>
+          {/* Speech arrow pointing up */}
+          <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
+          <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
+            "{grimdarQuote}"
+          </p>
+        </div>
       </motion.div>
 
       <motion.div
