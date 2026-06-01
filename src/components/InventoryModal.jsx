@@ -342,16 +342,16 @@ const InventoryModal = ({
         transition={{ duration: 0.25, ease: 'easeOut' }}
         style={{
           position: 'absolute',
-          left: 'calc(50% - min(36vw, 600px) - clamp(180px, 20vw, 320px) - 20px)',
+          left: 'calc(50% - min(30vw, 450px) - clamp(140px, 15vw, 240px) - 16px)',
           top: '50%', transform: 'translateY(-50%)',
-          width: 'clamp(180px, 20vw, 320px)',
+          width: 'clamp(140px, 15vw, 240px)',
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px',
           pointerEvents: 'auto',
         }}
         onClick={e => e.stopPropagation()}
       >
         <img src="/npcs/blacksmith.png" alt="Grimdar"
-          style={{ width: 'clamp(140px, 18vw, 280px)', height: 'clamp(140px, 18vw, 280px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+          style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
         <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>GRIMDAR</p>
         <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
@@ -373,7 +373,7 @@ const InventoryModal = ({
       <motion.div
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          width: showNPC ? 'min(72vw, calc(100vw - 48px))' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh',
+          width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
