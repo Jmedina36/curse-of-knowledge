@@ -19,17 +19,19 @@ const getArmorSprite = (piece, slot) => {
   return ARMOR_SPRITES[slot][Math.abs(seed) % ARMOR_SPRITES[slot].length];
 };
 
-// Weapon sprite assignment — same hash as ArmoryScene
-const WEAPON_SPRITES = [
-  '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
-  '/weapons/dagger1.png', '/weapons/dagger2.png',
-  '/weapons/mace1.png', '/weapons/staff.png', '/weapons/bow1.png',
-];
+// Weapon sprite assignment — keyword match on name so type matches PNG
 const getWeaponSprite = (wpn) => {
-  let seed = 0;
-  if (wpn?.id != null) seed = typeof wpn.id === 'number' ? wpn.id : String(wpn.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  else if (wpn?.name) seed = wpn.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
-  return WEAPON_SPRITES[Math.abs(seed) % WEAPON_SPRITES.length];
+  const name = (wpn?.name || '').toLowerCase();
+  if (/staff|rod|cane|scepter|focus|crystal|arcane|mage|sorcerer/.test(name)) return '/weapons/staff.png';
+  if (/bow|longbow|shortbow|recurve|shooter|ranger/.test(name)) return '/weapons/bow1.png';
+  if (/dagger|knife|stiletto|dirk|shiv/.test(name)) {
+    const seed = name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    return seed % 2 === 0 ? '/weapons/dagger1.png' : '/weapons/dagger2.png';
+  }
+  if (/mace|hammer|maul|axe|hatchet|cleaver|waraxe|battleaxe/.test(name)) return '/weapons/mace1.png';
+  // Default: sword variants
+  const seed = name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return ['/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png'][seed % 3];
 };
 
 const ARMOR_SLOTS = [
