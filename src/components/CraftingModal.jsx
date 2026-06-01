@@ -173,45 +173,53 @@ const CraftingModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 overflow-y-auto p-4" onClick={() => setShowCraftingModal(false)}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowCraftingModal(false)}>
+      {/* Outer row — shifted left by half of Aldric's column so the modal appears centered */}
+      <div style={{ display: 'flex', alignItems: 'center', transform: 'translateX(-160px)', gap: '20px' }} onClick={e => e.stopPropagation()}>
 
-      {/* Merchant NPC — left of modal */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.25, ease: 'easeOut' }}
-        style={{ width: '200px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', marginRight: '20px' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <img src="/npcs/merchant.png" alt="Merchant"
-          style={{ width: 160, height: 160, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 32px rgba(201,169,97,0.55), 0 0 80px rgba(201,169,97,0.2)' }}/>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>ALDRIC</p>
-        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-8px' }}>Wandering Merchant</p>
-        <div style={{ padding: '10px 14px', borderRadius: '10px', maxWidth: '190px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
-          <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '11px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>"{merchantQuote}"</p>
-        </div>
-      </motion.div>
-
-      <motion.div
-        className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative"
-        initial={{ opacity: 0, scale: 0.97, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
-        style={{ background: VISUAL_STYLES.modal.paper, backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center top', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Close */}
-        <button
-          onClick={() => { sounds.click(); setShowCraftingModal(false); }}
-          className="absolute top-4 right-4 p-2 rounded-lg border-2 transition-all"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderColor: 'rgba(212,175,55,0.4)', color: '#D4AF37' }}
-          onMouseEnter={e => { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.7)'; e.currentTarget.style.borderColor = '#D4AF37'; }}
-          onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'; }}
+        {/* Aldric — fixed width column */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          style={{ width: '320px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px' }}
+          onClick={e => e.stopPropagation()}
         >
-          <X size={20} />
-        </button>
+          <img src="/npcs/merchant.png" alt="Aldric"
+            style={{ width: 280, height: 280, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+              border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>ALDRIC</p>
+          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Wandering Merchant</p>
+          <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
+            <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>"{merchantQuote}"</p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="relative flex flex-col rounded-xl border-2 overflow-hidden"
+          initial={{ opacity: 0, scale: 0.97, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+          style={{ width: '72vw', maxWidth: '1200px', height: '95vh', backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
+          onClick={e => e.stopPropagation()}
+        >
+          {/* ── HEADER ── */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(0,0,0,0.55)', position: 'relative' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
+              <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>Aldric · Wandering Merchant</p>
+            </div>
+            <button
+              onClick={() => { sounds.click(); setShowCraftingModal(false); }}
+              style={{ position: 'absolute', right: '20px', background: 'rgba(0,0,0,0.5)', border: `1px solid rgba(212,175,55,0.4)`, borderRadius: '8px', padding: '8px', color: COLORS.gold, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            >
+              <X size={18}/>
+            </button>
+          </div>
+
+          {/* ── SCROLLABLE CONTENT ── */}
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 24px', background: 'rgba(0,0,0,0.5)' }}>
 
         {/* Main Tabs: Potions / Equipment */}
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -516,7 +524,9 @@ const CraftingModal = ({
           );
         })()}
 
-      </motion.div>
+          </div>{/* end scrollable content */}
+        </motion.div>
+      </div>{/* end outer row */}
 
       {/* ── Sell Confirmation Overlay ── */}
       {sellConfirm && (
@@ -563,7 +573,7 @@ const CraftingModal = ({
           </motion.div>
         </div>
       )}
-    </div>
+    </div>{/* end overlay */}
   );
 };
 
