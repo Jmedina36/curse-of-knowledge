@@ -47,6 +47,9 @@ const ContractsTab = ({
   setShowImportModal,
   log,
   addLog,
+  onRaid,
+  banditWaveNumber,
+  banditCaptainsDefeated,
 }) => {
   return (
     <div className="space-y-4">
@@ -456,6 +459,60 @@ const ContractsTab = ({
   </div>
 </button>
                   </div>
+
+                  {/* Raid Contract */}
+                  {isDayActive && (() => {
+                    const captDefeated = banditCaptainsDefeated?.length || 0;
+                    const allCaptainsDown = captDefeated >= 3;
+                    const nextWave = (banditWaveNumber || 0) + 1;
+                    return (
+                      <div className="mt-4 rounded-xl border-2 overflow-hidden" style={{
+                        borderColor: 'rgba(180,40,30,0.6)',
+                        background: 'linear-gradient(160deg, #1c0808 0%, #130505 60%, #0e0303 100%)',
+                        boxShadow: '0 4px 24px rgba(180,30,20,0.2)',
+                      }}>
+                        <div className="px-5 pt-4 pb-2 flex items-center justify-between">
+                          <div>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.25em', color: 'rgba(239,68,68,0.6)', textTransform: 'uppercase', marginBottom: '2px' }}>
+                              Raid Contract
+                            </p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 700, color: 'rgba(239,68,68,0.9)', letterSpacing: '0.1em' }}>
+                              {allCaptainsDown ? 'BANDIT LORD CUTTER' : `BANDIT RAID — WAVE ${nextWave}`}
+                            </p>
+                            <p style={{ fontSize: '0.7rem', color: 'rgba(200,150,140,0.7)', marginTop: '4px' }}>
+                              {allCaptainsDown
+                                ? 'All captains fallen. Cutter awaits.'
+                                : `Captains eliminated: ${captDefeated}/3`}
+                            </p>
+                          </div>
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            {[0,1,2].map(i => (
+                              <div key={i} style={{
+                                width: 10, height: 10, borderRadius: '50%',
+                                background: i < captDefeated ? '#EF4444' : 'rgba(239,68,68,0.15)',
+                                border: `1px solid ${i < captDefeated ? 'rgba(239,68,68,0.8)' : 'rgba(239,68,68,0.3)'}`,
+                              }} />
+                            ))}
+                          </div>
+                        </div>
+                        <div className="px-5 pb-4">
+                          <button
+                            onClick={() => { sounds.click(); onRaid(nextWave, banditCaptainsDefeated || []); }}
+                            style={{
+                              width: '100%', padding: '10px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
+                              fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase',
+                              background: 'rgba(127,29,29,0.7)', border: '1px solid rgba(239,68,68,0.5)',
+                              color: '#F5F5DC', cursor: 'pointer', transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(153,27,27,0.9)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.8)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(127,29,29,0.7)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)'; }}
+                          >
+                            {allCaptainsDown ? '⚔️ Confront the Bandit Lord' : '⚔️ Launch Raid'}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
                     {/* Section header with decorative divider */}

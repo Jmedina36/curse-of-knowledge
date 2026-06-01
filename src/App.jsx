@@ -6609,6 +6609,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               start={start} miniBoss={miniBoss} finalBoss={finalBoss}
               setShowImportModal={setShowImportModal}
               log={log} addLog={addLog}
+              onRaid={spawnBanditWave}
+              banditWaveNumber={banditWaveNumber}
+              banditCaptainsDefeated={banditCaptainsDefeated}
             />
           )}
 
