@@ -329,18 +329,22 @@ const InventoryModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowInventoryModal(false)}>
-      {/* Outer row — shifted left by half of Grimdar's column so the modal appears centered */}
-      <div style={{ display: 'flex', alignItems: 'center', transform: 'translateX(-160px)', gap: '20px' }} onClick={e => e.stopPropagation()}>
-
-      {/* Blacksmith — fixed width column, centered within */}
+      {/* Blacksmith — absolutely positioned to the left; no layout impact on modal centering */}
       <motion.div
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
-        style={{ width: '320px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px' }}
+        style={{
+          position: 'absolute',
+          left: 'calc(50% - min(36vw, 600px) - clamp(180px, 20vw, 320px) - 20px)',
+          top: '50%', transform: 'translateY(-50%)',
+          width: 'clamp(180px, 20vw, 320px)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px',
+          pointerEvents: 'auto',
+        }}
         onClick={e => e.stopPropagation()}
       >
         <img src="/npcs/blacksmith.png" alt="Grimdar"
-          style={{ width: 280, height: 280, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+          style={{ width: 'clamp(140px, 18vw, 280px)', height: 'clamp(140px, 18vw, 280px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
         <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>GRIMDAR</p>
         <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
@@ -362,7 +366,7 @@ const InventoryModal = ({
       <motion.div
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          width: '72vw', maxWidth: '1200px', height: '95vh',
+          width: 'min(72vw, calc(100vw - 48px))', maxWidth: '1200px', height: 'min(95vh, calc(100vh - 32px))',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

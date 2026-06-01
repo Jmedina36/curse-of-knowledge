@@ -6301,7 +6301,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
 
         {/* Navigation Section - Full Width */}
-        <nav className="flex gap-4 justify-center items-center mb-8 pt-6 pb-6 border-t-2 border-b-2" style={{
+        <nav className="flex flex-wrap gap-4 justify-center items-center mb-8 pt-6 pb-6 border-t-2 border-b-2" style={{
           marginLeft: 'calc(-50vw + 50%)',
           marginRight: 'calc(-50vw + 50%)',
           borderColor: 'rgba(212, 175, 55, 0.2)',
@@ -6319,7 +6319,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 <button 
                   key={t.id} 
                   onClick={() => { sounds.click(); setActiveTab(t.id); }}
-                  className="flex flex-col items-center gap-2 px-8 py-3 rounded-lg transition-all border-2"
+                  className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: activeTab === t.id ? 'rgba(184, 134, 11, 0.3)' : 'transparent',
                     borderColor: activeTab === t.id ? '#D4AF37' : 'transparent',

@@ -202,18 +202,22 @@ const CraftingModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowCraftingModal(false)}>
-      {/* Outer row — shifted left by half of Aldric's column so the modal appears centered */}
-      <div style={{ display: 'flex', alignItems: 'center', transform: 'translateX(-160px)', gap: '20px' }} onClick={e => e.stopPropagation()}>
-
-        {/* Aldric — fixed width column */}
+        {/* Aldric — absolutely positioned to the left; no layout impact on modal centering */}
         <motion.div
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          style={{ width: '320px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px' }}
+          style={{
+            position: 'absolute',
+            left: 'calc(50% - min(36vw, 600px) - clamp(180px, 20vw, 320px) - 20px)',
+            top: '50%', transform: 'translateY(-50%)',
+            width: 'clamp(180px, 20vw, 320px)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px',
+            pointerEvents: 'auto',
+          }}
           onClick={e => e.stopPropagation()}
         >
           <img src="/npcs/merchant.png" alt="Aldric"
-            style={{ width: 280, height: 280, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+            style={{ width: 'clamp(140px, 18vw, 280px)', height: 'clamp(140px, 18vw, 280px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>ALDRIC</p>
           <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Wandering Merchant</p>
@@ -229,7 +233,7 @@ const CraftingModal = ({
           initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          style={{ width: '72vw', maxWidth: '1200px', height: '95vh', backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
+          style={{ width: 'min(72vw, calc(100vw - 48px))', maxWidth: '1200px', height: 'min(95vh, calc(100vh - 32px))', backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
           onClick={e => e.stopPropagation()}
         >
           {/* ── HEADER ── */}
@@ -576,7 +580,6 @@ const CraftingModal = ({
 
           </div>{/* end scrollable content */}
         </motion.div>
-      </div>{/* end outer row */}
 
       {/* ── Sell Confirmation Overlay ── */}
       {sellConfirm && (
