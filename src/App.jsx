@@ -6610,13 +6610,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-4 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
                   <button onClick={() => {
                     setBattleType('wave');
+                    audioManager.play(TRACKS.malicious);
                     setTotalWaveEnemies(3);
                     setCurrentWaveEnemy(1);
                     spawnRegularEnemy(true, 1, 3);
                   }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Spawn Wave (3)</button>
-                  <button onClick={() => { setBattleType('elite'); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
+                  <button onClick={() => { setBattleType('elite'); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
                   <button onClick={() => {
                     setBattleType('final');
+                    audioManager.play(TRACKS.boss);
                     const bossHealth = 300;
                     const bossNameGenerated = makeBossName();
                     setBossName(bossNameGenerated);
