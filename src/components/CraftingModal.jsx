@@ -112,6 +112,12 @@ const MERCHANT_IDLE = [
   "You look like someone with gold. I respect that.",
 ];
 
+const ELF_NPCS = [
+  { img: '/npcs/elf-prince.png',  name: 'ALDRIC',   title: 'Wandering Merchant' },
+  { img: '/npcs/elf-lady.png',    name: 'SYLARA',   title: 'Arcane Trader'      },
+  { img: '/npcs/elf-warrior.png', name: 'TAERAL',   title: 'Blade Merchant'     },
+];
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const CraftingModal = ({
@@ -171,6 +177,7 @@ const CraftingModal = ({
   const isPotionsTab = merchantTab === 'buy' || merchantTab === 'sellPotions';
   const isEquipmentTab = merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment';
 
+  const elf = ELF_NPCS[(currentDay ?? 1) % ELF_NPCS.length];
   const [sellConfirm, setSellConfirm] = useState(null);
   const [merchantQuote, setMerchantQuote] = useState(() => MERCHANT_IDLE[Math.floor(Math.random() * MERCHANT_IDLE.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
@@ -226,11 +233,11 @@ const CraftingModal = ({
           }}
           onClick={e => e.stopPropagation()}
         >
-          <img src="/npcs/merchant.png" alt="Aldric"
+          <img src={elf.img} alt={elf.name}
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>ALDRIC</p>
-          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Wandering Merchant</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>{elf.name}</p>
+          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>{elf.title}</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
             <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>

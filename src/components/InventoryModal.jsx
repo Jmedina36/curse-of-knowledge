@@ -59,10 +59,17 @@ const GRIMDAR_IDLE = [
   "Stop browsin' and start equipping, ye time-waster.",
 ];
 
+const DWARF_NPCS = [
+  { img: '/npcs/dwarf-warrior.png', name: 'GRIMDAR',  title: 'Master Smith'      },
+  { img: '/npcs/dwarf-explorer.png', name: 'BORIN',   title: 'Wandering Forger'  },
+  { img: '/npcs/dwarf-lady.png',     name: 'HELGA',   title: 'Iron Matron'       },
+];
+
 const InventoryModal = ({
   // kept for compat but replaced by local state
   suppliesTab, setSuppliesTab,
   setShowInventoryModal,
+  currentDay,
   hp, stamina, level, gold,
   getMaxHp, getMaxStamina, getBaseAttack, getBaseDefense,
   healthPots, staminaPots, cleansePots, setStaminaPots,
@@ -76,6 +83,7 @@ const InventoryModal = ({
   addLog,
   useHealth, useCleanse,
 }) => {
+  const dwarf = DWARF_NPCS[(currentDay ?? 1) % DWARF_NPCS.length];
   const [category, setCategory] = useState('weapons');
   const [grimdarQuote, setGrimdarQuote] = useState(() => GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
@@ -352,11 +360,11 @@ const InventoryModal = ({
         }}
         onClick={e => e.stopPropagation()}
       >
-        <img src="/npcs/blacksmith.png" alt="Grimdar"
+        <img src={dwarf.img} alt={dwarf.name}
           style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>GRIMDAR</p>
-        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Master Smith</p>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>{dwarf.name}</p>
+        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>{dwarf.title}</p>
         {/* Dialogue bubble */}
         <div style={{
           marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',

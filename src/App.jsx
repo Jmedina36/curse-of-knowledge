@@ -6933,6 +6933,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <InventoryModal
               suppliesTab={suppliesTab} setSuppliesTab={setSuppliesTab}
               setShowInventoryModal={setShowInventoryModal}
+              currentDay={currentDay}
               hp={hp} stamina={stamina} setStamina={setStamina} level={level} gold={gold} curseLevel={curseLevel}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense}
