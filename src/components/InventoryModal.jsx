@@ -76,6 +76,13 @@ const InventoryModal = ({
 }) => {
   const [category, setCategory] = useState('weapons');
   const [grimdarQuote, setGrimdarQuote] = useState(() => GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)]);
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+  useEffect(() => {
+    const fn = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  const showNPC = windowWidth >= 1150;
 
   // Idle rotation — changes every 7s if no recent equip
   useEffect(() => {
@@ -329,8 +336,8 @@ const InventoryModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowInventoryModal(false)}>
-      {/* Blacksmith — absolutely positioned to the left; no layout impact on modal centering */}
-      <motion.div
+      {/* Blacksmith — only shown when viewport is wide enough that it won't clip off-screen */}
+      {showNPC && <motion.div
         initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
         style={{
@@ -361,12 +368,12 @@ const InventoryModal = ({
             "{grimdarQuote}"
           </p>
         </div>
-      </motion.div>
+      </motion.div>}
 
       <motion.div
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
-          width: 'min(72vw, calc(100vw - 48px))', maxWidth: '1200px', height: 'min(95vh, calc(100vh - 32px))',
+          width: showNPC ? 'min(72vw, calc(100vw - 48px))' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh',
           backgroundImage: 'url(/Gemini_Generated_Image_w9etpyw9etpyw9et.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',

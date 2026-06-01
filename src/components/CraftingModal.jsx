@@ -172,6 +172,7 @@ const CraftingModal = ({
 
   const [sellConfirm, setSellConfirm] = useState(null);
   const [merchantQuote, setMerchantQuote] = useState(() => MERCHANT_IDLE[Math.floor(Math.random() * MERCHANT_IDLE.length)]);
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -179,6 +180,14 @@ const CraftingModal = ({
     }, 7000);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    const fn = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+
+  const showNPC = windowWidth >= 1150;
 
   const say = (quotes) => setMerchantQuote(quotes[Math.floor(Math.random() * quotes.length)]);
 
@@ -202,8 +211,8 @@ const CraftingModal = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center overflow-hidden" onClick={() => setShowCraftingModal(false)}>
-        {/* Aldric — absolutely positioned to the left; no layout impact on modal centering */}
-        <motion.div
+        {/* Aldric — only shown when viewport is wide enough that it won't clip off-screen */}
+        {showNPC && <motion.div
           initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
           style={{
@@ -226,14 +235,14 @@ const CraftingModal = ({
             <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>"{merchantQuote}"</p>
           </div>
-        </motion.div>
+        </motion.div>}
 
         <motion.div
           className="relative flex flex-col rounded-xl border-2 overflow-hidden"
           initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          style={{ width: 'min(72vw, calc(100vw - 48px))', maxWidth: '1200px', height: 'min(95vh, calc(100vh - 32px))', backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
+          style={{ width: showNPC ? 'min(72vw, calc(100vw - 48px))' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh', backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
           onClick={e => e.stopPropagation()}
         >
           {/* ── HEADER ── */}
