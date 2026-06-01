@@ -155,7 +155,7 @@ const PlannerTab = ({
                   Calendar
                 </button>
               </div>
-        </div>{/* end fixed header */}
+        </div>
 
         {/* Scrollable content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
@@ -612,9 +612,9 @@ const PlannerTab = ({
               </div>
               )}
             </div>
-        </div>{/* end scrollable content */}
-      </div>{/* end card */}
-    </div>{/* end relative wrapper */}
+        </div>
+      </div>
+    </div>
   );
 };
 
