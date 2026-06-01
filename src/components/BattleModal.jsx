@@ -189,6 +189,7 @@ const BattleModal = ({
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const [bossEntered, setBossEntered] = useState(false);
+  const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
   const turnTimers = useRef([]);
   const turnCountRef = useRef(0);
   const logRef = useRef(null);
@@ -372,12 +373,21 @@ const BattleModal = ({
         : { x: 0 }
       }
       transition={{ duration: 0.45, ease: 'easeOut' }}
-      style={{ background: (() => {
-        if (isFinalBoss)           return 'radial-gradient(ellipse at 50% 0%, rgba(100,0,140,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(60,0,100,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(60,0,100,0.4) 0%, transparent 40%), rgb(2,0,7)';
-        if (battleType === 'elite') return 'radial-gradient(ellipse at 50% 0%, rgba(160,60,0,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(100,25,0,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(90,20,0,0.4) 0%, transparent 40%), rgb(6,1,0)';
-        if (battleType === 'wave')  return 'radial-gradient(ellipse at 50% 0%, rgba(0,45,120,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(0,25,80,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(0,25,80,0.4) 0%, transparent 40%), rgb(0,1,10)';
-        return                            'radial-gradient(ellipse at 50% 0%, rgba(130,8,15,0.95) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(80,0,5,0.5) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(80,0,5,0.4) 0%, transparent 40%), rgb(5,0,0)';
-      })() }}
+      style={{
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        background: (() => {
+          const overlay = (r,g,b,a1,a2,a3) =>
+            `radial-gradient(ellipse at 50% 0%, rgba(${r},${g},${b},${a1}) 0%, transparent 50%), radial-gradient(ellipse at 20% 65%, rgba(${r},${g},${b},${a2}) 0%, transparent 40%), radial-gradient(ellipse at 80% 70%, rgba(${r},${g},${b},${a3}) 0%, transparent 40%)`;
+          const img = isFinalBoss ? 'url(/battle-backgrounds/bg10.png)'
+            : battleType === 'elite' ? 'url(/battle-backgrounds/bg9.png)'
+            : `url(/battle-backgrounds/bg${battleBgIdx}.png)`;
+          if (isFinalBoss)           return `${overlay(100,0,140,0.75,0.4,0.35)}, ${img} center/cover no-repeat`;
+          if (battleType === 'elite') return `${overlay(160,60,0,0.75,0.4,0.35)}, ${img} center/cover no-repeat`;
+          if (battleType === 'wave')  return `${overlay(0,45,120,0.75,0.4,0.35)}, ${img} center/cover no-repeat`;
+          return                             `${overlay(130,8,15,0.75,0.4,0.35)}, ${img} center/cover no-repeat`;
+        })()
+      }}
     >
       {/* ── Vignette — darkens edges to focus the eye ─────────────────────── */}
       <div className="fixed inset-0 pointer-events-none" style={{
