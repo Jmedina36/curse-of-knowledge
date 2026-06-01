@@ -435,7 +435,8 @@ const CraftingModal = ({
                   return (
                     <div key={item.id} className="rounded-lg p-2 border-2 transition-all"
                       style={{ background: 'rgba(0,0,0,0.4)', borderColor: getRarityColor(item.rarity) }}>
-                      <div className="flex justify-between items-center mb-2" style={{ gap: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
                         {item.type === 'weapon' && (
                           <img src={getWeaponSprite(item)} alt={item.name}
                             style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0,
@@ -446,7 +447,7 @@ const CraftingModal = ({
                             style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
                               filter: `drop-shadow(0 0 4px ${getRarityColor(item.rarity)}60)` }}/>
                         )}
-                        <div className="flex-1">
+                        <div style={{ flex: 1 }}>
                           <p className="text-sm font-bold mb-1" style={{ color: getRarityColor(item.rarity) }}>{item.name}</p>
                           <p className="text-xs mb-1" style={{ color: COLORS.silver }}>
                             {GAME_CONSTANTS.RARITY_TIERS[item.rarity].name} {item.type === 'armor' ? item.slot : item.type}
@@ -465,6 +466,7 @@ const CraftingModal = ({
                             </div>
                           )}
                         </div>
+                        </div>{/* end image+text group */}
                         <button
                           onClick={() => { sounds.click(); handleBuyEquipment(item); }}
                           disabled={!canAfford}
@@ -538,8 +540,9 @@ const CraftingModal = ({
                               : sellType === 'armor' ? getArmorSprite(item, item.slot)
                               : null;
                             return (
-                              <div key={item.id} className="rounded-lg p-2 border flex justify-between items-center"
-                                style={{ background: 'rgba(0,0,0,0.3)', borderColor: color, gap: '10px' }}>
+                              <div key={item.id} className="rounded-lg p-2 border"
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', borderColor: color, gap: '10px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
                                 {sprite && (
                                   <img src={sprite} alt={item.name}
                                     style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
@@ -554,6 +557,7 @@ const CraftingModal = ({
                                     </p>
                                   )}
                                 </div>
+                                </div>{/* end image+text group */}
                                 <SellBtn onClick={() => handleSell(item.name, price, color, () => onSell(item))}>
                                   Sell: {price} Gold
                                 </SellBtn>
