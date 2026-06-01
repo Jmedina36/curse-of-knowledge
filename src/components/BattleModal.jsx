@@ -914,8 +914,6 @@ const BattleModal = ({
                     ? `+${captureResult.gold} gold seized!`
                     : captureResult.success ? 'Captured!'
                     : captureResult.reason === 'full' ? 'Stable is full!'
-                    : captureResult.reason === 'nogold' ? 'Not enough gold!'
-                    : captureResult.reason === 'nocrystal' ? 'Need a fusion crystal!'
                     : 'The creature resisted!'}
                 </p>
               )}

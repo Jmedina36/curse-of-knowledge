@@ -5222,32 +5222,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       addLog('Your stable is full! Release a monster first.');
       return { success: false, reason: 'full' };
     }
-    const captureCost = { gold: Math.floor(10 + currentDay * 2), crystals: 1 };
-    if (gold < captureCost.gold) {
-      addLog(`Not enough gold. Need ${captureCost.gold}g to attempt capture.`);
-      return { success: false, reason: 'nogold' };
-    }
-    if (fusionCrystals < captureCost.crystals) {
-      addLog('You need a fusion crystal to capture a monster.');
-      return { success: false, reason: 'nocrystal' };
-    }
-    // Deduct cost
-    setGold(g => g - captureCost.gold);
-    setFusionCrystals(c => c - captureCost.crystals);
-    // Success chance: base 30% + up to 40% bonus from low HP + WIS modifier
+    // No resource cost — success purely determined by stats + enemy HP
+    // WIS improves persuasion, CHA improves rapport; lower enemy HP = much better odds
     const wisMod = Math.floor(((hero?.abilities?.wis || 10) - 10) / 2);
-    const hpBonus = (1 - bossHpPct) * 0.4;
-    const chance = Math.min(0.9, 0.30 + hpBonus + wisMod * 0.05);
+    const chaMod = Math.floor(((hero?.abilities?.cha || 10) - 10) / 2);
+    const statBonus = (wisMod + chaMod) * 0.06; // each point above 10 adds ~3% per stat
+    const hpBonus = (1 - bossHpPct) * 0.55;     // up to +55% when near death
+    const chance = Math.min(0.92, 0.15 + hpBonus + statBonus);
     const success = Math.random() < chance;
     if (success) {
       const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
       const monster = { id: Date.now(), name: bossName, tier, creatureIdx };
       setCapturedMonsters(prev => [...prev, monster]);
       addLog(`${bossName} has been captured! Added to your stable.`);
-      return { success: true };
+      return { success: true, chance: Math.round(chance * 100) };
     } else {
       addLog(`${bossName} resisted capture! The creature breaks free.`);
-      return { success: false, reason: 'resisted' };
+      return { success: false, reason: 'resisted', chance: Math.round(chance * 100) };
     }
   };
 
