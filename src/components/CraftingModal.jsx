@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -72,6 +72,18 @@ const BuyPotionBtn = ({ label, price, effect, effectColor, lore, canBuy, active,
   );
 };
 
+// ─── Merchant NPC quotes ──────────────────────────────────────────────────────
+
+const MERCHANT_IDLE = [
+  "Everything has a price, friend. Including your dignity.",
+  "Browsing is free. Touching costs extra.",
+  "My prices are fair. My patience, considerably less so.",
+  "Gold doesn't spend itself, you know.",
+  "Finest wares in the realm. Don't let the dust fool you.",
+  "Hurry up. I haven't got all day... actually I do. But still.",
+  "You look like someone with gold. I respect that.",
+];
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 const CraftingModal = ({
@@ -131,7 +143,29 @@ const CraftingModal = ({
   const isPotionsTab = merchantTab === 'buy' || merchantTab === 'sellPotions';
   const isEquipmentTab = merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment';
 
-  const [sellConfirm, setSellConfirm] = useState(null); // { label, price, rarityColor, onConfirm }
+  const [sellConfirm, setSellConfirm] = useState(null);
+  const [merchantQuote, setMerchantQuote] = useState(() => MERCHANT_IDLE[Math.floor(Math.random() * MERCHANT_IDLE.length)]);
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setMerchantQuote(MERCHANT_IDLE[Math.floor(Math.random() * MERCHANT_IDLE.length)]);
+    }, 7000);
+    return () => clearInterval(t);
+  }, []);
+
+  const say = (quotes) => setMerchantQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+
+  const handleBuyPotion = (key) => {
+    craftItem(key);
+    say(["Wise investment. Your body will thank you.", "Pleasure doing business. Come back broken again.", "Excellent choice. A fine addition to your pack."]);
+  };
+  const handleBuyEquipment = (item) => {
+    purchaseShopItem(item);
+    say(["Fine taste. That piece will serve you well — or sell well.", "A worthy purchase. Mind you don't scratch it.", "Into your hands it goes. Out of mine, most importantly."]);
+  };
+  const handleSell = (label, price, rarityColor, onConfirm) => {
+    setSellConfirm({ label, price, rarityColor, onConfirm: () => { onConfirm(); say(["I'll take it. At a fair price. For me.", "Selling already? Adventurers are so fickle.", "Into the vault it goes. You'll regret this later, I promise."]); } });
+  };
 
   // Sub-tab config (Buy = gold, Sell = green) — reused for both Potions and Equipment panels
   const subTabCfg = (buyKey, sellKey) => [
@@ -140,7 +174,27 @@ const CraftingModal = ({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCraftingModal(false)}>
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 overflow-y-auto p-4" onClick={() => setShowCraftingModal(false)}>
+
+      {/* Merchant NPC — left of modal */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+        style={{ width: '200px', flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', marginRight: '20px' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <img src="/npcs/merchant.png" alt="Merchant"
+          style={{ width: 160, height: 160, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+            border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 32px rgba(201,169,97,0.55), 0 0 80px rgba(201,169,97,0.2)' }}/>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>ALDRIC</p>
+        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-8px' }}>Wandering Merchant</p>
+        <div style={{ padding: '10px 14px', borderRadius: '10px', maxWidth: '190px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
+          <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
+          <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '11px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>"{merchantQuote}"</p>
+        </div>
+      </motion.div>
+
       <motion.div
         className="rounded-xl p-6 max-w-2xl w-full border-2 my-8 relative"
         initial={{ opacity: 0, scale: 0.97, y: 12 }}
@@ -261,7 +315,7 @@ const CraftingModal = ({
                 footer="Prices refresh daily"
               />
               <div className="grid grid-cols-3 gap-2">
-                {potions.map(p => <BuyPotionBtn key={p.key} {...p} onClick={() => { sounds.click(); craftItem(p.key); }} />)}
+                {potions.map(p => <BuyPotionBtn key={p.key} {...p} onClick={() => { sounds.click(); handleBuyPotion(p.key); }} />)}
               </div>
             </div>
           );
@@ -289,7 +343,7 @@ const CraftingModal = ({
                           <p className="text-sm font-bold" style={{ color: '#FF6B6B' }}>Health Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {healthPots}</p>
                         </div>
-                        <SellBtn onClick={() => setSellConfirm({ label: 'Health Potion', price: Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7), onConfirm: () => sellPotion('healthPotion') })}>
+                        <SellBtn onClick={() => handleSell('Health Potion', Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7), null, () => sellPotion('healthPotion'))}>
                           Sell: {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
                         </SellBtn>
                       </div>
@@ -300,7 +354,7 @@ const CraftingModal = ({
                           <p className="text-sm font-bold" style={{ color: '#6BB6FF' }}>Stamina Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {staminaPots}</p>
                         </div>
-                        <SellBtn onClick={() => setSellConfirm({ label: 'Stamina Potion', price: Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7), onConfirm: () => sellPotion('staminaPotion') })}>
+                        <SellBtn onClick={() => handleSell('Stamina Potion', Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7), null, () => sellPotion('staminaPotion'))}>
                           Sell: {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
                         </SellBtn>
                       </div>
@@ -311,7 +365,7 @@ const CraftingModal = ({
                           <p className="text-sm font-bold" style={{ color: '#B794F4' }}>Cleanse Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {cleansePots}</p>
                         </div>
-                        <SellBtn onClick={() => setSellConfirm({ label: 'Cleanse Potion', price: Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7), onConfirm: () => sellPotion('cleansePotion') })}>
+                        <SellBtn onClick={() => handleSell('Cleanse Potion', Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7), null, () => sellPotion('cleansePotion'))}>
                           Sell: {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
                         </SellBtn>
                       </div>
@@ -370,7 +424,7 @@ const CraftingModal = ({
                           )}
                         </div>
                         <button
-                          onClick={() => { sounds.click(); purchaseShopItem(item); }}
+                          onClick={() => { sounds.click(); handleBuyEquipment(item); }}
                           disabled={!canAfford}
                           className="px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ml-3"
                           style={{
@@ -450,7 +504,7 @@ const CraftingModal = ({
                                     </p>
                                   )}
                                 </div>
-                                <SellBtn onClick={() => setSellConfirm({ label: item.name, price, rarityColor: color, onConfirm: () => onSell(item) })}>
+                                <SellBtn onClick={() => handleSell(item.name, price, color, () => onSell(item))}>
                                   Sell: {price} Gold
                                 </SellBtn>
                               </div>
