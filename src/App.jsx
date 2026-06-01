@@ -7151,9 +7151,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         
 
         
-        <div className="text-center pb-4">
-          <p className="text-xs text-gray-600">v4.15.1 - Forged Links + Skill Unlocks - Level-gated progression</p>
-        </div>
       </div>
       )}
       {/* D&D modals — fixed overlays */}
