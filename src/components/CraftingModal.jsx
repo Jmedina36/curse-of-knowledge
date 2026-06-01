@@ -71,6 +71,34 @@ const BuyPotionBtn = ({ label, price, effect, effectColor, lore, canBuy, active,
   );
 };
 
+// ─── Sprite helpers (same as InventoryModal) ─────────────────────────────────
+
+const WEAPON_SPRITES = [
+  '/weapons/sword1.png', '/weapons/sword2.png', '/weapons/sword3.png',
+  '/weapons/dagger1.png', '/weapons/dagger2.png',
+  '/weapons/mace1.png', '/weapons/staff.png', '/weapons/bow1.png',
+];
+const getWeaponSprite = (wpn) => {
+  let seed = 0;
+  if (wpn?.id != null) seed = typeof wpn.id === 'number' ? wpn.id : String(wpn.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  else if (wpn?.name) seed = wpn.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return WEAPON_SPRITES[Math.abs(seed) % WEAPON_SPRITES.length];
+};
+
+const ARMOR_SPRITES = {
+  helmet: ['/armor/helmet1.png','/armor/helmet2.png','/armor/helmet3.png','/armor/helmet4.png','/armor/helmet5.png'],
+  chest:  ['/armor/chest1.png', '/armor/chest2.png', '/armor/chest3.png', '/armor/chest4.png', '/armor/chest5.png'],
+  gloves: ['/armor/gloves1.png','/armor/gloves2.png','/armor/gloves3.png','/armor/gloves4.png','/armor/gloves5.png'],
+  boots:  ['/armor/boots1.png', '/armor/boots2.png', '/armor/boots3.png', '/armor/boots4.png', '/armor/boots5.png'],
+};
+const getArmorSprite = (piece, slot) => {
+  if (!piece || !ARMOR_SPRITES[slot]) return null;
+  let seed = 0;
+  if (piece?.id != null) seed = typeof piece.id === 'number' ? piece.id : String(piece.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  else if (piece?.name) seed = piece.name.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  return ARMOR_SPRITES[slot][Math.abs(seed) % ARMOR_SPRITES[slot].length];
+};
+
 // ─── Merchant NPC quotes ──────────────────────────────────────────────────────
 
 const MERCHANT_IDLE = [
@@ -407,7 +435,17 @@ const CraftingModal = ({
                   return (
                     <div key={item.id} className="rounded-lg p-2 border-2 transition-all"
                       style={{ background: 'rgba(0,0,0,0.4)', borderColor: getRarityColor(item.rarity) }}>
-                      <div className="flex justify-between items-start mb-2">
+                      <div className="flex justify-between items-center mb-2" style={{ gap: '10px' }}>
+                        {item.type === 'weapon' && (
+                          <img src={getWeaponSprite(item)} alt={item.name}
+                            style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0,
+                              filter: `drop-shadow(0 0 5px ${getRarityColor(item.rarity)}70)` }}/>
+                        )}
+                        {item.type === 'armor' && (
+                          <img src={getArmorSprite(item, item.slot)} alt={item.name}
+                            style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
+                              filter: `drop-shadow(0 0 4px ${getRarityColor(item.rarity)}60)` }}/>
+                        )}
                         <div className="flex-1">
                           <p className="text-sm font-bold mb-1" style={{ color: getRarityColor(item.rarity) }}>{item.name}</p>
                           <p className="text-xs mb-1" style={{ color: COLORS.silver }}>
@@ -496,9 +534,17 @@ const CraftingModal = ({
                           {items.map(item => {
                             const color = getRarityColor(item.rarity || 'common');
                             const price = calculateSellPrice(item, sellType);
+                            const sprite = sellType === 'weapon' ? getWeaponSprite(item)
+                              : sellType === 'armor' ? getArmorSprite(item, item.slot)
+                              : null;
                             return (
                               <div key={item.id} className="rounded-lg p-2 border flex justify-between items-center"
-                                style={{ background: 'rgba(0,0,0,0.3)', borderColor: color }}>
+                                style={{ background: 'rgba(0,0,0,0.3)', borderColor: color, gap: '10px' }}>
+                                {sprite && (
+                                  <img src={sprite} alt={item.name}
+                                    style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
+                                      filter: `drop-shadow(0 0 4px ${color}60)` }}/>
+                                )}
                                 <div className="flex-1">
                                   <p className="text-sm font-bold" style={{ color }}>{item.name}</p>
                                   <p className="text-xs" style={{ color: '#F5F5DC' }}>{getStat(item)}</p>
