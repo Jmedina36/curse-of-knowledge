@@ -85,11 +85,12 @@ const PlannerTab = ({
           initial={{ opacity: 0, x: -20, y: '-50%' }} animate={{ opacity: 1, x: 0, y: '-50%' }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
           style={{
-            position: 'absolute',
+            position: 'fixed',
             left: 'calc(25% - min(15vw, 225px) - clamp(70px, 7.5vw, 120px))',
             top: '40%',
             width: 'clamp(140px, 15vw, 240px)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px',
+            zIndex: 10,
           }}
         >
           <img src="/npcs/old-wizard.png" alt="Soren"
