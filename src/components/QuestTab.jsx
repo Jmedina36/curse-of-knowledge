@@ -63,7 +63,7 @@ const QuestTab = ({
   return (
             <div className="space-y-4">
             <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
-              backgroundImage: 'url(/Scroll.png)',
+              backgroundImage: 'url(/Updated scroll.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
