@@ -15,7 +15,8 @@ const getGuildRank = (level) => GUILD_RANKS.find(r => level >= r.min && level <=
 
 const getHeroPortrait = (className, gender) => {
   const classMap = { Knight: 'knight', Wizard: 'sorcerer', Assassin: 'thief', Crusader: 'crusader' };
-  return `/npcs/${classMap[className] || 'knight'}-${gender || 'm'}.png`;
+  const g = gender === 'female' ? 'f' : gender === 'male' ? 'm' : gender || 'm';
+  return `/npcs/${classMap[className] || 'knight'}-${g}.png`;
 };
 
 const QuestTab = ({
