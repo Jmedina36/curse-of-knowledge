@@ -531,7 +531,6 @@ const InventoryModal = ({
           </div>
         </div>
       </motion.div>
-      </div>
     </div>
   );
 };
