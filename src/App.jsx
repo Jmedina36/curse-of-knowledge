@@ -104,6 +104,8 @@ const FantasyStudyQuest = () => {
   const [healthPots, setHealthPots] = useState(0);
   const [staminaPots, setStaminaPots] = useState(0);
   const [cleansePots, setCleansePots] = useState(0);
+  const [fusionCrystals, setFusionCrystals] = useState(0);
+  const [capturedMonsters, setCapturedMonsters] = useState([]);
   const [weapon, setWeapon] = useState(0);
   const [armor, setArmor] = useState(0);
   
@@ -869,6 +871,8 @@ const getDateKey = useCallback((date) => {
         if (data.healthPots !== undefined) setHealthPots(data.healthPots);
         if (data.staminaPots !== undefined) setStaminaPots(data.staminaPots);
         if (data.cleansePots !== undefined) setCleansePots(data.cleansePots);
+        if (data.fusionCrystals !== undefined) setFusionCrystals(data.fusionCrystals);
+        if (data.capturedMonsters !== undefined) setCapturedMonsters(data.capturedMonsters);
         if (data.weapon !== undefined) setWeapon(data.weapon);
         if (data.armor !== undefined) setArmor(data.armor);
         if (data.equippedWeapon) setEquippedWeapon(data.equippedWeapon);
@@ -965,7 +969,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   useEffect(() => {
     if (hero) {
      const saveData = {
-  hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots,
+  hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters,
   weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, 
   equippedPendant, equippedRing, pendantInventory, ringInventory,
   tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
@@ -980,7 +984,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -2282,6 +2286,11 @@ pendingBattleSpawnRef.current = () => {
           addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
         }
         // 10% chance of no loot
+        // ~35% chance of fusion crystal from any battle
+        if (Math.random() < 0.35) {
+          setFusionCrystals(c => c + 1);
+          addLog('A fusion crystal glimmers among the remains!');
+        }
       } else {
         // Elite bosses: weapon/armor upgrades
         const lootRoll = Math.random();
@@ -5200,6 +5209,53 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   };
   
 
+  const shakedownEnemy = () => {
+    const day = Math.max(1, currentDay || 1);
+    const goldGained = Math.floor(5 + Math.random() * day * 3);
+    setGold(g => g + goldGained);
+    addLog(`You shake down the weakened creature for ${goldGained} gold!`);
+    return goldGained;
+  };
+
+  const captureMonster = (bossName, bossHpPct, battleType, isFinalBoss, creatureIdx) => {
+    if (capturedMonsters.length >= 4) {
+      addLog('Your stable is full! Release a monster first.');
+      return { success: false, reason: 'full' };
+    }
+    const captureCost = { gold: Math.floor(10 + currentDay * 2), crystals: 1 };
+    if (gold < captureCost.gold) {
+      addLog(`Not enough gold. Need ${captureCost.gold}g to attempt capture.`);
+      return { success: false, reason: 'nogold' };
+    }
+    if (fusionCrystals < captureCost.crystals) {
+      addLog('You need a fusion crystal to capture a monster.');
+      return { success: false, reason: 'nocrystal' };
+    }
+    // Deduct cost
+    setGold(g => g - captureCost.gold);
+    setFusionCrystals(c => c - captureCost.crystals);
+    // Success chance: base 30% + up to 40% bonus from low HP + WIS modifier
+    const wisMod = Math.floor(((hero?.abilities?.wis || 10) - 10) / 2);
+    const hpBonus = (1 - bossHpPct) * 0.4;
+    const chance = Math.min(0.9, 0.30 + hpBonus + wisMod * 0.05);
+    const success = Math.random() < chance;
+    if (success) {
+      const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
+      const monster = { id: Date.now(), name: bossName, tier, creatureIdx };
+      setCapturedMonsters(prev => [...prev, monster]);
+      addLog(`${bossName} has been captured! Added to your stable.`);
+      return { success: true };
+    } else {
+      addLog(`${bossName} resisted capture! The creature breaks free.`);
+      return { success: false, reason: 'resisted' };
+    }
+  };
+
+  const releaseMonster = (id) => {
+    setCapturedMonsters(prev => prev.filter(m => m.id !== id));
+    addLog('Monster released back into the wild.');
+  };
+
   const negotiate = (method, bribeAmount = 0) => {
     const wisMod = Math.floor(((hero.abilities?.wis || 10) - 10) / 2);
 
@@ -6800,6 +6856,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
               setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
               setShowCraftingModal={setShowCraftingModal}
+              capturedMonsters={capturedMonsters} fusionCrystals={fusionCrystals}
+              onReleaseMonster={releaseMonster}
             />
           )}
 
@@ -7032,6 +7090,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               flee={flee} dodge={dodge} advance={advance} die={die} negotiate={negotiate}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}
+              fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
+              onShakedown={shakedownEnemy} onCapture={captureMonster}
             />
           )}
           {showPomodoro && pomodoroTask && (

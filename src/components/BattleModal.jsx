@@ -164,7 +164,18 @@ const BattleModal = ({
   setStamina,
   setStaminaPots,
   getRarityColor,
+  fusionCrystals,
+  capturedMonsters,
+  onShakedown,
+  onCapture,
 }) => {
+  // ── Creature sprite helper ─────────────────────────────────────────────────
+  const getCreatureImg = (name, battleType, isFinalBoss) => {
+    const seed = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    if (isFinalBoss)            return `/creatures/creature${17 + (seed % 9)}.png`;
+    if (battleType === 'elite') return `/creatures/creature${9  + (seed % 8)}.png`;
+    return                             `/creatures/creature${1  + (seed % 8)}.png`;
+  };
   // ── Local effect state ──────────────────────────────────────────────────────
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [shaking, setShaking] = useState(false);
@@ -189,6 +200,9 @@ const BattleModal = ({
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const [bossEntered, setBossEntered] = useState(false);
+  const [hasShookDown, setHasShookDown] = useState(false);
+  const [capturePhase, setCapturePhase] = useState('idle'); // 'idle'|'result'
+  const [captureResult, setCaptureResult] = useState(null);
   const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
   const turnTimers = useRef([]);
   const turnCountRef = useRef(0);
@@ -736,40 +750,56 @@ const BattleModal = ({
             </motion.p>
           </div>
 
-          {/* Boss Name */}
+          {/* Enemy name (small label) + Creature image */}
           {bossName && (
-            <div className="text-center mb-3">
-              <motion.h1
-                className="font-black uppercase"
-                style={{
-                  fontFamily: 'Cinzel, serif',
-                  fontSize: 'clamp(2.8rem, 8vw, 5.5rem)',
-                  lineHeight: 1,
-                  letterSpacing: '0.08em',
-                  color: bossFlash ? '#FF3333'
-                    : isFinalBoss    ? '#D4AF37'
-                    : battleType === 'elite' ? '#FB923C'
-                    : battleType === 'wave'  ? '#60A5FA'
-                    : '#E8E8E8',
-                  textShadow: bossFlash
-                    ? '0 0 50px rgba(255,50,50,1), 0 0 100px rgba(255,0,0,0.6), 0 3px 0 rgba(0,0,0,0.9)'
-                    : isFinalBoss
-                    ? '0 0 40px rgba(212,175,55,0.9), 0 0 80px rgba(212,175,55,0.4), 0 0 120px rgba(212,175,55,0.15), 0 3px 0 rgba(0,0,0,0.9)'
-                    : battleType === 'elite'
-                    ? '0 0 35px rgba(251,146,60,0.8), 0 0 70px rgba(220,80,0,0.4), 0 3px 0 rgba(0,0,0,0.9)'
-                    : battleType === 'wave'
-                    ? '0 0 35px rgba(96,165,250,0.8), 0 0 70px rgba(30,100,220,0.4), 0 3px 0 rgba(0,0,0,0.9)'
-                    : '0 0 35px rgba(220,50,50,0.7), 0 0 70px rgba(180,0,0,0.3), 0 3px 0 rgba(0,0,0,0.9)',
-                  transition: 'color 0.1s, text-shadow 0.1s',
-                }}
-              >
+            <div className="text-center mb-2">
+              {/* Small name label */}
+              <p className="uppercase font-bold tracking-[0.2em] mb-2" style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: 'clamp(0.85rem, 2vw, 1.1rem)',
+                color: bossFlash ? '#FF3333'
+                  : isFinalBoss ? '#D4AF37'
+                  : battleType === 'elite' ? '#FB923C'
+                  : battleType === 'wave'  ? '#60A5FA'
+                  : '#E8E8E8',
+                textShadow: isFinalBoss ? '0 0 15px rgba(212,175,55,0.7)'
+                  : battleType === 'elite' ? '0 0 15px rgba(251,146,60,0.7)'
+                  : '0 0 12px rgba(220,50,50,0.6)',
+                transition: 'color 0.1s',
+              }}>
                 {bossName}
-              </motion.h1>
+              </p>
+              {/* Creature image — fades in after intro */}
+              <AnimatePresence>
+                {bossEntered && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                    animate={{ opacity: 1, scale: 1, y: [0, -8, 0] }}
+                    transition={{ opacity: { duration: 0.5 }, scale: { duration: 0.5 }, y: { duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 0.5 } }}
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                  >
+                    <img
+                      src={getCreatureImg(bossName, battleType, isFinalBoss)}
+                      alt={bossName}
+                      style={{
+                        height: 'clamp(120px, 18vh, 220px)',
+                        objectFit: 'contain',
+                        filter: bossFlash
+                          ? 'drop-shadow(0 0 20px rgba(255,50,50,0.9)) brightness(1.4)'
+                          : isFinalBoss ? 'drop-shadow(0 0 24px rgba(160,40,200,0.8))'
+                          : battleType === 'elite' ? 'drop-shadow(0 0 20px rgba(220,120,0,0.7))'
+                          : 'drop-shadow(0 0 16px rgba(220,50,50,0.5))',
+                        transition: 'filter 0.1s',
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {/* Underline accent */}
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <div style={{ width: '60px', height: '1px', background: isFinalBoss ? 'linear-gradient(to right, transparent, rgba(212,175,55,0.7))' : battleType === 'elite' ? 'linear-gradient(to right, transparent, rgba(251,146,60,0.7))' : battleType === 'wave' ? 'linear-gradient(to right, transparent, rgba(96,165,250,0.7))' : 'linear-gradient(to right, transparent, rgba(220,50,50,0.7))' }} />
-                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : battleType === 'wave' ? '#60A5FA' : '#DC3232' }} />
-                <div style={{ width: '60px', height: '1px', background: isFinalBoss ? 'linear-gradient(to left, transparent, rgba(212,175,55,0.7))' : battleType === 'elite' ? 'linear-gradient(to left, transparent, rgba(251,146,60,0.7))' : battleType === 'wave' ? 'linear-gradient(to left, transparent, rgba(96,165,250,0.7))' : 'linear-gradient(to left, transparent, rgba(220,50,50,0.7))' }} />
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <div style={{ width: '40px', height: '1px', background: isFinalBoss ? 'linear-gradient(to right, transparent, rgba(212,175,55,0.7))' : battleType === 'elite' ? 'linear-gradient(to right, transparent, rgba(251,146,60,0.7))' : 'linear-gradient(to right, transparent, rgba(220,50,50,0.7))' }} />
+                <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : '#DC3232' }} />
+                <div style={{ width: '40px', height: '1px', background: isFinalBoss ? 'linear-gradient(to left, transparent, rgba(212,175,55,0.7))' : battleType === 'elite' ? 'linear-gradient(to left, transparent, rgba(251,146,60,0.7))' : 'linear-gradient(to left, transparent, rgba(220,50,50,0.7))' }} />
               </div>
             </div>
           )}
@@ -817,6 +847,80 @@ const BattleModal = ({
               />
             </div>
           </div>
+
+          {/* ── Capture Buttons (< 40% HP, non-boss) ── */}
+          {bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
+            <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.25)' }}>
+              <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Cinzel, serif' }}>
+                The creature is weakened...
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {/* Shake Down */}
+                <button
+                  disabled={hasShookDown || turnPhase !== 'player'}
+                  onClick={() => {
+                    if (hasShookDown) return;
+                    setHasShookDown(true);
+                    const gained = onShakedown();
+                    setCaptureResult({ type: 'shakedown', gold: gained });
+                    setTimeout(() => setCaptureResult(null), 2000);
+                  }}
+                  style={{
+                    padding: '8px 6px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
+                    fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
+                    background: hasShookDown ? 'rgba(60,60,60,0.4)' : 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))',
+                    border: `1px solid ${hasShookDown ? 'rgba(155,139,126,0.3)' : 'rgba(212,175,55,0.6)'}`,
+                    color: hasShookDown ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
+                    cursor: hasShookDown ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {hasShookDown ? 'Shook Down' : '💰 Shake Down'}
+                </button>
+                {/* Capture */}
+                <button
+                  disabled={capturedMonsters?.length >= 4 || turnPhase !== 'player'}
+                  onClick={() => {
+                    if (capturedMonsters?.length >= 4) return;
+                    const creatureIdx = (() => {
+                      const seed = (bossName || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+                      if (isFinalBoss)            return 17 + (seed % 9);
+                      if (battleType === 'elite') return 9  + (seed % 8);
+                      return                             1  + (seed % 8);
+                    })();
+                    const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, creatureIdx);
+                    setCaptureResult({ type: 'capture', ...result });
+                    setTimeout(() => setCaptureResult(null), 2500);
+                  }}
+                  style={{
+                    padding: '8px 6px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
+                    fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
+                    background: capturedMonsters?.length >= 4 ? 'rgba(60,60,60,0.4)' : 'linear-gradient(to bottom, rgba(107,33,168,0.6), rgba(76,29,149,0.65))',
+                    border: `1px solid ${capturedMonsters?.length >= 4 ? 'rgba(155,139,126,0.3)' : 'rgba(168,85,247,0.6)'}`,
+                    color: capturedMonsters?.length >= 4 ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
+                    cursor: capturedMonsters?.length >= 4 ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {capturedMonsters?.length >= 4 ? 'Stable Full' : '🔮 Negotiate'}
+                </button>
+              </div>
+              {/* Result flash */}
+              {captureResult && (
+                <p className="text-xs text-center mt-2 animate-pulse" style={{
+                  color: captureResult.type === 'shakedown' ? '#D4AF37'
+                    : captureResult.success ? '#4ADE80' : '#FF6B6B',
+                  fontFamily: 'Cinzel, serif',
+                }}>
+                  {captureResult.type === 'shakedown'
+                    ? `+${captureResult.gold} gold seized!`
+                    : captureResult.success ? 'Captured!'
+                    : captureResult.reason === 'full' ? 'Stable is full!'
+                    : captureResult.reason === 'nogold' ? 'Not enough gold!'
+                    : captureResult.reason === 'nocrystal' ? 'Need a fusion crystal!'
+                    : 'The creature resisted!'}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Phase 2 Pressure */}
           {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
