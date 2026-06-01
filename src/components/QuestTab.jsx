@@ -80,10 +80,10 @@ const QuestTab = ({
 
               {/* Corner badges */}
               <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderLeft:'none'}}>
-                <span className="text-xs font-bold" style={{color:'#3D1F08',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
+                <span className="text-xs font-bold" style={{color:'#1A0A00',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
               </div>
               <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderRight:'none'}}>
-                <span className="text-xs font-bold" style={{color:'#3D1F08',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level} • {getGuildRank(level).name}</span>
+                <span className="text-xs font-bold" style={{color:'#1A0A00',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level} • {getGuildRank(level).name}</span>
               </div>
 
               <div className="relative z-10 pt-8">
@@ -101,13 +101,9 @@ const QuestTab = ({
                         onError={e=>{e.currentTarget.style.display='none';}}
                       />
                     </div>
-                    <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.65rem,1.5vw,0.8rem)',letterSpacing:'0.06em',color:'#2C1A0A',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',letterSpacing:'0.1em',color:'#7A4520',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.08em',color:'#A0692A',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.title}</p>
-                    <div style={{width:'100%',borderRadius:'5px',padding:'4px 6px',background:'rgba(180,140,80,0.25)',border:'1px solid rgba(80,45,15,0.3)',textAlign:'center',marginTop:'2px'}}>
-                      <span style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',color:'#7A4520',letterSpacing:'0.1em',display:'block',marginBottom:'1px'}}>GOLD</span>
-                      <span style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'0.9rem',color:'#5C2E00'}}>{gold}</span>
-                    </div>
+                    <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.65rem,1.5vw,0.8rem)',letterSpacing:'0.06em',color:'#1A0A00',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
+                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',letterSpacing:'0.1em',color:'#4A2000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
+                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.08em',color:'#6B3A10',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.title}</p>
                   </div>
 
                   {/* ── RIGHT: Stats column ── */}
@@ -116,8 +112,8 @@ const QuestTab = ({
                     {/* XP bar */}
                     <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.25)'}}>
                       <div className="flex justify-between text-xs mb-1">
-                        <span style={{fontFamily:'Cinzel,serif',fontWeight:700,letterSpacing:'0.08em',color:'#5C2E00',textTransform:'uppercase',fontSize:'0.65rem'}}>Experience</span>
-                        <span style={{fontFamily:'Cinzel,serif',fontWeight:700,color:'#3D1F08',fontSize:'0.65rem'}}>{(()=>{let s=0;for(let i=1;i<level;i++)s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));const cur=xp-s;const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));return`${cur} / ${need}`;})()}</span>
+                        <span style={{fontFamily:'Cinzel,serif',fontWeight:700,letterSpacing:'0.08em',color:'#3A1500',textTransform:'uppercase',fontSize:'0.65rem'}}>Experience</span>
+                        <span style={{fontFamily:'Cinzel,serif',fontWeight:700,color:'#1A0A00',fontSize:'0.65rem'}}>{(()=>{let s=0;for(let i=1;i<level;i++)s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));const cur=xp-s;const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));return`${cur} / ${need}`;})()}</span>
                       </div>
                       <div className="rounded-full h-2.5 overflow-hidden" style={{background:'rgba(80,45,15,0.2)',border:'1px solid rgba(80,45,15,0.2)'}}>
                         <div className="h-full rounded-full transition-all duration-300" style={{
@@ -131,15 +127,15 @@ const QuestTab = ({
                     <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
                       <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(139,0,0,0.3)'}}>
                         <div className="flex justify-between items-center mb-1">
-                          <div className="flex items-center gap-1.5"><HeartPulse size={13} style={{color:'#8B0000'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',fontWeight:700,color:'#8B0000',letterSpacing:'0.1em'}}>HP</span></div>
-                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',fontWeight:700,color:hp/getMaxHp()<0.25?'#8B0000':'#2C1A0A'}}>{hp}/{getMaxHp()}</span>
+                          <div className="flex items-center gap-1.5"><HeartPulse size={13} style={{color:'#7F0000'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',fontWeight:700,color:'#7F0000',letterSpacing:'0.1em'}}>HP</span></div>
+                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',fontWeight:700,color:hp/getMaxHp()<0.25?'#7F0000':'#1A0A00'}}>{hp}/{getMaxHp()}</span>
                         </div>
                         <div className="rounded h-2 overflow-hidden" style={{background:'rgba(139,0,0,0.15)'}}><div className="h-full rounded transition-all" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'#8B0000':'linear-gradient(to right,#7f1d1d,#b91c1c)'}}/></div>
                       </div>
                       <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(30,58,140,0.3)'}}>
                         <div className="flex justify-between items-center mb-1">
-                          <div className="flex items-center gap-1.5"><Sparkles size={13} style={{color:'#1E3A8A'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',fontWeight:700,color:'#1E3A8A',letterSpacing:'0.1em'}}>SP</span></div>
-                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',fontWeight:700,color:'#1E3A8A'}}>{stamina}/{getMaxStamina()}</span>
+                          <div className="flex items-center gap-1.5"><Sparkles size={13} style={{color:'#142B6E'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.6rem',fontWeight:700,color:'#142B6E',letterSpacing:'0.1em'}}>SP</span></div>
+                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',fontWeight:700,color:'#142B6E'}}>{stamina}/{getMaxStamina()}</span>
                         </div>
                         <div className="rounded h-2 overflow-hidden" style={{background:'rgba(30,58,140,0.15)'}}><div className="h-full rounded transition-all" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb)'}}/></div>
                       </div>
@@ -150,31 +146,31 @@ const QuestTab = ({
                       {(()=>{const ic=(()=>{const m={red:'#8B0000',blue:'#1E3A8A',green:'#064E3B',white:'#4B5563',purple:'#4B0082',yellow:'#92400E',amber:'#14532D'};return m[hero.class.color]||m.yellow;})();return(<>
                         <div className="rounded p-2 text-center" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.3)'}}>
                           <Swords size={14} style={{color:ic,margin:'0 auto 3px'}}/>
-                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.1rem',color:'#2C1A0A',lineHeight:1}}>{getBaseAttack()}</p>
-                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:'#7A4520',marginTop:'2px',textTransform:'uppercase'}}>Attack</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.1rem',color:'#1A0A00',lineHeight:1}}>{getBaseAttack()}</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:'#4A2000',marginTop:'2px',textTransform:'uppercase'}}>Attack</p>
                         </div>
                         <div className="rounded p-2 text-center" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.3)'}}>
                           <ShieldCheck size={14} style={{color:ic,margin:'0 auto 3px'}}/>
-                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.1rem',color:'#2C1A0A',lineHeight:1}}>{Math.floor((getBaseDefense()/(getBaseDefense()+50))*100)}%</p>
-                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:'#7A4520',marginTop:'2px',textTransform:'uppercase'}}>Defense</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.1rem',color:'#1A0A00',lineHeight:1}}>{Math.floor((getBaseDefense()/(getBaseDefense()+50))*100)}%</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.1em',color:'#4A2000',marginTop:'2px',textTransform:'uppercase'}}>Defense</p>
                         </div>
                       </>);})()}
                     </div>
 
                     {/* Ability Scores */}
-                    {(()=>{const ab=hero.abilities||{str:10,dex:10,con:10,int:10,wis:10,cha:10};const pMap={Knight:'str',Wizard:'int',Assassin:'dex',Crusader:'con'};const primary=pMap[hero.class.name]||'str';const ic=(()=>{const m={red:'#8B0000',blue:'#1E3A8A',green:'#064E3B',white:'#374151',purple:'#4B0082',yellow:'#92400E',amber:'#14532D'};return m[hero.class.color]||m.yellow;})();return(<>
+                    {(()=>{const ab=hero.abilities||{str:10,dex:10,con:10,int:10,wis:10,cha:10};const pMap={Knight:'str',Wizard:'int',Assassin:'dex',Crusader:'con'};const primary=pMap[hero.class.name]||'str';const ic=(()=>{const m={red:'#7F0000',blue:'#142B6E',green:'#063B28',white:'#1F2937',purple:'#3B006A',yellow:'#6B2E00',amber:'#0E3D1E'};return m[hero.class.color]||m.yellow;})();const fullNames={str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'};return(<>
                       <div className="flex items-center gap-2 mb-1">
-                        <div style={{flex:'1',height:'1px',background:'rgba(80,45,15,0.3)'}}/>
-                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.15em',color:'#7A4520',textTransform:'uppercase',whiteSpace:'nowrap'}}>Ability Scores</p>
-                        <div style={{flex:'1',height:'1px',background:'rgba(80,45,15,0.3)'}}/>
+                        <div style={{flex:'1',height:'1px',background:'rgba(60,30,5,0.4)'}}/>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.15em',color:'#3A1500',textTransform:'uppercase',whiteSpace:'nowrap'}}>Ability Scores</p>
+                        <div style={{flex:'1',height:'1px',background:'rgba(60,30,5,0.4)'}}/>
                       </div>
-                      <div style={{display:'grid',gridTemplateColumns:'repeat(6,1fr)',gap:'4px'}}>
+                      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'5px'}}>
                         {['str','dex','con','int','wis','cha'].map(key=>{
                           const score=ab[key]||10;const mod=Math.floor((score-10)/2);const ip=key===primary;
-                          return(<div key={key} className="rounded text-center" style={{padding:'5px 2px',background:ip?'rgba(180,140,80,0.35)':'rgba(180,140,80,0.15)',border:`1px solid ${ip?'rgba(80,45,15,0.5)':'rgba(80,45,15,0.2)'}`}}>
-                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.48rem',letterSpacing:'0.08em',color:ip?ic:'#A0692A',marginBottom:'1px',fontWeight:ip?900:400}}>{key.toUpperCase()}</p>
-                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.95rem',fontWeight:900,color:'#2C1A0A',lineHeight:1}}>{score}</p>
-                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.52rem',color:mod>=0?'#2D5A27':'#8B0000',marginTop:'1px',fontWeight:700}}>{mod>=0?'+':''}{mod}</p>
+                          return(<div key={key} className="rounded text-center" style={{padding:'6px 4px',background:ip?'rgba(140,90,30,0.25)':'rgba(180,140,80,0.15)',border:`1px solid ${ip?'rgba(60,30,5,0.5)':'rgba(60,30,5,0.2)'}`}}>
+                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.5rem',letterSpacing:'0.04em',color:ip?ic:'#4A2000',marginBottom:'2px',fontWeight:ip?900:600}}>{fullNames[key]}</p>
+                            <p style={{fontFamily:'Cinzel,serif',fontSize:'1.1rem',fontWeight:900,color:'#1A0A00',lineHeight:1}}>{score}</p>
+                            <p style={{fontFamily:'Cinzel,serif',fontSize:'0.55rem',color:mod>=0?'#1A4020':'#7F0000',marginTop:'2px',fontWeight:700}}>{mod>=0?'+':''}{mod}</p>
                           </div>);
                         })}
                       </div>
