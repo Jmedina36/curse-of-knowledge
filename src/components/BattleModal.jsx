@@ -171,6 +171,7 @@ const BattleModal = ({
   isBanditWave,
   banditEnemyImg,
   onBeg,
+  raidFaction,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -390,7 +391,9 @@ const BattleModal = ({
 
   const phaseLabel = isFinalBoss
     ? (inPhase3 ? 'PHASE 3 — ABYSS AWAKENING' : inPhase2 ? 'PHASE 2 — THE PRESSURE' : 'THE UNDYING LEGEND')
-    : isBanditWave ? `BANDIT RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
+    : raidFaction === 'daughters' ? `DAUGHTERS OF DUSK · ${currentWaveEnemy}/${totalWaveEnemies}`
+    : raidFaction === 'bandit' ? `BANDIT RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
+    : isBanditWave ? `RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
     : battleType === 'elite' ? 'TORMENTED CHAMPION'
     : battleType === 'wave' ? `WAVE ASSAULT · Enemy ${currentWaveEnemy}/${totalWaveEnemies}`
     : 'ENEMY ENCOUNTER';
@@ -872,7 +875,7 @@ const BattleModal = ({
           {isBanditWave && bossEntered && bossHp > 0 && bossHpPct < 40 && (
             <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(239,68,68,0.25)' }}>
               <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(239,68,68,0.7)', fontFamily: 'Cinzel, serif' }}>
-                You could beg for mercy...
+                {raidFaction === 'daughters' ? 'You could plead to the shadows...' : 'You could beg for mercy...'}
               </p>
               <button
                 disabled={turnPhase !== 'player'}

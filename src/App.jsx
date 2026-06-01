@@ -81,6 +81,43 @@ const buildBanditLineup = (waveNumber, captainsDefeated) => {
   return lineup;
 };
 
+// ─── Daughters of Dusk faction data ─────────────────────────────────────────
+const DAUGHTERS_POOL = {
+  members: [
+    { img: '/daughters-of-dusk/member-1.png', names: ['Vael', 'Nyx', 'Shade', 'Mourne', 'Eclipsa'] },
+    { img: '/daughters-of-dusk/member-2.png', names: ['Zira', 'Lune', 'Omen', 'Vex', 'Silka'] },
+    { img: '/daughters-of-dusk/member-3.png', names: ['Frost', 'Wraith', 'Ashen', 'Grim', 'Hex'] },
+    { img: '/daughters-of-dusk/member-4.png', names: ['Sable', 'Briar', 'Dusk', 'Thorn', 'Mist'] },
+    { img: '/daughters-of-dusk/member-5.png', names: ['Cipher', 'Ravel', 'Knell', 'Pyre', 'Lace'] },
+  ],
+  captains: [
+    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain' },
+    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris',  title: 'Dusk Captain' },
+    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne',  title: 'Dusk Captain' },
+  ],
+  leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen' },
+};
+
+const buildDaughtersLineup = (waveNumber, captainsDefeated) => {
+  const lineup = [];
+  const memberCount = waveNumber <= 2 ? 2 : 3;
+  const usedIdxs = new Set();
+  for (let i = 0; i < memberCount; i++) {
+    let gIdx;
+    do { gIdx = Math.floor(Math.random() * DAUGHTERS_POOL.members.length); }
+    while (usedIdxs.has(gIdx));
+    usedIdxs.add(gIdx);
+    const m = DAUGHTERS_POOL.members[gIdx];
+    lineup.push({ img: m.img, name: m.names[Math.floor(Math.random() * m.names.length)], isCapt: false, isLeader: false });
+  }
+  if (waveNumber >= 5) {
+    const available = DAUGHTERS_POOL.captains.filter((_, i) => !captainsDefeated.includes(i));
+    const pick = available[Math.floor(Math.random() * available.length)];
+    if (pick) lineup.push({ ...pick, isCapt: true, isLeader: false });
+  }
+  return lineup;
+};
+
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
@@ -474,6 +511,11 @@ const banditLineupIdxRef = useRef(0);
 const [banditCaptainsDefeated, setBanditCaptainsDefeated] = useState([]);
 const [banditWaveNumber, setBanditWaveNumber] = useState(0);
 const [banditEnemyImg, setBanditEnemyImg] = useState('');
+const [isDaughtersWave, setIsDaughtersWave] = useState(false);
+const daughtersLineupRef = useRef([]);
+const daughtersLineupIdxRef = useRef(0);
+const [daughtersCaptainsDefeated, setDaughtersCaptainsDefeated] = useState([]);
+const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
   const [battling, setBattling] = useState(false);
   const [battleMenu, setBattleMenu] = useState('main'); // 'main', 'fight', 'items'
   const [isFinalBoss, setIsFinalBoss] = useState(false);
@@ -2607,6 +2649,90 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setTimeout(() => spawnBanditWave(waveNum, captDefeated), 1500);
   };
 
+  const spawnDaughtersEnemy = (enemy, idx, total) => {
+    const config = GAME_CONSTANTS.SCALING_CONFIG.normal;
+    const base = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
+    const enemyHp = enemy.isLeader ? Math.floor(base * 2.8)
+      : enemy.isCapt ? Math.floor(base * 2.0)
+      : Math.floor(base * 1.1);
+
+    sounds.waveEntrance();
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+
+    setBossName(enemy.name);
+    setBossHp(enemyHp);
+    setBossMax(enemyHp);
+    setBanditEnemyImg(enemy.img);
+    setShowBoss(true);
+    setBattling(true);
+    setBattleMenu('main');
+    setBattleMode(true);
+    setIsFinalBoss(false);
+    setCanFlee(true);
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setVictoryLoot([]);
+    setChargeStacks(0);
+    setRecklessStacks(0);
+    setEnragedTurns(0);
+    setHasFled(false);
+    setIsBanditWave(false);
+    setIsDaughtersWave(true);
+    daughtersLineupIdxRef.current = idx;
+    setBattleType('wave');
+    setCurrentWaveEnemy(idx + 1);
+    setTotalWaveEnemies(total);
+    if (idx === 0) setWaveGoldTotal(0);
+    audioManager.play(TRACKS.malicious);
+
+    const label = enemy.isLeader
+      ? `🌑 DUSK QUEEN: ${enemy.name} steps from the shadows!`
+      : enemy.isCapt
+      ? `⚠️ ${enemy.title} ${enemy.name} appears! (${idx + 1}/${total})`
+      : `${enemy.name} of the Daughters of Dusk strikes! (${idx + 1}/${total})`;
+    addLog(label);
+
+    setEnemyDialogue(
+      enemy.isLeader ? "You should not have come here. There is no leaving the Dusk."
+      : enemy.isCapt ? "The Daughters do not forgive. They do not forget."
+      : "Darkness take you."
+    );
+
+    const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+    const initRoll = Math.ceil(Math.random() * 20);
+    const initTotal = Math.max(1, Math.min(20, initRoll + dexMod));
+    const playerFirst = initTotal >= 11;
+    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * 0.45 * (1 - wisMod * 0.02)));
+    setTimeout(() => setInitiativeRoll({
+      roll: initRoll, dexMod, total: initTotal, playerFirst,
+      openingDamage: openDmg,
+      openingLog: playerFirst ? '' : `🌑 AMBUSHED! ${enemy.name} strikes from the shadows! -${openDmg} HP`,
+    }), 3200);
+  };
+
+  const spawnDaughtersWave = (waveNum, captainsDefeated) => {
+    const lineup = buildDaughtersLineup(waveNum, captainsDefeated);
+    daughtersLineupRef.current = lineup;
+    daughtersLineupIdxRef.current = 0;
+    setDaughtersWaveNumber(waveNum);
+    setWaveCount(wc => wc + 1);
+    spawnDaughtersEnemy(lineup[0], 0, lineup.length);
+  };
+
+  const handleDaughtersBeg = () => {
+    addLog('🏳️ You plead for mercy. The Daughters melt back into the shadows... and regroup.');
+    setIsDaughtersWave(false);
+    setBattling(false);
+    setBattleMode(false);
+    setShowBoss(false);
+    const waveNum = daughtersWaveNumber;
+    const captDefeated = daughtersCaptainsDefeated;
+    setTimeout(() => spawnDaughtersWave(waveNum, captDefeated), 1500);
+  };
+
   const spawnRandomMiniBoss = (force = false) => {
     const completedTasks = tasks.filter(t => t.done).length;
     const totalTasks = tasks.length;
@@ -3246,6 +3372,42 @@ if (battleType === 'elite') {
     }
 
     setIsBanditWave(false);
+    setBattling(false);
+    setBattleMode(false);
+    generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
+    return;
+  }
+
+  // Check if Daughters of Dusk wave continues
+  if (isDaughtersWave) {
+    const nextIdx = daughtersLineupIdxRef.current + 1;
+    const lineup = daughtersLineupRef.current;
+    const defeatedEnemy = lineup[daughtersLineupIdxRef.current];
+
+    if (defeatedEnemy?.isCapt) {
+      const captIdx = DAUGHTERS_POOL.captains.findIndex(c => c.name === defeatedEnemy.name);
+      if (captIdx !== -1) setDaughtersCaptainsDefeated(prev => prev.includes(captIdx) ? prev : [...prev, captIdx]);
+    }
+
+    if (nextIdx < lineup.length) {
+      addLog(`The next Daughter steps forward...`);
+      setTimeout(() => spawnDaughtersEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+      return;
+    }
+
+    setXp(x => x + 20);
+    addLog(`The Daughters retreat into the dark! +20 bonus XP`);
+
+    const totalDefeated = daughtersCaptainsDefeated.length + (defeatedEnemy?.isCapt ? 1 : 0);
+    if (totalDefeated >= 3 && !defeatedEnemy?.isLeader) {
+      addLog(`All captains fallen... Mira, the Dusk Queen, reveals herself!`);
+      const leader = { ...DAUGHTERS_POOL.leader, isCapt: false, isLeader: true };
+      daughtersLineupRef.current = [leader];
+      setTimeout(() => spawnDaughtersEnemy(leader, 0, 1), 2000);
+      return;
+    }
+
+    setIsDaughtersWave(false);
     setBattling(false);
     setBattleMode(false);
     generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
@@ -4810,6 +4972,36 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           return;
         }
         setIsBanditWave(false);
+        setBattling(false);
+        setBattleMode(false);
+        generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
+        return;
+      }
+
+      if (isDaughtersWave) {
+        const nextIdx = daughtersLineupIdxRef.current + 1;
+        const lineup = daughtersLineupRef.current;
+        const defeatedEnemy = lineup[daughtersLineupIdxRef.current];
+        if (defeatedEnemy?.isCapt) {
+          const captIdx = DAUGHTERS_POOL.captains.findIndex(c => c.name === defeatedEnemy.name);
+          if (captIdx !== -1) setDaughtersCaptainsDefeated(prev => prev.includes(captIdx) ? prev : [...prev, captIdx]);
+        }
+        if (nextIdx < lineup.length) {
+          addLog(`The next Daughter steps forward...`);
+          setTimeout(() => spawnDaughtersEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+          return;
+        }
+        setXp(x => x + 20);
+        addLog(`The Daughters retreat into the dark! +20 bonus XP`);
+        const totalDefeated = daughtersCaptainsDefeated.length + (defeatedEnemy?.isCapt ? 1 : 0);
+        if (totalDefeated >= 3 && !defeatedEnemy?.isLeader) {
+          addLog(`All captains fallen... Mira, the Dusk Queen, reveals herself!`);
+          const leader = { ...DAUGHTERS_POOL.leader, isCapt: false, isLeader: true };
+          daughtersLineupRef.current = [leader];
+          setTimeout(() => spawnDaughtersEnemy(leader, 0, 1), 2000);
+          return;
+        }
+        setIsDaughtersWave(false);
         setBattling(false);
         setBattleMode(false);
         generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
@@ -6612,6 +6804,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onRaid={spawnBanditWave}
               banditWaveNumber={banditWaveNumber}
               banditCaptainsDefeated={banditCaptainsDefeated}
+              onDaughtersRaid={spawnDaughtersWave}
+              daughtersWaveNumber={daughtersWaveNumber}
+              daughtersCaptainsDefeated={daughtersCaptainsDefeated}
             />
           )}
 
@@ -7305,7 +7500,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               getRarityColor={getRarityColor}
               fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
               onShakedown={shakedownEnemy} onCapture={captureMonster}
-              isBanditWave={isBanditWave} banditEnemyImg={banditEnemyImg} onBeg={handleBeg}
+              isBanditWave={isBanditWave || isDaughtersWave} banditEnemyImg={banditEnemyImg}
+              onBeg={isBanditWave ? handleBeg : handleDaughtersBeg}
+              raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : null}
             />
           )}
           {showPomodoro && pomodoroTask && (
