@@ -218,7 +218,7 @@ const CraftingModal = ({
           style={{
             position: 'absolute',
             left: 'calc(25% - min(15vw, 225px) - clamp(70px, 7.5vw, 120px))',
-            top: '50%', transform: 'translateY(-50%)',
+            top: '50%', transform: 'translateY(-62%)',
             width: 'clamp(140px, 15vw, 240px)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px',
             pointerEvents: 'auto',
