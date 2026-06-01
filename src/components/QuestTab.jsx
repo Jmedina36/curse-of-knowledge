@@ -63,21 +63,16 @@ const QuestTab = ({
   return (
             <div className="space-y-4">
             <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
-              background: (() => {
-                const colorMap = {
-                  red: '#3D0A0A',      // Warrior - Deep crimson red (darker, richer)
-                  blue: '#1E2A5A',     // Mage - Brighter deep blue (more vibrant)
-                  green: '#0A2818',    // Assassin - Deep emerald shadow
-                  white: '#4A4A4A',    // Crusader - Lighter gray (for more contrast with white)
-                  purple: '#2A1A3D',   // Legacy purple
-                  yellow: '#3D3A1F',   // Legacy yellow
-                  amber: '#1E3A2E'     // Ranger - Forest green (nature theme)
-                };
-                return colorMap[hero.class.color] || colorMap.yellow;
-              })(),
+              backgroundImage: 'url(/Scroll.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
               border: (() => { const m={red:'rgba(180,30,30,0.5)',blue:'rgba(59,130,246,0.4)',green:'rgba(16,185,129,0.4)',white:'rgba(200,200,200,0.35)',purple:'rgba(139,92,246,0.4)',yellow:'rgba(212,175,55,0.4)',amber:'rgba(34,197,94,0.4)'}; return '2px solid '+(m[hero.class.color]||m.yellow); })(),
-              boxShadow: (() => { const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'}; const g=m[hero.class.color]||m.yellow; return '0 4px 30px '+g+', 0 0 60px '+g+', inset 0 0 50px rgba(0,0,0,0.4)'; })()
+              boxShadow: (() => { const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'}; const g=m[hero.class.color]||m.yellow; return '0 4px 30px '+g+', 0 0 60px '+g; })()
             }}>
+
+              {/* Dark overlay so stats stay readable over the scroll texture */}
+              <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.55)',pointerEvents:'none',zIndex:0}}/>
 
               {/* RPG Character Sheet layout */}
               <>
