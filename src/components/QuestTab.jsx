@@ -38,9 +38,6 @@ const QuestTab = ({
   gauntletMilestone,
   eliteBossDefeatedToday,
   debugWarningState,
-  // Hero card UI
-  heroCardCollapsed,
-  setHeroCardCollapsed,
   // Equipment
   equippedWeapon,
   equippedArmor,
@@ -82,70 +79,8 @@ const QuestTab = ({
               boxShadow: (() => { const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'}; const g=m[hero.class.color]||m.yellow; return '0 4px 30px '+g+', 0 0 60px '+g+', inset 0 0 50px rgba(0,0,0,0.4)'; })()
             }}>
 
-              {heroCardCollapsed ? (
-                // Collapsed state - minimal medieval theme
-                <div className="relative">
-                  {/* Large watermark emblem in center background */}
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '7rem', lineHeight: 1, opacity: 0.06, color: '#F5F5DC'}}>
-                    {getCardStyle(hero.class, currentDay).emblem}
-                  </div>
-
-                  <div className="relative z-10">
-                    {/* Header: name left, level right */}
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h3 className="font-black uppercase" style={{fontFamily:'Cinzel,serif',fontSize:'clamp(1.4rem,4vw,1.9rem)',letterSpacing:'0.06em',color:'#C8C8B0',textShadow:(()=>{const m={red:'rgba(220,50,50,0.35)',blue:'rgba(96,165,250,0.35)',green:'rgba(16,185,129,0.35)',white:'rgba(220,220,220,0.3)',purple:'rgba(167,139,250,0.35)',yellow:'rgba(212,175,55,0.35)',amber:'rgba(34,197,94,0.35)'};return '0 0 20px '+(m[hero.class.color]||m.yellow);})()}}>{hero.name}</h3>
-                        <p className="text-xs uppercase tracking-widest mt-0.5" style={{color:(()=>{const m={red:'rgba(220,50,50,0.75)',blue:'rgba(96,165,250,0.75)',green:'rgba(16,185,129,0.75)',white:'rgba(200,200,200,0.75)',purple:'rgba(167,139,250,0.75)',yellow:'rgba(212,175,55,0.75)',amber:'rgba(34,197,94,0.75)'};return m[hero.class.color]||m.yellow;})(),fontFamily:'Cinzel,serif'}}>{hero.title} • {hero.class.name}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="px-3 py-1 rounded border" style={{background:'rgba(0,0,0,0.5)',borderColor:'rgba(212,175,55,0.4)'}}>
-                          <span className="text-xs font-bold" style={{color:'#D4AF37',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level}</span>
-                        </div>
-                        <div className="px-2 py-0.5 rounded mt-1" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(212,175,55,0.2)'}}>
-                          <span className="text-xs" style={{color:getGuildRank(level).color,letterSpacing:'0.08em',fontFamily:'Cinzel,serif'}}>{getGuildRank(level).name}</span>
-                        </div>
-                        <p className="text-xs mt-1" style={{color:'rgba(245,245,220,0.4)'}}>Day {currentDay}</p>
-                      </div>
-                    </div>
-
-                    {/* HP Bar */}
-                    <div className="mb-2">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs uppercase tracking-widest font-bold" style={{color:'#FF6B6B'}}>HP</span>
-                        <span className="text-xs font-bold" style={{color:hp/getMaxHp()<0.25?'#EF4444':'#F5F5DC'}}>{hp} / {getMaxHp()}</span>
-                      </div>
-                      <div className="rounded h-2.5 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(139,0,0,0.4)'}}>
-                        <div className="h-full rounded transition-all duration-300" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'linear-gradient(to right,#7F1D1D,#DC2626)':'linear-gradient(to right,#7f1d1d,#b91c1c,#dc2626)'}}/>
-                      </div>
-                    </div>
-                    {/* SP Bar */}
-                    <div className="mb-3">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs uppercase tracking-widest font-bold" style={{color:'#60A5FA'}}>SP</span>
-                        <span className="text-xs font-bold" style={{color:'#93C5FD'}}>{stamina} / {getMaxStamina()}</span>
-                      </div>
-                      <div className="rounded h-2.5 overflow-hidden" style={{background:'rgba(0,0,0,0.6)',border:'1px solid rgba(30,58,140,0.4)'}}>
-                        <div className="h-full rounded transition-all duration-300" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb,#3b82f6)'}}/>
-                      </div>
-                    </div>
-
-                    {curseLevel > 0 && (
-                      <div className={`rounded p-2 mb-3 ${curseLevel===3?'animate-pulse':''}`} style={{background:'rgba(107,44,145,0.25)',border:`1px solid ${curseLevel===3?'rgba(220,38,38,0.6)':'rgba(138,59,181,0.45)'}`}}>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs font-bold uppercase" style={{color:curseLevel===3?'#FF6B6B':'#B794F4',fontFamily:'Cinzel,serif'}}>{curseLevel===1?'Cursed':curseLevel===2?'Deeply Cursed':'Condemned'}</p>
-                          <p className="text-xs" style={{color:'#B794F4'}}>{curseLevel}/3</p>
-                        </div>
-                      </div>
-                    )}
-
-                    <button onClick={() => { sounds.click(); setHeroCardCollapsed(false); }} className="w-full py-1.5 rounded text-xs uppercase tracking-widest transition-all hover:opacity-80" style={{background:'rgba(0,0,0,0.4)',border:'1px solid rgba(212,175,55,0.25)',color:'rgba(212,175,55,0.6)',fontFamily:'Cinzel,serif'}}>
-                      ▼ Show Full Card
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                // Expanded state — RPG Character Sheet layout
-                <>
+              {/* RPG Character Sheet layout */}
+              <>
               {/* Watermark emblem */}
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize: '20rem', lineHeight: 1, opacity: 0.04, color: '#F5F5DC'}}>
                 {getCardStyle(hero.class, currentDay).emblem}
@@ -285,19 +220,8 @@ const QuestTab = ({
                   </div>{/* end right column */}
                 </div>{/* end sheet row */}
 
-                {/* Collapse Button */}
-                <div className="flex justify-center mt-4">
-                  <button
-                    onClick={() => { sounds.click(); setHeroCardCollapsed(!heroCardCollapsed); }}
-                    className="px-3 py-1 rounded transition-all border-2 hover:scale-105"
-                    style={{background:'rgba(0,0,0,0.5)',borderColor:'rgba(212,175,55,0.4)',color:'#D4AF37',fontSize:'0.7rem',letterSpacing:'0.1em'}}
-                  >
-                    ▲ Collapse
-                  </button>
-                </div>
               </div>
               </>
-              )}
             </div>
 
             {/* ── Destination Cards ── */}
