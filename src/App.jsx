@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
 import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
@@ -6322,6 +6322,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'bestiary', icon:Shield, label:'Bestiary'},
                 {id:'legacy', icon:Skull, label:'Legacy'},
                 {id:'progress', icon:Trophy, label:'Progress'},
+                {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
                 <button 
                   key={t.id} 
@@ -6358,7 +6359,113 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </nav>
 
         <div className="max-w-6xl mx-auto">
-          {showDebug && (
+
+                    <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+          >
+          {activeTab === 'quest' && (
+            <QuestTab
+              hero={hero} hp={hp} stamina={stamina} xp={xp} level={level} gold={gold}
+              currentDay={currentDay} curseLevel={curseLevel}
+              isDayActive={isDayActive} timeUntilMidnight={timeUntilMidnight}
+              consecutiveDays={consecutiveDays} skipCount={skipCount} miniBossCount={miniBossCount}
+              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
+              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
+              heroCardCollapsed={heroCardCollapsed} setHeroCardCollapsed={setHeroCardCollapsed}
+              equippedWeapon={equippedWeapon} equippedArmor={equippedArmor}
+              equippedPendant={equippedPendant} equippedRing={equippedRing}
+              weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive} luckyCharmActive={luckyCharmActive}
+              getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
+              getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
+              setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
+              setShowCraftingModal={setShowCraftingModal}
+              capturedMonsters={capturedMonsters} fusionCrystals={fusionCrystals}
+              onReleaseMonster={releaseMonster}
+            />
+          )}
+
+          {activeTab === 'contracts' && (
+            <ContractsTab
+              hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
+              xp={xp} level={level}
+              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
+              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
+              tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
+              newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
+              timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
+              overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
+              setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
+              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
+              handleDragOver={handleDragOver} handleDrop={handleDrop}
+              setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
+              setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
+              setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
+              start={start} miniBoss={miniBoss} finalBoss={finalBoss}
+              setShowImportModal={setShowImportModal}
+              log={log} addLog={addLog}
+            />
+          )}
+
+          {activeTab === 'planner' && (
+            <PlannerTab
+              weeklyPlan={weeklyPlan} setWeeklyPlan={setWeeklyPlan}
+              plannerSubTab={plannerSubTab} setPlannerSubTab={setPlannerSubTab}
+              hidePlannerCompleted={hidePlannerCompleted} setHidePlannerCompleted={setHidePlannerCompleted}
+              currentMonth={currentMonth} setCurrentMonth={setCurrentMonth}
+              currentYear={currentYear} setCurrentYear={setCurrentYear}
+              calendarTasks={calendarTasks} calendarEvents={calendarEvents} calendarFocus={calendarFocus}
+              draggedPlanTask={draggedPlanTask} setDraggedPlanTask={setDraggedPlanTask}
+              handlePlanDragEnd={handlePlanDragEnd} handlePlanDragOver={handlePlanDragOver}
+              getNextDayOfWeek={getNextDayOfWeek}
+              setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay}
+              setShowCalendarModal={setShowCalendarModal} setShowPlanModal={setShowPlanModal}
+              addLog={addLog}
+            />
+          )}
+          {activeTab === 'study' && (
+            <ForgeTab
+              forgeSubTab={forgeSubTab} setForgeSubTab={setForgeSubTab}
+              flashcardDecks={flashcardDecks} setFlashcardDecks={setFlashcardDecks}
+              selectedDeck={selectedDeck} setSelectedDeck={setSelectedDeck}
+              showDeckModal={showDeckModal} setShowDeckModal={setShowDeckModal}
+              showCardModal={showCardModal} setShowCardModal={setShowCardModal}
+              showStudyModal={showStudyModal} setShowStudyModal={setShowStudyModal}
+              currentCardIndex={currentCardIndex} setCurrentCardIndex={setCurrentCardIndex}
+              studyQueue={studyQueue} setStudyQueue={setStudyQueue}
+              isFlipped={isFlipped} setIsFlipped={setIsFlipped}
+              studyWebsites={studyWebsites}
+              newWebsiteUrl={newWebsiteUrl} setNewWebsiteUrl={setNewWebsiteUrl}
+              newWebsiteName={newWebsiteName} setNewWebsiteName={setNewWebsiteName}
+              newWebsiteCategory={newWebsiteCategory} setNewWebsiteCategory={setNewWebsiteCategory}
+              addStudyWebsite={addStudyWebsite} removeStudyWebsite={removeStudyWebsite}
+              trackWebsiteClick={trackWebsiteClick}
+              generateQuiz={generateQuiz} startMatchGame={startMatchGame}
+              addLog={addLog}
+            />
+          )}
+          {activeTab === 'progress' && (
+            <ProgressTab
+              unlockedAchievements={unlockedAchievements} achievementStats={achievementStats}
+              selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}
+            />
+          )}
+          {activeTab === 'bestiary' && (
+            <BestiaryTab
+              capturedMonsters={capturedMonsters}
+              setCapturedMonsters={setCapturedMonsters}
+              addLog={addLog}
+            />
+          )}
+          {activeTab === 'legacy' && (
+            <LegacyTab graveyard={graveyard} heroes={heroes} />
+          )}
+          {activeTab === 'debug' && (
+
             <div className="max-w-4xl mx-auto mb-6 rounded-xl p-6 border-2 relative" style={{
               background: 'linear-gradient(to bottom, rgba(40, 20, 10, 0.95), rgba(20, 10, 5, 0.95))',
               borderColor: 'rgba(139, 0, 0, 0.6)',
@@ -6828,113 +6935,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 🔄 FULL RESET
               </button>
             </div>
-          )}
 
-
-
-          <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-          >
-          {activeTab === 'quest' && (
-            <QuestTab
-              hero={hero} hp={hp} stamina={stamina} xp={xp} level={level} gold={gold}
-              currentDay={currentDay} curseLevel={curseLevel}
-              isDayActive={isDayActive} timeUntilMidnight={timeUntilMidnight}
-              consecutiveDays={consecutiveDays} skipCount={skipCount} miniBossCount={miniBossCount}
-              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
-              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
-              heroCardCollapsed={heroCardCollapsed} setHeroCardCollapsed={setHeroCardCollapsed}
-              equippedWeapon={equippedWeapon} equippedArmor={equippedArmor}
-              equippedPendant={equippedPendant} equippedRing={equippedRing}
-              weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive} luckyCharmActive={luckyCharmActive}
-              getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
-              getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
-              setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
-              setShowCraftingModal={setShowCraftingModal}
-              capturedMonsters={capturedMonsters} fusionCrystals={fusionCrystals}
-              onReleaseMonster={releaseMonster}
-            />
-          )}
-
-          {activeTab === 'contracts' && (
-            <ContractsTab
-              hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
-              xp={xp} level={level}
-              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
-              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
-              tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
-              newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
-              timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
-              overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
-              setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
-              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
-              handleDragOver={handleDragOver} handleDrop={handleDrop}
-              setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
-              setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
-              setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
-              start={start} miniBoss={miniBoss} finalBoss={finalBoss}
-              setShowImportModal={setShowImportModal}
-              log={log} addLog={addLog}
-            />
-          )}
-
-          {activeTab === 'planner' && (
-            <PlannerTab
-              weeklyPlan={weeklyPlan} setWeeklyPlan={setWeeklyPlan}
-              plannerSubTab={plannerSubTab} setPlannerSubTab={setPlannerSubTab}
-              hidePlannerCompleted={hidePlannerCompleted} setHidePlannerCompleted={setHidePlannerCompleted}
-              currentMonth={currentMonth} setCurrentMonth={setCurrentMonth}
-              currentYear={currentYear} setCurrentYear={setCurrentYear}
-              calendarTasks={calendarTasks} calendarEvents={calendarEvents} calendarFocus={calendarFocus}
-              draggedPlanTask={draggedPlanTask} setDraggedPlanTask={setDraggedPlanTask}
-              handlePlanDragEnd={handlePlanDragEnd} handlePlanDragOver={handlePlanDragOver}
-              getNextDayOfWeek={getNextDayOfWeek}
-              setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay}
-              setShowCalendarModal={setShowCalendarModal} setShowPlanModal={setShowPlanModal}
-              addLog={addLog}
-            />
-          )}
-          {activeTab === 'study' && (
-            <ForgeTab
-              forgeSubTab={forgeSubTab} setForgeSubTab={setForgeSubTab}
-              flashcardDecks={flashcardDecks} setFlashcardDecks={setFlashcardDecks}
-              selectedDeck={selectedDeck} setSelectedDeck={setSelectedDeck}
-              showDeckModal={showDeckModal} setShowDeckModal={setShowDeckModal}
-              showCardModal={showCardModal} setShowCardModal={setShowCardModal}
-              showStudyModal={showStudyModal} setShowStudyModal={setShowStudyModal}
-              currentCardIndex={currentCardIndex} setCurrentCardIndex={setCurrentCardIndex}
-              studyQueue={studyQueue} setStudyQueue={setStudyQueue}
-              isFlipped={isFlipped} setIsFlipped={setIsFlipped}
-              studyWebsites={studyWebsites}
-              newWebsiteUrl={newWebsiteUrl} setNewWebsiteUrl={setNewWebsiteUrl}
-              newWebsiteName={newWebsiteName} setNewWebsiteName={setNewWebsiteName}
-              newWebsiteCategory={newWebsiteCategory} setNewWebsiteCategory={setNewWebsiteCategory}
-              addStudyWebsite={addStudyWebsite} removeStudyWebsite={removeStudyWebsite}
-              trackWebsiteClick={trackWebsiteClick}
-              generateQuiz={generateQuiz} startMatchGame={startMatchGame}
-              addLog={addLog}
-            />
-          )}
-          {activeTab === 'progress' && (
-            <ProgressTab
-              unlockedAchievements={unlockedAchievements} achievementStats={achievementStats}
-              selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}
-            />
-          )}
-          {activeTab === 'bestiary' && (
-            <BestiaryTab
-              capturedMonsters={capturedMonsters}
-              setCapturedMonsters={setCapturedMonsters}
-              addLog={addLog}
-            />
-          )}
-          {activeTab === 'legacy' && (
-            <LegacyTab graveyard={graveyard} heroes={heroes} />
           )}
           </motion.div>
           </AnimatePresence>
@@ -7148,9 +7149,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           </div>
         )}
         
-        <div className="flex justify-center mt-8 pb-6">
-          <button onClick={() => setShowDebug(!showDebug)} className="text-xs px-4 py-2 bg-gray-800 text-gray-400 rounded hover:bg-gray-700 transition-all border border-gray-700">{showDebug ? '▲ Hide' : '▼ Show'} Debug Panel</button>
-        </div>
+
         
         <div className="text-center pb-4">
           <p className="text-xs text-gray-600">v4.15.1 - Forged Links + Skill Unlocks - Level-gated progression</p>
