@@ -70,6 +70,17 @@ const PlannerTab = ({
   return (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
 
+              {/* Section header with decorative divider */}
+              <div className="text-center mb-4">
+                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>THE CODEX</h2>
+                <div className="flex items-center justify-center gap-2">
+                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
+                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                </div>
+              </div>
+              <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Chart your path through the coming trials..."</p>
+
               {/* ── Soren the Archivist ── */}
               <div style={{
                 display: 'flex', alignItems: 'center', gap: '20px',
@@ -96,17 +107,6 @@ const PlannerTab = ({
                   </div>
                 </div>
               </div>
-
-              {/* Section header with decorative divider */}
-              <div className="text-center mb-4">
-                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>THE CODEX</h2>
-                <div className="flex items-center justify-center gap-2">
-                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                  <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-                  <div style={{width: '80px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                </div>
-              </div>
-              <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Chart your path through the coming trials..."</p>
               
               {/* Sub-navigation tabs */}
               <div className="flex gap-2 justify-center mb-6">
