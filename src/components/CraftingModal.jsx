@@ -199,7 +199,7 @@ const CraftingModal = ({
         initial={{ opacity: 0, scale: 0.97, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.18, ease: 'easeOut' }}
-        style={{ background: VISUAL_STYLES.modal.paper, borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
+        style={{ background: VISUAL_STYLES.modal.paper, backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center top', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
         onClick={e => e.stopPropagation()}
       >
         {/* Close */}
