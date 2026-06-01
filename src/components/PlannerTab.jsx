@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Calendar, GripVertical, Plus, X } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
@@ -67,8 +68,52 @@ const PlannerTab = ({
     setSorenQuote(getSorenQuote(todayTasks));
   }, [todayTasks.length, completedCount]);
 
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+  useEffect(() => {
+    const fn = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  const showNPC = windowWidth >= 1150;
+
   return (
-            <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
+    <div style={{ position: 'relative' }}>
+
+      {/* ── Soren the Archivist — floats left of the card ── */}
+      {showNPC && (
+        <motion.div
+          initial={{ opacity: 0, x: -20, y: '-50%' }} animate={{ opacity: 1, x: 0, y: '-50%' }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          style={{
+            position: 'absolute',
+            left: 'calc(25% - min(15vw, 225px) - clamp(70px, 7.5vw, 120px))',
+            top: '40%',
+            width: 'clamp(140px, 15vw, 240px)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px',
+          }}
+        >
+          <img src="/npcs/old-wizard.png" alt="Soren"
+            style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+              border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(168,85,247,0.5), 0 0 100px rgba(168,85,247,0.15)' }}/>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>SOREN</p>
+          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>The Archivist</p>
+          <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
+            background: 'rgba(20,15,5,0.85)', border: '1px solid rgba(212,175,55,0.35)',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
+            <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid rgba(212,175,55,0.35)' }}/>
+            <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
+              "{sorenQuote}"
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{
+        borderColor: 'rgba(212, 175, 55, 0.6)',
+        width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
+        margin: '0 auto',
+      }}>
 
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
@@ -80,33 +125,6 @@ const PlannerTab = ({
                 </div>
               </div>
               <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Chart your path through the coming trials..."</p>
-
-              {/* ── Soren the Archivist ── */}
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '20px',
-                padding: '16px 20px', marginBottom: '24px', borderRadius: '12px',
-                background: 'rgba(10,8,4,0.7)', border: '1px solid rgba(212,175,55,0.25)',
-                boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
-              }}>
-                <img
-                  src="/npcs/old-wizard.png"
-                  alt="Soren"
-                  style={{
-                    width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
-                    flexShrink: 0, border: '2px solid rgba(212,175,55,0.6)',
-                    boxShadow: '0 0 20px rgba(168,85,247,0.3)',
-                  }}
-                />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', marginBottom: '2px' }}>SOREN</p>
-                  <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginBottom: '10px' }}>The Archivist</p>
-                  <div style={{ position: 'relative', padding: '10px 14px', borderRadius: '8px', background: 'rgba(20,15,5,0.8)', border: '1px solid rgba(212,175,55,0.3)' }}>
-                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
-                      "{sorenQuote}"
-                    </p>
-                  </div>
-                </div>
-              </div>
               
               {/* Sub-navigation tabs */}
               <div className="flex gap-2 justify-center mb-6">
@@ -586,6 +604,8 @@ const PlannerTab = ({
               </div>
               )}
             </div>
+      </div>
+    </div>
   );
 };
 
