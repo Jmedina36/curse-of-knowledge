@@ -168,6 +168,9 @@ const BattleModal = ({
   capturedMonsters,
   onShakedown,
   onCapture,
+  isBanditWave,
+  banditEnemyImg,
+  onBeg,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -387,6 +390,7 @@ const BattleModal = ({
 
   const phaseLabel = isFinalBoss
     ? (inPhase3 ? 'PHASE 3 — ABYSS AWAKENING' : inPhase2 ? 'PHASE 2 — THE PRESSURE' : 'THE UNDYING LEGEND')
+    : isBanditWave ? `BANDIT RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
     : battleType === 'elite' ? 'TORMENTED CHAMPION'
     : battleType === 'wave' ? `WAVE ASSAULT · Enemy ${currentWaveEnemy}/${totalWaveEnemies}`
     : 'ENEMY ENCOUNTER';
@@ -793,13 +797,15 @@ const BattleModal = ({
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <img
-                      src={getCreatureImg(bossName, battleType, isFinalBoss)}
+                      src={isBanditWave && banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
                       alt={bossName}
                       style={{
-                        height: 'clamp(120px, 18vh, 220px)',
+                        height: isBanditWave ? 'clamp(140px, 20vh, 260px)' : 'clamp(120px, 18vh, 220px)',
                         objectFit: 'contain',
+                        objectPosition: 'top',
                         filter: bossFlash
                           ? 'drop-shadow(0 0 20px rgba(255,50,50,0.9)) brightness(1.4)'
+                          : isBanditWave ? 'drop-shadow(0 0 18px rgba(239,68,68,0.6))'
                           : isFinalBoss ? 'drop-shadow(0 0 24px rgba(160,40,200,0.8))'
                           : battleType === 'elite' ? 'drop-shadow(0 0 20px rgba(220,120,0,0.7))'
                           : 'drop-shadow(0 0 16px rgba(220,50,50,0.5))',
@@ -862,8 +868,29 @@ const BattleModal = ({
             </div>
           </div>
 
-          {/* ── Capture Buttons (< 40% HP, non-boss) ── */}
-          {bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
+          {/* ── Beg (bandit waves only, < 40% HP) ── */}
+          {isBanditWave && bossEntered && bossHp > 0 && bossHpPct < 40 && (
+            <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(239,68,68,0.25)' }}>
+              <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(239,68,68,0.7)', fontFamily: 'Cinzel, serif' }}>
+                You could beg for mercy...
+              </p>
+              <button
+                disabled={turnPhase !== 'player'}
+                onClick={() => { if (turnPhase !== 'player') return; onBeg(); }}
+                style={{
+                  width: '100%', padding: '8px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
+                  fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
+                  background: 'linear-gradient(to bottom, rgba(127,29,29,0.6), rgba(100,20,20,0.65))',
+                  border: '1px solid rgba(239,68,68,0.5)', color: '#F5F5DC', cursor: 'pointer',
+                }}
+              >
+                🏳️ Beg for Mercy (Wave resets — no credit)
+              </button>
+            </div>
+          )}
+
+          {/* ── Capture Buttons (< 40% HP, non-boss, non-bandit) ── */}
+          {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
             <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.25)' }}>
               <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Cinzel, serif' }}>
                 The creature is weakened...

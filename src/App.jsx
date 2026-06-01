@@ -42,6 +42,45 @@ const NARRATION_PAGES = [
   "But someone must still try.\n\nNot because victory is certain.\nNot because this time will be different.\n\nBecause the alternative is surrender —\nand surrender is how the darkness wins.\n\nThe flame is yours now.\n\nLearn. Endure. Push back the dark.\n\nHow long can you hold the abyss at bay?",
 ];
 
+// ─── Bandit faction data ────────────────────────────────────────────────────
+const BANDIT_POOL = {
+  grunts: [
+    { img: '/bandits/bandit-1.png', names: ['Retch', 'Grim', 'Scar', 'Bile', 'Fenn'] },
+    { img: '/bandits/bandit-2.png', names: ['Dirk', 'Skit', 'Gash', 'Vane', 'Dross'] },
+    { img: '/bandits/bandit-3.png', names: ['Rust', 'Tack', 'Welt', 'Cobb', 'Spit'] },
+    { img: '/bandits/bandit-4.png', names: ['Grub', 'Slug', 'Muck', 'Pell', 'Gouge'] },
+    { img: '/bandits/bandit-5.png', names: ['Notch', 'Crux', 'Bane', 'Hack', 'Scrag'] },
+    { img: '/bandits/bandit-6.png', names: ['Dagger', 'Fang', 'Grit', 'Smash', 'Blot'] },
+    { img: '/bandits/bandit-7.png', names: ['Cinder', 'Ash', 'Ember', 'Char', 'Scorch'] },
+  ],
+  captains: [
+    { img: '/bandits/captain-1.png', name: 'Rook',  title: 'Bandit Captain' },
+    { img: '/bandits/captain-2.png', name: 'Vex',   title: 'Bandit Captain' },
+    { img: '/bandits/captain-3.png', name: 'Thorn', title: 'Bandit Captain' },
+  ],
+  leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord' },
+};
+
+const buildBanditLineup = (waveNumber, captainsDefeated) => {
+  const lineup = [];
+  const gruntCount = waveNumber <= 2 ? 2 : 3;
+  const usedIdxs = new Set();
+  for (let i = 0; i < gruntCount; i++) {
+    let gIdx;
+    do { gIdx = Math.floor(Math.random() * BANDIT_POOL.grunts.length); }
+    while (usedIdxs.has(gIdx));
+    usedIdxs.add(gIdx);
+    const g = BANDIT_POOL.grunts[gIdx];
+    lineup.push({ img: g.img, name: g.names[Math.floor(Math.random() * g.names.length)], isCapt: false, isLeader: false });
+  }
+  if (waveNumber >= 5) {
+    const available = BANDIT_POOL.captains.filter((_, i) => !captainsDefeated.includes(i));
+    const pick = available[Math.floor(Math.random() * available.length)];
+    if (pick) lineup.push({ ...pick, isCapt: true, isLeader: false });
+  }
+  return lineup;
+};
+
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
@@ -429,6 +468,12 @@ const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
 const [totalWaveEnemies, setTotalWaveEnemies] = useState(0);
 const [waveGoldTotal, setWaveGoldTotal] = useState(0);
+const [isBanditWave, setIsBanditWave] = useState(false);
+const banditLineupRef = useRef([]);
+const banditLineupIdxRef = useRef(0);
+const [banditCaptainsDefeated, setBanditCaptainsDefeated] = useState([]);
+const [banditWaveNumber, setBanditWaveNumber] = useState(0);
+const [banditEnemyImg, setBanditEnemyImg] = useState('');
   const [battling, setBattling] = useState(false);
   const [battleMenu, setBattleMenu] = useState('main'); // 'main', 'fight', 'items'
   const [isFinalBoss, setIsFinalBoss] = useState(false);
@@ -2477,6 +2522,91 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setTimeout(() => setInitiativeRoll({ roll: _initRoll, dexMod: _dexMod_init, total: _initTotal, playerFirst: _playerFirst, openingDamage: _openDmg_init, openingLog: _playerFirst ? '' : `⚔️ AMBUSHED! Enemy strikes first! -${_openDmg_init} HP` }), 3200);
 }, [currentDay, canCustomize, addLog, hero]);
 
+  const spawnBanditEnemy = (enemy, idx, total) => {
+    const config = GAME_CONSTANTS.SCALING_CONFIG.normal;
+    const base = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
+    const enemyHp = enemy.isLeader ? Math.floor(base * 2.5)
+      : enemy.isCapt ? Math.floor(base * 1.8)
+      : base;
+
+    sounds.waveEntrance();
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+
+    setBossName(enemy.name);
+    setBossHp(enemyHp);
+    setBossMax(enemyHp);
+    setBanditEnemyImg(enemy.img);
+    setShowBoss(true);
+    setBattling(true);
+    setBattleMenu('main');
+    setBattleMode(true);
+    setIsFinalBoss(false);
+    setCanFlee(true);
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setVictoryLoot([]);
+    setChargeStacks(0);
+    setRecklessStacks(0);
+    setEnragedTurns(0);
+    setHasFled(false);
+    setIsBanditWave(true);
+    banditLineupIdxRef.current = idx;
+    setBattleType('wave');
+    setCurrentWaveEnemy(idx + 1);
+    setTotalWaveEnemies(total);
+    if (idx === 0) setWaveGoldTotal(0);
+    audioManager.play(TRACKS.malicious);
+
+    const label = enemy.isLeader
+      ? `⚔️ BANDIT LORD: ${enemy.name} steps forward!`
+      : enemy.isCapt
+      ? `⚠️ Captain ${enemy.name} steps forward! (${idx + 1}/${total})`
+      : `Bandit ${enemy.name} charges! (${idx + 1}/${total})`;
+    addLog(label);
+
+    setEnemyDialogue(
+      enemy.isLeader ? "You've made a grave mistake coming here."
+      : enemy.isCapt ? "Stand down, or I'll make you regret it."
+      : "Your coin or your life!"
+    );
+
+    const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+    const initRoll = Math.ceil(Math.random() * 20);
+    const initTotal = Math.max(1, Math.min(20, initRoll + dexMod));
+    const playerFirst = initTotal >= 11;
+    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * 0.40 * (1 - wisMod * 0.02)));
+    setTimeout(() => setInitiativeRoll({
+      roll: initRoll, dexMod, total: initTotal, playerFirst,
+      openingDamage: openDmg,
+      openingLog: playerFirst ? '' : `⚔️ AMBUSHED! ${enemy.name} strikes first! -${openDmg} HP`,
+    }), 3200);
+  };
+
+  const spawnBanditWave = (waveNum, captainsDefeated) => {
+    const lineup = buildBanditLineup(waveNum, captainsDefeated);
+    banditLineupRef.current = lineup;
+    banditLineupIdxRef.current = 0;
+    setBanditWaveNumber(waveNum);
+    setWaveCount(wc => wc + 1);
+    spawnBanditEnemy(lineup[0], 0, lineup.length);
+  };
+
+  const handleBeg = () => {
+    // Reset the current wave — no xp/gold credit
+    addLog('🏃 You begged for mercy. The bandits laugh and reset their formation...');
+    setIsBanditWave(false);
+    setBattling(false);
+    setBattleMode(false);
+    setShowBoss(false);
+    // Re-spawn the same wave after a short delay
+    const waveNum = banditWaveNumber;
+    const captDefeated = banditCaptainsDefeated;
+    setTimeout(() => spawnBanditWave(waveNum, captDefeated), 1500);
+  };
+
   const spawnRandomMiniBoss = (force = false) => {
     const completedTasks = tasks.filter(t => t.done).length;
     const totalTasks = tasks.length;
@@ -3081,7 +3211,48 @@ if (battleType === 'elite') {
   addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
 }
   
-  // Check if wave continues
+  // Check if bandit wave continues
+  if (isBanditWave) {
+    const nextIdx = banditLineupIdxRef.current + 1;
+    const lineup = banditLineupRef.current;
+    const defeatedEnemy = lineup[banditLineupIdxRef.current];
+
+    // Track captain defeats
+    if (defeatedEnemy?.isCapt) {
+      const captIdx = BANDIT_POOL.captains.findIndex(c => c.name === defeatedEnemy.name);
+      if (captIdx !== -1) {
+        setBanditCaptainsDefeated(prev => prev.includes(captIdx) ? prev : [...prev, captIdx]);
+      }
+    }
+
+    if (nextIdx < lineup.length) {
+      addLog(`Next bandit incoming...`);
+      setTimeout(() => spawnBanditEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+      return;
+    }
+
+    // Bandit wave cleared
+    setXp(x => x + 20);
+    addLog(`Bandit wave cleared! +20 bonus XP`);
+
+    // Check if all 3 captains now defeated → spawn leader
+    const totalDefeated = banditCaptainsDefeated.length + (defeatedEnemy?.isCapt ? 1 : 0);
+    if (totalDefeated >= 3 && !defeatedEnemy?.isLeader) {
+      addLog(`All captains have fallen... Cutter emerges!`);
+      const leader = { ...BANDIT_POOL.leader, isCapt: false, isLeader: true };
+      banditLineupRef.current = [leader];
+      setTimeout(() => spawnBanditEnemy(leader, 0, 1), 2000);
+      return;
+    }
+
+    setIsBanditWave(false);
+    setBattling(false);
+    setBattleMode(false);
+    generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
+    return;
+  }
+
+  // Check if regular wave continues
   if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
     // More enemies in wave - keep battle screen open
     const nextEnemy = currentWaveEnemy + 1;
@@ -3090,7 +3261,7 @@ if (battleType === 'elite') {
     // Don't close battle screen - let it transition to next enemy
     return;
   }
-  
+
   // Wave complete bonus
   if (battleType === 'wave') {
     setXp(x => x + 20);
@@ -4615,13 +4786,43 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
       }
       
+      if (isBanditWave) {
+        const nextIdx = banditLineupIdxRef.current + 1;
+        const lineup = banditLineupRef.current;
+        const defeatedEnemy = lineup[banditLineupIdxRef.current];
+        if (defeatedEnemy?.isCapt) {
+          const captIdx = BANDIT_POOL.captains.findIndex(c => c.name === defeatedEnemy.name);
+          if (captIdx !== -1) setBanditCaptainsDefeated(prev => prev.includes(captIdx) ? prev : [...prev, captIdx]);
+        }
+        if (nextIdx < lineup.length) {
+          addLog(`Next bandit incoming...`);
+          setTimeout(() => spawnBanditEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+          return;
+        }
+        setXp(x => x + 20);
+        addLog(`Bandit wave cleared! +20 bonus XP`);
+        const totalDefeated = banditCaptainsDefeated.length + (defeatedEnemy?.isCapt ? 1 : 0);
+        if (totalDefeated >= 3 && !defeatedEnemy?.isLeader) {
+          addLog(`All captains have fallen... Cutter emerges!`);
+          const leader = { ...BANDIT_POOL.leader, isCapt: false, isLeader: true };
+          banditLineupRef.current = [leader];
+          setTimeout(() => spawnBanditEnemy(leader, 0, 1), 2000);
+          return;
+        }
+        setIsBanditWave(false);
+        setBattling(false);
+        setBattleMode(false);
+        generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
+        return;
+      }
+
       if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
         const nextEnemy = currentWaveEnemy + 1;
         addLog(`Next wave enemy incoming...`);
         setTimeout(() => spawnRegularEnemy(true, nextEnemy, totalWaveEnemies), 1500);
         return;
       }
-      
+
       if (battleType === 'wave') {
         setXp(x => x + 20);
         addLog(`The wave is vanquished! +20 bonus XP`);
@@ -7101,6 +7302,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               getRarityColor={getRarityColor}
               fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
               onShakedown={shakedownEnemy} onCapture={captureMonster}
+              isBanditWave={isBanditWave} banditEnemyImg={banditEnemyImg} onBeg={handleBeg}
             />
           )}
           {showPomodoro && pomodoroTask && (
