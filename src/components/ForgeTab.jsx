@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Hammer, Link, Plus, Sparkles, X } from 'lucide-react';
 import { COLORS } from '../constants';
 import { sounds } from '../sounds';
+
+const RYLAN_IDLE = [
+  "Pain is just weakness leaving the mind. Now open a deck.",
+  "You don't get stronger by watching. Study.",
+  "Every card you master is a scar your enemy won't give you.",
+  "I've trained knights. You're slower than most of them. Fix that.",
+  "Rest is for after the battle. You haven't fought yet.",
+  "Repetition. Discipline. Mastery. In that order.",
+  "The sharpest blade means nothing if the hand holding it is ignorant.",
+];
+
+const getRylanQuote = (decks) => {
+  const totalCards = decks.reduce((s, d) => s + d.cards.length, 0);
+  const mastered   = decks.reduce((s, d) => s + d.cards.filter(c => c.mastered).length, 0);
+  if (decks.length === 0)   return "No decks. No training. No excuses. Create one.";
+  if (totalCards === 0)     return "Decks with no cards are like swords with no edge. Fill them.";
+  if (mastered === totalCards && totalCards > 0) return "All cards mastered. Impressive. Now add harder ones.";
+  const pct = Math.floor((mastered / totalCards) * 100);
+  if (pct >= 75) return `${pct}% mastered. Close. Don't get comfortable.`;
+  if (pct >= 40) return `${pct}% mastered. Acceptable progress. Keep drilling.`;
+  return `${pct}% mastered. You have work to do. Begin.`;
+};
 
 const ForgeTab = ({
   forgeSubTab,
@@ -36,12 +58,55 @@ const ForgeTab = ({
   startMatchGame,
   addLog,
 }) => {
+  const [rylanQuote, setRylanQuote] = useState(() => getRylanQuote(flashcardDecks));
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setRylanQuote(RYLAN_IDLE[Math.floor(Math.random() * RYLAN_IDLE.length)]);
+    }, 8000);
+    return () => clearInterval(t);
+  }, []);
+
+  const totalCards = flashcardDecks.reduce((s, d) => s + d.cards.length, 0);
+  const mastered   = flashcardDecks.reduce((s, d) => s + d.cards.filter(c => c.mastered).length, 0);
+  useEffect(() => {
+    setRylanQuote(getRylanQuote(flashcardDecks));
+  }, [flashcardDecks.length, totalCards, mastered]);
+
   return (
   <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{
     borderColor: 'rgba(212, 175, 55, 0.6)'
   }}>
+
+    {/* ── Rylan the Drill Master ── */}
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: '20px',
+      padding: '16px 20px', marginBottom: '24px', borderRadius: '12px',
+      background: 'rgba(10,8,4,0.7)', border: '1px solid rgba(212,175,55,0.25)',
+      boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
+    }}>
+      <img
+        src="/npcs/warrior.png"
+        alt="Rylan"
+        style={{
+          width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+          flexShrink: 0, border: '2px solid rgba(212,175,55,0.6)',
+          boxShadow: '0 0 20px rgba(220,38,38,0.3)',
+        }}
+      />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', marginBottom: '2px' }}>RYLAN</p>
+        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginBottom: '10px' }}>Drill Master</p>
+        <div style={{ padding: '10px 14px', borderRadius: '8px', background: 'rgba(20,15,5,0.8)', border: '1px solid rgba(212,175,55,0.3)' }}>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
+            "{rylanQuote}"
+          </p>
+        </div>
+      </div>
+    </div>
+
     <div className="text-center mb-4">
-      <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>KNOWLEDGE FORGE</h2>
+      <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>TRAINING GROUNDS</h2>
       <div className="flex items-center justify-center gap-2">
         <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
         <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
@@ -61,7 +126,7 @@ const ForgeTab = ({
           color: '#F5F5DC'
         }}
       >
-        FLASHCARDS
+        DRILLS
       </button>
       <button 
         onClick={() => { sounds.click(); setForgeSubTab('resources'); }}
@@ -72,7 +137,7 @@ const ForgeTab = ({
           color: '#F5F5DC'
         }}
       >
-        FORGED LINKS
+        RELICS
       </button>
     </div>
     
