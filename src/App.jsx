@@ -2603,6 +2603,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     setBattleType('elite');
+    audioManager.cut();
     audioManager.play(TRACKS.darkling);
     spawnRandomMiniBoss();
     setCanFlee(false);
@@ -6615,7 +6616,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setCurrentWaveEnemy(1);
                     spawnRegularEnemy(true, 1, 3);
                   }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Spawn Wave (3)</button>
-                  <button onClick={() => { setBattleType('elite'); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
+                  <button onClick={() => { setBattleType('elite'); audioManager.cut(); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
                   <button onClick={() => {
                     setBattleType('final');
                     audioManager.play(TRACKS.boss);
