@@ -130,6 +130,7 @@ const FantasyStudyQuest = () => {
   const [charCreateStep, setCharCreateStep] = useState(0); // 0=name, 1=class, 2=closing
   const [charCreateName, setCharCreateName] = useState('');
   const [charCreateClass, setCharCreateClass] = useState(null);
+  const [charCreateGender, setCharCreateGender] = useState(null);
   const introTimers = useRef([]);
   const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
@@ -6387,7 +6388,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       ))}
                     </div>
                     <button
-                      onClick={() => { if (charCreateClass) setCharCreateStep(2); }}
+                      onClick={() => { if (charCreateClass) { setCharCreateGender(null); setCharCreateStep(2); } }}
                       disabled={!charCreateClass}
                       style={{
                         fontFamily: "'Cinzel', serif", fontWeight: 700,
@@ -6405,8 +6406,51 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 );
               })()}
 
-              {/* Step 2: Closing Message */}
+              {/* Step 2: Gender Selection */}
               {charCreateStep === 2 && (() => {
+                const PORTRAIT_MAP = {
+                  Knight:   { m: '/npcs/knight-m.png',   f: '/npcs/knight-f.png'   },
+                  Wizard:   { m: '/npcs/sorcerer-m.png', f: '/npcs/sorcerer-f.png' },
+                  Assassin: { m: '/npcs/thief-m.png',    f: '/npcs/thief-f.png'    },
+                  Crusader: { m: '/npcs/crusader-m.png', f: '/npcs/crusader-f.png' },
+                };
+                const portraits = charCreateClass ? (PORTRAIT_MAP[charCreateClass.name] || PORTRAIT_MAP.Knight) : PORTRAIT_MAP.Knight;
+                return (
+                  <div key="cc-gender" style={{ maxWidth: '520px', width: '100%', textAlign: 'center', animation: 'intro-fade-up 0.7s ease-out both' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '20px' }}>
+                      ✶ The Narrator Speaks ✶
+                    </p>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.04em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
+                      Who steps forward to carry the flame?
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+                      {[{ key: 'm', label: 'Male' }, { key: 'f', label: 'Female' }].map(({ key, label }) => (
+                        <button
+                          key={key}
+                          onClick={() => { setCharCreateGender(key); setCharCreateStep(3); }}
+                          style={{
+                            background: 'rgba(0,0,0,0.4)', border: `2px solid ${charCreateClass ? charCreateClass.color : 'rgba(212,175,55,0.4)'}`,
+                            borderRadius: '8px', padding: '16px 12px', cursor: 'pointer',
+                            transition: 'all 0.2s', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.6)'; e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 8px 24px rgba(0,0,0,0.5)`; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.4)'; e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                        >
+                          <img
+                            src={portraits[key]}
+                            alt={label}
+                            style={{ width: '140px', height: '140px', objectFit: 'cover', objectPosition: 'top', borderRadius: '6px', border: `1px solid ${charCreateClass ? charCreateClass.color : 'rgba(212,175,55,0.4)'}` }}
+                          />
+                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#F5F5DC' }}>{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Step 3: Closing Message */}
+              {charCreateStep === 3 && (() => {
                 const CLASS_SENDOFF = {
                   Knight:   'A Knight who never stops learning is the only kind the world remembers.',
                   Wizard:   'Every page you turn is a spell cast against the darkness.',
@@ -6429,6 +6473,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         ...prev,
                         name: charCreateName.trim() || prev.name,
                         class: fullClass || prev.class,
+                        gender: charCreateGender || 'm',
                       }));
                       introTimers.current.forEach(clearTimeout);
                       audioManager.play(TRACKS.midnightTale);
