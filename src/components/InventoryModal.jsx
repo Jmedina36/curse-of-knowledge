@@ -516,25 +516,6 @@ const InventoryModal = ({
               </div>
             </div>
 
-            {/* Stats summary */}
-            <div style={{ borderTop: `1px solid rgba(212,175,55,0.2)`, paddingTop: '14px' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '9px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '10px' }}>TOTALS</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
-                {[
-                  { label: 'Attack',   value: getBaseAttack(),              color: '#68D391' },
-                  { label: 'Defense',  value: getBaseDefense(),             color: COLORS.gold },
-                  { label: 'HP',       value: `${hp} / ${getMaxHp()}`,      color: '#FF6B6B' },
-                  { label: 'Stamina',  value: `${stamina} / ${getMaxStamina()}`, color: '#6BB6FF' },
-                ].map(({ label, value, color }) => (
-                  <div key={label} style={{ background: VISUAL_STYLES.card.default, borderRadius: '6px', padding: '7px 10px', border: `1px solid rgba(155,139,126,0.2)`, textAlign: 'center' }}>
-                    <p style={{ fontSize: '9px', color: COLORS.silver, marginBottom: '3px' }}>{label}</p>
-                    <p style={{ fontSize: '15px', fontWeight: 700, color, lineHeight: 1 }}>{value}</p>
-                  </div>
-                ))}
-              </div>
-              {totalDR      > 0 && <p style={{ textAlign: 'center', marginTop: '8px', fontSize: '11px', color: '#68D391' }}>{Math.floor(totalDR)}% Damage Reduction</p>}
-              {totalBonusHP > 0 && <p style={{ textAlign: 'center', fontSize: '11px', color: '#FF6B6B'  }}>+{Math.floor(totalBonusHP)} Bonus HP from gear</p>}
-            </div>
           </div>
         </div>
       </motion.div>
