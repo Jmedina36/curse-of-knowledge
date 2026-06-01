@@ -437,7 +437,7 @@ const ContractsTab = ({
   className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
   <div className="text-center">
-    <div className="mb-2">FACE THE DARKNESS</div>
+    <div className="mb-2">BLOOD CONTRACT</div>
     {!isDayActive ? (
       <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Day dormant — add tasks to begin</div>
     ) : eliteBossDefeatedToday ? (
@@ -455,7 +455,7 @@ const ContractsTab = ({
   className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length) ? 0.5 : 1}} onMouseEnter={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (gauntletUnlocked && tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
 >
   <div className="text-center">
-    <div className="mb-2">THE GAUNTLET</div>
+    <div className="mb-2">THE BLACK CONTRACT</div>
     {!gauntletUnlocked && (
       <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>{gauntletMilestone - xp} XP needed</div>
     )}
