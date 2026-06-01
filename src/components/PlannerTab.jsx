@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, GripVertical, Plus, X } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+
+const SOREN_IDLE = [
+  "The unexamined week is not worth living.",
+  "Plans are the bones of action. Without them you shamble.",
+  "I have watched a thousand students fail to plan. I am very tired.",
+  "Your future self is counting on the choices you make right now. Do not disappoint them.",
+  "The Codex does not lie. Your schedule, however, might.",
+  "Every empty day is a debt owed to tomorrow.",
+  "Write it down. The mind forgets. The Codex does not.",
+];
+
+const getSorenQuote = (todayTasks) => {
+  const count = todayTasks.length;
+  const incomplete = todayTasks.filter(t => !t.completed).length;
+  if (count === 0)   return "Today's page is blank. That is not rest — that is avoidance.";
+  if (incomplete === 0 && count > 0) return "All tasks fulfilled. Remarkable. I expected less from you.";
+  if (incomplete >= 6) return "Ambitious. I have buried students who overplanned. Choose wisely.";
+  if (incomplete >= 4) return "A full day ahead. Keep your mind sharp and your breaks short.";
+  if (incomplete >= 2) return "A measured load. The wise scholar does not sprint every day.";
+  return "One task left standing. Finish it. The Codex remembers sloth.";
+};
 
 const PlannerTab = ({
   weeklyPlan,
@@ -28,11 +49,57 @@ const PlannerTab = ({
   setShowPlanModal,
   addLog,
 }) => {
+  const todayDayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });
+  const todayTasks = weeklyPlan[todayDayName] || [];
+  const [sorenQuote, setSorenQuote] = useState(() => getSorenQuote(todayTasks));
+
+  // Rotate idle quote every 8s, but reactive quote (task-count based) takes priority
+  useEffect(() => {
+    const t = setInterval(() => {
+      setSorenQuote(SOREN_IDLE[Math.floor(Math.random() * SOREN_IDLE.length)]);
+    }, 8000);
+    return () => clearInterval(t);
+  }, []);
+
+  // Snap back to reactive quote whenever today's task count or completions change
+  const completedCount = todayTasks.filter(t => t.completed).length;
+  useEffect(() => {
+    setSorenQuote(getSorenQuote(todayTasks));
+  }, [todayTasks.length, completedCount]);
+
   return (
             <div className="bg-black bg-opacity-50 rounded-xl p-6 border-2" style={{borderColor: 'rgba(212, 175, 55, 0.6)'}}>
+
+              {/* ── Soren the Archivist ── */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '20px',
+                padding: '16px 20px', marginBottom: '24px', borderRadius: '12px',
+                background: 'rgba(10,8,4,0.7)', border: '1px solid rgba(212,175,55,0.25)',
+                boxShadow: '0 2px 16px rgba(0,0,0,0.4)',
+              }}>
+                <img
+                  src="/npcs/old-wizard.png"
+                  alt="Soren"
+                  style={{
+                    width: 80, height: 80, borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
+                    flexShrink: 0, border: '2px solid rgba(212,175,55,0.6)',
+                    boxShadow: '0 0 20px rgba(168,85,247,0.3)',
+                  }}
+                />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', marginBottom: '2px' }}>SOREN</p>
+                  <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginBottom: '10px' }}>The Archivist</p>
+                  <div style={{ position: 'relative', padding: '10px 14px', borderRadius: '8px', background: 'rgba(20,15,5,0.8)', border: '1px solid rgba(212,175,55,0.3)' }}>
+                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
+                      "{sorenQuote}"
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Section header with decorative divider */}
               <div className="text-center mb-4">
-                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>BATTLE PLANNER</h2>
+                <h2 className="text-4xl font-bold mb-4" style={{color: '#D4AF37', letterSpacing: '0.15em'}}>THE CODEX</h2>
                 <div className="flex items-center justify-center gap-2">
                   <div style={{width: '80px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
                   <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>

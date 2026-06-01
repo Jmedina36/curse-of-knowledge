@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
 import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
@@ -6316,7 +6316,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {[
                 {id:'quest', icon:Sword, label:'Guild'},
                 {id:'contracts', icon:Calendar, label:'Contracts'},
-                {id:'planner', icon:Calendar, label:'Planner'},
+                {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'study', icon:Hammer, label:'Forge'},
                 {id:'legacy', icon:Skull, label:'Legacy'},
                 {id:'progress', icon:Trophy, label:'Progress'},
