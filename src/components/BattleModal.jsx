@@ -169,12 +169,26 @@ const BattleModal = ({
   onShakedown,
   onCapture,
 }) => {
+  // ── Elite boss pool ────────────────────────────────────────────────────────
+  const ELITE_BOSSES = [
+    { img: '/bosses/frozen-zombie.png',        name: 'Rotgar the Frozen'      }, // male
+    { img: '/bosses/undead-vampire-woman.png',  name: 'Lady Seraphine'         }, // female
+    { img: '/bosses/orc-chief.png',             name: 'Warchief Thrakk'        }, // male
+    { img: '/bosses/orc-lady.png',              name: 'Varka the Fierce'       }, // female
+    { img: '/bosses/orc-warrior.png',           name: 'Krag Stonefist'         }, // male
+  ];
+
   // ── Creature sprite helper ─────────────────────────────────────────────────
   const getCreatureImg = (name, battleType, isFinalBoss) => {
     const seed = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
     if (isFinalBoss)            return '/undead-king.png';
-    if (battleType === 'elite') return `/creatures/creature${9  + (seed % 8)}.png`;
+    if (battleType === 'elite') return ELITE_BOSSES[seed % ELITE_BOSSES.length].img;
     return                             `/creatures/creature${1  + (seed % 8)}.png`;
+  };
+
+  const getEliteName = (name) => {
+    const seed = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    return ELITE_BOSSES[seed % ELITE_BOSSES.length].name;
   };
   // ── Local effect state ──────────────────────────────────────────────────────
   const [floatingNumbers, setFloatingNumbers] = useState([]);
@@ -639,7 +653,7 @@ const BattleModal = ({
                   : '0 0 60px rgba(255,60,60,1), 0 0 120px rgba(200,0,0,0.5)',
               }}
             >
-              {battleType === 'wave' ? 'WAVE ASSAULT' : bossName}
+              {battleType === 'wave' ? 'WAVE ASSAULT' : battleType === 'elite' ? getEliteName(bossName) : bossName}
             </motion.h1>
 
             {/* Battle type subtitle */}
@@ -767,7 +781,7 @@ const BattleModal = ({
                   : '0 0 12px rgba(220,50,50,0.6)',
                 transition: 'color 0.1s',
               }}>
-                {bossName}
+                {battleType === 'elite' ? getEliteName(bossName) : bossName}
               </p>
               {/* Creature image — fades in after intro */}
               <AnimatePresence>
