@@ -71,8 +71,8 @@ const QuestTab = ({
               boxShadow: (() => { const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'}; const g=m[hero.class.color]||m.yellow; return '0 4px 30px '+g+', 0 0 60px '+g; })()
             }}>
 
-              {/* Dark overlay so stats stay readable over the scroll texture */}
-              <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.55)',pointerEvents:'none',zIndex:0}}/>
+              {/* Overlay: dark enough for light text, light enough to show scroll texture */}
+              <div style={{position:'absolute',inset:0,background:'rgba(10,5,0,0.42)',pointerEvents:'none',zIndex:0}}/>
 
               {/* RPG Character Sheet layout */}
               <>
