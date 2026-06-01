@@ -48,22 +48,41 @@ const CATEGORIES = [
   { key: 'potions',     label: 'Potions'   },
 ];
 
-const GRIMDAR_IDLE = [
-  "...Are ye going to equip something or just stare at me?",
-  "Every second ye stand here, a goblin gets stronger.",
-  "I've forged better gear than that in me sleep.",
-  "Pick something and get out of me shop.",
-  "What are ye waitin' for? The rust to set in?",
-  "Ye smell like a dungeon. That's not a compliment.",
-  "I've seen corpses make faster decisions.",
-  "Stop browsin' and start equipping, ye time-waster.",
+const DWARF_NPCS = [
+  { img: '/npcs/dwarf-warrior.png',  name: 'GRIMDAR', title: 'Master Smith'     },
+  { img: '/npcs/dwarf-explorer.png', name: 'BORIN',   title: 'Wandering Forger' },
+  { img: '/npcs/dwarf-lady.png',     name: 'HELGA',   title: 'Iron Matron'      },
 ];
 
-const DWARF_NPCS = [
-  { img: '/npcs/dwarf-warrior.png', name: 'GRIMDAR',  title: 'Master Smith'      },
-  { img: '/npcs/dwarf-explorer.png', name: 'BORIN',   title: 'Wandering Forger'  },
-  { img: '/npcs/dwarf-lady.png',     name: 'HELGA',   title: 'Iron Matron'       },
-];
+const DWARF_QUOTES = {
+  GRIMDAR: {
+    idle:       ["...Are ye going to equip something or just stare at me?", "Every second ye stand here, a goblin gets stronger.", "I've forged better gear than that in me sleep.", "Pick something and get out of me shop.", "What are ye waitin' for? The rust to set in?", "Ye smell like a dungeon. That's not a compliment.", "I've seen corpses make faster decisions.", "Stop browsin' and start equipping, ye time-waster."],
+    weaponUp:   ["Finally. Something worth swingin'.", "Aye, that's a proper weapon. Try not to embarrass it.", "Better. Don't waste sharp steel on rats."],
+    weaponDown: ["Ye're downgradin'? Did ye take a knock to the head?", "That's worse. Congratulations on the step backward.", "I've seen farmers with better taste in iron."],
+    armorUp:    ["Good. Maybe ye won't bleed out on the first hit now.", "Aye, cover yerself up. Ye were embarrassin' me.", "Defense up. Try not to walk into every axe ye see."],
+    armorDown:  ["Ye swapped down in defense. Brilliant strategy.", "Less protection. Bold choice. Stupid, but bold.", "Ye'd be safer wearin' a barrel."],
+    pendant:    ["A bauble. At least yer HP's up — it ain't just pretty.", "Jewelry. Aye, very fierce.", "More HP from a necklace. I've seen worse."],
+    ring:       ["A ring. More stamina. Don't spend it all running away.", "Stamina up. Good. Dying tired is still dying.", "Fine. More endurance. Ye'll need it."],
+  },
+  BORIN: {
+    idle:       ["Found something like that in a ruin once. Sold it for a song. Regret it still.", "Every piece of iron has a story. This one's... boring.", "I've seen the frozen seas. Makes ye appreciate a warm forge.", "Aye, browse away. I'm not going anywhere. Again.", "You remind me of someone I met in the eastern wastes. They didn't make it.", "The road gives and the road takes. Same as gear.", "I've carried heavier loads than that. With one arm."],
+    weaponUp:   ["Aye, worth its weight. Picked up something similar in the Gorak Highlands.", "Good eye. Had one like it once. Lost it to a river troll.", "Smart choice. The open road rewards the well-armed."],
+    weaponDown: ["Downgradin'? I've made poor choices on the road too. Still regret 'em.", "Seen better on a bandit's corpse — and I robbed that bandit.", "The road doesn't care about bad gear. Neither do the things on it."],
+    armorUp:    ["That'll hold. Kept me alive through worse.", "Better coverage. The wilds don't give second chances.", "Aye, seen that style before. Good craftwork."],
+    armorDown:  ["Less armor's a choice. Usually the last one.", "Traded down? I've made that mistake. Once.", "The road doesn't care. The monsters do."],
+    pendant:    ["Found a pendant like that in a cave once. Don't ask what it was hanging from.", "More HP. Out there, every drop counts.", "Aye, wear it. You'll need the health."],
+    ring:       ["Stamina's the real currency out there, friend.", "Had a ring like that. Traded it for a mule. No regrets.", "Good. Tired fighters make mistakes. Dead mistakes."],
+  },
+  HELGA: {
+    idle:       ["Put that down. Ye don't know where it's been.", "I didn't forge this lot for ye to stand there gawking.", "My husband wore lesser iron. He's dead now. Lesson's free.", "Do ye want it or not? I've got stew on.", "Ye look like ye dress in the dark. Sort yerself out.", "I've hammered dents from braver souls than you.", "Yer mother would be ashamed of that equipment. I know I am."],
+    weaponUp:   ["Finally something decent. Yer mother can rest easy.", "Aye, that'll do. Don't go scratching it on a goblin.", "Better. Now maybe ye'll survive long enough to be a nuisance."],
+    weaponDown: ["Ye just downgraded. I raised my children better than that.", "That's a worse weapon. Explain yerself.", "I've seen stew ladles hit harder. What are ye doing?"],
+    armorUp:    ["Good. Armor means ye might come back in one piece.", "Finally. Ye were practically naked before.", "About time. Now ye might last more than three hits."],
+    armorDown:  ["Less armor. Bold decision. Wrong one.", "Downgrading yer defense? My husband did that. Once.", "Put something proper on. Ye're embarrassing the forge."],
+    pendant:    ["A pendant. At least yer HP's up. Wear it proudly.", "Jewelry too, is it? Fine. Whatever keeps ye breathing.", "More HP. Good. I'd rather not sweep ye off the floor."],
+    ring:       ["A ring. More stamina. Don't ye dare waste it.", "Endurance. Smart. The weak ones always die tired.", "Good. Fatigue is just dying slowly. Fight it."],
+  },
+};
 
 const InventoryModal = ({
   // kept for compat but replaced by local state
@@ -84,8 +103,9 @@ const InventoryModal = ({
   useHealth, useCleanse,
 }) => {
   const dwarf = DWARF_NPCS[(currentDay ?? 1) % DWARF_NPCS.length];
+  const dq = DWARF_QUOTES[dwarf.name];
   const [category, setCategory] = useState('weapons');
-  const [grimdarQuote, setGrimdarQuote] = useState(() => GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)]);
+  const [grimdarQuote, setGrimdarQuote] = useState(() => dq.idle[Math.floor(Math.random() * dq.idle.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
   useEffect(() => {
     const fn = () => setWindowWidth(window.innerWidth);
@@ -94,18 +114,10 @@ const InventoryModal = ({
   }, []);
   const showNPC = windowWidth >= 1150;
 
-  // Idle rotation — changes every 7s if no recent equip
+  // Idle rotation — returns to idle pool after any reactive quote
   useEffect(() => {
     const t = setInterval(() => {
-      setGrimdarQuote(q => {
-        // Only rotate if it's an idle quote
-        if (GRIMDAR_IDLE.includes(q)) {
-          const next = GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)];
-          return next;
-        }
-        // Reactive quote fades back to idle after one cycle
-        return GRIMDAR_IDLE[Math.floor(Math.random() * GRIMDAR_IDLE.length)];
-      });
+      setGrimdarQuote(dq.idle[Math.floor(Math.random() * dq.idle.length)]);
     }, 7000);
     return () => clearInterval(t);
   }, []);
@@ -121,9 +133,7 @@ const InventoryModal = ({
     addLog(`Equipped: ${wpn.name} (+${wpn.attack} Attack)`);
     if (old) addLog(`Unequipped: ${old.name}`);
     const isUpgrade = !old || weaponEffective(wpn) > weaponEffective(old);
-    const quotes = isUpgrade
-      ? ["Finally. Something worth swingin'.", "Aye, that's a proper weapon. Try not to embarrass it.", "Better. Don't waste sharp steel on rats."]
-      : ["Ye're downgradin'? Did ye take a knock to the head?", "That's worse. Congratulations on the step backward.", "I've seen farmers with better taste in iron."];
+    const quotes = isUpgrade ? dq.weaponUp : dq.weaponDown;
     setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
@@ -137,9 +147,7 @@ const InventoryModal = ({
     addLog(`Equipped: ${piece.name} (+${piece.defense} Defense)`);
     if (old) addLog(`Unequipped: ${old.name}`);
     const isUpgrade = !old || armorEffective(piece) > armorEffective(old);
-    const quotes = isUpgrade
-      ? ["Good. Maybe ye won't bleed out on the first hit now.", "Aye, cover yerself up. Ye were embarrassin' me.", "Defense up. Try not to walk into every axe ye see."]
-      : ["Ye swapped down in defense. Brilliant strategy.", "Less protection. Bold choice. Stupid, but bold.", "Ye'd be safer wearin' a barrel."];
+    const quotes = isUpgrade ? dq.armorUp : dq.armorDown;
     setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
@@ -149,8 +157,7 @@ const InventoryModal = ({
     setPendantInventory(prev => [...prev.filter(p => p.id !== pend.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${pend.name} (+${pend.hp} HP)`);
     if (old) addLog(`Unequipped: ${old.name}`);
-    const quotes = ["A bauble. At least yer HP's up — it ain't just pretty.", "Jewelry. Aye, very fierce.", "More HP from a necklace. I've seen worse."];
-    setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+    setGrimdarQuote(dq.pendant[Math.floor(Math.random() * dq.pendant.length)]);
   };
 
   const equipRing = (rng) => {
@@ -159,8 +166,7 @@ const InventoryModal = ({
     setRingInventory(prev => [...prev.filter(r => r.id !== rng.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${rng.name} (+${rng.stamina} Stamina)`);
     if (old) addLog(`Unequipped: ${old.name}`);
-    const quotes = ["A ring. More stamina. Don't spend it all running away.", "Stamina up. Good. Dying tired is still dying.", "Fine. More endurance. Ye'll need it."];
-    setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+    setGrimdarQuote(dq.ring[Math.floor(Math.random() * dq.ring.length)]);
   };
 
   // ── Shared styles ──
@@ -404,7 +410,7 @@ const InventoryModal = ({
         }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
-            <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>Grimdar Ironforge · Master Smith</p>
+            <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>{dwarf.name.charAt(0) + dwarf.name.slice(1).toLowerCase()} · {dwarf.title}</p>
           </div>
           <button
             onClick={() => { sounds.click(); setShowInventoryModal(false); }}

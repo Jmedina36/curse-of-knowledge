@@ -102,21 +102,29 @@ const getArmorSprite = (piece, slot) => {
 
 // ─── Merchant NPC quotes ──────────────────────────────────────────────────────
 
-const MERCHANT_IDLE = [
-  "Everything has a price, friend. Including your dignity.",
-  "Browsing is free. Touching costs extra.",
-  "My prices are fair. My patience, considerably less so.",
-  "Gold doesn't spend itself, you know.",
-  "Finest wares in the realm. Don't let the dust fool you.",
-  "Hurry up. I haven't got all day... actually I do. But still.",
-  "You look like someone with gold. I respect that.",
+const ELF_NPCS = [
+  { img: '/npcs/elf-prince.png',  name: 'ALDRIC', title: 'Wandering Merchant' },
+  { img: '/npcs/elf-lady.png',    name: 'SYLARA', title: 'Arcane Trader'      },
+  { img: '/npcs/elf-warrior.png', name: 'TAERAL', title: 'Blade Merchant'     },
 ];
 
-const ELF_NPCS = [
-  { img: '/npcs/elf-prince.png',  name: 'ALDRIC',   title: 'Wandering Merchant' },
-  { img: '/npcs/elf-lady.png',    name: 'SYLARA',   title: 'Arcane Trader'      },
-  { img: '/npcs/elf-warrior.png', name: 'TAERAL',   title: 'Blade Merchant'     },
-];
+const ELF_QUOTES = {
+  ALDRIC: {
+    idle: ["Everything here was sourced at considerable personal sacrifice. You're welcome.", "Browsing? How quaint. The discerning buyer acts decisively.", "My usual clientele doesn't deliberate this long.", "The market is fickle. My prices are not.", "I've traded in courts where gold moved faster than thought.", "Take your time. I only have three centuries to spare.", "Try not to scratch anything."],
+    buy:  ["A refined selection. You have better taste than I expected.", "Excellent. That piece will appreciate in value — if you survive.", "Into your hands it goes. Out of mine, most importantly."],
+    sell: ["I'll take it. At a fair price. For me.", "Selling already? Adventurers are so fickle.", "Into the vault it goes. You'll regret this later, I promise."],
+  },
+  SYLARA: {
+    idle: ["The arcane market shifts like fog — hesitate and the opportunity dissolves.", "You sense it too, don't you? These items hold echoes.", "Gold is merely crystallized intention. Spend it wisely.", "The veil between value and worth is thinner than you think.", "Every item here carries the memory of its previous owner.", "I see potential in you. Whether it manifests... is another matter.", "Choose carefully. Objects remember who holds them."],
+    buy:  ["That item called to you for a reason. Listen to it.", "The exchange is made. May it serve you as the fates intend.", "Interesting choice. The resonance is strong with that one."],
+    sell: ["An interesting release. The item moves on to its next chapter.", "You part with it willingly? Then it was never truly yours.", "I accept. The energies will find new purpose."],
+  },
+  TAERAL: {
+    idle: ["I don't haggle. The price is the price.", "Good steel keeps you breathing. I know which I'd choose.", "Bought that off a dead mercenary. Quality gear — clearly.", "No sentiment. Just transactions.", "I've bled for worse margins. Don't waste my time.", "Combat sharpens the mind. Shopping does not.", "Everything's negotiable except the price."],
+    buy:  ["Done. Next.", "Good choice. It'll hold up when it matters.", "Smart. Buy once, fight longer."],
+    sell: ["Fair enough. I'll move it.", "Selling gear? Only do that when you've got better.", "Coin in hand. Good. Keep moving."],
+  },
+};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -178,13 +186,14 @@ const CraftingModal = ({
   const isEquipmentTab = merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment';
 
   const elf = ELF_NPCS[(currentDay ?? 1) % ELF_NPCS.length];
+  const eq = ELF_QUOTES[elf.name];
   const [sellConfirm, setSellConfirm] = useState(null);
-  const [merchantQuote, setMerchantQuote] = useState(() => MERCHANT_IDLE[Math.floor(Math.random() * MERCHANT_IDLE.length)]);
+  const [merchantQuote, setMerchantQuote] = useState(() => eq.idle[Math.floor(Math.random() * eq.idle.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {
     const t = setInterval(() => {
-      setMerchantQuote(MERCHANT_IDLE[Math.floor(Math.random() * MERCHANT_IDLE.length)]);
+      setMerchantQuote(eq.idle[Math.floor(Math.random() * eq.idle.length)]);
     }, 7000);
     return () => clearInterval(t);
   }, []);
@@ -201,14 +210,14 @@ const CraftingModal = ({
 
   const handleBuyPotion = (key) => {
     craftItem(key);
-    say(["Wise investment. Your body will thank you.", "Pleasure doing business. Come back broken again.", "Excellent choice. A fine addition to your pack."]);
+    say(eq.buy);
   };
   const handleBuyEquipment = (item) => {
     purchaseShopItem(item);
-    say(["Fine taste. That piece will serve you well — or sell well.", "A worthy purchase. Mind you don't scratch it.", "Into your hands it goes. Out of mine, most importantly."]);
+    say(eq.buy);
   };
   const handleSell = (label, price, rarityColor, onConfirm) => {
-    setSellConfirm({ label, price, rarityColor, onConfirm: () => { onConfirm(); say(["I'll take it. At a fair price. For me.", "Selling already? Adventurers are so fickle.", "Into the vault it goes. You'll regret this later, I promise."]); } });
+    setSellConfirm({ label, price, rarityColor, onConfirm: () => { onConfirm(); say(eq.sell); } });
   };
 
   // Sub-tab config (Buy = gold, Sell = green) — reused for both Potions and Equipment panels
@@ -257,7 +266,7 @@ const CraftingModal = ({
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(0,0,0,0.55)', position: 'relative' }}>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
-              <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>Aldric · Wandering Merchant</p>
+              <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
             </div>
             <button
               onClick={() => { sounds.click(); setShowCraftingModal(false); }}
