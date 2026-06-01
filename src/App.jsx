@@ -2451,6 +2451,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   if (isWave) {
     setBattleType('wave');
+    audioManager.play(TRACKS.malicious);
     setCurrentWaveEnemy(waveIndex);
     setTotalWaveEnemies(totalWaves);
     if (waveIndex === 1) {
@@ -2459,6 +2460,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     addLog(`Wave assault - Enemy ${waveIndex}/${totalWaves}: ${enemyName}`);
   } else {
     setBattleType('regular');
+    audioManager.play(TRACKS.unholyKnight);
     addLog(`${enemyName} emerges from the shadows!`);
   }
 
@@ -2601,6 +2603,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     setBattleType('elite');
+    audioManager.play(TRACKS.darkling);
     spawnRandomMiniBoss();
     setCanFlee(false);
   };
@@ -2640,6 +2643,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBossHp(bossHealth);
     setBossMax(bossHealth);
     setBattleType('final');
+    audioManager.play(TRACKS.boss);
     setShowBoss(true);
     setBattling(true);
     setBattleMenu('main'); // Reset to main menu

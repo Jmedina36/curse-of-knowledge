@@ -17,9 +17,7 @@ export const TRACKS = {
   unholyKnight: '/sounds/music/Unholy Knight.mp3',
   darkling:     '/sounds/music/Darkling.mp3',
   malicious:    '/sounds/music/Malicious.mp3',
-  battle:     '/sounds/music/battle.mp3',
-  boss:       '/sounds/music/boss.mp3',
-  ambient:    '/sounds/music/ambient.mp3',
+  boss:       '/sounds/music/Obliteration.mp3',
 };
 
 const FADE_IN_MS  = 1400;
