@@ -428,7 +428,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                       src={loc.marker}
                       alt={loc.name}
                       style={{
-                        width: `${loc.markerSize || 44}px`, height: `${loc.markerSize || 44}px`,
+                        width: `${loc.markerSize || 56}px`, height: `${loc.markerSize || 56}px`,
                         objectFit: 'contain',
                         filter: unlocked
                           ? isActive
