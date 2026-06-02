@@ -132,7 +132,7 @@ const HealerModal = ({
       onClick={() => { sounds.click(); setTab(key); }}
       style={{
         flex: 1, padding: '10px', fontFamily: 'Cinzel, serif', fontWeight: 700,
-        fontSize: '0.78rem', letterSpacing: '0.15em', textTransform: 'uppercase',
+        fontSize: '0.9rem', letterSpacing: '0.15em', textTransform: 'uppercase',
         cursor: 'pointer', transition: 'all 0.2s', border: 'none',
         background: tab === key
           ? 'linear-gradient(to bottom, rgba(52,211,153,0.35), rgba(16,185,129,0.35))'
@@ -152,9 +152,9 @@ const HealerModal = ({
     }}>
       <span style={{ fontSize: '28px', flexShrink: 0 }}>{emoji}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.9rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
-        <p style={{ fontSize: '0.75rem', color: effectColor }}>{effect}</p>
-        {soldOut && <p style={{ fontSize: '0.65rem', color: 'rgba(200,100,100,0.8)', marginTop: '2px', fontStyle: 'italic' }}>Limit reached today</p>}
+        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.05rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
+        <p style={{ fontSize: '0.88rem', color: effectColor }}>{effect}</p>
+        {soldOut && <p style={{ fontSize: '0.75rem', color: 'rgba(200,100,100,0.8)', marginTop: '2px', fontStyle: 'italic' }}>Limit reached today</p>}
       </div>
       <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '24px', textAlign: 'center' }}>{count}</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>
@@ -163,7 +163,7 @@ const HealerModal = ({
           disabled={soldOut || (marketModifiers ? gold < price : false)}
           style={{
             padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
-            fontSize: '0.7rem', fontWeight: 700, cursor: soldOut ? 'not-allowed' : 'pointer',
+            fontSize: '0.82rem', fontWeight: 700, cursor: soldOut ? 'not-allowed' : 'pointer',
             background: soldOut ? 'rgba(0,0,0,0.3)' : 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))',
             border: `1px solid ${soldOut ? 'rgba(155,139,126,0.2)' : 'rgba(212,175,55,0.5)'}`,
             color: soldOut ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
@@ -175,7 +175,7 @@ const HealerModal = ({
           disabled={disabled}
           style={{
             padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
-            fontSize: '0.7rem', fontWeight: 700, cursor: disabled ? 'not-allowed' : 'pointer',
+            fontSize: '0.82rem', fontWeight: 700, cursor: disabled ? 'not-allowed' : 'pointer',
             background: disabled ? 'rgba(0,0,0,0.3)' : 'rgba(52,211,153,0.15)',
             border: `1px solid ${disabled ? 'rgba(52,211,153,0.1)' : greenBorder}`,
             color: disabled ? 'rgba(52,211,153,0.25)' : green,
@@ -288,7 +288,7 @@ const HealerModal = ({
                 background: 'rgba(0,0,0,0.4)', borderRadius: '12px', padding: '18px',
                 marginBottom: '20px', border: `1px solid rgba(52,211,153,0.2)`, textAlign: 'center',
               }}>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', color: greenDim, marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Current HP</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: greenDim, marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Current HP</p>
                 <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '2rem', color: hp / maxHp < 0.25 ? '#EF4444' : '#fff', marginBottom: '8px' }}>
                   {hp} <span style={{ fontSize: '1rem', color: 'rgba(245,245,220,0.4)' }}>/ {maxHp}</span>
                 </p>
@@ -300,7 +300,7 @@ const HealerModal = ({
                     borderRadius: '3px', transition: 'width 0.3s ease',
                   }}/>
                 </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: 'rgba(52,211,153,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', color: 'rgba(52,211,153,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
               </div>
 
               {missing > 0 ? (
@@ -354,7 +354,7 @@ const HealerModal = ({
           {/* ── SUPPLIES TAB ── */}
           {tab === 'supplies' && (
             <div style={{ maxWidth: '520px', margin: '0 auto' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.45)', marginBottom: '16px', textAlign: 'center' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.45)', marginBottom: '16px', textAlign: 'center' }}>
                 Gold on hand: <span style={{ color: '#D4AF37', fontWeight: 700 }}>{gold}</span>
               </p>
 
