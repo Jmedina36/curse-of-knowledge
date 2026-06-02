@@ -6754,7 +6754,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'quest', icon:Sword, label:'Guild'},
                 {id:'contracts', icon:Calendar, label:'Contracts'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
-                {id:'study', icon:Hammer, label:'Training'},
+                {id:'study', icon:Hammer, label:'Forge'},
                 {id:'bestiary', icon:Shield, label:'Bestiary'},
                 {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
