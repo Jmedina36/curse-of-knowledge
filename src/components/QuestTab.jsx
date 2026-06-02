@@ -267,7 +267,7 @@ const QuestTab = ({
               >
                 <img src={dwarf.img} alt={dwarf.name} style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,50,40,0.6)',boxShadow:'0 0 12px rgba(200,60,40,0.3)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(220,130,120,0.8)',marginBottom:'3px'}}>{dwarf.name}</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(220,130,120,0.8)',marginBottom:'3px'}}>{dwarf.name}</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,185,175,1)',marginBottom:'4px'}}>The Armory</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(180,50,40,0.4)',margin:'0 auto 5px'}}/>
                   <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(200,130,120,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
@@ -287,7 +287,7 @@ const QuestTab = ({
               >
                 <img src={elf.img} alt={elf.name} style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,135,20,0.6)',boxShadow:'0 0 12px rgba(180,135,10,0.3)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(200,160,70,0.8)',marginBottom:'3px'}}>{elf.name}</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(200,160,70,0.8)',marginBottom:'3px'}}>{elf.name}</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'4px'}}>The Merchant</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(180,135,20,0.4)',margin:'0 auto 5px'}}/>
                   <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(190,150,60,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
@@ -307,7 +307,7 @@ const QuestTab = ({
               >
                 <img src="/npcs/medic.png" alt="Healer" style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(40,180,120,0.6)',boxShadow:'0 0 12px rgba(40,180,120,0.3)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(100,210,160,0.8)',marginBottom:'3px'}}>Sister Mara</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(100,210,160,0.8)',marginBottom:'3px'}}>Sister Mara</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(110,231,183,1)',marginBottom:'4px'}}>The Healer</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(40,180,120,0.4)',margin:'0 auto 5px'}}/>
                   <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(80,190,140,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Restore HP</p>
