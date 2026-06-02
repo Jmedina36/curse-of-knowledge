@@ -147,7 +147,7 @@ const ContractsTab = ({
                 return (
                   <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'8px', marginBottom:'18px' }}>
                     <span style={{
-                      fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.4em',
+                      fontFamily:'Cinzel,serif', fontSize:'0.9rem', letterSpacing:'0.4em',
                       textTransform:'uppercase', color:'rgba(230,210,170,0.9)',
                     }}>Guild Rank</span>
                     <span style={{
