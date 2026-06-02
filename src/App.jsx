@@ -2297,8 +2297,8 @@ pendingBattleSpawnRef.current = () => {
       // Regular/wave enemies: potions, weapons, armor, and accessories
       if (battleType === 'regular' || battleType === 'wave') {
         const isWave = battleType === 'wave';
-        const healthPotRate = isWave ? 0.22 : 0.18; // 22% wave, 18% regular
-        const staminaPotRate = isWave ? 0.52 : 0.43; // 52% wave cumulative, 43% regular cumulative
+        const healthPotRate = isWave ? 0.14 : 0.10; // 14% wave, 10% regular
+        const staminaPotRate = isWave ? 0.35 : 0.28; // 35% wave cumulative, 28% regular cumulative
         
         const lootRoll = Math.random();
         if (lootRoll < healthPotRate) {
@@ -3118,7 +3118,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     } else if (battleType === 'final' || isFinalBoss) {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
-    
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+
     // Assassin Mark for Death: Reduce enemy defense by 20%
     if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
       enemyDef = Math.floor(enemyDef * (1 - GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.defenseReduction));
@@ -3536,7 +3537,7 @@ if (battleType === 'elite') {
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
   baseAttack = 16;
-  attackScaling = 1.5;
+  attackScaling = 2.0;
 } else {
   // Elite and Final bosses use constants
   baseAttack = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_BASE : GAME_CONSTANTS.MINI_BOSS_ATK_BASE;
@@ -4033,6 +4034,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else if (battleType === 'final' || isFinalBoss) {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
 
     // Calculate base damage with special multiplier
     const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
@@ -4400,7 +4402,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 let baseAttack, attackScaling;
 if (battleType === 'regular' || battleType === 'wave') {
   baseAttack = 16;
-  attackScaling = 1.5;
+  attackScaling = 2.0;
 } else {
   // Elite and Final bosses use constants
   baseAttack = battleType === 'final' ? GAME_CONSTANTS.BOSS_ATTACK_BASE : GAME_CONSTANTS.MINI_BOSS_ATK_BASE;
@@ -4712,6 +4714,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
     if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
     else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
 
     // D20 crit roll
     const d20 = Math.ceil(Math.random() * 20);
@@ -4887,7 +4890,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else if (battleType === 'final' || isFinalBoss) {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
-    
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+
     // Assassin Mark for Death: Reduce enemy defense by 20%
     if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
       enemyDef = Math.floor(enemyDef * (1 - GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.defenseReduction));
@@ -5258,7 +5262,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else if (battleType === 'final' || isFinalBoss) {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
-    
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+
     // Calculate damage with Smite multiplier
     const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
     

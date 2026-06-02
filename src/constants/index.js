@@ -77,8 +77,8 @@ export const GAME_CONSTANTS = {
   PLAYER_HP_PER_DAY: 8,
   PLAYER_SP_PER_DAY: 8,
   PLAYER_ATK_PER_DAY: 2,
-  HEALTH_POTION_HEAL_PERCENT: 30, // 30% of max HP
-  HEALTH_POTION_MIN: 30, // Minimum heal amount
+  HEALTH_POTION_HEAL_PERCENT: 22, // 22% of max HP
+  HEALTH_POTION_MIN: 22, // Minimum heal amount
   STAMINA_POTION_RESTORE_PERCENT: 50, // 50% of max stamina
   STAMINA_POTION_MIN: 50, // Minimum restore amount
   STAMINA_PER_TASK: 20,
@@ -123,17 +123,18 @@ export const GAME_CONSTANTS = {
   BOSS_ATTACK_BASE: 20,
   BOSS_ATTACK_DAY_SCALING: 3,
   ENEMY_DEFENSE: {
-    regular: 3,
-    elite: 6,
-    gauntlet: 8
+    regular: 5,
+    elite: 8,
+    gauntlet: 10
   },
+  ENEMY_DEFENSE_DAY_SCALE: 1.0, // +1 enemy defense per day
   
   // NEW COMBAT SYSTEMS - Engineered Balance
-  ARMOR_K_CONSTANT: 60, // Diminishing returns formula constant
+  ARMOR_K_CONSTANT: 75, // Diminishing returns formula constant — higher = less effective armor stacking
   
   SCALING_CONFIG: {
     normal: {
-      hpBase: 60,
+      hpBase: 75,
       hpGrowth: 1.25,        // 25% per day exponential
       damageBase: 16,
       damageGrowth: 1.20,
@@ -178,8 +179,8 @@ export const GAME_CONSTANTS = {
     common: { totalBudget: 10, affixCount: 1, affixPowerRange: [8, 12] },
     uncommon: { totalBudget: 18, affixCount: 2, affixPowerRange: [7, 11] },
     rare: { totalBudget: 28, affixCount: 3, affixPowerRange: [7, 12] },
-    epic: { totalBudget: 40, affixCount: 4, affixPowerRange: [8, 12] },
-    legendary: { totalBudget: 55, affixCount: 5, affixPowerRange: [9, 13] }
+    epic: { totalBudget: 33, affixCount: 4, affixPowerRange: [7, 10] },
+    legendary: { totalBudget: 44, affixCount: 5, affixPowerRange: [8, 10] }
   },
   
   AFFIX_COSTS: {
@@ -513,8 +514,8 @@ export const GAME_CONSTANTS = {
   },
   
   WEAPON_STAT_RANGES: {
-    min: 4,
-    max: 12
+    min: 3,
+    max: 9
   },
   
   WEAPON_NAMES: {
