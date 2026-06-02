@@ -30,6 +30,17 @@ const getMonsterImg = (monster) => {
   return `/creatures/creature${1 + (idx % 8)}.png`;
 };
 
+const DWARF_NPCS = [
+  { img: '/npcs/dwarf-warrior.png',  name: 'Grimdar', title: 'Master Smith'     },
+  { img: '/npcs/dwarf-explorer.png', name: 'Borin',   title: 'Wandering Forger' },
+  { img: '/npcs/dwarf-lady.png',     name: 'Helga',   title: 'Iron Matron'      },
+];
+const ELF_NPCS = [
+  { img: '/npcs/elf-prince.png',  name: 'Aldric', title: 'Wandering Merchant' },
+  { img: '/npcs/elf-lady.png',    name: 'Sylara', title: 'Arcane Trader'      },
+  { img: '/npcs/elf-warrior.png', name: 'Taeral', title: 'Blade Merchant'     },
+];
+
 const getHeroPortrait = (className, gender) => {
   const classMap = { Knight: 'knight', Wizard: 'sorcerer', Assassin: 'thief', Crusader: 'crusader' };
   const g = gender === 'female' ? 'f' : gender === 'male' ? 'm' : gender || 'm';
@@ -237,6 +248,10 @@ const QuestTab = ({
             </div>
 
             {/* ── Guild Buttons ── */}
+            {(() => {
+              const dwarf = DWARF_NPCS[(currentDay ?? 1) % DWARF_NPCS.length];
+              const elf   = ELF_NPCS[(currentDay ?? 1) % ELF_NPCS.length];
+              return (
             <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'}}>
 
               {/* Armory */}
@@ -250,9 +265,9 @@ const QuestTab = ({
                 onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(160,30,20,0.45), inset 0 1px 0 rgba(255,120,100,0.06)';e.currentTarget.style.borderColor='rgba(220,80,60,0.75)';}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,120,100,0.06)';e.currentTarget.style.borderColor='rgba(180,50,40,0.55)';}}
               >
-                <img src="/npcs/dwarf-warrior.png" alt="Blacksmith" style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,50,40,0.6)',boxShadow:'0 0 12px rgba(200,60,40,0.3)'}}/>
+                <img src={dwarf.img} alt={dwarf.name} style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,50,40,0.6)',boxShadow:'0 0 12px rgba(200,60,40,0.3)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(220,130,120,0.8)',marginBottom:'3px'}}>Tormund</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(220,130,120,0.8)',marginBottom:'3px'}}>{dwarf.name}</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,185,175,1)',marginBottom:'4px'}}>The Armory</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(180,50,40,0.4)',margin:'0 auto 5px'}}/>
                   <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(200,130,120,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
@@ -270,9 +285,9 @@ const QuestTab = ({
                 onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,110,10,0.4), inset 0 1px 0 rgba(255,200,60,0.06)';e.currentTarget.style.borderColor='rgba(210,165,30,0.75)';}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,200,60,0.06)';e.currentTarget.style.borderColor='rgba(180,135,20,0.55)';}}
               >
-                <img src="/npcs/elf-prince.png" alt="Merchant" style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,135,20,0.6)',boxShadow:'0 0 12px rgba(180,135,10,0.3)'}}/>
+                <img src={elf.img} alt={elf.name} style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,135,20,0.6)',boxShadow:'0 0 12px rgba(180,135,10,0.3)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(200,160,70,0.8)',marginBottom:'3px'}}>Aldric</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(200,160,70,0.8)',marginBottom:'3px'}}>{elf.name}</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'4px'}}>The Merchant</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(180,135,20,0.4)',margin:'0 auto 5px'}}/>
                   <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(190,150,60,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
@@ -300,6 +315,8 @@ const QuestTab = ({
               </button>
 
             </div>
+              );
+            })()}
 
             {/* ── Monster Stable ── */}
             {capturedMonsters && capturedMonsters.length > 0 && (
