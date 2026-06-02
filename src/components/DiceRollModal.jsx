@@ -74,7 +74,7 @@ const getConfig = (roll) => {
   return ROLL_CONFIG.nat20;
 };
 
-const DiceRollModal = ({ roll, bonusXP, bonusGold, onClose }) => {
+const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank, onClose }) => {
   const config = getConfig(roll);
   const [msgIdx] = useState(() => Math.floor(Math.random() * config.messages.length));
   const [showBonus, setShowBonus] = useState(false);
@@ -84,7 +84,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, onClose }) => {
     return () => clearTimeout(t);
   }, []);
 
-  const hasBonus = bonusXP > 0 || bonusGold > 0;
+  const hasBonus = bonusXP > 0 || bonusGold > 0 || guildPointsEarned > 0;
 
   return (
     <div
@@ -164,6 +164,16 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, onClose }) => {
             {bonusGold > 0 && (
               <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, color: '#D4AF37', marginTop: bonusXP > 0 ? '4px' : 0 }}>
                 +{bonusGold} Gold
+              </p>
+            )}
+            {guildPointsEarned > 0 && (
+              <p style={{
+                fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700,
+                color: guildRank?.color || '#C8C8C8',
+                textShadow: guildRank?.color ? `0 0 8px ${guildRank.color}88` : 'none',
+                marginTop: (bonusXP > 0 || bonusGold > 0) ? '4px' : 0,
+              }}>
+                +{guildPointsEarned} Guild Point{guildPointsEarned > 1 ? 's' : ''}
               </p>
             )}
           </motion.div>

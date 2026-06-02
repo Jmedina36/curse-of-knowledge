@@ -2112,9 +2112,10 @@ if (task.overdue) {
     else if (_d20 >= 10) { _bonusXP = Math.round(xpGain * 0.10); }
     if (_bonusXP > 0)   setXp(x => x + _bonusXP);
     if (_bonusGold > 0) setGold(g => g + _bonusGold);
-    setDiceRoll({ roll: _d20, bonusXP: _bonusXP, bonusGold: _bonusGold });
+    setDiceRoll({ roll: _d20, bonusXP: _bonusXP, bonusGold: _bonusGold, guildPointsEarned: gpEarned });
     sounds.taskComplete();
-    setGuildPoints(p => p + (task.priority === 'important' ? 3 : 1));
+    const gpEarned = task.priority === 'important' ? 3 : 1;
+    setGuildPoints(p => p + gpEarned);
 
     setStudyStats(prev => ({
       ...prev,
@@ -7721,7 +7722,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       {/* D&D modals — fixed overlays */}
       {diceRoll && introPhase === 'done' && (
         <DiceRollModal
-          roll={diceRoll.roll} bonusXP={diceRoll.bonusXP} bonusGold={diceRoll.bonusGold}
+          roll={diceRoll.roll} bonusXP={diceRoll.bonusXP} bonusGold={diceRoll.bonusGold} guildPointsEarned={diceRoll.guildPointsEarned} guildRank={guildRank}
           onClose={() => {
             setDiceRoll(null);
             if (pendingBattleSpawnRef.current) {
