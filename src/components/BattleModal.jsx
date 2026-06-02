@@ -210,6 +210,9 @@ const BattleModal = ({
   const [captureResult, setCaptureResult] = useState(null);
   const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
 
+  const bossMaxStamina = isFinalBoss ? 150 : battleType === 'elite' ? 100 : 80;
+  const [bossStamina, setBossStamina] = useState(() => isFinalBoss ? 150 : battleType === 'elite' ? 100 : 80);
+
   // Stats generated once when battle opens — carried over if captured
   const [bossStats] = useState(() => {
     const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
@@ -374,6 +377,7 @@ const BattleModal = ({
     // Show enemy text at the exact moment enemy damage fires
     schedule(() => {
       setBattleLine(enemyText);
+      setBossStamina(prev => Math.max(0, prev - Math.floor(18 + Math.random() * 18)));
     }, enemyActDelay);
 
     // After enemy text finishes typing, return control to player
@@ -382,6 +386,7 @@ const BattleModal = ({
       setBattleLine('');
       setTurnPhase('player');
       turnCountRef.current++;
+      setBossStamina(prev => Math.min(bossMaxStamina, prev + 12));
     }, enemyActDelay + enemyTextDuration);
   };
 
@@ -858,6 +863,22 @@ const BattleModal = ({
             </div>
           </div>
 
+          {/* Boss SP Bar */}
+          <div className="mb-1">
+            <div className="flex justify-between items-baseline mb-1">
+              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#06B6D4' }}>SP</span>
+              <span className="text-sm" style={{ color: 'rgba(245,245,220,0.5)' }}>{bossStamina} / {bossMaxStamina}</span>
+            </div>
+            <div className="h-3 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6,182,212,0.25)' }}>
+              <motion.div
+                className="h-full"
+                animate={{ width: `${(bossStamina / bossMaxStamina) * 100}%` }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                style={{ background: 'linear-gradient(to right, #0E7490, #06B6D4)', boxShadow: '0 0 6px rgba(6,182,212,0.4)' }}
+              />
+            </div>
+          </div>
+
           {/* ── Capture Buttons (< 40% HP, non-boss, non-bandit) ── */}
           {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
             <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.25)' }}>
@@ -1168,14 +1189,14 @@ const BattleModal = ({
 
                     <div className={`grid gap-3 mb-3 ${(canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
-                        className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                        className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Fight
                       </button>
 
                       <button onClick={() => { sounds.click(); setBattleMenu('items'); }}
                         disabled={healthPots === 0 && staminaPots === 0}
-                        className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Items
                       </button>
@@ -1183,7 +1204,7 @@ const BattleModal = ({
                       {canFlee && (
                         <button onClick={() => handlePlayerAction(flee, 'Flee', true)}
                           disabled={stamina < 25}
-                          className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                           style={{ background: stamina >= 25 ? 'linear-gradient(to bottom, rgba(30, 70, 35, 0.9), rgba(15, 40, 18, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${stamina >= 25 ? 'rgba(60, 160, 70, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Flee
                           {stamina >= 25 && <div className="text-sm font-normal mt-0.5 opacity-60">25 SP</div>}
@@ -1192,7 +1213,7 @@ const BattleModal = ({
 
                       {showDodgeButton && (
                         <button onClick={() => handlePlayerAction(dodge, 'Dodge', true)}
-                          className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                          className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(20, 50, 100, 0.9), rgba(10, 30, 60, 0.9))', border: '2px solid rgba(96, 165, 250, 0.7)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Dodge
                           <div className="text-sm font-normal mt-0.5 opacity-70">Avoid AOE</div>
