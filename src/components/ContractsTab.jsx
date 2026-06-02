@@ -678,7 +678,7 @@ const ContractsTab = ({
                 <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
               </div>
-              <h3 className="text-lg font-bold mb-3" style={{color:'#D4AF37',letterSpacing:'0.15em'}}>CHRONICLE OF EVENTS</h3>
+              <h3 style={{fontFamily:'Cinzel,serif',fontSize:'1.3rem',fontWeight:900,letterSpacing:'0.25em',color:'#D4AF37',textShadow:'0 0 18px rgba(212,175,55,0.4)',marginBottom:'0.75rem'}}>CHRONICLE OF EVENTS</h3>
               <div className="flex items-center justify-center gap-3">
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
                 <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
