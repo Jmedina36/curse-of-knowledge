@@ -194,75 +194,33 @@ const QuestTab = ({
               </>
             </div>
 
-            {/* ── Destination Cards ── */}
-            <div className="space-y-3 max-w-2xl mx-auto">
+            {/* ── Destination Buttons ── */}
+            <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'}}>
 
-              {/* Armory / Supplies */}
               <button
                 onClick={() => { sounds.click(); setSuppliesTab('potions'); setShowInventoryModal(true); }}
-                style={{
-                  width: '100%', position: 'relative', overflow: 'hidden',
-                  padding: '24px', borderRadius: '6px', cursor: 'pointer',
-                  background: 'linear-gradient(110deg, #3d0c0c 0%, #5a1010 50%, #3d0c0c 100%)',
-                  border: '1px solid rgba(200,60,50,0.55)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-                  transition: 'all 0.25s', textAlign: 'center',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'linear-gradient(110deg, #4e1010 0%, #6e1414 50%, #4e1010 100%)';
-                  e.currentTarget.style.borderColor = 'rgba(240,80,60,0.75)';
-                  e.currentTarget.style.boxShadow = '0 6px 28px rgba(180,30,20,0.45), inset 0 1px 0 rgba(255,255,255,0.07)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'linear-gradient(110deg, #3d0c0c 0%, #5a1010 50%, #3d0c0c 100%)';
-                  e.currentTarget.style.borderColor = 'rgba(200,60,50,0.55)';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
+                style={{padding:'14px 10px',borderRadius:'8px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(135deg,#3d0c0c,#5a1010)',
+                  border:'1px solid rgba(200,60,50,0.6)',
+                  boxShadow:'0 3px 12px rgba(0,0,0,0.4)',transition:'all 0.2s'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(180,30,20,0.5)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 3px 12px rgba(0,0,0,0.4)';}}
               >
-                <div style={{position:'relative',zIndex:1}}>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1.05rem,2.5vw,1.3rem)',letterSpacing:'0.25em',textTransform:'uppercase',color:'rgba(255,190,180,1)',marginBottom:'5px',textShadow:'0 0 20px rgba(220,60,50,0.6)'}}>
-                    The Armory
-                  </p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.65rem',letterSpacing:'0.18em',color:'rgba(220,150,140,0.7)',textTransform:'uppercase'}}>
-                    Potions • Provisions • Equipment
-                  </p>
-                </div>
+                <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.85rem,2vw,1rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(255,190,180,1)',marginBottom:'3px'}}>The Armory</p>
+                <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(220,150,140,0.7)',textTransform:'uppercase'}}>Potions • Equipment</p>
               </button>
 
-              {/* Merchant's Den */}
               <button
                 onClick={() => { sounds.click(); setShowCraftingModal(true); }}
-                style={{
-                  width: '100%', position: 'relative', overflow: 'hidden',
-                  padding: '24px', borderRadius: '6px', cursor: 'pointer',
-                  background: 'linear-gradient(110deg, #2e1e00 0%, #4a3000 50%, #2e1e00 100%)',
-                  border: '1px solid rgba(200,155,30,0.55)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
-                  transition: 'all 0.25s', textAlign: 'center',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'linear-gradient(110deg, #3a2600 0%, #5c3c00 50%, #3a2600 100%)';
-                  e.currentTarget.style.borderColor = 'rgba(212,175,55,0.85)';
-                  e.currentTarget.style.boxShadow = '0 6px 28px rgba(180,140,20,0.35), inset 0 1px 0 rgba(255,255,255,0.07)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'linear-gradient(110deg, #2e1e00 0%, #4a3000 50%, #2e1e00 100%)';
-                  e.currentTarget.style.borderColor = 'rgba(200,155,30,0.55)';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
+                style={{padding:'14px 10px',borderRadius:'8px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(135deg,#2e1e00,#4a3000)',
+                  border:'1px solid rgba(200,155,30,0.6)',
+                  boxShadow:'0 3px 12px rgba(0,0,0,0.4)',transition:'all 0.2s'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(180,140,20,0.4)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 3px 12px rgba(0,0,0,0.4)';}}
               >
-                <div style={{position:'relative',zIndex:1}}>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1.05rem,2.5vw,1.3rem)',letterSpacing:'0.25em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'5px',textShadow:'0 0 20px rgba(212,175,55,0.65)'}}>
-                    The Merchant
-                  </p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.65rem',letterSpacing:'0.18em',color:'rgba(200,165,70,0.75)',textTransform:'uppercase'}}>
-                    Forge • Craft • Trade your gold for power
-                  </p>
-                </div>
+                <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.85rem,2vw,1rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'3px'}}>The Merchant</p>
+                <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(200,165,70,0.75)',textTransform:'uppercase'}}>Craft • Trade</p>
               </button>
 
             </div>
