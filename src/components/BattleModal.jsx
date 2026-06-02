@@ -1125,49 +1125,26 @@ const BattleModal = ({
                 {turnPhase === 'player' && battleMenu === 'main' && (
                   <motion.div key="main" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
 
-                    {/* ⚡ Charged Strike — standalone D20 crit, no SP cost, shown at max charges */}
-                    {chargeStacks === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges && (() => {
-                      const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special;
-                      const canUse = !locked;
-                      return (
-                        <motion.button
-                          key="unleash"
-                          initial={{ opacity: 0, scale: 0.94 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          onClick={() => canUse && handlePlayerAction(chargedStrike, 'Charged Strike')}
-                          disabled={!canUse}
-                          className="w-full py-3 rounded font-black uppercase transition-all border-2 mb-3 disabled:cursor-not-allowed"
-                          style={{
-                            background: canUse
-                              ? 'linear-gradient(to bottom, rgba(212,175,55,0.92), rgba(155,110,5,0.96))'
-                              : 'rgba(30,40,55,0.7)',
-                            borderColor: canUse ? '#D4AF37' : 'rgba(80,80,80,0.3)',
-                            color: canUse ? '#120d00' : '#888',
-                            opacity: canUse ? 1 : 0.5,
-                            boxShadow: canUse ? '0 0 24px rgba(212,175,55,0.55), 0 4px 14px rgba(212,175,55,0.22)' : 'none',
-                            fontFamily: 'Cinzel, serif',
-                            letterSpacing: '0.18em',
-                            animation: canUse ? 'intro-hint-pulse 1.6s ease-in-out infinite' : 'none',
-                          }}
-                        >
-                          ⚡ CHARGED STRIKE
-                          <div className="text-xs font-normal mt-0.5 opacity-75" style={{ letterSpacing: '0.08em' }}>
-                            {locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : 'Free · D20 Crit Roll'}
-                          </div>
-                        </motion.button>
-                      );
-                    })()}
-
                     <div className={`grid gap-3 mb-3 ${
                       canCapture
                         ? (canFlee || showDodgeButton) ? 'grid-cols-4' : 'grid-cols-3'
                         : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'
                     }`}>
-                      <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
-                        className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
-                        style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
-                        Fight
-                      </button>
+                      {chargeStacks >= GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges ? (
+                        <button
+                          onClick={() => handlePlayerAction(chargedStrike, GAME_CONSTANTS.CHARGED_ATTACK_NAMES[hero?.class?.name] || 'Charged Strike')}
+                          className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                          style={{ background: 'linear-gradient(to bottom, rgba(212,175,55,0.92), rgba(155,110,5,0.96))', border: '2px solid #D4AF37', color: '#120d00', boxShadow: '0 0 24px rgba(212,175,55,0.55)', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', animation: 'intro-hint-pulse 1.6s ease-in-out infinite' }}>
+                          ⚡ {GAME_CONSTANTS.CHARGED_ATTACK_NAMES[hero?.class?.name] || 'Charged Strike'}
+                          <div className="text-xs font-normal mt-0.5 opacity-75" style={{ letterSpacing: '0.08em' }}>D20 Crit Roll</div>
+                        </button>
+                      ) : (
+                        <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
+                          className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                          style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
+                          Fight
+                        </button>
+                      )}
 
                       <button onClick={() => { sounds.click(); setBattleMenu('items'); }}
                         disabled={healthPots === 0 && staminaPots === 0}

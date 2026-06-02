@@ -3183,17 +3183,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       bonusMessages.push(`✙ +${empowermentHeal} HP from Holy Empowerment`);
     }
     
-    // Build charges for special attacks
+    // Build charges via basic attack only
     if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
       setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
       if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-        addLog(`⚡ CHARGED STRIKE READY!`);
         sounds.chargeFull();
       } else {
         sounds.chargeGain();
       }
     }
-    
+
     // Update dialogue based on HP phase
     const hpPercent = newBossHp / bossMax;
     
@@ -4651,7 +4650,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     else if (d20 <= 19)  critMult = 3.0;
     else                  critMult = 4.0;
 
-    setChargedCritRoll({ roll: d20, multiplier: critMult, attackName: 'Charged Strike' });
+    const chargedAttackName = GAME_CONSTANTS.CHARGED_ATTACK_NAMES[hero?.class?.name] || 'Charged Strike';
+    setChargedCritRoll({ roll: d20, multiplier: critMult, attackName: chargedAttackName });
     setChargeStacks(0);
 
     const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
@@ -4663,7 +4663,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     }
 
     const tierLabel = critMult >= 4 ? 'LEGENDARY STRIKE' : critMult >= 3 ? 'DEVASTATING CRIT' : critMult >= 2.5 ? 'HEAVY CRIT' : critMult >= 2 ? 'CRITICAL HIT' : 'GLANCING CRIT';
-    addLog(`⚡ CHARGED STRIKE! ${tierLabel}! (${critMult}x) — ${damage} damage!`);
+    addLog(`⚡ ${chargedAttackName.toUpperCase()}! ${tierLabel}! (${critMult}x) — ${damage} damage!`);
 
     const newBossHp = Math.max(0, bossHp - damage);
     setBossHp(newBossHp);
@@ -4878,17 +4878,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     const newBossHp = Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
-    
-    // Build charges for special attacks
-    if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-      setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
-      if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-        addLog(`⚡ CHARGED STRIKE READY!`);
-        sounds.chargeFull();
-      } else {
-        sounds.chargeGain();
-      }
-    }
     
     addLog(`⚔️ CRUSHING BLOW! Dealt ${finalDamage} damage!`);
     bonusMessages.forEach(msg => addLog(msg));
@@ -5269,14 +5258,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     setBossFlash(true);
     setTimeout(() => setBossFlash(false), 200);
-    
-    // Build charges
-    if (chargeStacks < GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-      setChargeStacks(c => Math.min(c + GAME_CONSTANTS.CHARGE_SYSTEM.chargePerAttack, GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges));
-      if (chargeStacks + 1 === GAME_CONSTANTS.CHARGE_SYSTEM.maxCharges) {
-        addLog(`⚡ SPECIAL CHARGED! (Next special deals +25% damage)`);
-      }
-    }
     
     if (newBossHp <= 0) {
       // Victory - simplified version

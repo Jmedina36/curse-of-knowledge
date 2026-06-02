@@ -291,6 +291,13 @@ export const GAME_CONSTANTS = {
     Wizard: 'Arcane Bolt',
     Assassin: 'Quick Slash'
   },
+
+  CHARGED_ATTACK_NAMES: {
+    Knight: 'Shattering Blow',
+    Crusader: 'Divine Wrath',
+    Wizard: 'Arcane Overload',
+    Assassin: 'Lethal Flurry'
+  },
   
   SPECIAL_ATTACKS: {
     Knight: { 
