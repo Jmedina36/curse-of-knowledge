@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
+import { getCreatureQuality } from '../creatures';
 import { audioManager } from '../audioManager';
 import { sounds } from '../sounds';
 
@@ -913,15 +914,28 @@ const BattleModal = ({
                     5: { label: 'Legendary', color: '#F59E0B' },
                   };
                   const meta = TIER_META[currentBattleCreature.tier];
-                  if (!meta) return null;
+                  const quality = currentBattleCreature.roll != null ? getCreatureQuality(currentBattleCreature.roll) : null;
                   return (
-                    <span style={{
-                      fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em',
-                      textTransform: 'uppercase', color: meta.color,
-                      border: `1px solid ${meta.color}55`,
-                      background: `${meta.color}18`,
-                      padding: '1px 6px', borderRadius: '3px',
-                    }}>{meta.label}</span>
+                    <>
+                      {meta && (
+                        <span style={{
+                          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em',
+                          textTransform: 'uppercase', color: meta.color,
+                          border: `1px solid ${meta.color}55`,
+                          background: `${meta.color}18`,
+                          padding: '1px 6px', borderRadius: '3px',
+                        }}>{meta.label}</span>
+                      )}
+                      {quality && (
+                        <span style={{
+                          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em',
+                          textTransform: 'uppercase', color: quality.color,
+                          border: `1px solid ${quality.color}55`,
+                          background: `${quality.color}18`,
+                          padding: '1px 6px', borderRadius: '3px',
+                        }}>{quality.label}</span>
+                      )}
+                    </>
                   );
                 })()}
               </div>
