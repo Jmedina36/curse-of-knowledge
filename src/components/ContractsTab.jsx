@@ -148,14 +148,14 @@ const ContractsTab = ({
                   <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'8px', marginBottom:'18px' }}>
                     <span style={{
                       fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.4em',
-                      textTransform:'uppercase', color:'rgba(210,190,150,0.6)',
+                      textTransform:'uppercase', color:'rgba(230,210,170,0.9)',
                     }}>Guild Rank</span>
                     <span style={{
                       fontFamily:'Cinzel,serif', fontSize:'1.5rem', fontWeight:900, letterSpacing:'0.25em',
                       textTransform:'uppercase', color: guildRank.color,
                       textShadow: `0 0 20px ${guildRank.color}99, 0 0 40px ${guildRank.color}44`,
                     }}>{guildRank.name}</span>
-                    <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', color:'rgba(210,190,150,0.75)' }}>
+                    <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', color:'rgba(230,210,170,0.95)' }}>
                       {guildPoints} Guild Points
                     </span>
                     {nextRank && (
@@ -168,7 +168,7 @@ const ContractsTab = ({
                             boxShadow: `0 0 6px ${guildRank.color}88`,
                           }} />
                         </div>
-                        <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.62rem', letterSpacing:'0.14em', color:'rgba(210,190,150,0.7)', textAlign:'center', marginTop:'5px', textTransform:'uppercase' }}>
+                        <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.62rem', letterSpacing:'0.14em', color:'rgba(230,210,170,0.9)', textAlign:'center', marginTop:'5px', textTransform:'uppercase' }}>
                           {nextRank.min - guildPoints} GP to {nextRank.name}
                         </p>
                       </div>
