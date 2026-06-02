@@ -13,6 +13,23 @@ const GUILD_RANKS = [
 ];
 const getGuildRank = (level) => GUILD_RANKS.find(r => level >= r.min && level <= r.max) || GUILD_RANKS[0];
 
+const getMonsterImg = (monster) => {
+  if (monster.tier === 3) return '/undead-king.png';
+  if (monster.tier === 2) {
+    const ELITE_IMGS = [
+      '/bosses/frozen-zombie.png',
+      '/bosses/undead-vampire-woman.png',
+      '/bosses/orc-chief.png',
+      '/bosses/orc-lady.png',
+      '/bosses/orc-warrior.png',
+    ];
+    const seed = monster.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+    return ELITE_IMGS[seed % ELITE_IMGS.length];
+  }
+  const idx = monster.creatureIdx != null ? monster.creatureIdx : (monster.id % 8);
+  return `/creatures/creature${1 + (idx % 8)}.png`;
+};
+
 const getHeroPortrait = (className, gender) => {
   const classMap = { Knight: 'knight', Wizard: 'sorcerer', Assassin: 'thief', Crusader: 'crusader' };
   const g = gender === 'female' ? 'f' : gender === 'male' ? 'm' : gender || 'm';
@@ -265,7 +282,7 @@ const QuestTab = ({
                       position: 'relative',
                     }}>
                       <img
-                        src={`/creatures/creature${monster.creatureIdx}.png`}
+                        src={getMonsterImg(monster)}
                         alt={monster.name}
                         style={{ width: 52, height: 52, objectFit: 'contain',
                           filter: `drop-shadow(0 0 6px ${monster.tier === 3 ? 'rgba(212,175,55,0.6)' : monster.tier === 2 ? 'rgba(251,146,60,0.5)' : 'rgba(168,85,247,0.4)'})`
