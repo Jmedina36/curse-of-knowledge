@@ -304,6 +304,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
             const result = getFusionResult(slotA, slotB);
             const tierMismatch = slotA && slotB && slotA.tier !== slotB.tier;
             const canFuse = !!result;
+            const ritualColor = canFuse ? TIER_COLORS[result.tier] : tierMismatch ? '#EF4444' : 'rgba(212,175,55,0.25)';
 
             const selectForSlot = (monsterId) => {
               setFusionSlots(prev => {
@@ -317,115 +318,204 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
 
             const performFusion = () => {
               if (!canFuse) return;
-              const newMonster = {
-                ...result,
-                id: `fused_${Date.now()}`,
-                fusedFrom: [slotA.name, slotB.name],
-              };
-              setCapturedMonsters(prev => [
-                ...prev.filter(m => m.id !== slotA.id && m.id !== slotB.id),
-                newMonster,
-              ]);
+              const newMonster = { ...result, id: `fused_${Date.now()}`, fusedFrom: [slotA.name, slotB.name] };
+              setCapturedMonsters(prev => [...prev.filter(m => m.id !== slotA.id && m.id !== slotB.id), newMonster]);
               setFusionSlots([null, null]);
               addLog(`Fusion complete — ${newMonster.name} emerged from the ritual.`);
             };
 
             const SlotCard = ({ monster, slotIdx }) => (
               <div style={{
-                flex: 1, minHeight: 180, borderRadius: '12px', padding: '16px', textAlign: 'center',
-                background: monster ? `linear-gradient(135deg, ${TIER_GLOW[monster.tier]}, rgba(0,0,0,0.6))` : 'rgba(0,0,0,0.3)',
-                border: `2px dashed ${monster ? TIER_BORDER[monster.tier] : 'rgba(212,175,55,0.2)'}`,
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                position: 'relative',
+                flex: 1, minHeight: 220, borderRadius: '16px', padding: '20px 16px', textAlign: 'center',
+                background: monster
+                  ? `radial-gradient(ellipse at top, ${TIER_GLOW[monster.tier].replace('0.0', '0.2').replace('0.1', '0.2')}, rgba(5,4,2,0.9))`
+                  : 'radial-gradient(ellipse at top, rgba(212,175,55,0.04), rgba(5,4,2,0.85))',
+                border: `1px solid ${monster ? TIER_COLORS[monster.tier] + '88' : 'rgba(212,175,55,0.15)'}`,
+                boxShadow: monster ? `0 0 30px ${TIER_COLORS[monster.tier]}22, inset 0 0 20px rgba(0,0,0,0.4)` : 'inset 0 0 20px rgba(0,0,0,0.3)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px',
+                position: 'relative', transition: 'all 0.3s',
               }}>
-                <div style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.4)', marginBottom: '4px' }}>
-                  SLOT {slotIdx + 1}
+                {/* Corner accents */}
+                {['top:0,left:0', 'top:0,right:0', 'bottom:0,left:0', 'bottom:0,right:0'].map((pos, i) => {
+                  const [v, h] = pos.split(',');
+                  const [vSide, vVal] = v.split(':');
+                  const [hSide, hVal] = h.split(':');
+                  return (
+                    <div key={i} style={{
+                      position: 'absolute', [vSide]: vVal, [hSide]: hVal,
+                      width: 14, height: 14,
+                      borderTop: (vSide === 'top') ? `2px solid ${monster ? TIER_COLORS[monster.tier] + 'aa' : 'rgba(212,175,55,0.2)'}` : 'none',
+                      borderBottom: (vSide === 'bottom') ? `2px solid ${monster ? TIER_COLORS[monster.tier] + 'aa' : 'rgba(212,175,55,0.2)'}` : 'none',
+                      borderLeft: (hSide === 'left') ? `2px solid ${monster ? TIER_COLORS[monster.tier] + 'aa' : 'rgba(212,175,55,0.2)'}` : 'none',
+                      borderRight: (hSide === 'right') ? `2px solid ${monster ? TIER_COLORS[monster.tier] + 'aa' : 'rgba(212,175,55,0.2)'}` : 'none',
+                    }} />
+                  );
+                })}
+                <div style={{ fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.25em', color: monster ? TIER_COLORS[monster.tier] + '99' : 'rgba(212,175,55,0.25)', textTransform: 'uppercase' }}>
+                  ◈ Slot {slotIdx + 1}
                 </div>
                 {monster ? (
                   <>
-                    <img src={getMonsterImg(monster)} alt={monster.name} style={{ width: 72, height: 72, objectFit: 'contain', filter: `drop-shadow(0 0 8px ${TIER_COLORS[monster.tier]}66)` }} />
-                    <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.8rem', color: TIER_COLORS[monster.tier], lineHeight: 1.3, margin: 0 }}>{monster.name}</p>
-                    <span style={{ fontSize: '0.65rem', color: TIER_COLORS[monster.tier], opacity: 0.7, background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '4px', border: `1px solid ${TIER_BORDER[monster.tier]}` }}>{TIER_LABELS[monster.tier]}</span>
-                    <button onClick={() => setFusionSlots(prev => prev.map((v, i) => i === slotIdx ? null : v))} style={{ fontSize: '0.65rem', color: 'rgba(239,68,68,0.6)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '4px' }}>✕ Remove</button>
+                    <img src={getMonsterImg(monster)} alt={monster.name} style={{
+                      width: 86, height: 86, objectFit: 'contain',
+                      filter: `drop-shadow(0 0 16px ${TIER_COLORS[monster.tier]}99) drop-shadow(0 0 32px ${TIER_COLORS[monster.tier]}44)`,
+                    }} />
+                    <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.85rem', color: TIER_COLORS[monster.tier], lineHeight: 1.3, margin: 0 }}>{monster.name}</p>
+                    <span style={{
+                      fontSize: '0.6rem', letterSpacing: '0.15em', color: TIER_COLORS[monster.tier],
+                      background: 'rgba(0,0,0,0.6)', padding: '2px 10px', borderRadius: '20px',
+                      border: `1px solid ${TIER_COLORS[monster.tier]}55`,
+                    }}>{TIER_LABELS[monster.tier].toUpperCase()}</span>
+                    <button onClick={() => setFusionSlots(prev => prev.map((v, i) => i === slotIdx ? null : v))}
+                      style={{ fontSize: '0.62rem', color: 'rgba(239,68,68,0.5)', background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '0.1em' }}>
+                      ✕ REMOVE
+                    </button>
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(212,175,55,0.3)', fontStyle: 'italic', fontSize: '0.8rem' }}>Select a creature below</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ fontSize: '1.8rem', opacity: 0.15, color: '#D4AF37' }}>◈</div>
+                    <p style={{ color: 'rgba(212,175,55,0.25)', fontStyle: 'italic', fontSize: '0.75rem', margin: 0 }}>Select below</p>
+                  </div>
                 )}
               </div>
             );
 
             return (
               <div>
-                {/* Header */}
-                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'rgba(212,175,55,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 6px' }}>Ritual of Binding</p>
-                  <p style={{ fontSize: '0.78rem', color: 'rgba(245,245,220,0.5)', fontStyle: 'italic', margin: 0 }}>Select two creatures of the same tier to fuse them into something stronger.</p>
-                </div>
-
-                {/* Fusion slots + arrow + result */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-                  <SlotCard monster={slotA} slotIdx={0} />
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                    <span style={{ fontSize: '1.5rem', color: tierMismatch ? '#EF4444' : canFuse ? '#D4AF37' : 'rgba(212,175,55,0.2)' }}>⚗</span>
-                    <span style={{ fontSize: '0.9rem', color: tierMismatch ? '#EF4444' : canFuse ? '#D4AF37' : 'rgba(212,175,55,0.2)' }}>→</span>
+                {/* Ritual header */}
+                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.2))' }} />
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.35em', color: 'rgba(212,175,55,0.5)', textTransform: 'uppercase' }}>
+                      ◆ Ritual of Binding ◆
+                    </span>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.2))' }} />
                   </div>
-                  <SlotCard monster={slotB} slotIdx={1} />
-                </div>
-
-                {/* Tier mismatch warning */}
-                {tierMismatch && (
-                  <p style={{ textAlign: 'center', color: '#EF4444', fontSize: '0.78rem', fontStyle: 'italic', marginBottom: '16px' }}>
-                    Both creatures must be the same tier to fuse.
+                  {/* Tier chain */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                    {[1,2,3,4,5].map((t, i) => (
+                      <React.Fragment key={t}>
+                        <span style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', color: TIER_COLORS[t], letterSpacing: '0.1em', opacity: 0.8 }}>{TIER_LABELS[t]}</span>
+                        {i < 4 && <span style={{ fontSize: '0.6rem', color: 'rgba(212,175,55,0.25)' }}>⟶</span>}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.35)', fontStyle: 'italic', margin: '8px 0 0' }}>
+                    Sacrifice two creatures of equal tier to birth something greater.
                   </p>
-                )}
+                </div>
 
-                {/* Result preview */}
-                {canFuse && (
-                  <div style={{ textAlign: 'center', marginBottom: '20px', padding: '16px', borderRadius: '12px', background: `linear-gradient(135deg, ${TIER_GLOW[result.tier]}, rgba(0,0,0,0.5))`, border: `1px solid ${TIER_BORDER[result.tier]}` }}>
-                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.5)', marginBottom: '10px' }}>FUSION RESULT</p>
-                    <img src={result.img} alt={result.name} style={{ width: 80, height: 80, objectFit: 'contain', margin: '0 auto 10px', display: 'block', filter: `drop-shadow(0 0 12px ${TIER_COLORS[result.tier]}88)` }} />
-                    <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: TIER_COLORS[result.tier], marginBottom: '4px' }}>{result.name}</p>
-                    <span style={{ fontSize: '0.65rem', color: TIER_COLORS[result.tier], opacity: 0.8, background: 'rgba(0,0,0,0.5)', padding: '2px 10px', borderRadius: '4px', border: `1px solid ${TIER_BORDER[result.tier]}` }}>{TIER_LABELS[result.tier]}</span>
-                    <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.55)', fontStyle: 'italic', marginTop: '10px', lineHeight: 1.5 }}>{result.desc}</p>
-                    <button
-                      onClick={performFusion}
-                      style={{
-                        marginTop: '14px', padding: '10px 32px', fontFamily: 'Cinzel, serif', fontWeight: 700,
-                        fontSize: '0.85rem', letterSpacing: '0.15em', cursor: 'pointer', borderRadius: '8px',
-                        background: `linear-gradient(135deg, ${TIER_GLOW[result.tier]}, rgba(0,0,0,0.7))`,
-                        border: `1px solid ${TIER_COLORS[result.tier]}`, color: TIER_COLORS[result.tier],
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      Perform Fusion
-                    </button>
+                {/* Ritual arena */}
+                <div style={{
+                  borderRadius: '20px', padding: '24px',
+                  background: 'radial-gradient(ellipse at center, rgba(60,20,80,0.25) 0%, rgba(5,4,2,0.6) 70%)',
+                  border: `1px solid ${ritualColor}44`,
+                  boxShadow: canFuse ? `0 0 60px ${ritualColor}22, inset 0 0 40px rgba(0,0,0,0.5)` : 'inset 0 0 40px rgba(0,0,0,0.5)',
+                  marginBottom: '24px', transition: 'all 0.4s',
+                }}>
+                  {/* Slots row */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <SlotCard monster={slotA} slotIdx={0} />
+
+                    {/* Center sigil */}
+                    <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                      <div style={{
+                        width: 56, height: 56, borderRadius: '50%',
+                        border: `2px solid ${ritualColor}`,
+                        boxShadow: canFuse ? `0 0 24px ${ritualColor}88, 0 0 48px ${ritualColor}33` : 'none',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: `radial-gradient(circle, ${ritualColor}11, rgba(0,0,0,0.6))`,
+                        transition: 'all 0.4s',
+                        fontSize: '1.4rem',
+                      }}>
+                        {tierMismatch ? '✕' : canFuse ? '⚗' : '◈'}
+                      </div>
+                      <span style={{ fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', color: ritualColor, opacity: 0.7 }}>
+                        {tierMismatch ? 'MISMATCH' : canFuse ? 'READY' : 'WAITING'}
+                      </span>
+                    </div>
+
+                    <SlotCard monster={slotB} slotIdx={1} />
                   </div>
-                )}
+
+                  {/* Tier mismatch warning */}
+                  {tierMismatch && (
+                    <p style={{ textAlign: 'center', color: '#EF4444', fontSize: '0.75rem', fontStyle: 'italic', marginTop: '16px', marginBottom: 0 }}>
+                      Both creatures must be the same tier to perform the ritual.
+                    </p>
+                  )}
+
+                  {/* Result reveal */}
+                  {canFuse && (
+                    <div style={{ marginTop: '24px', borderTop: `1px solid ${TIER_COLORS[result.tier]}33`, paddingTop: '24px' }}>
+                      <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.3em', color: TIER_COLORS[result.tier] + 'aa', textTransform: 'uppercase', textAlign: 'center', marginBottom: '18px' }}>
+                        ◆ That Which Shall Emerge ◆
+                      </p>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <div style={{ textAlign: 'center' }}>
+                          <img src={result.img} alt={result.name} style={{
+                            width: 100, height: 100, objectFit: 'contain', display: 'block', margin: '0 auto 12px',
+                            filter: `drop-shadow(0 0 20px ${TIER_COLORS[result.tier]}cc) drop-shadow(0 0 40px ${TIER_COLORS[result.tier]}55)`,
+                          }} />
+                          <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.1rem', color: TIER_COLORS[result.tier], margin: '0 0 6px', textShadow: `0 0 20px ${TIER_COLORS[result.tier]}88` }}>{result.name}</p>
+                          <span style={{
+                            fontSize: '0.62rem', letterSpacing: '0.2em', color: TIER_COLORS[result.tier],
+                            background: 'rgba(0,0,0,0.6)', padding: '3px 14px', borderRadius: '20px',
+                            border: `1px solid ${TIER_COLORS[result.tier]}66`,
+                          }}>{TIER_LABELS[result.tier].toUpperCase()}</span>
+                        </div>
+                        <div style={{ flex: 1, minWidth: '160px' }}>
+                          <p style={{ fontSize: '0.78rem', color: 'rgba(245,245,220,0.6)', fontStyle: 'italic', lineHeight: 1.7, margin: '0 0 18px' }}>{result.desc}</p>
+                          <button
+                            onClick={performFusion}
+                            style={{
+                              width: '100%', padding: '12px 24px', fontFamily: 'Cinzel, serif', fontWeight: 700,
+                              fontSize: '0.88rem', letterSpacing: '0.2em', cursor: 'pointer', borderRadius: '10px',
+                              background: `linear-gradient(135deg, ${TIER_COLORS[result.tier]}22, rgba(0,0,0,0.8))`,
+                              border: `1px solid ${TIER_COLORS[result.tier]}`,
+                              color: TIER_COLORS[result.tier], textTransform: 'uppercase',
+                              boxShadow: `0 0 20px ${TIER_COLORS[result.tier]}44`,
+                              textShadow: `0 0 10px ${TIER_COLORS[result.tier]}88`,
+                            }}
+                          >
+                            ⚗ Perform Ritual
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Stable creature picker */}
-                <div style={{ borderTop: '1px solid rgba(212,175,55,0.15)', paddingTop: '20px' }}>
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.4)', textTransform: 'uppercase', marginBottom: '12px' }}>Your Stable</p>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.15))' }} />
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.25em', color: 'rgba(212,175,55,0.35)', textTransform: 'uppercase' }}>Your Stable</span>
+                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.15))' }} />
+                  </div>
                   {capturedMonsters.length === 0 ? (
-                    <p style={{ color: 'rgba(192,192,192,0.4)', fontStyle: 'italic', fontSize: '0.8rem' }}>No creatures in your stable.</p>
+                    <p style={{ color: 'rgba(192,192,192,0.35)', fontStyle: 'italic', fontSize: '0.78rem', textAlign: 'center' }}>No creatures in your stable. Capture some in battle first.</p>
                   ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
                       {capturedMonsters.map(monster => {
                         const inSlot = fusionSlots.includes(monster.id);
                         return (
-                          <button
-                            key={monster.id}
-                            onClick={() => selectForSlot(monster.id)}
-                            style={{
-                              borderRadius: '10px', padding: '12px 10px', textAlign: 'center', cursor: 'pointer',
-                              background: inSlot ? `linear-gradient(135deg, ${TIER_GLOW[monster.tier]}, rgba(0,0,0,0.4))` : 'rgba(0,0,0,0.35)',
-                              border: `1px solid ${inSlot ? TIER_COLORS[monster.tier] : TIER_BORDER[monster.tier]}`,
-                              boxShadow: inSlot ? `0 0 16px ${TIER_COLORS[monster.tier]}44` : 'none',
-                              transition: 'all 0.15s',
-                            }}
-                          >
-                            <img src={getMonsterImg(monster)} alt={monster.name} style={{ width: 52, height: 52, objectFit: 'contain', display: 'block', margin: '0 auto 8px', filter: `drop-shadow(0 0 6px ${TIER_COLORS[monster.tier]}55)` }} />
-                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.72rem', color: TIER_COLORS[monster.tier], margin: '0 0 4px', lineHeight: 1.3 }}>{monster.name}</p>
-                            <span style={{ fontSize: '0.6rem', color: TIER_COLORS[monster.tier], opacity: 0.6 }}>{TIER_LABELS[monster.tier]}</span>
+                          <button key={monster.id} onClick={() => selectForSlot(monster.id)} style={{
+                            borderRadius: '12px', padding: '14px 10px', textAlign: 'center', cursor: 'pointer',
+                            background: inSlot
+                              ? `radial-gradient(ellipse at top, ${TIER_GLOW[monster.tier].replace('0.0', '0.25').replace('0.1', '0.25')}, rgba(0,0,0,0.7))`
+                              : 'rgba(0,0,0,0.4)',
+                            border: `1px solid ${inSlot ? TIER_COLORS[monster.tier] : TIER_COLORS[monster.tier] + '44'}`,
+                            boxShadow: inSlot ? `0 0 20px ${TIER_COLORS[monster.tier]}44` : 'none',
+                            transition: 'all 0.2s',
+                          }}>
+                            {inSlot && <div style={{ fontSize: '0.55rem', color: TIER_COLORS[monster.tier], letterSpacing: '0.15em', marginBottom: '6px' }}>✓ SELECTED</div>}
+                            <img src={getMonsterImg(monster)} alt={monster.name} style={{
+                              width: 56, height: 56, objectFit: 'contain', display: 'block', margin: '0 auto 8px',
+                              filter: `drop-shadow(0 0 ${inSlot ? 12 : 6}px ${TIER_COLORS[monster.tier]}${inSlot ? 'cc' : '55'})`,
+                            }} />
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.7rem', color: TIER_COLORS[monster.tier], margin: '0 0 4px', lineHeight: 1.3 }}>{monster.name}</p>
+                            <span style={{ fontSize: '0.58rem', color: TIER_COLORS[monster.tier], opacity: 0.6, letterSpacing: '0.1em' }}>{TIER_LABELS[monster.tier]}</span>
                           </button>
                         );
                       })}
