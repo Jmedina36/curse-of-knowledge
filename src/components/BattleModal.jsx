@@ -843,7 +843,7 @@ const BattleModal = ({
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <img
-                      src={isBanditWave && banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
+                      src={banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
                       alt={bossName}
                       style={{
                         height: isBanditWave ? 'clamp(150px, 22vh, 250px)' : 'clamp(130px, 19vh, 215px)',

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { COLORS } from '../constants';
+import { CREATURE_INDEX, getCreatureQuality } from '../creatures';
 
 const KAEL_IDLE = [
   "Every beast in here was defeated by your hand. Remember that.",
@@ -37,45 +38,7 @@ const getMonsterImg = (monster) => {
 
 const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD', mag: 'MAG' };
 
-const CREATURE_INDEX = [
-  // T1 — Grunt (weakest, vermin-level)
-  { id: 'c1',  name: 'Bloodmaw',              img: '/creatures/creature1.png',  tier: 1, desc: 'A savage predator that hunts by scent alone. Its jaws can crush iron.' },
-  { id: 'c4',  name: 'Rot Creeper',           img: '/creatures/creature4.png',  tier: 1, desc: 'A colony of decay given form. Its touch spreads blight to living tissue.' },
-  { id: 'c6',  name: 'Plagueborn',            img: '/creatures/creature6.png',  tier: 1, desc: 'Born in the fever-swamps. Where it walks, sickness follows.' },
-  { id: 'c8',  name: 'Soulblight',            img: '/creatures/creature8.png',  tier: 1, desc: 'Feeds on the vital essence of the living, leaving hollow shells in its wake.' },
-  { id: 'c9',  name: 'Darkfang',              img: '/creatures/creature9.png',  tier: 1, desc: 'Its venom corrodes both body and will. Survivors rarely speak of the encounter.' },
-  { id: 'c10', name: 'Frostveil',             img: '/creatures/creature10.png', tier: 1, desc: 'A wraith of frozen air that numbs its prey into stillness before striking.' },
-  { id: 'c12', name: 'Ashborn',               img: '/creatures/creature12.png', tier: 1, desc: 'Forged in the embers of a razed village. It carries the wrath of the fallen.' },
-  { id: 'c22', name: 'Bog Fiend',             img: '/creatures/creature22.png', tier: 1, desc: 'Pulls victims beneath the mire. None have returned from its domain.' },
-  // T2 — Predator (dangerous, territorial)
-  { id: 'c2',  name: 'Graveborn Crusher',     img: '/creatures/creature2.png',  tier: 2, desc: 'Risen from mass graves, it shambles forward with unstoppable weight.' },
-  { id: 'c5',  name: 'Bonescale Fiend',       img: '/creatures/creature5.png',  tier: 2, desc: 'Plated in fused bone, it shrugs off blows that would fell a lesser beast.' },
-  { id: 'c11', name: 'Bloodthorn',            img: '/creatures/creature11.png', tier: 2, desc: 'A cursed bramble-creature that bleeds its victims dry through barbed tendrils.' },
-  { id: 'c15', name: 'Thunderhide',           img: '/creatures/creature15.png', tier: 2, desc: 'A brute whose hide conducts lightning. Striking it risks a deadly discharge.' },
-  { id: 'c16', name: 'Briarhunter',           img: '/creatures/creature16.png', tier: 2, desc: 'Stalks prey through dense undergrowth. Silent until the moment it lunges.' },
-  { id: 'c17', name: 'Emberspecter',          img: '/creatures/creature17.png', tier: 2, desc: 'The ghost of something burned alive. It radiates searing heat in all directions.' },
-  { id: 'c18', name: 'Viperous Shade',        img: '/creatures/creature18.png', tier: 2, desc: 'Half serpent, half shadow. Its bite poisons the mind as much as the body.' },
-  { id: 'c19', name: 'Stoneblight',           img: '/creatures/creature19.png', tier: 2, desc: 'A slow, grinding horror. Its presence petrifies the ground beneath it.' },
-  { id: 'c21', name: 'Stormscreech',          img: '/creatures/creature21.png', tier: 2, desc: 'A flying predator that calls lightning down on fleeing prey.' },
-  // T3 — Dire (terrifying, borderline elite)
-  { id: 'c3',  name: 'Shadowflesh',           img: '/creatures/creature3.png',  tier: 3, desc: 'Its body shifts between shadow and flesh, making it nearly impossible to strike.' },
-  { id: 'c7',  name: 'Death Hollow',          img: '/creatures/creature7.png',  tier: 3, desc: 'A hollow vessel animated by residual death magic. It knows no pain.' },
-  { id: 'c13', name: 'Grave Sentinel',        img: '/creatures/creature13.png', tier: 3, desc: 'An ancient guardian bound to protect a tomb long since plundered.' },
-  { id: 'c14', name: 'Dusk Wraith',           img: '/creatures/creature14.png', tier: 3, desc: 'Emerges only at twilight. Its wail paralyzes those who hear it.' },
-  { id: 'c20', name: 'Tomb Horror',           img: '/creatures/creature20.png', tier: 3, desc: 'Dragged from the deep dark of burial crypts. It despises the living.' },
-  { id: 'c23', name: 'Void Spawn',            img: '/creatures/creature23.png', tier: 3, desc: 'A fragment of the void given grotesque form. It hungers without end.' },
-  { id: 'c24', name: 'Lava Fiend',            img: '/creatures/creature24.png', tier: 3, desc: 'Crawls from volcanic fissures. Its body burns at temperatures that melt steel.' },
-  { id: 'c25', name: 'Rift Horror',           img: '/creatures/creature25.png', tier: 3, desc: 'Slips between planes of existence. Wounds from it do not heal naturally.' },
-  // T4 — Elite (named, unique)
-  { id: 'e1',  name: 'Morvane, the Frozen Condemned',   img: '/bosses/frozen-zombie.png',         tier: 4, desc: 'A warrior executed in winter and cursed to walk forever. His rage has not thawed in three centuries.' },
-  { id: 'e2',  name: 'Seraphine the Bloodless',          img: '/bosses/undead-vampire-woman.png',  tier: 4, desc: 'Once a high priestess, now an undying predator. She drains life with a whisper.' },
-  { id: 'e3',  name: 'Grakthar the Unbroken',            img: '/bosses/orc-chief.png',             tier: 4, desc: 'No blade has ever drawn his blood. He has crushed every challenger beneath his fists.' },
-  { id: 'e4',  name: 'Gryvara, Ironblood Matriarch',     img: '/bosses/orc-lady.png',              tier: 4, desc: 'Commander of a dozen warbands. She leads from the front and leaves nothing standing.' },
-  { id: 'e5',  name: 'Korruk the Merciless',             img: '/bosses/orc-warrior.png',           tier: 4, desc: 'Has never offered quarter and never asked for it. His battlefield record spans forty years of war.' },
-  // T5 — Legendary (apex, named with titles)
-  { id: 'l1',  name: 'Sylvaris, Queen of Ruin',          img: '/bosses/dark-elf-queen.png',        tier: 5, desc: 'She dismantled an empire from within. Now she builds something far worse from its ashes.' },
-  { id: 'l2',  name: 'Malachar, the Eternal Lich',       img: '/undead-king.png',                  tier: 5, desc: 'His phylactery has never been found. He has died seventeen times and returned each time stronger.' },
-];
+// CREATURE_INDEX imported from ../creatures
 
 const getFusionResult = (a, b) => {
   if (!a || !b || a.tier !== b.tier || a.tier >= 5) return null;
@@ -540,6 +503,19 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                   boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[monster.tier]}`,
                   position: 'relative',
                 }}>
+                  {/* Quality badge */}
+                  {monster.quality != null && (() => {
+                    const q = getCreatureQuality(monster.quality);
+                    return (
+                      <div style={{
+                        position: 'absolute', top: '10px', right: '10px',
+                        fontSize: '9px', fontWeight: 700, letterSpacing: '0.1em',
+                        color: q.color, padding: '2px 7px', borderRadius: '4px',
+                        background: 'rgba(0,0,0,0.7)', border: `1px solid ${q.color}66`,
+                      }}>{q.label.toUpperCase()}</div>
+                    );
+                  })()}
+
                   {/* Tier badge */}
                   <div style={{
                     position: 'absolute', top: '10px', left: '10px',

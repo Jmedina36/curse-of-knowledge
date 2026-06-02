@@ -7,6 +7,7 @@ import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
+import { pickCreatureForDay, rollCreatureStats } from './creatures';
 import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
@@ -502,6 +503,7 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [showBoss, setShowBoss] = useState(false);
   const [bossHp, setBossHp] = useState(0);
   const [bossMax, setBossMax] = useState(0);
+  const [currentBattleCreature, setCurrentBattleCreature] = useState(null);
   const [battleType, setBattleType] = useState('regular');
 const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
@@ -2520,17 +2522,22 @@ pendingBattleSpawnRef.current = () => {
 
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
-  
-  // Exponential scaling from SCALING_CONFIG
+
+  // Pick a creature from CREATURE_INDEX weighted by day
+  const creature = pickCreatureForDay(currentDay);
+  const rolled = rollCreatureStats(creature);
+  setCurrentBattleCreature(rolled);
+
+  // Exponential scaling from SCALING_CONFIG, modified by creature's HP profile
   const config = GAME_CONSTANTS.SCALING_CONFIG.normal;
-  const enemyHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
-  
+  const enemyHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1) * rolled.rolledHpMult);
+
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
   isWave ? sounds.waveEntrance() : sounds.enemyEntrance();
 
-  const enemyName = makeBossName();
-  setBossName(enemyName);
+  setBossName(creature.name);
+  setBanditEnemyImg(creature.img);
   setBossHp(enemyHp);
   setBossMax(enemyHp);
   setShowBoss(true);
@@ -3119,6 +3126,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    enemyDef = Math.floor(enemyDef * (currentBattleCreature?.rolledDefMult ?? 1));
 
     // Assassin Mark for Death: Reduce enemy defense by 20%
     if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
@@ -3504,6 +3512,7 @@ if (battleType === 'elite') {
   
   setBattling(false);
   setBattleMode(false);
+  setCurrentBattleCreature(null);
 
   // Pendant regenHP: restore HP after combat victory
   if (equippedPendant?.affixes?.regenHP) {
@@ -3545,7 +3554,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 }
 
 // Diminishing returns armor formula: damage * (K / (K + armor))
-const rawEnemyDamage = baseAttack + (currentDay * attackScaling);
+const rawEnemyDamage = Math.floor((baseAttack + (currentDay * attackScaling)) * (currentBattleCreature?.rolledAtkMult ?? 1));
 
 // Apply bleed DoT tick
 if (playerDebuffs.bleedTurns > 0) {
@@ -4035,6 +4044,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    enemyDef = Math.floor(enemyDef * (currentBattleCreature?.rolledDefMult ?? 1));
 
     // Calculate base damage with special multiplier
     const baseDamage = getBaseAttack() + Math.floor(Math.random() * 10);
@@ -4410,7 +4420,7 @@ if (battleType === 'regular' || battleType === 'wave') {
 }
 
 // Diminishing returns armor formula: damage * (K / (K + armor))
-const rawEnemyDamage = baseAttack + (currentDay * attackScaling);
+const rawEnemyDamage = Math.floor((baseAttack + (currentDay * attackScaling)) * (currentBattleCreature?.rolledAtkMult ?? 1));
 
 // Apply bleed DoT tick (counter-attack turn)
 if (playerDebuffs.bleedTurns > 0) {
@@ -4715,6 +4725,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
     else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    enemyDef = Math.floor(enemyDef * (currentBattleCreature?.rolledDefMult ?? 1));
 
     // D20 crit roll
     const d20 = Math.ceil(Math.random() * 20);
@@ -4891,6 +4902,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    enemyDef = Math.floor(enemyDef * (currentBattleCreature?.rolledDefMult ?? 1));
 
     // Assassin Mark for Death: Reduce enemy defense by 20%
     if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
@@ -5263,6 +5275,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
     }
     enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    enemyDef = Math.floor(enemyDef * (currentBattleCreature?.rolledDefMult ?? 1));
 
     // Calculate damage with Smite multiplier
     const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
@@ -5690,18 +5703,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     const chance = Math.min(0.92, 0.15 + hpBonus + statBonus);
     const success = Math.random() < chance;
     if (success) {
-      const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
+      // Derive tier: use creature's actual tier if available, else fall back to battle type
+      const tier = currentBattleCreature?.tier ?? (isFinalBoss ? 5 : battleType === 'elite' ? 4 : 1);
+      const quality = currentBattleCreature?.roll ?? null;
       const stats = preRolledStats || (() => {
         const roll = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
         const ranges = {
-          1: { hp:[40,120],  atk:[5,14],   def:[3,10],  spd:[4,10],  mag:[2,8]  },
-          2: { hp:[180,380], atk:[18,38],  def:[14,28], spd:[10,20], mag:[12,28] },
-          3: { hp:[500,900], atk:[55,95],  def:[40,65], spd:[18,35], mag:[40,80] },
+          1: { hp:[40,120],   atk:[5,14],   def:[3,10],  spd:[4,10],  mag:[2,8]   },
+          2: { hp:[100,220],  atk:[12,28],  def:[8,20],  spd:[8,16],  mag:[8,20]  },
+          3: { hp:[180,380],  atk:[20,45],  def:[15,30], spd:[12,22], mag:[15,35] },
+          4: { hp:[180,380],  atk:[18,38],  def:[14,28], spd:[10,20], mag:[12,28] },
+          5: { hp:[500,900],  atk:[55,95],  def:[40,65], spd:[18,35], mag:[40,80] },
         };
-        const r = ranges[tier];
+        const r = ranges[tier] || ranges[1];
         return { hp: roll(...r.hp), atk: roll(...r.atk), def: roll(...r.def), spd: roll(...r.spd), mag: roll(...r.mag) };
       })();
-      const monster = { id: Date.now(), name: bossName, tier, img, stats };
+      const monster = { id: Date.now(), name: bossName, tier, img, stats, quality };
       setCapturedMonsters(prev => [...prev, monster]);
       addLog(`${bossName} has been captured! Added to your stable.`);
       return { success: true, chance: Math.round(chance * 100) };
