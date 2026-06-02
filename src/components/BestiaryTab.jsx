@@ -242,20 +242,20 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                       </span>
                       <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${TIER_BORDER[tier]})` }}/>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
                       {entries.map(creature => (
                         <div key={creature.id} style={{
-                          borderRadius: '10px', padding: '14px 10px 12px', textAlign: 'center',
+                          borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
                           background: `linear-gradient(135deg, ${TIER_GLOW[creature.tier]}, rgba(0,0,0,0.55))`,
                           border: `1px solid ${TIER_BORDER[creature.tier]}`,
-                          boxShadow: `0 4px 12px rgba(0,0,0,0.4), 0 0 18px ${TIER_GLOW[creature.tier]}`,
+                          boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
                         }}>
                           <img
                             src={creature.img}
                             alt={creature.name}
                             style={{
-                              width: 72, height: 72, objectFit: 'contain', margin: '0 auto 10px', display: 'block',
-                              filter: `drop-shadow(0 0 8px ${TIER_COLORS[creature.tier]}55)`,
+                              width: 110, height: 110, objectFit: 'contain', margin: '0 auto 14px', display: 'block',
+                              filter: `drop-shadow(0 0 10px ${TIER_COLORS[creature.tier]}55)`,
                             }}
                           />
                           <p style={{
