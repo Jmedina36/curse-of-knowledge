@@ -318,64 +318,6 @@ const QuestTab = ({
               );
             })()}
 
-            {/* ── Monster Stable ── */}
-            {capturedMonsters && capturedMonsters.length > 0 && (
-              <div className="max-w-2xl mx-auto">
-                <div className="flex items-center gap-2 mb-2 px-1">
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: 'rgba(168,85,247,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase' }}>
-                    Monster Stable
-                  </p>
-                  {fusionCrystals > 0 && (
-                    <span style={{ fontSize: '10px', color: 'rgba(168,85,247,0.6)', fontStyle: 'italic' }}>
-                      · 🔮 {fusionCrystals} crystal{fusionCrystals !== 1 ? 's' : ''}
-                    </span>
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {capturedMonsters.map(monster => (
-                    <div key={monster.id} style={{
-                      width: '90px', borderRadius: '10px', padding: '8px 6px',
-                      background: 'rgba(30,15,50,0.85)',
-                      border: `1px solid ${monster.tier === 3 ? 'rgba(212,175,55,0.5)' : monster.tier === 2 ? 'rgba(251,146,60,0.4)' : 'rgba(168,85,247,0.35)'}`,
-                      boxShadow: `0 0 12px ${monster.tier === 3 ? 'rgba(212,175,55,0.15)' : monster.tier === 2 ? 'rgba(251,146,60,0.1)' : 'rgba(168,85,247,0.1)'}`,
-                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                      position: 'relative',
-                    }}>
-                      <img
-                        src={getMonsterImg(monster)}
-                        alt={monster.name}
-                        style={{ width: 52, height: 52, objectFit: 'contain',
-                          filter: `drop-shadow(0 0 6px ${monster.tier === 3 ? 'rgba(212,175,55,0.6)' : monster.tier === 2 ? 'rgba(251,146,60,0.5)' : 'rgba(168,85,247,0.4)'})`
-                        }}
-                      />
-                      <p style={{ fontSize: '8px', fontWeight: 700, color: '#F5F5DC', textAlign: 'center', fontFamily: 'Cinzel, serif', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '78px' }}>
-                        {monster.name}
-                      </p>
-                      <p style={{ fontSize: '7px', color: monster.tier === 3 ? '#D4AF37' : monster.tier === 2 ? '#FB923C' : '#C084FC', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                        Tier {monster.tier}
-                      </p>
-                      <button
-                        onClick={() => { sounds.click(); onReleaseMonster(monster.id); }}
-                        style={{ fontSize: '7px', color: 'rgba(245,245,220,0.3)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline', padding: 0 }}
-                      >
-                        Release
-                      </button>
-                    </div>
-                  ))}
-                  {/* Empty slots */}
-                  {Array.from({ length: 4 - capturedMonsters.length }).map((_, i) => (
-                    <div key={i} style={{
-                      width: '90px', height: '110px', borderRadius: '10px',
-                      background: 'rgba(15,10,25,0.4)',
-                      border: '1px dashed rgba(168,85,247,0.15)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <p style={{ fontSize: '9px', color: 'rgba(168,85,247,0.2)', fontFamily: 'Cinzel, serif' }}>Empty</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             </div>
   );
