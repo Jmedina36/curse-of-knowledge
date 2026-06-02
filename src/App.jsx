@@ -2570,11 +2570,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (waveIndex === 1) {
       setWaveGoldTotal(0); // Reset total at start of wave
     }
-    addLog(`Wave assault - Enemy ${waveIndex}/${totalWaves}: ${enemyName}`);
+    addLog(`Wave assault - Enemy ${waveIndex}/${totalWaves}: ${creature.name}`);
   } else {
     setBattleType('regular');
     audioManager.play(TRACKS.unholyKnight);
-    addLog(`${enemyName} emerges from the shadows!`);
+    addLog(`${creature.name} emerges from the shadows!`);
   }
 
   // Initiative — player D20+DEX vs enemy D20
