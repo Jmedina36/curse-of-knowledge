@@ -45,7 +45,6 @@ const CATEGORIES = [
   { key: 'weapons',     label: 'Weapons'   },
   { key: 'armor',       label: 'Armor'     },
   { key: 'accessories', label: 'Gear'      },
-  { key: 'potions',     label: 'Potions'   },
 ];
 
 const DWARF_NPCS = [
@@ -347,7 +346,6 @@ const InventoryModal = ({
     weapons:     (equippedWeapon ? 1 : 0) + weaponInventory.length,
     armor:       ARMOR_SLOTS.reduce((s, { key }) => s + (equippedArmor[key] ? 1 : 0) + (armorInventory[key]?.length || 0), 0),
     accessories: (equippedPendant ? 1 : 0) + pendantInventory.length + (equippedRing ? 1 : 0) + ringInventory.length,
-    potions:     healthPots + staminaPots + cleansePots,
   };
 
   return (
@@ -450,7 +448,6 @@ const InventoryModal = ({
               {category === 'weapons'     && renderWeapons()}
               {category === 'armor'       && renderArmor()}
               {category === 'accessories' && renderAccessories()}
-              {category === 'potions'     && renderPotions()}
             </div>
           </div>
 

@@ -23,6 +23,7 @@ import EncounterModal from './components/EncounterModal';
 import InitiativeModal from './components/InitiativeModal';
 import DeathSaveModal from './components/DeathSaveModal';
 import ContractFulfilledModal from './components/ContractFulfilledModal';
+import HealerModal from './components/HealerModal';
 import ASIModal from './components/ASIModal';
 import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
@@ -7465,66 +7466,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               addLog={addLog} useHealth={useHealth} useCleanse={useCleanse}
             />
           )}
-          {showHealerModal && (() => {
-            const missing = getMaxHp() - hp;
-            const costPerHp = 3;
-            const fullCost = missing * costPerHp;
-            const halfMissing = Math.ceil(missing / 2);
-            const halfCost = halfMissing * costPerHp;
-            return (
-              <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.75)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'}}
-                onClick={e=>{if(e.target===e.currentTarget)setShowHealerModal(false);}}>
-                <div style={{background:'linear-gradient(135deg,#0a2218,#0f3326)',border:'2px solid rgba(52,211,153,0.5)',borderRadius:'16px',padding:'32px',maxWidth:'380px',width:'100%',textAlign:'center',boxShadow:'0 0 60px rgba(52,211,153,0.15)'}}>
-                  <img src="/npcs/medic.png" alt="Healer" style={{width:'90px',height:'90px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'3px solid rgba(52,211,153,0.6)',margin:'0 auto 12px',display:'block',boxShadow:'0 0 24px rgba(52,211,153,0.3)'}}/>
-                  <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.2rem',letterSpacing:'0.15em',color:'rgba(110,231,183,1)',marginBottom:'4px'}}>HEALER</p>
-                  <p style={{fontFamily:'Cinzel,serif',fontSize:'0.7rem',color:'rgba(52,211,153,0.6)',letterSpacing:'0.1em',marginBottom:'20px'}}>Your wounds can be mended — for a price.</p>
-
-                  <div style={{background:'rgba(0,0,0,0.3)',borderRadius:'8px',padding:'12px',marginBottom:'20px',border:'1px solid rgba(52,211,153,0.2)'}}>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',color:'rgba(110,231,183,0.8)',marginBottom:'4px'}}>Current HP</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.4rem',color: hp/getMaxHp()<0.25?'#EF4444':'#fff'}}>{hp} / {getMaxHp()}</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.65rem',color:'rgba(52,211,153,0.5)',marginTop:'4px'}}>{costPerHp} gold per HP</p>
-                  </div>
-
-                  <div style={{display:'flex',flexDirection:'column',gap:'10px',marginBottom:'16px'}}>
-                    {missing > 0 ? (<>
-                      <button
-                        onClick={()=>{
-                          if(gold < halfCost){addLog('Not enough gold.');return;}
-                          setGold(g=>g-halfCost); setHp(h=>Math.min(h+halfMissing,getMaxHp()));
-                          addLog(`Healer restored ${halfMissing} HP for ${halfCost} gold.`);
-                          setShowHealerModal(false);
-                        }}
-                        style={{padding:'10px',borderRadius:'8px',fontFamily:'Cinzel,serif',fontWeight:700,fontSize:'0.85rem',cursor:'pointer',background:'rgba(52,211,153,0.15)',border:'1px solid rgba(52,211,153,0.4)',color:'rgba(110,231,183,1)',transition:'all 0.2s'}}
-                        onMouseEnter={e=>e.currentTarget.style.background='rgba(52,211,153,0.25)'}
-                        onMouseLeave={e=>e.currentTarget.style.background='rgba(52,211,153,0.15)'}
-                      >
-                        Heal Half — {halfCost} gold
-                      </button>
-                      <button
-                        onClick={()=>{
-                          if(gold < fullCost){addLog('Not enough gold.');return;}
-                          setGold(g=>g-fullCost); setHp(getMaxHp());
-                          addLog(`Healer restored ${missing} HP for ${fullCost} gold.`);
-                          setShowHealerModal(false);
-                        }}
-                        style={{padding:'10px',borderRadius:'8px',fontFamily:'Cinzel,serif',fontWeight:700,fontSize:'0.85rem',cursor:'pointer',background:'rgba(52,211,153,0.25)',border:'1px solid rgba(52,211,153,0.6)',color:'rgba(110,231,183,1)',transition:'all 0.2s'}}
-                        onMouseEnter={e=>e.currentTarget.style.background='rgba(52,211,153,0.38)'}
-                        onMouseLeave={e=>e.currentTarget.style.background='rgba(52,211,153,0.25)'}
-                      >
-                        Full Heal — {fullCost} gold
-                      </button>
-                    </>) : (
-                      <p style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',color:'rgba(110,231,183,0.7)',padding:'12px'}}>You are already at full health.</p>
-                    )}
-                  </div>
-
-                  <button onClick={()=>setShowHealerModal(false)} style={{fontFamily:'Cinzel,serif',fontSize:'0.7rem',color:'rgba(52,211,153,0.4)',background:'none',border:'none',cursor:'pointer',letterSpacing:'0.1em'}}>
-                    LEAVE
-                  </button>
-                </div>
-              </div>
-            );
-          })()}
+          {showHealerModal && (
+            <HealerModal
+              setShowHealerModal={setShowHealerModal}
+              hp={hp} getMaxHp={getMaxHp} gold={gold} setGold={setGold} setHp={setHp}
+              stamina={stamina} getMaxStamina={getMaxStamina} setStamina={setStamina}
+              healthPots={healthPots} staminaPots={staminaPots} cleansePots={cleansePots}
+              setHealthPots={setHealthPots} setStaminaPots={setStaminaPots} setCleansePots={setCleansePots}
+              curseLevel={curseLevel}
+              cleansePotionPurchasedToday={cleansePotionPurchasedToday}
+              setCleansePotionPurchasedToday={setCleansePotionPurchasedToday}
+              marketModifiers={marketModifiers}
+              getPotionPrice={getPotionPrice}
+              addLog={addLog}
+              useHealth={useHealth}
+              useCleanse={useCleanse}
+            />
+          )}
           {showCraftingModal && (
             <CraftingModal
               setShowCraftingModal={setShowCraftingModal}
