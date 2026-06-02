@@ -155,7 +155,7 @@ const ContractsTab = ({
                       textTransform:'uppercase', color: guildRank.color,
                       textShadow: `0 0 20px ${guildRank.color}99, 0 0 40px ${guildRank.color}44`,
                     }}>{guildRank.name}</span>
-                    <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', color:'rgba(230,210,170,0.95)' }}>
+                    <span style={{ fontFamily:'Cinzel,serif', fontSize:'1rem', letterSpacing:'0.2em', color:'rgba(230,210,170,0.95)' }}>
                       {guildPoints} Guild Points
                     </span>
                     {nextRank && (
