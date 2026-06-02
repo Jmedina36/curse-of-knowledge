@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const MAP_BASE = '/WORLD%20MAP-ARALUL/PNG';
-
 const ZONES = [
   {
     id: 'outskirts',
     name: 'The Outskirts',
     subtitle: 'Village Edge',
     desc: 'Weak creatures roam just beyond the village walls. A safe place to begin the hunt.',
-    marker: `${MAP_BASE}/HOUSES/WOODEN%20HOUSE.png`,
+    marker: '/worldmap/wooden-house.png',
     tierWeights: { 1: 10, 2: 0, 3: 0 },
     unlockDay: 1,
     position: { left: '47%', top: '76%' },
@@ -22,7 +20,7 @@ const ZONES = [
     name: 'Whisper Forest',
     subtitle: 'Ancient Woodland',
     desc: 'Old trees conceal things that have learned to hunt. Not all creatures here are mindless.',
-    marker: `${MAP_BASE}/TREES/TREE%201.png`,
+    marker: '/worldmap/tree.png',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockDay: 2,
     position: { left: '20%', top: '54%' },
@@ -35,7 +33,7 @@ const ZONES = [
     name: 'Barrow Ruins',
     subtitle: 'Forgotten Battleground',
     desc: 'The bones of old wars. Predators nest among the fallen, feeding on the remnants of history.',
-    marker: `${MAP_BASE}/OLD%20SWORDS.png`,
+    marker: '/worldmap/old-swords.png',
     tierWeights: { 1: 2, 2: 6, 3: 2 },
     unlockDay: 3,
     position: { left: '65%', top: '55%' },
@@ -48,7 +46,7 @@ const ZONES = [
     name: 'Stonehenge Wilds',
     subtitle: 'Ancient Circle',
     desc: 'A place of old power. The creatures here feel the pull of it — and so do you.',
-    marker: `${MAP_BASE}/STONES/STONEHENGE.png`,
+    marker: '/worldmap/stonehenge.png',
     tierWeights: { 1: 1, 2: 4, 3: 5 },
     unlockDay: 4,
     position: { left: '33%', top: '35%' },
@@ -61,7 +59,7 @@ const ZONES = [
     name: 'Stoneback Cavern',
     subtitle: 'The Deep Dark',
     desc: 'No light reaches the bottom. Only dire things live here — things that have never needed it.',
-    marker: `${MAP_BASE}/CAVE.png`,
+    marker: '/worldmap/cave.png',
     tierWeights: { 1: 0, 2: 2, 3: 8 },
     unlockDay: 5,
     position: { left: '57%', top: '26%' },
@@ -74,7 +72,7 @@ const ZONES = [
     name: 'Lava Wastes',
     subtitle: 'Scorched Earth',
     desc: 'The ground itself is hostile. The creatures born here are the world\'s way of killing everything else.',
-    marker: `${MAP_BASE}/LAVAS/LAVA%20LAKE.png`,
+    marker: '/worldmap/lava-lake.png',
     tierWeights: { 1: 0, 2: 0, 3: 10 },
     unlockDay: 6,
     position: { left: '74%', top: '18%' },
@@ -87,7 +85,7 @@ const ZONES = [
     name: 'Dungeon of the Fallen',
     subtitle: 'Elite Territory',
     desc: 'Elite horrors have claimed this place. Enter only when the contracts demand it.',
-    marker: `${MAP_BASE}/DUNGEON.png`,
+    marker: '/worldmap/dungeon.png',
     tierWeights: null,
     unlockDay: null,
     isContractOnly: true,
@@ -101,7 +99,7 @@ const ZONES = [
     name: 'Skull Cavern',
     subtitle: 'Legendary Darkness',
     desc: 'No one speaks of what lives inside. Those who returned did not speak at all.',
-    marker: `${MAP_BASE}/SKULL%20CAVE.png`,
+    marker: '/worldmap/skull-cave.png',
     tierWeights: null,
     unlockDay: null,
     isContractOnly: true,
@@ -169,7 +167,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
           }}>
             {/* Terrain base */}
             <img
-              src={`${MAP_BASE}/TERRAIN.png`}
+              src="/worldmap/terrain.png"
               alt="Ararlul World Map"
               style={{
                 width: '100%', height: '100%',
@@ -341,7 +339,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
 
             {/* Cardinal directions watermark */}
             <img
-              src={`${MAP_BASE}/CARDINAL%20DIRECTIONS.png`}
+              src="/worldmap/cardinal.png"
               alt=""
               style={{
                 position: 'absolute', bottom: '10px', right: '10px',
