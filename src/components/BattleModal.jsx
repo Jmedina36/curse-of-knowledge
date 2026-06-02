@@ -171,7 +171,6 @@ const BattleModal = ({
   getRarityColor,
   fusionCrystals,
   capturedMonsters,
-  onShakedown,
   onCapture,
   isBanditWave,
   banditEnemyImg,
@@ -211,7 +210,6 @@ const BattleModal = ({
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const [bossEntered, setBossEntered] = useState(false);
-  const [hasShookDown, setHasShookDown] = useState(false);
   const [capturePhase, setCapturePhase] = useState('idle'); // 'idle'|'result'
   const [captureResult, setCaptureResult] = useState(null);
   const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
@@ -916,68 +914,40 @@ const BattleModal = ({
             </div>
           </div>
 
-          {/* ── Capture Buttons (< 40% HP, non-boss, non-bandit) ── */}
+          {/* ── Capture Button (< 40% HP, non-boss, non-bandit) ── */}
           {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
             <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.25)' }}>
               <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Cinzel, serif' }}>
                 The creature is weakened...
               </p>
-              <div className="grid grid-cols-2 gap-2">
-                {/* Shake Down */}
-                <button
-                  disabled={hasShookDown || turnPhase !== 'player'}
-                  onClick={() => {
-                    if (hasShookDown) return;
-                    setHasShookDown(true);
-                    const gained = onShakedown();
-                    setCaptureResult({ type: 'shakedown', gold: gained });
-                    setTimeout(() => setCaptureResult(null), 2000);
-                  }}
-                  style={{
-                    padding: '8px 6px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
-                    fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
-                    background: hasShookDown ? 'rgba(60,60,60,0.4)' : 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))',
-                    border: `1px solid ${hasShookDown ? 'rgba(155,139,126,0.3)' : 'rgba(212,175,55,0.6)'}`,
-                    color: hasShookDown ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
-                    cursor: hasShookDown ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {hasShookDown ? 'Shook Down' : '💰 Shake Down'}
-                </button>
-                {/* Capture */}
-                <button
-                  disabled={capturedMonsters?.length >= 4 || turnPhase !== 'player'}
-                  onClick={() => {
-                    if (capturedMonsters?.length >= 4) return;
-                    const captureImg = isBanditWave && banditEnemyImg
-                      ? banditEnemyImg
-                      : getCreatureImg(bossName, battleType, isFinalBoss);
-                    const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, captureImg, bossStats);
-                    setCaptureResult({ type: 'capture', ...result });
-                    setTimeout(() => setCaptureResult(null), 2500);
-                  }}
-                  style={{
-                    padding: '8px 6px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
-                    fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
-                    background: capturedMonsters?.length >= 4 ? 'rgba(60,60,60,0.4)' : 'linear-gradient(to bottom, rgba(107,33,168,0.6), rgba(76,29,149,0.65))',
-                    border: `1px solid ${capturedMonsters?.length >= 4 ? 'rgba(155,139,126,0.3)' : 'rgba(168,85,247,0.6)'}`,
-                    color: capturedMonsters?.length >= 4 ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
-                    cursor: capturedMonsters?.length >= 4 ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {capturedMonsters?.length >= 4 ? 'Stable Full' : '🔮 Negotiate'}
-                </button>
-              </div>
-              {/* Result flash */}
+              <button
+                disabled={capturedMonsters?.length >= 4 || turnPhase !== 'player'}
+                onClick={() => {
+                  if (capturedMonsters?.length >= 4) return;
+                  const captureImg = isBanditWave && banditEnemyImg
+                    ? banditEnemyImg
+                    : getCreatureImg(bossName, battleType, isFinalBoss);
+                  const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, captureImg, bossStats);
+                  setCaptureResult({ type: 'capture', ...result });
+                  setTimeout(() => setCaptureResult(null), 2500);
+                }}
+                style={{
+                  width: '100%', padding: '8px 6px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
+                  fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
+                  background: capturedMonsters?.length >= 4 ? 'rgba(60,60,60,0.4)' : 'linear-gradient(to bottom, rgba(107,33,168,0.6), rgba(76,29,149,0.65))',
+                  border: `1px solid ${capturedMonsters?.length >= 4 ? 'rgba(155,139,126,0.3)' : 'rgba(168,85,247,0.6)'}`,
+                  color: capturedMonsters?.length >= 4 ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
+                  cursor: capturedMonsters?.length >= 4 ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {capturedMonsters?.length >= 4 ? 'Stable Full' : '🔮 Capture'}
+              </button>
               {captureResult && (
                 <p className="text-xs text-center mt-2 animate-pulse" style={{
-                  color: captureResult.type === 'shakedown' ? '#D4AF37'
-                    : captureResult.success ? '#4ADE80' : '#FF6B6B',
+                  color: captureResult.success ? '#4ADE80' : '#FF6B6B',
                   fontFamily: 'Cinzel, serif',
                 }}>
-                  {captureResult.type === 'shakedown'
-                    ? `+${captureResult.gold} gold seized!`
-                    : captureResult.success ? 'Captured!'
+                  {captureResult.success ? 'Captured!'
                     : captureResult.reason === 'full' ? 'Stable is full!'
                     : 'The creature resisted!'}
                 </p>

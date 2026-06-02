@@ -7603,7 +7603,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}
               fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
-              onShakedown={shakedownEnemy} onCapture={captureMonster}
+              onCapture={captureMonster}
               isBanditWave={isBanditWave || isDaughtersWave} banditEnemyImg={banditEnemyImg}
               raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : null}
             />
