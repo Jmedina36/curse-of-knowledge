@@ -215,24 +215,29 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                   </p>
 
                   {/* Stats panel */}
-                  {openStats[monster.id] && monster.stats && (
+                  {openStats[monster.id] && (
                     <div style={{
                       margin: '10px 0 8px',
                       background: 'rgba(0,0,0,0.45)',
                       border: `1px solid ${TIER_BORDER[monster.tier]}`,
                       borderRadius: '8px',
                       padding: '8px 10px',
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(5, 1fr)',
-                      gap: '4px',
                       textAlign: 'center',
                     }}>
-                      {Object.entries(STAT_LABELS).map(([key, label]) => (
-                        <div key={key}>
-                          <div style={{ fontSize: '9px', color: COLORS.silver, letterSpacing: '0.08em', marginBottom: '2px' }}>{label}</div>
-                          <div style={{ fontSize: '12px', fontWeight: 700, color: TIER_COLORS[monster.tier] }}>{monster.stats[key]}</div>
+                      {monster.stats ? (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
+                          {Object.entries(STAT_LABELS).map(([key, label]) => (
+                            <div key={key}>
+                              <div style={{ fontSize: '9px', color: COLORS.silver, letterSpacing: '0.08em', marginBottom: '2px' }}>{label}</div>
+                              <div style={{ fontSize: '12px', fontWeight: 700, color: TIER_COLORS[monster.tier] }}>{monster.stats[key]}</div>
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      ) : (
+                        <p style={{ fontSize: '10px', color: COLORS.silver, fontStyle: 'italic', margin: 0 }}>
+                          Capture again to record stats
+                        </p>
+                      )}
                     </div>
                   )}
 
