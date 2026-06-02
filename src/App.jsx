@@ -5616,7 +5616,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     return goldGained;
   };
 
-  const captureMonster = (bossName, bossHpPct, battleType, isFinalBoss, creatureIdx) => {
+  const captureMonster = (bossName, bossHpPct, battleType, isFinalBoss, img) => {
     if (capturedMonsters.length >= 4) {
       addLog('Your stable is full! Release a monster first.');
       return { success: false, reason: 'full' };
@@ -5631,7 +5631,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     const success = Math.random() < chance;
     if (success) {
       const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
-      const monster = { id: Date.now(), name: bossName, tier, creatureIdx };
+      const monster = { id: Date.now(), name: bossName, tier, img };
       setCapturedMonsters(prev => [...prev, monster]);
       addLog(`${bossName} has been captured! Added to your stable.`);
       return { success: true, chance: Math.round(chance * 100) };

@@ -17,6 +17,8 @@ const TIER_BORDER = { 1: 'rgba(192,192,192,0.35)', 2: 'rgba(168,85,247,0.45)', 3
 const TIER_GLOW   = { 1: 'rgba(192,192,192,0.08)', 2: 'rgba(168,85,247,0.12)', 3: 'rgba(245,158,11,0.15)' };
 
 const getMonsterImg = (monster) => {
+  if (monster.img) return monster.img;
+  // fallback for old saves without img
   if (monster.tier === 3) return '/undead-king.png';
   if (monster.tier === 2) {
     const ELITE_IMGS = [

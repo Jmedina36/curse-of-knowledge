@@ -925,13 +925,10 @@ const BattleModal = ({
                   disabled={capturedMonsters?.length >= 4 || turnPhase !== 'player'}
                   onClick={() => {
                     if (capturedMonsters?.length >= 4) return;
-                    const creatureIdx = (() => {
-                      const seed = (bossName || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-                      if (isFinalBoss)            return 17 + (seed % 9);
-                      if (battleType === 'elite') return 9  + (seed % 8);
-                      return                             1  + (seed % 8);
-                    })();
-                    const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, creatureIdx);
+                    const captureImg = isBanditWave && banditEnemyImg
+                      ? banditEnemyImg
+                      : getCreatureImg(bossName, battleType, isFinalBoss);
+                    const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, captureImg);
                     setCaptureResult({ type: 'capture', ...result });
                     setTimeout(() => setCaptureResult(null), 2500);
                   }}
