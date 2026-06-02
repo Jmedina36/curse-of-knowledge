@@ -6889,6 +6889,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onOpenHealer={() => setShowHealerModal(true)}
               capturedMonsters={capturedMonsters} fusionCrystals={fusionCrystals}
               onReleaseMonster={releaseMonster}
+              guildRank={guildRank}
             />
           )}
 

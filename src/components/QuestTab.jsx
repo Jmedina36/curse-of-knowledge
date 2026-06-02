@@ -77,6 +77,7 @@ const QuestTab = ({
   capturedMonsters,
   fusionCrystals,
   onReleaseMonster,
+  guildRank,
 }) => {
   return (
             <div className="space-y-4">
@@ -101,7 +102,12 @@ const QuestTab = ({
                 <span style={{fontSize:'0.8rem',fontWeight:900,color:'#000',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>DAY {currentDay}</span>
               </div>
               <div className="absolute top-0 right-0 px-3 py-1 rounded-bl-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderRight:'none'}}>
-                <span style={{fontSize:'0.8rem',fontWeight:900,color:'#000',letterSpacing:'0.1em',fontFamily:'Cinzel,serif'}}>LVL {level} • {getGuildRank(level).name}</span>
+                <span style={{fontSize:'0.8rem',fontWeight:900,letterSpacing:'0.1em',fontFamily:'Cinzel,serif',color:'#000'}}>LVL {level}</span>
+                {guildRank && (
+                  <span style={{fontSize:'0.8rem',fontWeight:900,letterSpacing:'0.1em',fontFamily:'Cinzel,serif',color: guildRank.name === 'Initiate' ? '#000' : guildRank.color,textShadow: guildRank.name === 'Initiate' ? 'none' : '0 0 6px rgba(0,0,0,0.3)'}}>
+                    {' '}• {guildRank.name}
+                  </span>
+                )}
               </div>
 
               <div className="relative z-10 pt-8">
@@ -120,6 +126,24 @@ const QuestTab = ({
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.85rem,2vw,1.05rem)',letterSpacing:'0.06em',color:'#000',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.7rem',fontWeight:700,letterSpacing:'0.08em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.title}</p>
+                    {guildRank && (
+                      <div style={{
+                        marginTop:'2px',
+                        padding:'2px 8px', borderRadius:'3px',
+                        background:'rgba(30,20,10,0.12)',
+                        border:`1px solid ${guildRank.name === 'Initiate' ? 'rgba(100,80,40,0.3)' : guildRank.color + '55'}`,
+                      }}>
+                        <p style={{
+                          fontFamily:'Cinzel,serif', fontSize:'0.6rem', fontWeight:700,
+                          letterSpacing:'0.18em', textTransform:'uppercase', margin:0,
+                          textAlign:'center',
+                          color: guildRank.name === 'Initiate' ? 'rgba(80,60,30,0.7)' : guildRank.color,
+                          textShadow: guildRank.name === 'Initiate' ? 'none' : '0 0 8px rgba(0,0,0,0.25)',
+                        }}>
+                          {guildRank.name}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
                   {/* RIGHT: XP, HP, SP, ATK, DEF */}
