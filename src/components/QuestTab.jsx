@@ -212,48 +212,67 @@ const QuestTab = ({
               </>
             </div>
 
-            {/* ── Destination Buttons ── */}
+            {/* ── Guild Buttons ── */}
             <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'}}>
 
+              {/* Armory */}
               <button
                 onClick={() => { sounds.click(); setSuppliesTab('potions'); setShowInventoryModal(true); }}
-                style={{padding:'14px 10px',borderRadius:'8px',cursor:'pointer',textAlign:'center',
-                  background:'linear-gradient(135deg,#3d0c0c,#5a1010)',
-                  border:'1px solid rgba(200,60,50,0.6)',
-                  boxShadow:'0 3px 12px rgba(0,0,0,0.4)',transition:'all 0.2s'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(180,30,20,0.5)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 3px 12px rgba(0,0,0,0.4)';}}
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(160deg,#2a0808,#420d0d,#1a0505)',
+                  border:'1px solid rgba(180,50,40,0.55)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,120,100,0.06)',
+                  transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(160,30,20,0.45), inset 0 1px 0 rgba(255,120,100,0.06)';e.currentTarget.style.borderColor='rgba(220,80,60,0.75)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,120,100,0.06)';e.currentTarget.style.borderColor='rgba(180,50,40,0.55)';}}
               >
-                <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.85rem,2vw,1rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(255,190,180,1)',marginBottom:'3px'}}>The Armory</p>
-                <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(220,150,140,0.7)',textTransform:'uppercase'}}>Potions • Equipment</p>
+                <img src="/npcs/blacksmith.png" alt="Blacksmith" style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,50,40,0.6)',boxShadow:'0 0 12px rgba(200,60,40,0.3)'}}/>
+                <div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(220,130,120,0.8)',marginBottom:'3px'}}>Tormund</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,185,175,1)',marginBottom:'4px'}}>The Armory</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(180,50,40,0.4)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(200,130,120,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
+                </div>
               </button>
 
+              {/* Merchant */}
               <button
                 onClick={() => { sounds.click(); setShowCraftingModal(true); }}
-                style={{padding:'14px 10px',borderRadius:'8px',cursor:'pointer',textAlign:'center',
-                  background:'linear-gradient(135deg,#2e1e00,#4a3000)',
-                  border:'1px solid rgba(200,155,30,0.6)',
-                  boxShadow:'0 3px 12px rgba(0,0,0,0.4)',transition:'all 0.2s'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(180,140,20,0.4)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 3px 12px rgba(0,0,0,0.4)';}}
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(160deg,#1e1400,#332200,#150f00)',
+                  border:'1px solid rgba(180,135,20,0.55)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,200,60,0.06)',
+                  transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,110,10,0.4), inset 0 1px 0 rgba(255,200,60,0.06)';e.currentTarget.style.borderColor='rgba(210,165,30,0.75)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,200,60,0.06)';e.currentTarget.style.borderColor='rgba(180,135,20,0.55)';}}
               >
-                <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.85rem,2vw,1rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'3px'}}>The Merchant</p>
-                <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(200,165,70,0.75)',textTransform:'uppercase'}}>Craft • Trade</p>
+                <img src="/npcs/merchant.png" alt="Merchant" style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,135,20,0.6)',boxShadow:'0 0 12px rgba(180,135,10,0.3)'}}/>
+                <div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(200,160,70,0.8)',marginBottom:'3px'}}>Aldric</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'4px'}}>The Merchant</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(180,135,20,0.4)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(190,150,60,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
+                </div>
               </button>
 
+              {/* Healer */}
               <button
                 onClick={() => { sounds.click(); onOpenHealer && onOpenHealer(); }}
-                style={{padding:'14px 10px',borderRadius:'8px',cursor:'pointer',textAlign:'center',
-                  background:'linear-gradient(135deg,#0a2218,#0f3326)',
-                  border:'1px solid rgba(52,211,153,0.5)',
-                  boxShadow:'0 3px 12px rgba(0,0,0,0.4)',transition:'all 0.2s',
-                  display:'flex',flexDirection:'column',alignItems:'center',gap:'6px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(52,211,153,0.3)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 3px 12px rgba(0,0,0,0.4)';}}
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(160deg,#071a12,#0d2b1e,#041009)',
+                  border:'1px solid rgba(40,180,120,0.5)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(52,211,153,0.06)',
+                  transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(20,140,80,0.35), inset 0 1px 0 rgba(52,211,153,0.06)';e.currentTarget.style.borderColor='rgba(52,211,153,0.7)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(52,211,153,0.06)';e.currentTarget.style.borderColor='rgba(40,180,120,0.5)';}}
               >
-                <img src="/npcs/medic.png" alt="Healer" style={{width:'38px',height:'38px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(52,211,153,0.5)'}}/>
-                <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.75rem,1.8vw,0.9rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(110,231,183,1)',marginBottom:'2px'}}>Healer</p>
-                <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(52,211,153,0.7)',textTransform:'uppercase'}}>Restore HP</p>
+                <img src="/npcs/medic.png" alt="Healer" style={{width:'52px',height:'52px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(40,180,120,0.6)',boxShadow:'0 0 12px rgba(40,180,120,0.3)'}}/>
+                <div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.72rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(100,210,160,0.8)',marginBottom:'3px'}}>Sister Mara</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.8rem,1.8vw,0.95rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(110,231,183,1)',marginBottom:'4px'}}>The Healer</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(40,180,120,0.4)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.58rem',letterSpacing:'0.1em',color:'rgba(80,190,140,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Restore HP</p>
+                </div>
               </button>
 
             </div>
