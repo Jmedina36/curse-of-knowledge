@@ -130,9 +130,12 @@ const ContractsTab = ({
         <>
           {/* ── BOARD SHELL ── */}
           <div className="rounded-xl p-5 border-2" style={{
-            background: 'linear-gradient(160deg, #1c1007 0%, #130d05 60%, #0e0a03 100%)',
+            backgroundImage: 'url(/Contract%20board.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             borderColor: 'rgba(101,67,33,0.7)',
-            boxShadow: '0 4px 32px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.4)',
+            boxShadow: '0 4px 32px rgba(0,0,0,0.6)',
           }}>
 
             {/* Board header */}
