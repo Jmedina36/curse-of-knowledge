@@ -249,7 +249,16 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                           background: `linear-gradient(135deg, ${TIER_GLOW[creature.tier]}, rgba(0,0,0,0.55))`,
                           border: `1px solid ${TIER_BORDER[creature.tier]}`,
                           boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
+                          position: 'relative',
                         }}>
+                          {/* Entry number */}
+                          <div style={{
+                            position: 'absolute', top: '8px', left: '10px',
+                            fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700,
+                            color: TIER_COLORS[creature.tier], opacity: 0.7,
+                          }}>
+                            #{CREATURE_INDEX.findIndex(c => c.id === creature.id) + 1}
+                          </div>
                           <img
                             src={creature.img}
                             alt={creature.name}
