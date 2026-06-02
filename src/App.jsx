@@ -12,7 +12,6 @@ import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
 import ForgeTab from './components/ForgeTab';
 import ProgressTab from './components/ProgressTab';
-import LegacyTab from './components/LegacyTab';
 import BestiaryTab from './components/BestiaryTab';
 import InventoryModal from './components/InventoryModal';
 import CraftingModal from './components/CraftingModal';
@@ -6758,7 +6757,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'study', icon:Hammer, label:'Training'},
                 {id:'bestiary', icon:Shield, label:'Bestiary'},
-                {id:'legacy', icon:Skull, label:'Legacy'},
                 {id:'progress', icon:Trophy, label:'Progress'},
                 {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
@@ -6904,9 +6902,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               setCapturedMonsters={setCapturedMonsters}
               addLog={addLog}
             />
-          )}
-          {activeTab === 'legacy' && (
-            <LegacyTab graveyard={graveyard} heroes={heroes} />
           )}
           {activeTab === 'debug' && (
 
