@@ -397,7 +397,7 @@ const BattleModal = ({
     : isBanditWave ? `RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
     : battleType === 'elite' ? 'TORMENTED CHAMPION'
     : battleType === 'wave' ? `WAVE ASSAULT · Enemy ${currentWaveEnemy}/${totalWaveEnemies}`
-    : 'ENEMY ENCOUNTER';
+    : '';
 
   const onCooldown = (cd) => !!cd;
 
@@ -760,17 +760,19 @@ const BattleModal = ({
         <div className="flex-1 flex flex-col justify-end px-6 pt-3 pb-2">
 
           {/* Phase Label */}
-          <div className="text-center mb-1">
-            <motion.p
-              key={phaseLabel}
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-sm uppercase tracking-[0.4em]"
-              style={{ color: inPhase3 ? '#FF6B6B' : inPhase2 ? '#FF8C42' : '#CD7F32' }}
-            >
-              {phaseLabel}
-            </motion.p>
-          </div>
+          {phaseLabel && (
+            <div className="text-center mb-1">
+              <motion.p
+                key={phaseLabel}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm uppercase tracking-[0.4em]"
+                style={{ color: inPhase3 ? '#FF6B6B' : inPhase2 ? '#FF8C42' : '#CD7F32' }}
+              >
+                {phaseLabel}
+              </motion.p>
+            </div>
+          )}
 
           {/* Enemy name (small label) + Creature image */}
           {bossName && (
