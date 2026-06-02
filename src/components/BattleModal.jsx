@@ -707,7 +707,7 @@ const BattleModal = ({
                 fontSize: 'clamp(3rem, 10vw, 7rem)',
                 letterSpacing: '0.1em',
                 lineHeight: 1,
-                color: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : battleType === 'wave' ? '#60A5FA' : '#EF4444',
+                color: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : battleType === 'wave' ? '#60A5FA' : '#FFFFFF',
                 textShadow: isFinalBoss
                   ? '0 0 60px rgba(212,175,55,1), 0 0 120px rgba(212,175,55,0.5)'
                   : battleType === 'elite'
@@ -901,7 +901,7 @@ const BattleModal = ({
           {/* Boss HP Bar */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#EF4444' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
+              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#FFFFFF' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
               <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
             </div>
             <div className="h-5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
