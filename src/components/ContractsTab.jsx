@@ -336,7 +336,7 @@ const ContractsTab = ({
                                 addLog(`Starting focus session: ${t.title}`);
                               }}
                               style={{
-                                fontFamily:'Cinzel,serif',fontSize:'0.7rem',letterSpacing:'0.15em',
+                                fontFamily:'Cinzel,serif',fontSize:'0.82rem',letterSpacing:'0.15em',
                                 padding:'5px 12px',borderRadius:'2px',
                                 background:'rgba(60,30,80,0.6)',border:'1px solid rgba(150,100,200,0.6)',
                                 color:'rgba(210,170,255,0.95)',cursor:'pointer',transition:'all 0.2s',
@@ -347,7 +347,7 @@ const ContractsTab = ({
                             <button
                               onClick={() => { sounds.click(); complete(t.id); }}
                               style={{
-                                fontFamily:'Cinzel,serif',fontSize:'0.7rem',letterSpacing:'0.15em',
+                                fontFamily:'Cinzel,serif',fontSize:'0.82rem',letterSpacing:'0.15em',
                                 padding:'5px 12px',borderRadius:'2px',
                                 background:'rgba(20,60,30,0.6)',border:'1px solid rgba(50,160,80,0.6)',
                                 color:'rgba(130,230,150,0.95)',cursor:'pointer',transition:'all 0.2s',
