@@ -175,6 +175,8 @@ const BattleModal = ({
   isBanditWave,
   banditEnemyImg,
   raidFaction,
+  playerStunned,
+  setPlayerStunned,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -353,6 +355,19 @@ const BattleModal = ({
       setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
     }
   }, [turnPhase]);
+
+  // Stun on decisive initiative loss — lock player out for one beat
+  useEffect(() => {
+    if (!playerStunned || !bossEntered || bossHp <= 0 || hp <= 0) return;
+    setBattleLine('You stagger — overwhelmed by the ambush. You cannot act.');
+    setTurnPhase('narrating');
+    const t = setTimeout(() => {
+      setBattleLine('');
+      setTurnPhase('player');
+      setPlayerStunned(false);
+    }, 2800);
+    return () => clearTimeout(t);
+  }, [playerStunned, bossEntered]);
 
   // Cancel narration immediately on battle end
   useEffect(() => {

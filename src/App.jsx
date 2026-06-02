@@ -135,7 +135,8 @@ const FantasyStudyQuest = () => {
   const [currentEncounter, setCurrentEncounter] = useState(null);
   const [lastEncounterDay, setLastEncounterDay] = useState(0);
   const [dayBonuses, setDayBonuses] = useState({ xpMultiplier: 1.0 });
-  const [initiativeRoll, setInitiativeRoll] = useState(null); // { roll, dexMod, total, playerFirst }
+  const [initiativeRoll, setInitiativeRoll] = useState(null);
+  const [playerStunned, setPlayerStunned] = useState(false);
   const [isDying, setIsDying] = useState(false);
   const [asiPending, setAsiPending] = useState(null); // { newLevel }
   const [chargedCritRoll, setChargedCritRoll] = useState(null); // { roll, multiplier, attackName }
@@ -2552,16 +2553,27 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     addLog(`${enemyName} emerges from the shadows!`);
   }
 
-  // Initiative roll — DEX modifier adds to the D20
+  // Initiative — player D20+DEX vs enemy D20
   const _dexMod_init = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
-  const _initRoll = Math.ceil(Math.random() * 20);
-  const _initTotal = Math.max(1, Math.min(20, _initRoll + _dexMod_init));
-  const _playerFirst = _initTotal >= 11;
-  const _rawAtk_init = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
   const _wis_init = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
-  const _openDmg_init = _playerFirst ? 0 : Math.max(3, Math.floor(_rawAtk_init * 0.40 * (1 - _wis_init * 0.02)));
-  // Show initiative after entrance cinematic; damage fires when player dismisses the modal
-  setTimeout(() => setInitiativeRoll({ roll: _initRoll, dexMod: _dexMod_init, total: _initTotal, playerFirst: _playerFirst, openingDamage: _openDmg_init, openingLog: _playerFirst ? '' : `⚔️ AMBUSHED! Enemy strikes first! -${_openDmg_init} HP` }), 3200);
+  const _rawAtk_init = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+  const _pRoll_init = Math.ceil(Math.random() * 20);
+  const _pTotal_init = _pRoll_init + _dexMod_init;
+  const _eMod_init = 0;
+  const _eRoll_init = Math.ceil(Math.random() * 20);
+  const _eTotal_init = _eRoll_init + _eMod_init;
+  const _pFirst_init = _pTotal_init >= _eTotal_init;
+  const _margin_init = Math.abs(_pTotal_init - _eTotal_init);
+  const _decisive_init = _margin_init >= 5;
+  const _openDmg_init = _pFirst_init ? 0 : Math.max(3, Math.floor(_rawAtk_init * (_decisive_init ? 0.65 : 0.40) * (1 - _wis_init * 0.02)));
+  const _stunned_init = !_pFirst_init && _decisive_init;
+  setTimeout(() => setInitiativeRoll({
+    playerRoll: _pRoll_init, playerMod: _dexMod_init, playerTotal: _pTotal_init,
+    enemyRoll: _eRoll_init, enemyMod: _eMod_init, enemyTotal: _eTotal_init,
+    playerFirst: _pFirst_init, decisive: _decisive_init, margin: _margin_init,
+    openingDamage: _openDmg_init, stunned: _stunned_init,
+    openingLog: _pFirst_init ? '' : `Enemy strikes first for ${_openDmg_init} damage.${_stunned_init ? ' You are stunned.' : ''}`,
+  }), 3200);
 }, [currentDay, canCustomize, addLog, hero]);
 
   const spawnBanditEnemy = (enemy, idx, total) => {
@@ -2614,16 +2626,24 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     );
 
     const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
-    const initRoll = Math.ceil(Math.random() * 20);
-    const initTotal = Math.max(1, Math.min(20, initRoll + dexMod));
-    const playerFirst = initTotal >= 11;
-    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
     const wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
-    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * 0.40 * (1 - wisMod * 0.02)));
+    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const pRoll = Math.ceil(Math.random() * 20);
+    const pTotal = pRoll + dexMod;
+    const eMod = 0;
+    const eRoll = Math.ceil(Math.random() * 20);
+    const eTotal = eRoll + eMod;
+    const playerFirst = pTotal >= eTotal;
+    const margin = Math.abs(pTotal - eTotal);
+    const decisive = margin >= 5;
+    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * (decisive ? 0.65 : 0.40) * (1 - wisMod * 0.02)));
+    const stunned = !playerFirst && decisive;
     setTimeout(() => setInitiativeRoll({
-      roll: initRoll, dexMod, total: initTotal, playerFirst,
-      openingDamage: openDmg,
-      openingLog: playerFirst ? '' : `⚔️ AMBUSHED! ${enemy.name} strikes first! -${openDmg} HP`,
+      playerRoll: pRoll, playerMod: dexMod, playerTotal: pTotal,
+      enemyRoll: eRoll, enemyMod: eMod, enemyTotal: eTotal,
+      playerFirst, decisive, margin,
+      openingDamage: openDmg, stunned,
+      openingLog: playerFirst ? '' : `Enemy strikes first for ${openDmg} damage.${stunned ? ' You are stunned.' : ''}`,
     }), 3200);
   };
 
@@ -2700,16 +2720,24 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     );
 
     const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
-    const initRoll = Math.ceil(Math.random() * 20);
-    const initTotal = Math.max(1, Math.min(20, initRoll + dexMod));
-    const playerFirst = initTotal >= 11;
-    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
     const wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
-    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * 0.45 * (1 - wisMod * 0.02)));
+    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const pRoll = Math.ceil(Math.random() * 20);
+    const pTotal = pRoll + dexMod;
+    const eMod = 1;
+    const eRoll = Math.ceil(Math.random() * 20);
+    const eTotal = eRoll + eMod;
+    const playerFirst = pTotal >= eTotal;
+    const margin = Math.abs(pTotal - eTotal);
+    const decisive = margin >= 5;
+    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * (decisive ? 0.65 : 0.45) * (1 - wisMod * 0.02)));
+    const stunned = !playerFirst && decisive;
     setTimeout(() => setInitiativeRoll({
-      roll: initRoll, dexMod, total: initTotal, playerFirst,
-      openingDamage: openDmg,
-      openingLog: playerFirst ? '' : `🌑 AMBUSHED! ${enemy.name} strikes from the shadows! -${openDmg} HP`,
+      playerRoll: pRoll, playerMod: dexMod, playerTotal: pTotal,
+      enemyRoll: eRoll, enemyMod: eMod, enemyTotal: eTotal,
+      playerFirst, decisive, margin,
+      openingDamage: openDmg, stunned,
+      openingLog: playerFirst ? '' : `Enemy strikes first for ${openDmg} damage.${stunned ? ' You are stunned.' : ''}`,
     }), 3200);
   };
 
@@ -2783,15 +2811,27 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
     
     addLog(`AMBUSH! ${bossNameGenerated} emerges from the shadows!`);
-  // Initiative roll
+  // Initiative — player D20+DEX vs elite D20+2
   const _dexMod_mb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
-  const _mbRoll = Math.ceil(Math.random() * 20);
-  const _mbTotal = Math.max(1, Math.min(20, _mbRoll + _dexMod_mb));
-  const _rawAtk_mb = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
   const _wis_mb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
-  const _mbFirst = _mbTotal >= 11;
-  const _openDmg_mb = _mbFirst ? 0 : Math.max(3, Math.floor(_rawAtk_mb * 0.40 * (1 - _wis_mb * 0.02)));
-  setTimeout(() => setInitiativeRoll({ roll: _mbRoll, dexMod: _dexMod_mb, total: _mbTotal, playerFirst: _mbFirst, openingDamage: _openDmg_mb, openingLog: _mbFirst ? '' : `⚔️ Enemy seizes initiative! -${_openDmg_mb} HP` }), 3200);
+  const _rawAtk_mb = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+  const _pRoll_mb = Math.ceil(Math.random() * 20);
+  const _pTotal_mb = _pRoll_mb + _dexMod_mb;
+  const _eMod_mb = 2;
+  const _eRoll_mb = Math.ceil(Math.random() * 20);
+  const _eTotal_mb = _eRoll_mb + _eMod_mb;
+  const _mbFirst = _pTotal_mb >= _eTotal_mb;
+  const _margin_mb = Math.abs(_pTotal_mb - _eTotal_mb);
+  const _decisive_mb = _margin_mb >= 5;
+  const _openDmg_mb = _mbFirst ? 0 : Math.max(3, Math.floor(_rawAtk_mb * (_decisive_mb ? 0.65 : 0.40) * (1 - _wis_mb * 0.02)));
+  const _stunned_mb = !_mbFirst && _decisive_mb;
+  setTimeout(() => setInitiativeRoll({
+    playerRoll: _pRoll_mb, playerMod: _dexMod_mb, playerTotal: _pTotal_mb,
+    enemyRoll: _eRoll_mb, enemyMod: _eMod_mb, enemyTotal: _eTotal_mb,
+    playerFirst: _mbFirst, decisive: _decisive_mb, margin: _margin_mb,
+    openingDamage: _openDmg_mb, stunned: _stunned_mb,
+    openingLog: _mbFirst ? '' : `Enemy strikes first for ${_openDmg_mb} damage.${_stunned_mb ? ' You are stunned.' : ''}`,
+  }), 3200);
   };
   
   const useHealth = () => {
@@ -2937,15 +2977,27 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setEnemyDialogue(bossDialogue.START);
     
     addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
-  // Initiative roll
+  // Initiative — player D20+DEX vs final boss D20+4
   const _dexMod_fb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
-  const _fbRoll = Math.ceil(Math.random() * 20);
-  const _fbTotal = Math.max(1, Math.min(20, _fbRoll + _dexMod_fb));
-  const _rawAtk_fb = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
   const _wis_fb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
-  const _fbFirst = _fbTotal >= 11;
-  const _openDmg_fb = _fbFirst ? 0 : Math.max(3, Math.floor(_rawAtk_fb * 0.50 * (1 - _wis_fb * 0.02)));
-  setTimeout(() => setInitiativeRoll({ roll: _fbRoll, dexMod: _dexMod_fb, total: _fbTotal, playerFirst: _fbFirst, openingDamage: _openDmg_fb, openingLog: _fbFirst ? '' : `⚔️ THE GAUNTLET STRIKES FIRST! -${_openDmg_fb} HP` }), 3200);
+  const _rawAtk_fb = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+  const _pRoll_fb = Math.ceil(Math.random() * 20);
+  const _pTotal_fb = _pRoll_fb + _dexMod_fb;
+  const _eMod_fb = 4;
+  const _eRoll_fb = Math.ceil(Math.random() * 20);
+  const _eTotal_fb = _eRoll_fb + _eMod_fb;
+  const _fbFirst = _pTotal_fb >= _eTotal_fb;
+  const _margin_fb = Math.abs(_pTotal_fb - _eTotal_fb);
+  const _decisive_fb = _margin_fb >= 5;
+  const _openDmg_fb = _fbFirst ? 0 : Math.max(3, Math.floor(_rawAtk_fb * (_decisive_fb ? 0.75 : 0.50) * (1 - _wis_fb * 0.02)));
+  const _stunned_fb = !_fbFirst && _decisive_fb;
+  setTimeout(() => setInitiativeRoll({
+    playerRoll: _pRoll_fb, playerMod: _dexMod_fb, playerTotal: _pTotal_fb,
+    enemyRoll: _eRoll_fb, enemyMod: _eMod_fb, enemyTotal: _eTotal_fb,
+    playerFirst: _fbFirst, decisive: _decisive_fb, margin: _margin_fb,
+    openingDamage: _openDmg_fb, stunned: _stunned_fb,
+    openingLog: _fbFirst ? '' : `Enemy strikes first for ${_openDmg_fb} damage.${_stunned_fb ? ' You are stunned.' : ''}`,
+  }), 3200);
   };
   
   const attack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
@@ -7587,6 +7639,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onCapture={captureMonster}
               isBanditWave={isBanditWave || isDaughtersWave} banditEnemyImg={banditEnemyImg}
               raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : null}
+              playerStunned={playerStunned} setPlayerStunned={setPlayerStunned}
             />
           )}
           {showPomodoro && pomodoroTask && (
@@ -7667,6 +7720,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               addLog(initiativeRoll.openingLog);
             }, 350);
           }
+          if (initiativeRoll.stunned) setPlayerStunned(true);
           setInitiativeRoll(null);
         }} />
       )}
