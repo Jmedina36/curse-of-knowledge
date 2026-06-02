@@ -686,8 +686,8 @@ const ContractsTab = ({
               </div>
             </div>
             {log.length === 0
-              ? <p className="text-sm text-gray-500 italic text-center">The journey begins...</p>
-              : <div className="space-y-1">{log.map((l, i) => <p key={i} className="text-sm text-gray-300">{l}</p>)}</div>
+              ? <p className="italic text-center" style={{fontSize:'0.9rem',color:'rgba(160,150,120,0.6)'}}>The journey begins...</p>
+              : <div className="space-y-2">{log.map((l, i) => <p key={i} style={{fontSize:'0.9rem',color:'rgba(210,200,175,0.9)',fontFamily:'Cinzel,serif',letterSpacing:'0.02em'}}>{l}</p>)}</div>
             }
           </div>
         </>
