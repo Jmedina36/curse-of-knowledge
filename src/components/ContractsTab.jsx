@@ -307,7 +307,7 @@ const ContractsTab = ({
                             {t.done ? 'Sealed' : t.overdue ? 'Overdue' : t.priority === 'important' ? 'Silver' : 'Copper'}
                           </span>
                           {!t.done && (
-                            <span style={{fontSize:'0.65rem',color:'rgba(200,175,110,0.8)',fontFamily:'Cinzel,serif'}}>
+                            <span style={{fontSize:'0.75rem',color:'rgba(200,175,110,0.8)',fontFamily:'Cinzel,serif'}}>
                               {t.priority === 'important' ? '1.25x XP' : '1.0x XP'}
                             </span>
                           )}
