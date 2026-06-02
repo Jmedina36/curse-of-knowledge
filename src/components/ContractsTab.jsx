@@ -75,6 +75,9 @@ const ContractsTab = ({
   onDaughtersRaid,
   daughtersWaveNumber,
   daughtersCaptainsDefeated,
+  guildPoints,
+  guildRank,
+  guildRanks,
 }) => {
   return (
     <div className="space-y-4">
@@ -139,6 +142,50 @@ const ContractsTab = ({
                 <h2 style={{fontFamily:'Cinzel,serif',fontSize:'clamp(1rem,3vw,1.3rem)',fontWeight:900,letterSpacing:'0.3em',color:'rgba(212,175,55,0.9)',textShadow:'0 0 20px rgba(212,175,55,0.4)'}}>GUILD CONTRACT BOARD</h2>
                 <div style={{flex:1,height:'2px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.8))'}}/>
               </div>
+
+              {/* Guild rank badge */}
+              {guildRank && (() => {
+                const nextRank = guildRanks && guildRanks.find(r => r.min > guildPoints);
+                const pct = nextRank ? Math.min(100, ((guildPoints - guildRank.min) / (nextRank.min - guildRank.min)) * 100) : 100;
+                return (
+                  <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'6px', marginBottom:'14px' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+                      <span style={{
+                        fontFamily:'Cinzel,serif', fontSize:'0.52rem', letterSpacing:'0.3em',
+                        textTransform:'uppercase', color:'rgba(180,160,120,0.45)',
+                      }}>Rank</span>
+                      <span style={{
+                        fontFamily:'Cinzel,serif', fontSize:'0.72rem', fontWeight:900, letterSpacing:'0.22em',
+                        textTransform:'uppercase', color: guildRank.color,
+                        textShadow: `0 0 12px ${guildRank.color}88`,
+                      }}>{guildRank.name}</span>
+                      <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.48rem', letterSpacing:'0.15em', color:'rgba(180,160,120,0.35)' }}>
+                        {guildPoints} GP
+                      </span>
+                    </div>
+                    {nextRank && (
+                      <div style={{ width:'160px' }}>
+                        <div style={{ width:'100%', height:'3px', borderRadius:'2px', background:'rgba(255,255,255,0.05)', overflow:'hidden' }}>
+                          <div style={{
+                            height:'100%', width:`${pct}%`,
+                            background: `linear-gradient(to right, ${guildRank.color}88, ${guildRank.color})`,
+                            borderRadius:'2px', transition:'width 0.4s ease',
+                          }} />
+                        </div>
+                        <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.44rem', letterSpacing:'0.12em', color:'rgba(180,160,120,0.3)', textAlign:'center', marginTop:'3px', textTransform:'uppercase' }}>
+                          {nextRank.min - guildPoints} GP to {nextRank.name}
+                        </p>
+                      </div>
+                    )}
+                    {!nextRank && (
+                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.48rem', letterSpacing:'0.2em', color: guildRank.color, opacity:0.6, textTransform:'uppercase' }}>
+                        Pinnacle of the Guild
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
+
               {/* Tier legend */}
               <div className="flex items-center justify-center gap-4 flex-wrap">
                 {['copper','silver','gold','platinum','mythril'].map(t => (

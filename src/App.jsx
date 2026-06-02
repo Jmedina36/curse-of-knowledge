@@ -604,7 +604,18 @@ const [customClass, setCustomClass] = useState(null);
   const [lastPlayedDate, setLastPlayedDate] = useState(null);
   const [curseLevel, setCurseLevel] = useState(0); // 0 = none, 1-3 = curse levels
 const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
-const [contractFulfilled, setContractFulfilled] = useState(null); // { xpEarned }
+const [contractFulfilled, setContractFulfilled] = useState(null); // { xpEarned, tier }
+const [guildPoints, setGuildPoints] = useState(0);
+
+const GUILD_RANKS = [
+  { name: 'Initiate',  min: 0,   color: 'rgba(180,160,120,0.75)' },
+  { name: 'Copper',    min: 15,  color: '#CD7F32' },
+  { name: 'Silver',    min: 50,  color: '#C8C8C8' },
+  { name: 'Gold',      min: 120, color: '#D4AF37' },
+  { name: 'Platinum',  min: 250, color: '#E8E8E8' },
+  { name: 'Mythril',   min: 500, color: '#7DF9FF' },
+];
+const guildRank = [...GUILD_RANKS].reverse().find(r => guildPoints >= r.min) || GUILD_RANKS[0];
 const [cleansePotionPurchasedToday, setCleansePotionPurchasedToday] = useState(false);
 const [lastRealDay, setLastRealDay] = useState(null);
 const [debugWarningState, setDebugWarningState] = useState(null); // null = auto, or 'locked', 'unlocked', 'evening', 'finalhour'
@@ -1008,6 +1019,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           setCalendarEvents(migratedEvents);
         }
         if (data.studyWebsites) setStudyWebsites(data.studyWebsites);
+        if (data.guildPoints !== undefined) setGuildPoints(data.guildPoints);
       } catch (e) {
         console.error('Failed to load save:', e);
         // If saved data is corrupted, generate new hero
@@ -1067,7 +1079,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
-  studyWebsites
+  studyWebsites, guildPoints
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
       
@@ -1075,7 +1087,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -2102,7 +2114,8 @@ if (task.overdue) {
     if (_bonusGold > 0) setGold(g => g + _bonusGold);
     setDiceRoll({ roll: _d20, bonusXP: _bonusXP, bonusGold: _bonusGold });
     sounds.taskComplete();
-    
+    setGuildPoints(p => p + (task.priority === 'important' ? 3 : 1));
+
     setStudyStats(prev => ({
       ...prev,
       tasksCompletedToday: prev.tasksCompletedToday + 1
@@ -3388,7 +3401,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   // Elite boss defeated - set daily flag (curse cleared at midnight)
 if (battleType === 'elite') {
   setEliteBossDefeatedToday(true);
-  setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss });
+  setGuildPoints(p => p + 15);
+  setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss, tier: 'platinum' });
   addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
 }
   
@@ -4990,7 +5004,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       if (battleType === 'elite') {
         setEliteBossDefeatedToday(true);
-        setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss });
+        setGuildPoints(p => p + 15);
+        setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss, tier: 'platinum' });
         addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
       }
 
@@ -5885,6 +5900,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // Gauntlet defeated - lock until next milestone
       setGauntletUnlocked(false);
       setGauntletMilestone(m => m + 1500);
+      setGuildPoints(p => p + 30);
+      setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.finalBoss, tier: 'mythril' });
       updateAchievementStat('gauntlet_completed');
       updateAchievementStat('battles_won');
       addLog(`The Gauntlet has fallen! Next trial at ${gauntletMilestone + 1500} XP.`);
@@ -5905,7 +5922,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // Ensure elite boss defeated flag is set (in case of React batching issues)
       if (battleType === 'elite') {
         setEliteBossDefeatedToday(true);
-        setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss });
+        setGuildPoints(p => p + 15);
+        setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss, tier: 'platinum' });
       }
       
       const totalTasks = tasks.length;
@@ -6899,6 +6917,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onDaughtersRaid={spawnDaughtersWave}
               daughtersWaveNumber={daughtersWaveNumber}
               daughtersCaptainsDefeated={daughtersCaptainsDefeated}
+              guildPoints={guildPoints} guildRank={guildRank} guildRanks={GUILD_RANKS}
             />
           )}
 
@@ -7743,6 +7762,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         <ContractFulfilledModal
           tasks={tasks}
           xpEarned={contractFulfilled.xpEarned}
+          tier={contractFulfilled.tier}
           onClose={() => setContractFulfilled(null)}
         />
       )}
