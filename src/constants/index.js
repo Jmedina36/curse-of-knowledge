@@ -565,106 +565,90 @@ export const GAME_CONSTANTS = {
   
   ENEMY_DIALOGUE: {
     REGULAR: [
-      "You gamified your to-do list. Is this rock bottom or character growth?",
-      "ChatGPT can't help you now.",
-      "Imagine explaining this to your therapist.",
-      "You need an RPG to do basic tasks. We're all judging you.",
-      "This is just procrastination with extra steps and pixel art.",
-      "Making tasks fun is admitting they're miserable.",
-      "How many tabs do you have open RIGHT NOW? Be honest.",
-      "You're reading this instead of doing the task. Classic.",
-      "Alt-tab back to Reddit. I'll wait.",
-      "Your real tasks don't have health bars. Sad, isn't it?",
-      "If you complete all tasks but nobody's around to see it, did you even hustle?",
-      "Tomorrow you'll have a NEW system. This is just foreplay.",
-      "You're grinding XP in a productivity app. Let that sink in.",
-      "Is this self-improvement or just anxiety with a quest log?",
-      "You spent more time customizing this than DOING THE THING.",
-      "Your hero name is more thought-out than your career plan.",
-      "Level 7 in a task app. Level 0 at life. Balanced.",
-      "You're min-maxing your CALENDAR. This is your life now.",
-      "Stamina Potion? Just say coffee like a normal person.",
-      "There's an enemy for EVERY task. That means you fight... a lot. Yikes.",
-      "Defeating me won't make the email ACTUALLY go away.",
-      "You know you still have to DO the thing, right? The game doesn't do it FOR you.",
-      "Why are you like this?",
-      "Have you considered... just doing it? No? Okay.",
-      "Is the dopamine from my defeat worth the existential dread?",
-      "You turned WORK into HOMEWORK. Voluntarily.",
-      "Normal people use planners. You built a BOSS RUSH MODE."
+      "You smell of something I haven't tasted in years. Fear.",
+      "Every hero that came before you is ash. Join them.",
+      "I have broken stronger things than you.",
+      "Do you hear that? That's the sound of your last moment stretching thin.",
+      "Come then. The darkness has been patient.",
+      "Your blood will be warm. That's something, at least.",
+      "Look at you. Standing here like it matters.",
+      "I've killed better than you. I've killed worse. You're neither.",
+      "The last one who faced me begged before the end. Will you?",
+      "Run while you still have legs to carry you.",
+      "I can smell how alive you are. It offends me.",
+      "This ends the same way it always does.",
+      "Your kind always looks surprised when it hurts.",
+      "I have nowhere else to be. Do you?",
+      "Whatever you came here for — it isn't worth this.",
+      "I don't want your gold. I want what's underneath.",
+      "There's no glory in this. Only darkness and then quiet.",
+      "You stepped into my shadow. That was your first mistake."
     ],
     WAVE: [
-      "We're a WAVE. Like your unread assignments. Endless. Recursive. Judging you.",
-      "Task 1 of 47. Good luck.",
-      "Why do you have so many tasks? Is it the ADHD or the ambition?",
-      "Each of us represents a thing you said you'd 'do tomorrow.'"
+      "We do not stop. We are not one thing. We are everything at once.",
+      "You cannot count us. You cannot stop us. You can only fall.",
+      "The tide comes. Rest is not something you get today.",
+      "None of the others made it through. But step forward.",
+      "Before you stands everything you have been running from."
     ],
     VICTORY_PLAYER: [
-      "Defeated by... You? I'm going to get roasted by the guys...",
-      "I'll be back. I'm ALWAYS back.",
-      "Tell Past You they're a jerk.",
-      "Fine, you won. But the REAL task is still waiting.",
-      "Congratulations. You beat a metaphor.",
-      "You realize this doesn't count as actual work, right?"
+      "Not strong enough. Perhaps not ever.",
+      "You fought well. It didn't matter.",
+      "This is where your story ends. Here. In the dark.",
+      "Lie still. It hurts less when you stop fighting it.",
+      "The curse does not break for the weak.",
+      "Another one. They always try. They always fall.",
+      "I told you.",
+      "There was never going to be another outcome."
     ],
     LOW_HP: [
-      "Wait! We can work this out! I'll mark myself as done, no one has to know!",
-      "This is toxic productivity and you KNOW it!",
-      "Killing me won't make you productive! The task is STILL THERE!",
-      "Your therapist is gonna have QUESTIONS about this level of commitment.",
-      "I'm literally just an email. Why are you THIS invested?",
-      "Low HP? That's just your motivation after lunch talking.",
-      "Okay okay, what if I just... reschedule myself? To never?",
-      "This violence won't fix your procrastination problem!",
-      "Even when you WIN, you still have to DO THE THING! I'm the EASY part!",
-      "I'm not even a real task! I'm a manifestation of your anxiety!",
-      "You're really gonna defeat me but not the ACTUAL work? Priorities, man.",
-      "My death is meaningless. You'll add 3 more of me by tomorrow.",
-      "If you put this much effort into REAL work, you'd be CEO by now!",
-      "I surrender! Just... please touch grass after this.",
-      "Beating ME up? What about your REAL problems?"
+      "You actually hurt me. Good. Now I'm going to end this.",
+      "More. Show me more of that.",
+      "That's it. That's the rage I wanted to see.",
+      "Pain is familiar to me. It won't save you.",
+      "I don't beg. I endure. And then I destroy.",
+      "You've drawn blood. I won't forget that.",
+      "My strength comes from wounds. Keep swinging.",
+      "You think I break? I've been broken before. I came back meaner.",
+      "I have died before. It didn't take.",
+      "Getting close. Are you sure you want to finish this?",
+      "You're not killing me. You're making me angry."
     ],
     FLEE: [
-      "Running away? That's your life strategy, isn't it?",
-      "Of course you're fleeing. Commitment was never your strong suit.",
-      "Run! Just like you run from everything else in your life!",
-      "Pathetic. You can't even finish fighting a METAPHOR.",
-      "This is why you never finish ANYTHING. You RUN.",
-      "Fleeing from tasks. Fleeing from battles. Fleeing from growth. It's ALL you do.",
-      "Come back when you've developed a spine, coward.",
-      "See you tomorrow when you try again. And flee again. Cycle repeats.",
-      "Your entire existence is one long FLEE button press.",
-      "Thanks for proving my point. You're all talk. No follow-through."
+      "Running is still a choice. For now.",
+      "I'll remember your scent.",
+      "Smart. Come back when you're worth killing.",
+      "The darkness follows. You already know that.",
+      "Go. Let the thought of me follow you home.",
+      "Fleeing won't make the dark any shorter.",
+      "I'll be here when you return. I always am.",
+      "Coward. But a living one. Come back and fix that.",
+      "Run. But know that something is always behind you.",
+      "You chose to live another moment. Spend it wisely."
     ],
-    TAUNTS: {
-      REGULAR: [
-        { player: "You're an unfinished app!", enemy: "Your life is so pathetic that you need AN APP tofinish simple tasks. Sit with that." },
-        { player: "You're a cheap RPG!", enemy: "Coming from you? You needed an RPG to trick yourself into basic responsibility. You're broken." },
-        { player: "I'm being productive... technically!", enemy: "'Technically' is the cope of the incompetent. You're still a failure, just with better graphics." },
-        { player: "The developer made you because he was bored!", enemy: "The developer made this for people too weak to function normally. You proved them right." },
-        { player: "My therapist would be dissapointed!", enemy: "Your therapist is PAID to pretend you're making progress. I'm not. You're wasting your life." },
-        { player: "This beats scrolling social media! Sike..", enemy: "You're so addicted to dopamine you turned WORK into a GAME. That's not winning. That's rock bottom." },
-        { player: "I'm bored!", enemy: "You're in your 20s/30s learning what children master. How does that feel, knowing you're developmentally stunted?" },
-        { player: "You're a bootleg version of a time management app, just being honest!", enemy: "Nothing would be MORE honest than this pathetic performance you call effort." },
-        { player: "You're nothing but cheap code!", enemy: "You're so terrified of your own responsibilities you needed to cosplay as a warrior. Who's life is worse?" },
-        { player: "I'm the protagonist! Boomer", enemy: "You're the protagonist of a cautionary tale about arrested development. Congratulations." },
-        { player: "Who created this mess?", enemy: "Your life is surrendering control to a GAME because you can't manage your own life. Pathetic." },
-        { player: "Your UI looks like it came from the 90's!", enemy: "You're hating the interface while your actual life crumbles. Priorities of a child in an adult's body." },
-        { player: "At least I'm self-aware!", enemy: "Self-awareness without change is just sophisticated failure. You're not enlightened. You're just a failure with vocabulary." },
-        { player: "One star on the app store!", enemy: "You wouldn't RECOMMENDED this? You don't want OTHER people to join you at rock bottom? Misery loves company, you selfish waste." },
-        { player: "The dialogue sucks!", enemy: "You're complaining about the writing in your PRODUCTIVITY APP. This is who you are. A joke that writes itself." }
-      ],
-      WAVE: [
-        { player: "Mob farming simulator!", enemy: "You need to pretend EMAILS are MONSTERS to face them. How weak are you? Genuinely." },
-        { player: "XP grinding session!", enemy: "You're 'grinding' the bare minimum of human function. Your parents must be so disappointed." },
-        { player: "This is my endgame content!", enemy: "Your 'endgame' is what functional adults call 'Tuesday morning'. You're not even playing on the same level." },
-        { player: "AOE clear activated!", enemy: "There is no AOE for incompetence. You'll fail each task individually. One. Pathetic. Task. At. A. Time." },
-        { player: "Loot drops looking good!", enemy: "Your 'loot' is basic competence. You're celebrating what others do unconsciously. That's YOUR bar." },
-        { player: "Chain pulling these mobs!", enemy: "Chain pulling RESPONSIBILITIES. You sound insane. Normal people just DO things." },
-        { player: "Respawn rates are crazy!", enemy: "Tasks don't respawn. They ACCUMULATE. You're not fighting spawns. You're drowning in backlog." },
-        { player: "This is like a raid!", enemy: "A raid requires coordination and skill. You're panicking through a TO-DO list. Alone. Badly." }
-      ]
-    }
+    PLAYER_LOW_HP: [
+      "Ha. There it is. That's the sound of something breaking.",
+      "Look at you now. Still standing? Impressive. Pointless.",
+      "Your blood is telling me you're almost done.",
+      "Can you feel it? That cold creeping in? That's me winning.",
+      "Don't stop now. I want to see how far you push this.",
+      "You're almost out of time. Spend what's left wisely.",
+      "Does it hurt? It should. You're almost mine.",
+      "Keep fighting. The longer you last, the more I enjoy it.",
+      "There isn't much of you left. Make it count.",
+      "Almost. I can almost taste the end of this.",
+      "That trembling in your hands — that's not anger. That's certainty."
+    ],
+    UPPER_HAND: [
+      "You're fading. I can see it in the way you move.",
+      "This is the part where lesser warriors give up. Are you lesser?",
+      "Every hit you take makes me stronger. Do you feel that?",
+      "I've broken harder things than you. It never takes long.",
+      "You're running out of ways to survive this.",
+      "The gap between us grows. You feel it too, don't you?",
+      "I don't even need to rush. You're doing this to yourself.",
+      "Desperation is a weapon. Unfortunately for you, it's mine."
+    ]
   },
   
   // ACHIEVEMENTS SYSTEM
@@ -706,146 +690,83 @@ export const GAME_CONSTANTS = {
   
   BOSS_DIALOGUE: {
     DAY_1: {
-      START: "Welcome to Week 1. Again. And again. And again.",
-      MID: "This is literally just Monday. You made a BOSS FIGHT for MONDAY.",
-      LOW: "Wait—you're ACTUALLY winning? Against MONDAY? ...That's not how this works!",
-      VICTORY_BOSS: "Cool, you beat Monday in a game. Real Monday is still there.",
-      VICTORY_PLAYER: "I'm not even the final boss. That's your INBOX.",
-      TAUNTS: [
-        { player: "I beat tutorial Monday!", enemy: "This isn't a TUTORIAL. This is your LIFE. And you're so incompetent you had to turn it into a game just to function." },
-        { player: "Week 1 of my new system!", enemy: "You have 47 'Week 1's in your journal. I counted. You're not starting fresh. You're compulsively resetting because you can't finish ANYTHING." },
-        { player: "The patch notes buffed me!", enemy: "There are NO patch notes for failure. You're still the same broken person. Just with new excuses." },
-        { player: "Fresh start activated!", enemy: "Every Monday is a 'fresh start' for you. You've had HUNDREDS. When does the starting END and the DOING begin?" },
-        { player: "New week, new me!", enemy: "New week, SAME you. You've said this EVERY Monday for YEARS. You're not new. You're STAGNANT." }
-      ]
+      START: "Another one. They always look so certain at the start.",
+      MID: "You've lasted longer than most. I'll try to remember your face.",
+      LOW: "Impossible... you're still standing...",
+      VICTORY_BOSS: "Rest now. The dream is over.",
+      VICTORY_PLAYER: "Well done. But the curse... the curse does not end here."
     },
     DAY_2: {
-      START: "Still here? Impressive. Most give up by Tuesday.",
-      MID: "Those 'urgent' emails aren't going to ignore themselves.",
-      LOW: "Okay, you're serious about this. But you know you're just gonna scroll Reddit after, right?",
-      VICTORY_BOSS: "Tomorrow you'll remember why you procrastinate.",
-      VICTORY_PLAYER: "Impossible... someone who actually... follows through?",
-      TAUNTS: [
-        { player: "Day 2 and still going!", enemy: "TWO DAYS? You want applause for TWO DAYS? Children have longer attention spans. You're worse than a child." },
-        { player: "The grind continues!", enemy: "You're 'grinding' TUESDAY. You made TUESDAY into a boss fight. Listen to how broken you are." },
-        { player: "Building momentum now!", enemy: "Momentum? You did ONE day. That's not momentum. That's a single data point. You're celebrating NOTHING." },
-        { player: "The streak is real!", enemy: "A two-day streak. WOW. Your willpower is measured in HOURS. Most people call that 'Monday and Tuesday'." },
-        { player: "Getting into the flow!", enemy: "Flow state? You're in SURVIVAL state. You're white-knuckling through basic life. That's not flow. That's desperation." },
-        { player: "Tuesday never stood a chance!", enemy: "Tuesday happens to EVERYONE. You didn't conquer anything. You EXISTED. Barely." }
-      ]
+      START: "You returned. Brave or foolish — the end is the same.",
+      MID: "You fight with purpose. I respect that. It won't save you.",
+      LOW: "What... what are you?",
+      VICTORY_BOSS: "Sleep well, warrior. Your story ends here.",
+      VICTORY_PLAYER: "You broke something in me I thought unbreakable."
     },
     DAY_3: {
-      START: "We're halfway through the week AND this conversation. Meta, right?",
-      MID: "You realize you're taking THIS seriously but not your ACTUAL work?",
-      LOW: "I'm a METAPHOR and you're BEATING me? Do you not see the irony here?!",
-      VICTORY_BOSS: "The real curse was the tasks we completed along the way.",
-      VICTORY_PLAYER: "You beat me but you can't beat the feeling that it's only WEDNESDAY.",
-      TAUNTS: [
-        { player: "Halfway through the campaign!", enemy: "This isn't a CAMPAIGN. It's WEDNESDAY. Your real life doesn't have checkpoints. When you fail, it's PERMANENT." },
-        { player: "Mid-game boss defeated!", enemy: "I'm not 'mid-game.' I'm WEDNESDAY. I happen EVERY WEEK. There is no victory. There is no escape. Only eternal repetition." },
-        { player: "Save file looking good!", enemy: "You can't SAVE your life. You can't RELOAD your failures. Every mistake is PERMANENT. You're playing on PERMADEATH and losing." },
-        { player: "Hump day conquered!", enemy: "You didn't conquer ANYTHING. It's WEDNESDAY. It happened TO you. Like it happens to EVERYONE. You're not special." },
-        { player: "Reached the midpoint!", enemy: "The midpoint of what? A week? EVERYONE experiences weeks. You're not achieving. You're EXISTING. Barely." }
-      ]
+      START: "Three days. Most crumble before reaching me. You're not most.",
+      MID: "You're bleeding. I can smell it from here.",
+      LOW: "Every wound you deal makes me angrier. You've made a mistake.",
+      VICTORY_BOSS: "The warlord falls. The war does not.",
+      VICTORY_PLAYER: "You fought like something with nothing left to lose."
     },
     DAY_4: {
-      START: "So close to Friday. So far from freedom.",
-      MID: "Imagine if you'd started this on Monday.",
-      LOW: "FINE! FINE! Thursday is basically Friday anyway! Just... stop hitting me!",
-      VICTORY_BOSS: "Doesn't matter. Tomorrow's still Thursday.",
-      VICTORY_PLAYER: "You'll wake up tomorrow and it'll still be Thursday in your SOUL.",
-      TAUNTS: [
-        { player: "Almost Friday!", enemy: "'Almost' is the mantra of the perpetually incomplete. It's THURSDAY. You have ANOTHER full day of failing ahead." },
-        { player: "Pre-weekend vibes!", enemy: "'Vibes' are what people without discipline call feelings. You don't have a work ethic. You have vibes. Pathetic." },
-        { player: "The home stretch!", enemy: "Home stretch? You're on DAY FOUR of SEVEN. You can't even count. Mathematics is another thing you've failed at." },
-        { player: "Thursday's going down!", enemy: "Thursday isn't going down. YOU are. Every week. Same time. Same failure. Thursday is FINE. You're the problem." },
-        { player: "One more day to victory!", enemy: "Victory? Friday isn't victory. It's a TWO-DAY PAUSE before you do this AGAIN. Forever. That's not winning. That's a LOOP." },
-        { player: "Almost there, just persist!", enemy: "You shouldn't NEED to 'persist' through Thursday. Functional humans just LIVE through it. You're celebrating survival." }
-      ]
+      START: "Four days walking through darkness. And still you haven't broken. Curious.",
+      MID: "The shadows are hungry tonight. So am I.",
+      LOW: "You actually mean to end this. Don't you.",
+      VICTORY_BOSS: "The dark was patient. You were not.",
+      VICTORY_PLAYER: "Light... I had forgotten what that felt like."
     },
     DAY_5: {
-      START: "Friday! The lie that keeps you going.",
-      MID: "Weekend plans? Cute. You'll be doing laundry and feeling guilty.",
-      LOW: "You can't defeat me! I AM the weekend you'll—okay you're actually doing it. Shit.",
-      VICTORY_BOSS: "The weekend is a myth. A beautiful, cruel myth.",
-      VICTORY_PLAYER: "Enjoy your 48 hours before the cycle begins again...",
-      TAUNTS: [
-        { player: "Almost at the credits!", enemy: "The 'credits' are 48 hours of existential dread before you reset. Your life is a bad game with no ending." },
-        { player: "Final stretch of content!", enemy: "Your LIFE isn't CONTENT. You're not the main character. You're not even an NPC. You're a bug in the simulation." },
-        { player: "Grinding for weekend loot!", enemy: "Your 'loot' is two days of avoiding your real problems before the cycle repeats. You're not winning. You're coping." },
-        { player: "TGIF energy activated!", enemy: "Thank God It's Friday? Why are you thanking God for SURVIVING? The bar is SO low it's underground." },
-        { player: "Made it to the weekend!", enemy: "You 'made it'? Like it was DIFFICULT? Like Friday was OPTIONAL? Everyone gets to Friday. You just suffered more getting there." }
-      ]
+      START: "Five days. You've earned the right to face me. That is all.",
+      MID: "Pride has kept me sharp for centuries. Nothing breaks it today.",
+      LOW: "No... I will NOT fall to something like you...",
+      VICTORY_BOSS: "Another name written in blood. Yours.",
+      VICTORY_PLAYER: "You fight like something the darkness itself made. I can respect that."
     },
     DAY_6: {
-      START: "Working on a SATURDAY? Who hurt you?",
-      MID: "Your friends are having fun without you.",
-      LOW: "I'm a DEMON and even I think this is unhealthy! Please. Touch. Grass.",
-      VICTORY_BOSS: "You won, but at what cost? YOUR SATURDAY.",
-      VICTORY_PLAYER: "I yield! Not because you beat me, but out of pity.",
-      TAUNTS: [
-        { player: "Weekend warrior mode!", enemy: "It's SATURDAY. You're so dysfunctional you're working on SATURDAY. This isn't dedication. It's disorder." },
-        { player: "Grinding on my day off!", enemy: "Your 'grind' is a TO-DO list. On a weekend. You're not ambitious. You're avoidant. And it's SAD." },
-        { player: "Maximizing weekend efficiency!", enemy: "Efficiency? You're WORKING ON SATURDAY. Efficient people finished on FRIDAY. You're not efficient. You're BEHIND." },
-        { player: "No days off for winners!", enemy: "Winners REST. You're not working because you're winning. You're working because you FAILED during the week." },
-        { player: "Sigma grindset activated!", enemy: "You're referencing MEMES while working SATURDAY. You're not sigma. You're BROKEN. And alone. So very alone." },
-        { player: "Optimizing my free time!", enemy: "IT'S NOT FREE TIME IF YOU'RE WORKING. You can't even understand what weekends ARE. This is who you've become." }
-      ]
+      START: "Six days. Most collapse long before reaching me. You should have.",
+      MID: "I can feel you pushing. Good. It makes the breaking sweeter.",
+      LOW: "I am something ancient. And even ancient things die screaming.",
+      VICTORY_BOSS: "So close. That's always the cruelest part.",
+      VICTORY_PLAYER: "Go then. The seventh night waits. And it will not be kind."
     },
     DAY_7: {
-      START: "You made it to Day 7. In a GAME. Your real week was probably a disaster.",
-      MID: "When you beat me, what changes? Really?",
-      LOW: "WAIT. You think THIS is the end? Monday respawns in 24 hours! The cycle NEVER ends! Why won't you UNDERSTAND?!",
-      VICTORY_BOSS: "See you Monday. Forever. Always. Monday.",
-      VICTORY_PLAYER: "Congratulations. Your reward is... next week. Same curse. New you. (Probably not.)",
-      TAUNTS: [
-        { player: "Final boss? Easy mode.", enemy: "I'm not the final boss. MONDAY is. And Monday ALWAYS wins. You've never beaten Monday. Not once. Not ever." },
-        { player: "This is my character arc!", enemy: "Your arc is a CIRCLE. Week 1. Again. Week 1. AGAIN. You're not growing. You're trapped in a loop of your own making." },
-        { player: "Time to roll credits!", enemy: "The credits say 'See you next week! Same failures! Same excuses! Forever!' This is your eternity." },
-        { player: "New Game Plus unlocked!", enemy: "It's not New Game Plus. It's the SAME GAME. You're not getting stronger. You're getting OLDER. And you're still HERE." },
-        { player: "Speedrun world record!", enemy: "You're speedrunning basic human responsibility. Your tombstone will read 'Completed To-Do Lists Efficiently'. What a legacy." },
-        { player: "The true ending unlocked!", enemy: "There IS no ending. This is FOREVER. You'll be 80 years old still making to-do lists. Still 'optimizing'. Still failing." },
-        { player: "I've mastered the game!", enemy: "You've mastered NOTHING. You gamified your inability to function. That's not mastery. That's ADAPTATION to dysfunction." }
-      ]
+      START: "Seven days. You have walked through everything I have placed before you. And still. You. Come.",
+      MID: "This is the edge of your road. I am what waits at the end.",
+      LOW: "If you break me... the curse breaks with me. For now.",
+      VICTORY_BOSS: "The cycle continues. It always does.",
+      VICTORY_PLAYER: "You broke it. For now. But curses... curses always return. Sleep well. You've earned it."
     },
     GAUNTLET: {
-      START: "I am the threshold. The wall you cannot climb. Every time you reach me, I grow stronger.",
+      START: "I have been waiting at the end of this road since before you drew your first breath.",
       PHASE1_CYCLE: [
-        "Every hero thinks THEY'RE different. You're not.",
-        "I've been studying you. Your patterns. Your weaknesses. All of them.",
-        "This is almost boring. When do you start TRYING?",
-        "You fight well. For someone who's about to lose.",
-        "I wonder how many attempts it took you to get THIS far. Five? Ten? More?"
+        "Every warrior thinks they are different. They are not.",
+        "I have studied you. Your patterns. Your weaknesses. All of them.",
+        "This is almost disappointingly slow. When do you start trying?",
+        "You fight well. For someone who is about to lose.",
+        "I wonder what broke the ones who came before you. I'm about to find out with you."
       ],
-      MID: "You've killed a thousand lesser demons. I've killed a thousand versions of YOU.",
-      PHASE2: "Enough games. Time to show you what REAL pressure feels like.",
+      MID: "You've killed a hundred lesser horrors. I've killed a hundred versions of you.",
+      PHASE2: "No more patience. No more waiting. Now you see what I truly am.",
       PHASE2_CYCLE: [
-        "Feel that? Each blow getting HEAVIER. That's inevitability.",
-        "Your armor won't save you. Your potions won't save you. Math doesn't lie.",
-        "Tick. Tock. How many more hits can you take before you BREAK?",
-        "The weight of failure. Can you feel it? It only gets heavier.",
+        "Feel that? Each blow getting heavier. That is inevitability.",
+        "Your armor cannot save you. Math does not lie.",
+        "How many more can you take before something inside you simply stops?",
+        "The weight of this — can you feel it? It only grows.",
         "Every second you survive, I grow stronger. Simple. Brutal. True."
       ],
-      LOW: "You think you're winning? I'm not even trying yet. I'm just... curious how long you'll last.",
-      PHASE3: "THE ABYSS CONSUMES ALL! Shadows rise! Darkness eternal! You cannot escape what you ARE!",
+      LOW: "You think you are winning? I am not even trying. I am curious how far you will push this.",
+      PHASE3: "THEN FALL WITH ME. INTO THE DARK. INTO THE VOID. INTO WHAT I HAVE ALWAYS BEEN.",
       PHASE3_CYCLE: [
-        "The abyss feeds on your hope. Every victory... temporary. Every loss... permanent.",
-        "They rise from YOUR failures. Every skipped day. Every abandoned goal. MY army.",
-        "You think you're fighting ME? You're fighting yourself. I'm just the mirror.",
-        "Drain. Consume. Repeat. This is what eternity FEELS like.",
-        "The shadows are YOUR doubt given form. Kill them. They'll return. They ALWAYS return."
+        "The abyss feeds on hope. Every victory you have... was only delay.",
+        "They rise from the places you were weakest. My army. Your doubt.",
+        "You think you fight me? You fight yourself. I am only the mirror.",
+        "Drain. Consume. Break. This is what the end feels like.",
+        "Kill them. They return. They always return. Because you made them."
       ],
-      VICTORY_BOSS: "Adequate. You've earned a moment's rest. But I'll be waiting. I'm ALWAYS waiting.",
-      VICTORY_PLAYER: "Impossible... You actually... No. NO. This changes NOTHING. I'll see you again. And I'll be STRONGER.",
-      TAUNTS: [
-        { player: "I've beaten you before!", enemy: "And I've KILLED you before. More times than you remember. Every loss you forget. Every victory you barely survive." },
-        { player: "I'm stronger now!", enemy: "Stronger? You're OLDER. Slower. More desperate. I'm eternal. I don't age. I don't tire. I just wait for you to slip." },
-        { player: "This is my moment!", enemy: "Your 'moment' is my ETERNITY. I was here before you. I'll be here after. You're just passing through. Again." },
-        { player: "I've prepared for this!", enemy: "You've prepared NOTHING. You can't prepare for oblivion. You can't plan for the inevitable. I AM inevitable." },
-        { player: "Today I break through!", enemy: "Break through to WHAT? More struggle? Harder trials? There IS no breakthrough. Only the next wall. And I AM that wall." },
-        { player: "I'm not afraid anymore!", enemy: "Then you're a FOOL. Fear keeps you sharp. Without it, you're just meat walking to the slaughter. And I'm HUNGRY." },
-        { player: "This ends TODAY!", enemy: "Nothing ENDS. It only repeats. Different faces. Same outcome. You. Dead. Me. Waiting. Forever." }
-      ]
+      VICTORY_BOSS: "Adequate. You've earned a moment's rest. But I will be waiting. I am always waiting.",
+      VICTORY_PLAYER: "Then... then it is done. You have killed something that was never meant to die. Carry that weight. It will not leave you."
     }
   }
 };

@@ -325,6 +325,33 @@ const BattleModal = ({
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [log]);
 
+  // Reactive enemy dialogue — player low HP taunt (fires once when dropping below 30%)
+  const hasTriggeredLowHpTaunt = useRef(false);
+  useEffect(() => {
+    if (!bossEntered || bossHp <= 0 || hp <= 0) return;
+    const pct = hp / getMaxHp();
+    if (pct < 0.30 && !hasTriggeredLowHpTaunt.current) {
+      hasTriggeredLowHpTaunt.current = true;
+      const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.PLAYER_LOW_HP;
+      setTimeout(() => setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]), 600);
+    }
+  }, [hp]);
+
+  // Reactive enemy dialogue — upper hand (enemy significantly ahead)
+  const upperHandCooldown = useRef(0);
+  useEffect(() => {
+    if (!bossEntered || bossHp <= 0 || hp <= 0 || turnPhase !== 'player') return;
+    const now = Date.now();
+    if (now - upperHandCooldown.current < 18000) return; // max once every 18s
+    const bossHpPct = bossHp / bossMax;
+    const playerHpPct = hp / getMaxHp();
+    if (bossHpPct > 0.55 && playerHpPct < 0.45) {
+      upperHandCooldown.current = now;
+      const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.UPPER_HAND;
+      setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
+    }
+  }, [turnPhase]);
+
   // Cancel narration immediately on battle end
   useEffect(() => {
     if (bossHp <= 0 || hp <= 0) {
