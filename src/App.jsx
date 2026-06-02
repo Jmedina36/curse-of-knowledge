@@ -11,7 +11,6 @@ import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
 import ForgeTab from './components/ForgeTab';
-import ProgressTab from './components/ProgressTab';
 import BestiaryTab from './components/BestiaryTab';
 import InventoryModal from './components/InventoryModal';
 import CraftingModal from './components/CraftingModal';
@@ -6757,7 +6756,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'study', icon:Hammer, label:'Training'},
                 {id:'bestiary', icon:Shield, label:'Bestiary'},
-                {id:'progress', icon:Trophy, label:'Progress'},
                 {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
                 <button 
@@ -6888,12 +6886,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               trackWebsiteClick={trackWebsiteClick}
               generateQuiz={generateQuiz} startMatchGame={startMatchGame}
               addLog={addLog}
-            />
-          )}
-          {activeTab === 'progress' && (
-            <ProgressTab
-              unlockedAchievements={unlockedAchievements} achievementStats={achievementStats}
-              selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory}
             />
           )}
           {activeTab === 'bestiary' && (
