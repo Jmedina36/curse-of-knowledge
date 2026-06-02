@@ -122,6 +122,17 @@ const TIER_WEIGHTS_BY_DAY = [
   { 1: 0,  2: 3,  3: 7  }, // day 7
 ];
 
+export const pickCreatureForZone = (tierWeights) => {
+  const pool = [];
+  [1, 2, 3].forEach(t => {
+    const w = tierWeights[t] || 0;
+    if (w === 0) return;
+    const creatures = ENCOUNTER_POOL.filter(c => c.tier === t);
+    for (let i = 0; i < w; i++) pool.push(...creatures);
+  });
+  return pool[Math.floor(Math.random() * pool.length)];
+};
+
 export const pickCreatureForDay = (day) => {
   const weights = TIER_WEIGHTS_BY_DAY[Math.min(day - 1, 6)];
   const pool = [];

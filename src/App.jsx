@@ -5,9 +5,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings, Map } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
-import { pickCreatureForDay, rollCreatureStats } from './creatures';
+import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats } from './creatures';
+import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
@@ -504,6 +505,8 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [bossHp, setBossHp] = useState(0);
   const [bossMax, setBossMax] = useState(0);
   const [currentBattleCreature, setCurrentBattleCreature] = useState(null);
+  const [selectedZone, setSelectedZone] = useState(null);
+  const selectedZoneRef = useRef(null);
   const [battleType, setBattleType] = useState('regular');
 const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
@@ -734,6 +737,9 @@ const getDateKey = useCallback((date) => {
   const addLog = useCallback((msg) => {
     setLog(prev => [...prev, msg].slice(-GAME_CONSTANTS.LOG_MAX_ENTRIES));
   }, []);
+
+  // Keep selectedZoneRef in sync for use inside useCallback closures
+  useEffect(() => { selectedZoneRef.current = selectedZone; }, [selectedZone]);
   
   // Study Links Functions
   const addStudyWebsite = useCallback(() => {
@@ -2523,8 +2529,11 @@ pendingBattleSpawnRef.current = () => {
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
 
-  // Pick a creature from CREATURE_INDEX weighted by day
-  const creature = pickCreatureForDay(currentDay);
+  // Pick a creature — use zone weights if a hunting ground is selected, otherwise fall back to day weights
+  const zone = selectedZoneRef.current;
+  const creature = zone?.tierWeights
+    ? pickCreatureForZone(zone.tierWeights)
+    : pickCreatureForDay(currentDay);
   const rolled = rollCreatureStats(creature);
   setCurrentBattleCreature(rolled);
 
@@ -6848,6 +6857,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'study', icon:Hammer, label:'Forge'},
                 {id:'bestiary', icon:Shield, label:'Bestiary'},
+                {id:'map', icon:Map, label:'Map'},
                 {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
                 <button 
@@ -6988,6 +6998,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               capturedMonsters={capturedMonsters}
               setCapturedMonsters={setCapturedMonsters}
               addLog={addLog}
+            />
+          )}
+          {activeTab === 'map' && (
+            <WorldMapTab
+              currentDay={currentDay}
+              selectedZone={selectedZone}
+              setSelectedZone={setSelectedZone}
             />
           )}
           {activeTab === 'debug' && (
