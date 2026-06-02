@@ -443,9 +443,13 @@ const ContractsTab = ({
                           className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase"
                           style={{
                             backgroundColor: isDisabled ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)',
-                            borderColor: isDisabled ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)',
+                            borderColor: taskGateMet && !eliteBossDefeatedToday && isDayActive
+                              ? 'rgba(239,68,68,0.7)'
+                              : isDisabled ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)',
                             color: '#F5F5DC',
                             opacity: isDisabled ? 0.5 : 1,
+                            boxShadow: taskGateMet && !eliteBossDefeatedToday && isDayActive
+                              ? '0 0 18px rgba(239,68,68,0.25)' : 'none',
                           }}
                           onMouseEnter={(e) => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'; }}
                           onMouseLeave={(e) => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'; }}
@@ -456,12 +460,36 @@ const ContractsTab = ({
                               <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Day dormant — add tasks to begin</div>
                             ) : eliteBossDefeatedToday ? (
                               <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>Today's trial complete</div>
-                            ) : tasks.length === 0 ? (
-                              <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Add tasks to unlock</div>
-                            ) : taskGateMet ? (
-                              <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>Guardian awakens — {completedTasks}/{requiredTasks} tasks done</div>
                             ) : (
-                              <div className="text-xs font-normal uppercase" style={{color: '#FBBF24'}}>{completedTasks}/{requiredTasks} tasks — guardian stirs</div>
+                              <div>
+                                {/* Progress bar */}
+                                <div style={{
+                                  width: '100%', height: '4px', borderRadius: '2px',
+                                  background: 'rgba(255,255,255,0.08)',
+                                  overflow: 'hidden', marginBottom: '6px',
+                                }}>
+                                  <div style={{
+                                    height: '100%',
+                                    width: tasks.length === 0 ? '0%' : `${Math.min(100, (completedTasks / requiredTasks) * 100)}%`,
+                                    background: taskGateMet
+                                      ? 'linear-gradient(to right, #dc2626, #ef4444)'
+                                      : 'linear-gradient(to right, #92400e, #d97706)',
+                                    borderRadius: '2px',
+                                    transition: 'width 0.4s ease',
+                                    boxShadow: taskGateMet ? '0 0 6px rgba(239,68,68,0.6)' : 'none',
+                                  }} />
+                                </div>
+                                <div className="text-xs font-normal uppercase" style={{
+                                  color: taskGateMet ? '#ef4444' : '#FBBF24',
+                                  letterSpacing: '0.05em',
+                                }}>
+                                  {tasks.length === 0
+                                    ? 'Add tasks to unlock'
+                                    : taskGateMet
+                                      ? 'Guardian awakens'
+                                      : `${completedTasks} / ${requiredTasks} tasks`}
+                                </div>
+                              </div>
                             )}
                           </div>
                         </button>

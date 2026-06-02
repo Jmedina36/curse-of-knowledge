@@ -22,6 +22,7 @@ import DiceRollModal from './components/DiceRollModal';
 import EncounterModal from './components/EncounterModal';
 import InitiativeModal from './components/InitiativeModal';
 import DeathSaveModal from './components/DeathSaveModal';
+import ContractFulfilledModal from './components/ContractFulfilledModal';
 import ASIModal from './components/ASIModal';
 import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
@@ -603,6 +604,7 @@ const [customClass, setCustomClass] = useState(null);
   const [lastPlayedDate, setLastPlayedDate] = useState(null);
   const [curseLevel, setCurseLevel] = useState(0); // 0 = none, 1-3 = curse levels
 const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
+const [contractFulfilled, setContractFulfilled] = useState(null); // { xpEarned }
 const [cleansePotionPurchasedToday, setCleansePotionPurchasedToday] = useState(false);
 const [lastRealDay, setLastRealDay] = useState(null);
 const [debugWarningState, setDebugWarningState] = useState(null); // null = auto, or 'locked', 'unlocked', 'evening', 'finalhour'
@@ -3386,6 +3388,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   // Elite boss defeated - set daily flag (curse cleared at midnight)
 if (battleType === 'elite') {
   setEliteBossDefeatedToday(true);
+  setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss });
   addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
 }
   
@@ -4987,9 +4990,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       if (battleType === 'elite') {
         setEliteBossDefeatedToday(true);
+        setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss });
         addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
       }
-      
+
       if (isBanditWave) {
         const nextIdx = banditLineupIdxRef.current + 1;
         const lineup = banditLineupRef.current;
@@ -5901,6 +5905,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // Ensure elite boss defeated flag is set (in case of React batching issues)
       if (battleType === 'elite') {
         setEliteBossDefeatedToday(true);
+        setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss });
       }
       
       const totalTasks = tasks.length;
@@ -7733,6 +7738,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       )}
       {chargedCritRoll && (
         <ChargedCritModal data={chargedCritRoll} onClose={() => setChargedCritRoll(null)} />
+      )}
+      {contractFulfilled && (
+        <ContractFulfilledModal
+          tasks={tasks}
+          xpEarned={contractFulfilled.xpEarned}
+          onClose={() => setContractFulfilled(null)}
+        />
       )}
       {asiPending && (
         <ASIModal
