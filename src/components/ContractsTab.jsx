@@ -159,13 +159,13 @@ const ContractsTab = ({
                       {guildPoints} Guild Points
                     </span>
                     {nextRank && (
-                      <div style={{ width:'200px' }}>
-                        <div style={{ width:'100%', height:'5px', borderRadius:'3px', background:'rgba(255,255,255,0.06)', overflow:'hidden' }}>
+                      <div style={{ width:'240px' }}>
+                        <div style={{ width:'100%', height:'10px', borderRadius:'5px', background:'rgba(255,255,255,0.06)', overflow:'hidden' }}>
                           <div style={{
                             height:'100%', width:`${pct}%`,
                             background: `linear-gradient(to right, ${guildRank.color}77, ${guildRank.color})`,
-                            borderRadius:'3px', transition:'width 0.4s ease',
-                            boxShadow: `0 0 6px ${guildRank.color}88`,
+                            borderRadius:'5px', transition:'width 0.4s ease',
+                            boxShadow: `0 0 8px ${guildRank.color}88`,
                           }} />
                         </div>
                         <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', letterSpacing:'0.14em', color:'rgba(230,210,170,0.9)', textAlign:'center', marginTop:'5px', textTransform:'uppercase' }}>
