@@ -151,7 +151,7 @@ const ContractsTab = ({
                       textTransform:'uppercase', color:'rgba(230,210,170,0.9)',
                     }}>Guild Rank</span>
                     <span style={{
-                      fontFamily:'Cinzel,serif', fontSize:'1.5rem', fontWeight:900, letterSpacing:'0.25em',
+                      fontFamily:'Cinzel,serif', fontSize:'2rem', fontWeight:900, letterSpacing:'0.25em',
                       textTransform:'uppercase', color: guildRank.color,
                       textShadow: `0 0 20px ${guildRank.color}99, 0 0 40px ${guildRank.color}44`,
                     }}>{guildRank.name}</span>
