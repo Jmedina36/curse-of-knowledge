@@ -416,7 +416,7 @@ const BattleModal = ({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col overflow-y-auto"
+      className="fixed inset-0 z-50 flex flex-col overflow-hidden"
       animate={shaking
         ? { x: [-9, 9, -7, 7, -4, 4, -2, 2, 0] }
         : { x: 0 }
@@ -770,10 +770,10 @@ const BattleModal = ({
         {/* ══════════════════════════════════════════════════════════════════ */}
         {/*  ENEMY SECTION                                                    */}
         {/* ══════════════════════════════════════════════════════════════════ */}
-        <div className="flex-1 flex flex-col justify-end px-6 pt-6 pb-4">
+        <div className="flex-1 flex flex-col justify-end px-6 pt-3 pb-2">
 
           {/* Phase Label */}
-          <div className="text-center mb-2">
+          <div className="text-center mb-1">
             <motion.p
               key={phaseLabel}
               initial={{ opacity: 0, y: -6 }}
@@ -787,7 +787,7 @@ const BattleModal = ({
 
           {/* Enemy name (small label) + Creature image */}
           {bossName && (
-            <div className="text-center mb-2">
+            <div className="text-center mb-1">
               {/* Small name label */}
               <p className="uppercase font-bold tracking-[0.2em] mb-2" style={{
                 fontFamily: 'Cinzel, serif',
@@ -817,7 +817,7 @@ const BattleModal = ({
                       src={isBanditWave && banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
                       alt={bossName}
                       style={{
-                        height: isBanditWave ? 'clamp(140px, 20vh, 260px)' : 'clamp(120px, 18vh, 220px)',
+                        height: isBanditWave ? 'clamp(100px, 15vh, 180px)' : 'clamp(85px, 13vh, 155px)',
                         objectFit: 'contain',
                         objectPosition: 'top',
                         filter: bossFlash
@@ -863,12 +863,12 @@ const BattleModal = ({
           )}
 
           {/* Boss HP Bar */}
-          <div className="mb-2">
+          <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-base uppercase tracking-widest font-bold" style={{ color: '#CD7F32' }}>Enemy HP</span>
-              <span className="text-lg font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
+              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#CD7F32' }}>Enemy HP</span>
+              <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
             </div>
-            <div className="h-7 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+            <div className="h-5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
                 className={`h-full ${bossFlash ? 'hp-pulse' : ''}`}
                 animate={{ width: `${bossHpPct}%` }}
@@ -1028,7 +1028,7 @@ const BattleModal = ({
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.96 }}
                   transition={{ duration: 0.22 }}
-                  className="rounded-lg px-5 py-4 relative mt-2"
+                  className="rounded-lg px-4 py-2 relative mt-1"
                   style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid ' + borderColor, boxShadow: '0 0 24px ' + glowColor + ', inset 0 1px 0 rgba(255,255,255,0.04)' }}
                 >
                   <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid ' + borderColor }} />
@@ -1045,7 +1045,7 @@ const BattleModal = ({
         {/*  VS DIVIDER                                                       */}
         {/* ══════════════════════════════════════════════════════════════════ */}
         <div
-          className="flex items-center px-6 py-2"
+          className="flex items-center px-6 py-1"
           style={{
             borderTop: '1px solid rgba(139, 0, 0, 0.25)',
             borderBottom: '1px solid rgba(139, 0, 0, 0.25)',
@@ -1057,7 +1057,7 @@ const BattleModal = ({
             className="mx-5 font-black tracking-[0.5em]"
             style={{
               fontFamily: 'Cinzel, serif',
-              fontSize: '1.75rem',
+              fontSize: '1.2rem',
               color: '#D4AF37',
               textShadow: '0 0 25px rgba(212, 175, 55, 0.8), 0 0 50px rgba(212, 175, 55, 0.3)',
             }}
@@ -1070,21 +1070,21 @@ const BattleModal = ({
         {/* ══════════════════════════════════════════════════════════════════ */}
         {/*  PLAYER SECTION                                                   */}
         {/* ══════════════════════════════════════════════════════════════════ */}
-        <div className="flex-1 flex flex-col px-6 pt-4 pb-6">
+        <div className="flex-1 flex flex-col px-6 pt-2 pb-3">
 
           {/* Player identity */}
-          <div className="flex justify-between items-baseline mb-2">
+          <div className="flex justify-between items-baseline mb-1">
             <span className="font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#68D391', fontSize: '1.4rem' }}>{hero?.name}</span>
             <span className="text-sm uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
           </div>
 
           {/* Player HP */}
           <div className="mb-1">
-            <div className="flex justify-between items-baseline mb-1">
+            <div className="flex justify-between items-baseline mb-0.5">
               <span className="text-sm uppercase tracking-widest" style={{ color: '#68D391' }}>HP</span>
-              <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
+              <span className="text-sm font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
             </div>
-            <div className="h-6 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0, 100, 0, 0.4)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
+            <div className="h-4 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0, 100, 0, 0.4)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
               <motion.div
                 className={`h-full ${playerFlash ? 'hp-pulse' : ''}`}
                 animate={{ width: `${playerHpPct}%` }}
@@ -1103,12 +1103,12 @@ const BattleModal = ({
           </div>
 
           {/* Player Stamina */}
-          <div className="mb-3">
-            <div className="flex justify-between items-baseline mb-1">
+          <div className="mb-2">
+            <div className="flex justify-between items-baseline mb-0.5">
               <span className="text-sm uppercase tracking-widest" style={{ color: '#06B6D4' }}>SP</span>
               <span className="text-sm" style={{ color: '#A0AEC0' }}>{stamina} / {getMaxStamina()}</span>
             </div>
-            <div className="h-4 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
+            <div className="h-3 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6, 182, 212, 0.3)' }}>
               <motion.div
                 className="h-full"
                 animate={{ width: `${staminaPct}%` }}
@@ -1157,7 +1157,7 @@ const BattleModal = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.22 }}
-                className="rounded-lg px-5 py-4 relative mb-3"
+                className="rounded-lg px-4 py-2 relative mb-2"
                 style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid rgba(104,211,145,0.6)', boxShadow: '0 0 20px rgba(104,211,145,0.12), inset 0 1px 0 rgba(255,255,255,0.04)' }}
               >
                 <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid rgba(104,211,145,0.6)' }} />
@@ -1217,21 +1217,21 @@ const BattleModal = ({
 
                     <div className={`grid gap-3 mb-3 ${(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 ? 'grid-cols-3' : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
-                        className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
+                        className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Fight
                       </button>
 
                       <button onClick={() => { sounds.click(); setBattleMenu('items'); }}
                         disabled={healthPots === 0 && staminaPots === 0}
-                        className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                        className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Items
                       </button>
 
                       {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && !hasBeggedThisBattle && (
                         <button onClick={() => { sounds.negotiateOpen(); setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
-                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                          className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
                           Beg
                         </button>
@@ -1240,7 +1240,7 @@ const BattleModal = ({
                       {canFlee && (
                         <button onClick={() => handlePlayerAction(flee, 'Flee', true)}
                           disabled={stamina < 25}
-                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
                           style={{ background: stamina >= 25 ? 'linear-gradient(to bottom, rgba(30, 70, 35, 0.9), rgba(15, 40, 18, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${stamina >= 25 ? 'rgba(60, 160, 70, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Flee
                           {stamina >= 25 && <div className="text-sm font-normal mt-0.5 opacity-60">25 SP</div>}
@@ -1249,7 +1249,7 @@ const BattleModal = ({
 
                       {showDodgeButton && (
                         <button onClick={() => handlePlayerAction(dodge, 'Dodge', true)}
-                          className="py-4 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                          className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(20, 50, 100, 0.9), rgba(10, 30, 60, 0.9))', border: '2px solid rgba(96, 165, 250, 0.7)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Dodge
                           <div className="text-sm font-normal mt-0.5 opacity-70">Avoid AOE</div>
@@ -1342,7 +1342,7 @@ const BattleModal = ({
 
                       {/* Basic Attack */}
                       <button onClick={() => handlePlayerAction(attack, hero?.class?.name ? (GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] || 'Attack') : 'Attack')}
-                        className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95"
+                        className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.85), rgba(90, 4, 4, 0.85))', borderColor: 'rgba(200, 30, 30, 0.6)', color: '#F5F5DC' }}>
                         <div className="text-base uppercase tracking-wide">{hero?.class?.name ? GAME_CONSTANTS.BASIC_ATTACK_NAMES[hero.class.name] : 'Attack'}</div>
                         <div className="text-sm mt-0.5 opacity-60">Basic Strike</div>
@@ -1357,7 +1357,7 @@ const BattleModal = ({
                         const unavail = noSP || cd;
                         return (
                           <button onClick={() => handlePlayerAction(useCrushingBlow, 'Crushing Blow')} disabled={unavail}
-                            className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
+                            className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Powerful strike. Cannot be used twice in a row.'}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(165, 42, 42, 0.85), rgba(100, 25, 25, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(165, 42, 42, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
@@ -1377,7 +1377,7 @@ const BattleModal = ({
                         const unavail = stamina < 15 || cd;
                         return (
                           <button onClick={() => handlePlayerAction(useSmite, 'Smite')} disabled={unavail}
-                            className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
+                            className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.basicSkill}` : 'Holy strike that heals.'}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(218, 165, 32, 0.85), rgba(160, 120, 10, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(218, 165, 32, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
@@ -1398,7 +1398,7 @@ const BattleModal = ({
                         const unavail = stamina < spec.cost || (spec.hpCost && hp <= spec.hpCost) || cd;
                         return (
                           <button onClick={() => handlePlayerAction(specialAttack, spec.name)} disabled={unavail}
-                            className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
+                            className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : spec.effect}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.85), rgba(8, 77, 94, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(13, 116, 142, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
@@ -1422,7 +1422,7 @@ const BattleModal = ({
                         const unavail = stamina < tac.cost || cd;
                         return (
                           <button onClick={() => handlePlayerAction(useTacticalSkill, tac.name)} disabled={unavail}
-                            className="py-4 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
+                            className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
                             title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : tac.effect}
                             style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.85), rgba(120, 87, 7, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(184, 134, 11, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
                             {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
