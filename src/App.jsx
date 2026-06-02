@@ -2112,10 +2112,10 @@ if (task.overdue) {
     else if (_d20 >= 10) { _bonusXP = Math.round(xpGain * 0.10); }
     if (_bonusXP > 0)   setXp(x => x + _bonusXP);
     if (_bonusGold > 0) setGold(g => g + _bonusGold);
-    setDiceRoll({ roll: _d20, bonusXP: _bonusXP, bonusGold: _bonusGold, guildPointsEarned: gpEarned });
-    sounds.taskComplete();
     const gpEarned = task.priority === 'important' ? 3 : 1;
     setGuildPoints(p => p + gpEarned);
+    setDiceRoll({ roll: _d20, bonusXP: _bonusXP, bonusGold: _bonusGold, guildPointsEarned: gpEarned });
+    sounds.taskComplete();
 
     setStudyStats(prev => ({
       ...prev,
