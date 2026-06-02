@@ -774,25 +774,9 @@ const BattleModal = ({
             </div>
           )}
 
-          {/* Enemy name (small label) + Creature image */}
+          {/* Creature image */}
           {bossName && (
             <div className="text-center mb-1">
-              {/* Small name label */}
-              <p className="uppercase font-bold tracking-[0.2em] mb-2" style={{
-                fontFamily: 'Cinzel, serif',
-                fontSize: 'clamp(0.85rem, 2vw, 1.1rem)',
-                color: bossFlash ? '#FF3333'
-                  : isFinalBoss ? '#D4AF37'
-                  : battleType === 'elite' ? '#FB923C'
-                  : battleType === 'wave'  ? '#60A5FA'
-                  : '#E8E8E8',
-                textShadow: isFinalBoss ? '0 0 15px rgba(212,175,55,0.7)'
-                  : battleType === 'elite' ? '0 0 15px rgba(251,146,60,0.7)'
-                  : '0 0 12px rgba(220,50,50,0.6)',
-                transition: 'color 0.1s',
-              }}>
-                {battleType === 'elite' ? getEliteName(bossName) : bossName}
-              </p>
               {/* Creature image — fades in after intro */}
               <AnimatePresence>
                 {bossEntered && (
@@ -806,7 +790,7 @@ const BattleModal = ({
                       src={isBanditWave && banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
                       alt={bossName}
                       style={{
-                        height: isBanditWave ? 'clamp(100px, 15vh, 180px)' : 'clamp(85px, 13vh, 155px)',
+                        height: isBanditWave ? 'clamp(130px, 19vh, 220px)' : 'clamp(110px, 16vh, 190px)',
                         objectFit: 'contain',
                         objectPosition: 'top',
                         filter: bossFlash
@@ -854,7 +838,7 @@ const BattleModal = ({
           {/* Boss HP Bar */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#CD7F32' }}>Enemy HP</span>
+              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#CD7F32' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
               <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
             </div>
             <div className="h-5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
