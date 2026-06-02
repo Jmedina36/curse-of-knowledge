@@ -384,16 +384,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
               <div>
                 {/* Ritual header */}
                 <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-                  {/* Tier chain */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                    {[1,2,3,4,5].map((t, i) => (
-                      <React.Fragment key={t}>
-                        <span style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', color: TIER_COLORS[t], letterSpacing: '0.1em', opacity: 0.8 }}>{TIER_LABELS[t]}</span>
-                        {i < 4 && <span style={{ fontSize: '0.6rem', color: 'rgba(212,175,55,0.25)' }}>⟶</span>}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                  <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.35)', fontStyle: 'italic', margin: '8px 0 0' }}>
+                  <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.35)', fontStyle: 'italic', margin: 0 }}>
                     Sacrifice two creatures of equal tier to birth something greater.
                   </p>
                 </div>
@@ -429,6 +420,16 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                     </div>
 
                     <SlotCard monster={slotB} slotIdx={1} />
+                  </div>
+
+                  {/* Tier chain */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '20px' }}>
+                    {[1,2,3,4,5].map((t, i) => (
+                      <React.Fragment key={t}>
+                        <span style={{ fontSize: '0.65rem', fontFamily: 'Cinzel, serif', color: TIER_COLORS[t], letterSpacing: '0.1em', fontWeight: 700 }}>{TIER_LABELS[t]}</span>
+                        {i < 4 && <span style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.3)' }}>⟶</span>}
+                      </React.Fragment>
+                    ))}
                   </div>
 
                   {/* Tier mismatch warning */}
