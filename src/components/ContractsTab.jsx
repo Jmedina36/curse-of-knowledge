@@ -195,6 +195,11 @@ const ContractsTab = ({
                   </span>
                 ))}
               </div>
+              <div className="flex items-center justify-center gap-3 mt-3">
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
+                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
+              </div>
             </div>
 
             {/* Add task controls */}
