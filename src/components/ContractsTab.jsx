@@ -15,7 +15,7 @@ const TierDivider = ({ tier, label }) => (
   <div className="flex items-center gap-3 my-5">
     <div style={{ flex: 1, height: '1px', background: `linear-gradient(to right, transparent, ${TIER[tier].border})` }} />
     <span style={{
-      fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.4em',
+      fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.4em',
       textTransform: 'uppercase', color: TIER[tier].color, opacity: 0.75,
       whiteSpace: 'nowrap',
     }}>
