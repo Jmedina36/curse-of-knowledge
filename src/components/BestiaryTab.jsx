@@ -37,9 +37,48 @@ const getMonsterImg = (monster) => {
 
 const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD', mag: 'MAG' };
 
+const CREATURE_INDEX = [
+  // Common — tier 1
+  { id: 'c1',  name: 'Goblin Scout',        img: '/creatures/creature1.png',  tier: 1 },
+  { id: 'c2',  name: 'Stone Golem',          img: '/creatures/creature2.png',  tier: 1 },
+  { id: 'c3',  name: 'Shadow Wisp',          img: '/creatures/creature3.png',  tier: 1 },
+  { id: 'c4',  name: 'Iron Toad',            img: '/creatures/creature4.png',  tier: 1 },
+  { id: 'c5',  name: 'Cave Crawler',         img: '/creatures/creature5.png',  tier: 1 },
+  { id: 'c6',  name: 'Plague Bat',           img: '/creatures/creature6.png',  tier: 1 },
+  { id: 'c7',  name: 'Bone Specter',         img: '/creatures/creature7.png',  tier: 1 },
+  { id: 'c8',  name: 'Marsh Drake',          img: '/creatures/creature8.png',  tier: 1 },
+  { id: 'c9',  name: 'Venom Imp',            img: '/creatures/creature9.png',  tier: 1 },
+  { id: 'c10', name: 'Frost Wraith',         img: '/creatures/creature10.png', tier: 1 },
+  { id: 'c11', name: 'Blood Hound',          img: '/creatures/creature11.png', tier: 1 },
+  { id: 'c12', name: 'Ember Lizard',         img: '/creatures/creature12.png', tier: 1 },
+  { id: 'c13', name: 'Crypt Walker',         img: '/creatures/creature13.png', tier: 1 },
+  { id: 'c14', name: 'Moon Faerie',          img: '/creatures/creature14.png', tier: 1 },
+  { id: 'c15', name: 'Thunder Brute',        img: '/creatures/creature15.png', tier: 1 },
+  { id: 'c16', name: 'Vine Stalker',         img: '/creatures/creature16.png', tier: 1 },
+  { id: 'c17', name: 'Ash Elemental',        img: '/creatures/creature17.png', tier: 1 },
+  { id: 'c18', name: 'Dusk Serpent',         img: '/creatures/creature18.png', tier: 1 },
+  { id: 'c19', name: 'Crystal Golem',        img: '/creatures/creature19.png', tier: 1 },
+  { id: 'c20', name: 'Tomb Shade',           img: '/creatures/creature20.png', tier: 1 },
+  { id: 'c21', name: 'Storm Harpy',          img: '/creatures/creature21.png', tier: 1 },
+  { id: 'c22', name: 'Bog Troll',            img: '/creatures/creature22.png', tier: 1 },
+  { id: 'c23', name: 'Nightmare Sprite',     img: '/creatures/creature23.png', tier: 1 },
+  { id: 'c24', name: 'Lava Spawn',           img: '/creatures/creature24.png', tier: 1 },
+  { id: 'c25', name: 'Void Shifter',         img: '/creatures/creature25.png', tier: 1 },
+  // Elite — tier 2
+  { id: 'e1',  name: 'Frozen Zombie',        img: '/bosses/frozen-zombie.png',         tier: 2 },
+  { id: 'e2',  name: 'Vampire Wraith',       img: '/bosses/undead-vampire-woman.png',  tier: 2 },
+  { id: 'e3',  name: 'Orc Chieftain',        img: '/bosses/orc-chief.png',             tier: 2 },
+  { id: 'e4',  name: 'Orc Matriarch',        img: '/bosses/orc-lady.png',              tier: 2 },
+  { id: 'e5',  name: 'Orc Warlord',          img: '/bosses/orc-warrior.png',           tier: 2 },
+  // Legendary — tier 3
+  { id: 'l1',  name: 'Dark Elf Queen',       img: '/bosses/dark-elf-queen.png',        tier: 3 },
+  { id: 'l2',  name: 'Undead King',          img: '/undead-king.png',                  tier: 3 },
+];
+
 const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [openStats, setOpenStats] = useState({});
+  const [activeTab, setActiveTab] = useState('stable');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -140,8 +179,27 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
           overflow: 'hidden',
         }}
       >
-        {/* Fixed header: stable capacity bar */}
-        <div style={{ flexShrink: 0, padding: '20px 24px 0' }}>
+        {/* Tab bar */}
+        <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
+          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }].map(t => (
+            <button
+              key={t.key}
+              onClick={() => setActiveTab(t.key)}
+              style={{
+                flex: 1, padding: '12px', fontFamily: 'Cinzel, serif', fontWeight: 700,
+                fontSize: '0.82rem', letterSpacing: '0.15em', textTransform: 'uppercase',
+                cursor: 'pointer', transition: 'all 0.2s', border: 'none',
+                background: activeTab === t.key ? 'rgba(212,175,55,0.12)' : 'transparent',
+                color: activeTab === t.key ? '#D4AF37' : 'rgba(212,175,55,0.4)',
+                borderBottom: `2px solid ${activeTab === t.key ? '#D4AF37' : 'transparent'}`,
+              }}
+            >{t.label}</button>
+          ))}
+        </div>
+
+        {/* Fixed sub-header: stable capacity bar (Stable tab only) */}
+        {activeTab === 'stable' && (
+        <div style={{ flexShrink: 0, padding: '16px 24px 0' }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
             paddingBottom: '16px', fontSize: '12px', color: COLORS.silver,
@@ -164,10 +222,57 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
             )}
           </div>
         </div>
+        )}
 
-        {/* Scrollable content: monster grid */}
+        {/* Scrollable content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px' }}>
-          {capturedMonsters.length === 0 ? (
+          {/* ── CREATURE INDEX TAB ── */}
+          {activeTab === 'index' && (
+            <div>
+              {[3, 2, 1].map(tier => {
+                const entries = CREATURE_INDEX.filter(c => c.tier === tier);
+                const tierLabel = { 1: 'Common', 2: 'Elite', 3: 'Legendary' }[tier];
+                return (
+                  <div key={tier} style={{ marginBottom: '32px' }}>
+                    {/* Tier section header */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                      <div style={{ flex: 1, height: '1px', background: `linear-gradient(to right, transparent, ${TIER_BORDER[tier]})` }}/>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: TIER_COLORS[tier] }}>
+                        ◆ {tierLabel}
+                      </span>
+                      <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${TIER_BORDER[tier]})` }}/>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
+                      {entries.map(creature => (
+                        <div key={creature.id} style={{
+                          borderRadius: '10px', padding: '14px 10px 12px', textAlign: 'center',
+                          background: `linear-gradient(135deg, ${TIER_GLOW[creature.tier]}, rgba(0,0,0,0.55))`,
+                          border: `1px solid ${TIER_BORDER[creature.tier]}`,
+                          boxShadow: `0 4px 12px rgba(0,0,0,0.4), 0 0 18px ${TIER_GLOW[creature.tier]}`,
+                        }}>
+                          <img
+                            src={creature.img}
+                            alt={creature.name}
+                            style={{
+                              width: 72, height: 72, objectFit: 'contain', margin: '0 auto 10px', display: 'block',
+                              filter: `drop-shadow(0 0 8px ${TIER_COLORS[creature.tier]}55)`,
+                            }}
+                          />
+                          <p style={{
+                            fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.72rem',
+                            color: TIER_COLORS[creature.tier], lineHeight: 1.35,
+                          }}>{creature.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── STABLE TAB ── */}
+          {activeTab === 'stable' && capturedMonsters.length === 0 ? (
             <div className="text-center py-16 rounded-lg border-2" style={{
               background: 'rgba(0,0,0,0.3)',
               borderColor: 'rgba(212,175,55,0.2)',
@@ -176,7 +281,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
               <p className="text-lg mb-2" style={{ color: '#C0C0C0' }}>The stable is empty.</p>
               <p className="text-sm" style={{ color: '#9CA3AF' }}>Defeat bosses in battle and choose to capture them.</p>
             </div>
-          ) : (
+          ) : activeTab === 'stable' ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
               {capturedMonsters.map(monster => (
                 <div key={monster.id} style={{
@@ -269,7 +374,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </div>
