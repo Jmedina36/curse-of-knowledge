@@ -333,11 +333,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
     }
   }, []);
 
-  const isUnlocked = (loc) => {
-    if (loc.isElite || loc.isLegendary) return false;
-    if (loc.unlockDay === null) return false;
-    return currentDay >= loc.unlockDay;
-  };
+  const isUnlocked = (_loc) => true;
 
   const displayed = activeLocation
     ? LOCATIONS.find(l => l.id === activeLocation)
