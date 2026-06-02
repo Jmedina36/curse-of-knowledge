@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Zones ordered bottom-to-top: Day 1 at bottom, Day 6 near top
+// top % is relative to the FULL portrait image height
 const ZONES = [
   {
     id: 'outskirts',
@@ -10,7 +12,7 @@ const ZONES = [
     marker: '/worldmap/wooden-house.png',
     tierWeights: { 1: 10, 2: 0, 3: 0 },
     unlockDay: 1,
-    position: { left: '47%', top: '76%' },
+    position: { left: '47%', top: '84%' },
     danger: 1,
     dangerLabel: 'Tame',
     dangerColor: '#9CA3AF',
@@ -23,7 +25,7 @@ const ZONES = [
     marker: '/worldmap/tree.png',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockDay: 2,
-    position: { left: '20%', top: '54%' },
+    position: { left: '20%', top: '70%' },
     danger: 2,
     dangerLabel: 'Moderate',
     dangerColor: '#CD7F32',
@@ -36,10 +38,24 @@ const ZONES = [
     marker: '/worldmap/old-swords.png',
     tierWeights: { 1: 2, 2: 6, 3: 2 },
     unlockDay: 3,
-    position: { left: '65%', top: '55%' },
+    position: { left: '65%', top: '60%' },
     danger: 2,
     dangerLabel: 'Moderate',
     dangerColor: '#CD7F32',
+  },
+  {
+    id: 'dungeon',
+    name: 'Dungeon of the Fallen',
+    subtitle: 'Elite Territory',
+    desc: 'Elite horrors have claimed this place. Enter only when the contracts demand it.',
+    marker: '/worldmap/dungeon.png',
+    tierWeights: null,
+    unlockDay: null,
+    isContractOnly: true,
+    position: { left: '55%', top: '52%' },
+    danger: 4,
+    dangerLabel: 'Elite',
+    dangerColor: '#A855F7',
   },
   {
     id: 'stonehenge_wilds',
@@ -49,7 +65,7 @@ const ZONES = [
     marker: '/worldmap/stonehenge.png',
     tierWeights: { 1: 1, 2: 4, 3: 5 },
     unlockDay: 4,
-    position: { left: '33%', top: '35%' },
+    position: { left: '30%', top: '46%' },
     danger: 3,
     dangerLabel: 'Dangerous',
     dangerColor: '#DC2626',
@@ -62,7 +78,7 @@ const ZONES = [
     marker: '/worldmap/cave.png',
     tierWeights: { 1: 0, 2: 2, 3: 8 },
     unlockDay: 5,
-    position: { left: '57%', top: '26%' },
+    position: { left: '60%', top: '33%' },
     danger: 3,
     dangerLabel: 'Dangerous',
     dangerColor: '#DC2626',
@@ -75,24 +91,10 @@ const ZONES = [
     marker: '/worldmap/lava-lake.png',
     tierWeights: { 1: 0, 2: 0, 3: 10 },
     unlockDay: 6,
-    position: { left: '74%', top: '18%' },
+    position: { left: '72%', top: '18%' },
     danger: 3,
     dangerLabel: 'Dire',
     dangerColor: '#7C3AED',
-  },
-  {
-    id: 'dungeon',
-    name: 'Dungeon of the Fallen',
-    subtitle: 'Elite Territory',
-    desc: 'Elite horrors have claimed this place. Enter only when the contracts demand it.',
-    marker: '/worldmap/dungeon.png',
-    tierWeights: null,
-    unlockDay: null,
-    isContractOnly: true,
-    position: { left: '43%', top: '43%' },
-    danger: 4,
-    dangerLabel: 'Elite',
-    dangerColor: '#A855F7',
   },
   {
     id: 'skull_cave',
@@ -103,17 +105,12 @@ const ZONES = [
     tierWeights: null,
     unlockDay: null,
     isContractOnly: true,
-    position: { left: '26%', top: '16%' },
+    position: { left: '28%', top: '10%' },
     danger: 5,
     dangerLabel: 'Legendary',
     dangerColor: '#F59E0B',
   },
 ];
-
-const DANGER_DOTS = (n, color) =>
-  Array.from({ length: 5 }, (_, i) => (
-    <span key={i} style={{ color: i < n ? color : 'rgba(255,255,255,0.1)', fontSize: '0.55rem' }}>◆</span>
-  ));
 
 const TIER_META = {
   1: { label: 'Grunt',    color: '#A8A8A8' },
@@ -123,6 +120,14 @@ const TIER_META = {
 
 const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
   const [hoveredZone, setHoveredZone] = useState(null);
+  const scrollRef = useRef(null);
+
+  // Scroll to bottom on mount — Day 1 zones are at the bottom of the map
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, []);
 
   const isUnlocked = (zone) => {
     if (zone.isContractOnly) return false;
@@ -155,201 +160,191 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
       {/* Map + Panel */}
       <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
 
-        {/* Map container */}
-        <div style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-          <div style={{
-            position: 'relative',
-            height: '520px',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            border: '1px solid rgba(212,175,55,0.18)',
-            boxShadow: '0 0 40px rgba(0,0,0,0.6), inset 0 0 60px rgba(0,0,0,0.3)',
-          }}>
-            {/* Terrain base */}
-            <img
-              src="/worldmap/terrain.png"
-              alt="Ararlul World Map"
-              style={{
-                width: '100%', height: '100%',
-                objectFit: 'cover',
-                objectPosition: 'center top',
-                display: 'block',
-              }}
-            />
+        {/* Scrollable map */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div
+            ref={scrollRef}
+            style={{
+              height: '560px',
+              overflowY: 'scroll',
+              borderRadius: '8px',
+              border: '1px solid rgba(212,175,55,0.18)',
+              boxShadow: '0 0 40px rgba(0,0,0,0.6)',
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'rgba(212,175,55,0.25) rgba(0,0,0,0.3)',
+            }}
+          >
+            {/* Inner map — natural portrait height */}
+            <div style={{ position: 'relative', width: '100%' }}>
+              {/* Terrain */}
+              <img
+                src="/worldmap/terrain.png"
+                alt="Ararlul World Map"
+                style={{ width: '100%', display: 'block' }}
+              />
 
-            {/* Atmospheric overlay */}
-            <div style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              background: 'linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.35) 100%)',
-            }} />
+              {/* Atmospheric overlay */}
+              <div style={{
+                position: 'absolute', inset: 0, pointerEvents: 'none',
+                background: 'linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 30%, rgba(0,0,0,0.05) 70%, rgba(0,0,0,0.2) 100%)',
+              }} />
 
-            {/* Vignette */}
-            <div style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              boxShadow: 'inset 0 0 80px rgba(0,0,0,0.5)',
-            }} />
+              {/* Zone markers */}
+              {ZONES.map(zone => {
+                const unlocked = isUnlocked(zone);
+                const isSelected = selectedZone?.id === zone.id;
+                const isHovered = hoveredZone === zone.id;
 
-            {/* Zone markers */}
-            {ZONES.map(zone => {
-              const unlocked = isUnlocked(zone);
-              const isSelected = selectedZone?.id === zone.id;
-              const isHovered = hoveredZone === zone.id;
+                return (
+                  <motion.div
+                    key={zone.id}
+                    style={{
+                      position: 'absolute',
+                      left: zone.position.left,
+                      top: zone.position.top,
+                      transform: 'translate(-50%, -50%)',
+                      cursor: unlocked ? 'pointer' : 'default',
+                      zIndex: isSelected || isHovered ? 10 : 5,
+                    }}
+                    whileHover={unlocked ? { scale: 1.12 } : {}}
+                    onClick={() => unlocked && setSelectedZone(zone)}
+                    onMouseEnter={() => setHoveredZone(zone.id)}
+                    onMouseLeave={() => setHoveredZone(null)}
+                  >
+                    {/* Selection ring */}
+                    {isSelected && (
+                      <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        style={{
+                          position: 'absolute', inset: '-10px',
+                          borderRadius: '50%',
+                          border: `2px solid ${zone.dangerColor}`,
+                          boxShadow: `0 0 14px ${zone.dangerColor}88`,
+                        }}
+                      />
+                    )}
 
-              return (
-                <motion.div
-                  key={zone.id}
-                  style={{
-                    position: 'absolute',
-                    left: zone.position.left,
-                    top: zone.position.top,
-                    transform: 'translate(-50%, -50%)',
-                    cursor: unlocked ? 'pointer' : 'default',
-                    zIndex: isSelected || isHovered ? 10 : 5,
-                  }}
-                  whileHover={unlocked ? { scale: 1.12 } : {}}
-                  onClick={() => unlocked && setSelectedZone(zone)}
-                  onMouseEnter={() => setHoveredZone(zone.id)}
-                  onMouseLeave={() => setHoveredZone(null)}
-                >
-                  {/* Selection ring */}
-                  {isSelected && (
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
+                    <img
+                      src={zone.marker}
+                      alt={zone.name}
                       style={{
-                        position: 'absolute',
-                        inset: '-10px',
-                        borderRadius: '50%',
-                        border: `2px solid ${zone.dangerColor}`,
-                        boxShadow: `0 0 14px ${zone.dangerColor}88`,
+                        width: '48px', height: '48px',
+                        objectFit: 'contain',
+                        filter: unlocked
+                          ? isSelected
+                            ? `drop-shadow(0 0 10px ${zone.dangerColor}) brightness(1.1)`
+                            : 'drop-shadow(0 2px 6px rgba(0,0,0,0.9))'
+                          : 'grayscale(1) brightness(0.3)',
+                        transition: 'filter 0.2s',
                       }}
                     />
-                  )}
 
-                  <img
-                    src={zone.marker}
-                    alt={zone.name}
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      objectFit: 'contain',
-                      filter: unlocked
-                        ? isSelected
-                          ? `drop-shadow(0 0 10px ${zone.dangerColor}) brightness(1.1)`
-                          : 'drop-shadow(0 2px 5px rgba(0,0,0,0.9))'
-                        : 'grayscale(1) brightness(0.35)',
-                      transition: 'filter 0.2s',
-                    }}
-                  />
-
-                  {/* Lock badge */}
-                  {!unlocked && !zone.isContractOnly && (
-                    <div style={{
-                      position: 'absolute', top: '-2px', right: '-2px',
-                      background: 'rgba(0,0,0,0.85)',
-                      borderRadius: '50%',
-                      width: '14px', height: '14px',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '8px',
-                    }}>
-                      🔒
-                    </div>
-                  )}
-
-                  {/* Contract badge */}
-                  {zone.isContractOnly && (
-                    <div style={{
-                      position: 'absolute', top: '-6px', right: '-6px',
-                      fontSize: '0.5rem', fontWeight: 700,
-                      background: 'rgba(0,0,0,0.9)',
-                      color: zone.dangerColor,
-                      border: `1px solid ${zone.dangerColor}44`,
-                      borderRadius: '3px',
-                      padding: '1px 3px',
-                      letterSpacing: '0.04em',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      CONTRACT
-                    </div>
-                  )}
-
-                  {/* Hover tooltip */}
-                  <AnimatePresence>
-                    {isHovered && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.12 }}
-                        style={{
-                          position: 'absolute',
-                          bottom: 'calc(100% + 8px)',
-                          left: '50%',
-                          transform: 'translateX(-50%)',
-                          background: 'rgba(8,4,4,0.97)',
-                          border: `1px solid ${zone.dangerColor}44`,
-                          borderRadius: '4px',
-                          padding: '5px 9px',
-                          whiteSpace: 'nowrap',
-                          pointerEvents: 'none',
-                          zIndex: 20,
-                          boxShadow: `0 4px 12px rgba(0,0,0,0.7)`,
-                        }}
-                      >
-                        <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.07em' }}>
-                          {zone.name}
-                        </div>
-                        <div style={{ fontSize: '0.55rem', color: zone.dangerColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '1px' }}>
-                          {zone.dangerLabel}
-                          {!unlocked && !zone.isContractOnly && ` · Unlocks Day ${zone.unlockDay}`}
-                          {zone.isContractOnly && ' · Contract Only'}
-                        </div>
-                      </motion.div>
+                    {/* Lock badge */}
+                    {!unlocked && !zone.isContractOnly && (
+                      <div style={{
+                        position: 'absolute', top: '-2px', right: '-2px',
+                        background: 'rgba(0,0,0,0.85)',
+                        borderRadius: '50%', width: '14px', height: '14px',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '8px',
+                      }}>🔒</div>
                     )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
 
-            {/* Active zone chip at bottom-left */}
-            <AnimatePresence>
-              {selectedZone && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  style={{
-                    position: 'absolute', bottom: '12px', left: '12px',
-                    background: 'rgba(0,0,0,0.88)',
-                    border: `1px solid ${selectedZone.dangerColor}44`,
-                    borderRadius: '5px',
-                    padding: '6px 10px',
-                    backdropFilter: 'blur(4px)',
-                  }}
-                >
-                  <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.55)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>
-                    Hunting Ground
-                  </div>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 700, color: selectedZone.dangerColor, letterSpacing: '0.1em' }}>
-                    {selectedZone.name}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    {/* Contract badge */}
+                    {zone.isContractOnly && (
+                      <div style={{
+                        position: 'absolute', top: '-6px', right: '-6px',
+                        fontSize: '0.5rem', fontWeight: 700,
+                        background: 'rgba(0,0,0,0.9)',
+                        color: zone.dangerColor,
+                        border: `1px solid ${zone.dangerColor}44`,
+                        borderRadius: '3px', padding: '1px 3px',
+                        whiteSpace: 'nowrap',
+                      }}>CONTRACT</div>
+                    )}
 
-            {/* Cardinal directions watermark */}
-            <img
-              src="/worldmap/cardinal.png"
-              alt=""
-              style={{
-                position: 'absolute', bottom: '10px', right: '10px',
-                width: '48px', height: '48px',
-                objectFit: 'contain',
-                opacity: 0.55,
-                pointerEvents: 'none',
-              }}
-            />
+                    {/* Zone name label beneath marker */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      marginTop: '3px',
+                      whiteSpace: 'nowrap',
+                      textAlign: 'center',
+                      pointerEvents: 'none',
+                    }}>
+                      <div style={{
+                        fontSize: '0.55rem', fontWeight: 700,
+                        color: isSelected ? zone.dangerColor : 'rgba(240,230,210,0.85)',
+                        letterSpacing: '0.07em',
+                        textShadow: '0 1px 4px rgba(0,0,0,0.9), 0 0 8px rgba(0,0,0,0.8)',
+                        background: 'rgba(0,0,0,0.45)',
+                        padding: '1px 4px',
+                        borderRadius: '2px',
+                      }}>
+                        {zone.name}
+                      </div>
+                    </div>
+
+                    {/* Hover tooltip */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.12 }}
+                          style={{
+                            position: 'absolute',
+                            bottom: 'calc(100% + 8px)',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            background: 'rgba(8,4,4,0.97)',
+                            border: `1px solid ${zone.dangerColor}44`,
+                            borderRadius: '4px',
+                            padding: '5px 9px',
+                            whiteSpace: 'nowrap',
+                            pointerEvents: 'none',
+                            zIndex: 20,
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.7)',
+                          }}
+                        >
+                          <div style={{ fontSize: '0.65rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.07em' }}>
+                            {zone.name}
+                          </div>
+                          <div style={{ fontSize: '0.55rem', color: zone.dangerColor, letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: '1px' }}>
+                            {zone.dangerLabel}
+                            {!unlocked && !zone.isContractOnly && ` · Unlocks Day ${zone.unlockDay}`}
+                            {zone.isContractOnly && ' · Contract Only'}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+
+              {/* Cardinal directions */}
+              <img
+                src="/worldmap/cardinal.png"
+                alt=""
+                style={{
+                  position: 'absolute', bottom: '12px', right: '12px',
+                  width: '52px', height: '52px',
+                  objectFit: 'contain',
+                  opacity: 0.5,
+                  pointerEvents: 'none',
+                }}
+              />
+            </div>
           </div>
+
+          {/* Scroll hint */}
+          <p style={{ textAlign: 'center', fontSize: '0.55rem', color: 'rgba(180,160,140,0.3)', letterSpacing: '0.15em', textTransform: 'uppercase', marginTop: '6px' }}>
+            scroll to explore — day 1 at the bottom, higher dangers above
+          </p>
         </div>
 
         {/* Info panel */}
@@ -370,7 +365,6 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                   boxShadow: `0 0 24px ${selectedZone.dangerColor}10`,
                 }}
               >
-                {/* Name */}
                 <div style={{ marginBottom: '10px' }}>
                   <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: '3px' }}>
                     {selectedZone.subtitle}
@@ -382,14 +376,12 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
 
                 {/* Danger */}
                 <div style={{ marginBottom: '10px' }}>
-                  <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: '4px' }}>
-                    Danger
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <div style={{ display: 'flex', gap: '2px' }}>
-                      {DANGER_DOTS(selectedZone.danger, selectedZone.dangerColor)}
-                    </div>
-                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: selectedZone.dangerColor, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: '4px' }}>Danger</div>
+                  <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <span key={i} style={{ fontSize: '0.5rem', color: i < selectedZone.danger ? selectedZone.dangerColor : 'rgba(255,255,255,0.1)' }}>◆</span>
+                    ))}
+                    <span style={{ fontSize: '0.6rem', fontWeight: 700, color: selectedZone.dangerColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginLeft: '4px' }}>
                       {selectedZone.dangerLabel}
                     </span>
                   </div>
@@ -398,9 +390,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                 {/* Creature breakdown */}
                 {selectedZone.tierWeights && (
                   <div style={{ marginBottom: '10px' }}>
-                    <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: '6px' }}>
-                      Creatures
-                    </div>
+                    <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.45)', letterSpacing: '0.22em', textTransform: 'uppercase', marginBottom: '6px' }}>Creatures</div>
                     {[1, 2, 3].map(tier => {
                       const w = selectedZone.tierWeights[tier] || 0;
                       const total = Object.values(selectedZone.tierWeights).reduce((a, b) => a + b, 0);
@@ -422,15 +412,10 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                   </div>
                 )}
 
-                {/* Lore desc */}
-                <p style={{
-                  fontSize: '0.62rem', color: 'rgba(180,165,150,0.6)',
-                  lineHeight: 1.65, marginBottom: '12px', fontStyle: 'italic',
-                }}>
+                <p style={{ fontSize: '0.62rem', color: 'rgba(180,165,150,0.6)', lineHeight: 1.65, marginBottom: '12px', fontStyle: 'italic' }}>
                   "{selectedZone.desc}"
                 </p>
 
-                {/* Status footer */}
                 {selectedZone.isContractOnly ? (
                   <div style={{
                     fontSize: '0.58rem', color: selectedZone.dangerColor,
@@ -438,9 +423,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                     border: `1px solid ${selectedZone.dangerColor}30`,
                     borderRadius: '4px', padding: '6px 8px',
                     textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase',
-                  }}>
-                    Contract Access Only
-                  </div>
+                  }}>Contract Access Only</div>
                 ) : !isUnlocked(selectedZone) ? (
                   <div style={{
                     fontSize: '0.58rem', color: '#6B7280',
@@ -448,14 +431,9 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                     border: '1px solid rgba(255,255,255,0.07)',
                     borderRadius: '4px', padding: '6px 8px',
                     textAlign: 'center', letterSpacing: '0.08em',
-                  }}>
-                    Unlocks on Day {selectedZone.unlockDay}
-                  </div>
+                  }}>Unlocks on Day {selectedZone.unlockDay}</div>
                 ) : (
-                  <div style={{
-                    fontSize: '0.55rem', color: `${selectedZone.dangerColor}aa`,
-                    textAlign: 'center', letterSpacing: '0.15em', textTransform: 'uppercase',
-                  }}>
+                  <div style={{ fontSize: '0.55rem', color: `${selectedZone.dangerColor}aa`, textAlign: 'center', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
                     ✦ Active hunting ground ✦
                   </div>
                 )}
@@ -513,7 +491,6 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
               );
             })}
 
-            {/* Contract-only divider */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: '8px 0 4px' }}>
               <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
               <span style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.3)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Contract</span>
@@ -529,17 +506,14 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                   padding: '5px 8px', marginBottom: '3px',
                   background: selectedZone?.id === zone.id ? `${zone.dangerColor}14` : 'rgba(0,0,0,0.25)',
                   border: `1px solid ${selectedZone?.id === zone.id ? zone.dangerColor + '40' : 'rgba(255,255,255,0.05)'}`,
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'all 0.15s',
-                  textAlign: 'left',
+                  borderRadius: '4px', cursor: 'pointer', transition: 'all 0.15s', textAlign: 'left',
                 }}
               >
                 <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: zone.dangerColor, flexShrink: 0 }} />
                 <span style={{ fontSize: '0.58rem', color: selectedZone?.id === zone.id ? zone.dangerColor : '#D4C5B0', letterSpacing: '0.07em', flex: 1 }}>
                   {zone.name}
                 </span>
-                <span style={{ fontSize: '0.48rem', color: zone.dangerColor, opacity: 0.6, letterSpacing: '0.08em' }}>⚔</span>
+                <span style={{ fontSize: '0.48rem', color: zone.dangerColor, opacity: 0.6 }}>⚔</span>
               </button>
             ))}
           </div>
