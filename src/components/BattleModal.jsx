@@ -177,6 +177,7 @@ const BattleModal = ({
   raidFaction,
   playerStunned,
   setPlayerStunned,
+  currentBattleCreature,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -901,7 +902,29 @@ const BattleModal = ({
           {/* Boss HP Bar */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#FFFFFF' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#FFFFFF' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
+                {currentBattleCreature && (() => {
+                  const TIER_META = {
+                    1: { label: 'Grunt',     color: '#A8A8A8' },
+                    2: { label: 'Predator',  color: '#CD7F32' },
+                    3: { label: 'Dire',      color: '#DC2626' },
+                    4: { label: 'Elite',     color: '#A855F7' },
+                    5: { label: 'Legendary', color: '#F59E0B' },
+                  };
+                  const meta = TIER_META[currentBattleCreature.tier];
+                  if (!meta) return null;
+                  return (
+                    <span style={{
+                      fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em',
+                      textTransform: 'uppercase', color: meta.color,
+                      border: `1px solid ${meta.color}55`,
+                      background: `${meta.color}18`,
+                      padding: '1px 6px', borderRadius: '3px',
+                    }}>{meta.label}</span>
+                  );
+                })()}
+              </div>
               <span className="text-base font-bold" style={{ color: '#F5F5DC' }}>{bossHp} / {bossMax}</span>
             </div>
             <div className="h-5 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(139,0,0,0.5)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>

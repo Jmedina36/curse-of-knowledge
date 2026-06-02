@@ -7647,6 +7647,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               isBanditWave={isBanditWave || isDaughtersWave} banditEnemyImg={banditEnemyImg}
               raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : null}
               playerStunned={playerStunned} setPlayerStunned={setPlayerStunned}
+              currentBattleCreature={currentBattleCreature}
             />
           )}
           {showPomodoro && pomodoroTask && (
