@@ -298,7 +298,7 @@ const ContractsTab = ({
                         {/* Tier badge row */}
                         <div style={{marginBottom:'8px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
                           <span style={{
-                            fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.22em',
+                            fontFamily:'Cinzel,serif', fontSize:'0.75rem', letterSpacing:'0.22em',
                             textTransform:'uppercase', padding:'2px 8px', borderRadius:'2px',
                             background: t.done ? 'rgba(60,90,40,0.3)' : t.overdue ? 'rgba(140,30,20,0.4)' : t.priority === 'important' ? 'rgba(50,50,55,0.5)' : 'rgba(45,25,8,0.5)',
                             border: t.done ? '1px solid rgba(80,120,60,0.4)' : t.overdue ? '1px solid rgba(180,40,30,0.5)' : t.priority === 'important' ? `1px solid ${TIER.silver.border}` : `1px solid ${TIER.copper.border}`,
