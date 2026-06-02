@@ -190,7 +190,7 @@ const ContractsTab = ({
               </div>
               <div className="flex items-center justify-center gap-5 flex-wrap">
                 {['copper','silver','gold','platinum','mythril'].map(t => (
-                  <span key={t} style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', textTransform:'uppercase', color: TIER[t].color, opacity: 0.95 }}>
+                  <span key={t} style={{ fontFamily:'Cinzel,serif', fontSize:'0.9rem', letterSpacing:'0.2em', textTransform:'uppercase', color: TIER[t].color, opacity: 0.95 }}>
                     ◆ {TIER[t].label}
                   </span>
                 ))}
