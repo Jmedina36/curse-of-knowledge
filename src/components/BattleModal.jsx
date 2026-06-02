@@ -429,6 +429,7 @@ const BattleModal = ({
   const bossHpPct = (bossHp / bossMax) * 100;
   const playerHpPct = (hp / getMaxHp()) * 100;
   const staminaPct = (stamina / getMaxStamina()) * 100;
+  const canCapture = !isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && capturedMonsters.length < 4;
 
   const phaseLabel = isFinalBoss
     ? (inPhase3 ? 'PHASE 3 — ABYSS AWAKENING' : inPhase2 ? 'PHASE 2 — THE PRESSURE' : 'THE UNDYING LEGEND')
@@ -875,6 +876,13 @@ const BattleModal = ({
             </div>
           )}
 
+          {/* Weakened notice */}
+          {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
+            <p className="text-xs text-center uppercase tracking-widest mb-1 animate-pulse" style={{ color: 'rgba(212,175,55,0.8)', fontFamily: 'Cinzel, serif' }}>
+              ✦ The creature is weakened ✦
+            </p>
+          )}
+
           {/* Boss HP Bar */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
@@ -914,46 +922,6 @@ const BattleModal = ({
             </div>
           </div>
 
-          {/* ── Capture Button (< 40% HP, non-boss, non-bandit) ── */}
-          {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
-            <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.25)' }}>
-              <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(212,175,55,0.7)', fontFamily: 'Cinzel, serif' }}>
-                The creature is weakened...
-              </p>
-              <button
-                disabled={capturedMonsters?.length >= 4 || turnPhase !== 'player'}
-                onClick={() => {
-                  if (capturedMonsters?.length >= 4) return;
-                  const captureImg = isBanditWave && banditEnemyImg
-                    ? banditEnemyImg
-                    : getCreatureImg(bossName, battleType, isFinalBoss);
-                  const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, captureImg, bossStats);
-                  setCaptureResult({ type: 'capture', ...result });
-                  setTimeout(() => setCaptureResult(null), 2500);
-                }}
-                style={{
-                  width: '100%', padding: '8px 6px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
-                  fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
-                  background: capturedMonsters?.length >= 4 ? 'rgba(60,60,60,0.4)' : 'linear-gradient(to bottom, rgba(107,33,168,0.6), rgba(76,29,149,0.65))',
-                  border: `1px solid ${capturedMonsters?.length >= 4 ? 'rgba(155,139,126,0.3)' : 'rgba(168,85,247,0.6)'}`,
-                  color: capturedMonsters?.length >= 4 ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
-                  cursor: capturedMonsters?.length >= 4 ? 'not-allowed' : 'pointer',
-                }}
-              >
-                {capturedMonsters?.length >= 4 ? 'Stable Full' : '🔮 Capture'}
-              </button>
-              {captureResult && (
-                <p className="text-xs text-center mt-2 animate-pulse" style={{
-                  color: captureResult.success ? '#4ADE80' : '#FF6B6B',
-                  fontFamily: 'Cinzel, serif',
-                }}>
-                  {captureResult.success ? 'Captured!'
-                    : captureResult.reason === 'full' ? 'Stable is full!'
-                    : 'The creature resisted!'}
-                </p>
-              )}
-            </div>
-          )}
 
           {/* Phase 2 Pressure */}
           {inPhase2 && !inPhase3 && phase2DamageStacks > 0 && (
@@ -1190,7 +1158,11 @@ const BattleModal = ({
                       );
                     })()}
 
-                    <div className={`grid gap-3 mb-3 ${(canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    <div className={`grid gap-3 mb-3 ${
+                      canCapture
+                        ? (canFlee || showDodgeButton) ? 'grid-cols-4' : 'grid-cols-3'
+                        : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'
+                    }`}>
                       <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
                         className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1220,6 +1192,18 @@ const BattleModal = ({
                           style={{ background: 'linear-gradient(to bottom, rgba(20, 50, 100, 0.9), rgba(10, 30, 60, 0.9))', border: '2px solid rgba(96, 165, 250, 0.7)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                           Dodge
                           <div className="text-sm font-normal mt-0.5 opacity-70">Avoid AOE</div>
+                        </button>
+                      )}
+
+                      {canCapture && (
+                        <button
+                          onClick={() => {
+                            sounds.click();
+                            onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, getCreatureImg(bossName, battleType, isFinalBoss), bossStats);
+                          }}
+                          className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
+                          style={{ background: 'linear-gradient(to bottom, rgba(80, 30, 120, 0.9), rgba(50, 15, 80, 0.9))', border: '2px solid rgba(168, 85, 247, 0.7)', color: '#E9D5FF', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.3)' }}>
+                          🔮 Capture
                         </button>
                       )}
                     </div>
