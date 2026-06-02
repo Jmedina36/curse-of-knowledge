@@ -11,16 +11,16 @@ const KAEL_IDLE = [
   "Capture enough and the wilds themselves will fear your name.",
 ];
 
-const TIER_LABELS = { 1: 'Common', 2: 'Elite', 3: 'Legendary' };
-const TIER_COLORS = { 1: '#C0C0C0', 2: '#A855F7', 3: '#F59E0B' };
-const TIER_BORDER = { 1: 'rgba(192,192,192,0.35)', 2: 'rgba(168,85,247,0.45)', 3: 'rgba(245,158,11,0.55)' };
-const TIER_GLOW   = { 1: 'rgba(192,192,192,0.08)', 2: 'rgba(168,85,247,0.12)', 3: 'rgba(245,158,11,0.15)' };
+const TIER_LABELS = { 1: 'Grunt', 2: 'Predator', 3: 'Dire', 4: 'Elite', 5: 'Legendary' };
+const TIER_COLORS = { 1: '#A8A8A8', 2: '#CD7F32', 3: '#DC2626', 4: '#A855F7', 5: '#F59E0B' };
+const TIER_BORDER = { 1: 'rgba(168,168,168,0.35)', 2: 'rgba(205,127,50,0.45)', 3: 'rgba(220,38,38,0.45)', 4: 'rgba(168,85,247,0.45)', 5: 'rgba(245,158,11,0.55)' };
+const TIER_GLOW   = { 1: 'rgba(168,168,168,0.08)', 2: 'rgba(205,127,50,0.1)', 3: 'rgba(220,38,38,0.1)', 4: 'rgba(168,85,247,0.12)', 5: 'rgba(245,158,11,0.15)' };
 
 const getMonsterImg = (monster) => {
   if (monster.img) return monster.img;
   // fallback for old saves without img
-  if (monster.tier === 3) return '/undead-king.png';
-  if (monster.tier === 2) {
+  if (monster.tier === 5) return '/undead-king.png';
+  if (monster.tier === 4) {
     const ELITE_IMGS = [
       '/bosses/frozen-zombie.png',
       '/bosses/undead-vampire-woman.png',
@@ -31,54 +31,65 @@ const getMonsterImg = (monster) => {
     const seed = monster.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
     return ELITE_IMGS[seed % ELITE_IMGS.length];
   }
-  const idx = monster.creatureIdx != null ? monster.creatureIdx : (monster.id % 8);
-  return `/creatures/creature${1 + (idx % 8)}.png`;
+  const idx = monster.creatureIdx != null ? monster.creatureIdx : (monster.id % 25);
+  return `/creatures/creature${1 + (idx % 25)}.png`;
 };
 
 const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD', mag: 'MAG' };
 
 const CREATURE_INDEX = [
-  // Common — tier 1
+  // T1 — Grunt (weakest, vermin-level)
   { id: 'c1',  name: 'Bloodmaw',              img: '/creatures/creature1.png',  tier: 1, desc: 'A savage predator that hunts by scent alone. Its jaws can crush iron.' },
-  { id: 'c2',  name: 'Graveborn Crusher',     img: '/creatures/creature2.png',  tier: 1, desc: 'Risen from mass graves, it shambles forward with unstoppable weight.' },
-  { id: 'c3',  name: 'Shadowflesh',           img: '/creatures/creature3.png',  tier: 1, desc: 'Its body shifts between shadow and flesh, making it nearly impossible to strike.' },
   { id: 'c4',  name: 'Rot Creeper',           img: '/creatures/creature4.png',  tier: 1, desc: 'A colony of decay given form. Its touch spreads blight to living tissue.' },
-  { id: 'c5',  name: 'Bonescale Fiend',       img: '/creatures/creature5.png',  tier: 1, desc: 'Plated in fused bone, it shrugs off blows that would fell a lesser beast.' },
   { id: 'c6',  name: 'Plagueborn',            img: '/creatures/creature6.png',  tier: 1, desc: 'Born in the fever-swamps. Where it walks, sickness follows.' },
-  { id: 'c7',  name: 'Death Hollow',          img: '/creatures/creature7.png',  tier: 1, desc: 'A hollow vessel animated by residual death magic. It knows no pain.' },
   { id: 'c8',  name: 'Soulblight',            img: '/creatures/creature8.png',  tier: 1, desc: 'Feeds on the vital essence of the living, leaving hollow shells in its wake.' },
   { id: 'c9',  name: 'Darkfang',              img: '/creatures/creature9.png',  tier: 1, desc: 'Its venom corrodes both body and will. Survivors rarely speak of the encounter.' },
   { id: 'c10', name: 'Frostveil',             img: '/creatures/creature10.png', tier: 1, desc: 'A wraith of frozen air that numbs its prey into stillness before striking.' },
-  { id: 'c11', name: 'Bloodthorn',            img: '/creatures/creature11.png', tier: 1, desc: 'A cursed bramble-creature that bleeds its victims dry through barbed tendrils.' },
   { id: 'c12', name: 'Ashborn',               img: '/creatures/creature12.png', tier: 1, desc: 'Forged in the embers of a razed village. It carries the wrath of the fallen.' },
-  { id: 'c13', name: 'Grave Sentinel',        img: '/creatures/creature13.png', tier: 1, desc: 'An ancient guardian bound to protect a tomb long since plundered.' },
-  { id: 'c14', name: 'Dusk Wraith',           img: '/creatures/creature14.png', tier: 1, desc: 'Emerges only at twilight. Its wail paralyzes those who hear it.' },
-  { id: 'c15', name: 'Thunderhide',           img: '/creatures/creature15.png', tier: 1, desc: 'A brute whose hide conducts lightning. Striking it risks a deadly discharge.' },
-  { id: 'c16', name: 'Briarhunter',           img: '/creatures/creature16.png', tier: 1, desc: 'Stalks prey through dense undergrowth. Silent until the moment it lunges.' },
-  { id: 'c17', name: 'Emberspecter',          img: '/creatures/creature17.png', tier: 1, desc: 'The ghost of something burned alive. It radiates searing heat in all directions.' },
-  { id: 'c18', name: 'Viperous Shade',        img: '/creatures/creature18.png', tier: 1, desc: 'Half serpent, half shadow. Its bite poisons the mind as much as the body.' },
-  { id: 'c19', name: 'Stoneblight',           img: '/creatures/creature19.png', tier: 1, desc: 'A slow, grinding horror. Its presence petrifies the ground beneath it.' },
-  { id: 'c20', name: 'Tomb Horror',           img: '/creatures/creature20.png', tier: 1, desc: 'Dragged from the deep dark of burial crypts. It despises the living.' },
-  { id: 'c21', name: 'Stormscreech',          img: '/creatures/creature21.png', tier: 1, desc: 'A flying predator that calls lightning down on fleeing prey.' },
   { id: 'c22', name: 'Bog Fiend',             img: '/creatures/creature22.png', tier: 1, desc: 'Pulls victims beneath the mire. None have returned from its domain.' },
-  { id: 'c23', name: 'Void Spawn',            img: '/creatures/creature23.png', tier: 1, desc: 'A fragment of the void given grotesque form. It hungers without end.' },
-  { id: 'c24', name: 'Lava Fiend',            img: '/creatures/creature24.png', tier: 1, desc: 'Crawls from volcanic fissures. Its body burns at temperatures that melt steel.' },
-  { id: 'c25', name: 'Rift Horror',           img: '/creatures/creature25.png', tier: 1, desc: 'Slips between planes of existence. Wounds from it do not heal naturally.' },
-  // Elite — tier 2
-  { id: 'e1',  name: 'Morvane, the Frozen Condemned',   img: '/bosses/frozen-zombie.png',         tier: 2, desc: 'A warrior executed in winter and cursed to walk forever. His rage has not thawed in three centuries.' },
-  { id: 'e2',  name: 'Seraphine the Bloodless',          img: '/bosses/undead-vampire-woman.png',  tier: 2, desc: 'Once a high priestess, now an undying predator. She drains life with a whisper.' },
-  { id: 'e3',  name: 'Grakthar the Unbroken',            img: '/bosses/orc-chief.png',             tier: 2, desc: 'No blade has ever drawn his blood. He has crushed every challenger beneath his fists.' },
-  { id: 'e4',  name: 'Gryvara, Ironblood Matriarch',     img: '/bosses/orc-lady.png',              tier: 2, desc: 'Commander of a dozen warbands. She leads from the front and leaves nothing standing.' },
-  { id: 'e5',  name: 'Korruk the Merciless',             img: '/bosses/orc-warrior.png',           tier: 2, desc: 'Has never offered quarter and never asked for it. His battlefield record spans forty years of war.' },
-  // Legendary — tier 3
-  { id: 'l1',  name: 'Sylvaris, Queen of Ruin',          img: '/bosses/dark-elf-queen.png',        tier: 3, desc: 'She dismantled an empire from within. Now she builds something far worse from its ashes.' },
-  { id: 'l2',  name: 'Malachar, the Eternal Lich',       img: '/undead-king.png',                  tier: 3, desc: 'His phylactery has never been found. He has died seventeen times and returned each time stronger.' },
+  // T2 — Predator (dangerous, territorial)
+  { id: 'c2',  name: 'Graveborn Crusher',     img: '/creatures/creature2.png',  tier: 2, desc: 'Risen from mass graves, it shambles forward with unstoppable weight.' },
+  { id: 'c5',  name: 'Bonescale Fiend',       img: '/creatures/creature5.png',  tier: 2, desc: 'Plated in fused bone, it shrugs off blows that would fell a lesser beast.' },
+  { id: 'c11', name: 'Bloodthorn',            img: '/creatures/creature11.png', tier: 2, desc: 'A cursed bramble-creature that bleeds its victims dry through barbed tendrils.' },
+  { id: 'c15', name: 'Thunderhide',           img: '/creatures/creature15.png', tier: 2, desc: 'A brute whose hide conducts lightning. Striking it risks a deadly discharge.' },
+  { id: 'c16', name: 'Briarhunter',           img: '/creatures/creature16.png', tier: 2, desc: 'Stalks prey through dense undergrowth. Silent until the moment it lunges.' },
+  { id: 'c17', name: 'Emberspecter',          img: '/creatures/creature17.png', tier: 2, desc: 'The ghost of something burned alive. It radiates searing heat in all directions.' },
+  { id: 'c18', name: 'Viperous Shade',        img: '/creatures/creature18.png', tier: 2, desc: 'Half serpent, half shadow. Its bite poisons the mind as much as the body.' },
+  { id: 'c19', name: 'Stoneblight',           img: '/creatures/creature19.png', tier: 2, desc: 'A slow, grinding horror. Its presence petrifies the ground beneath it.' },
+  { id: 'c21', name: 'Stormscreech',          img: '/creatures/creature21.png', tier: 2, desc: 'A flying predator that calls lightning down on fleeing prey.' },
+  // T3 — Dire (terrifying, borderline elite)
+  { id: 'c3',  name: 'Shadowflesh',           img: '/creatures/creature3.png',  tier: 3, desc: 'Its body shifts between shadow and flesh, making it nearly impossible to strike.' },
+  { id: 'c7',  name: 'Death Hollow',          img: '/creatures/creature7.png',  tier: 3, desc: 'A hollow vessel animated by residual death magic. It knows no pain.' },
+  { id: 'c13', name: 'Grave Sentinel',        img: '/creatures/creature13.png', tier: 3, desc: 'An ancient guardian bound to protect a tomb long since plundered.' },
+  { id: 'c14', name: 'Dusk Wraith',           img: '/creatures/creature14.png', tier: 3, desc: 'Emerges only at twilight. Its wail paralyzes those who hear it.' },
+  { id: 'c20', name: 'Tomb Horror',           img: '/creatures/creature20.png', tier: 3, desc: 'Dragged from the deep dark of burial crypts. It despises the living.' },
+  { id: 'c23', name: 'Void Spawn',            img: '/creatures/creature23.png', tier: 3, desc: 'A fragment of the void given grotesque form. It hungers without end.' },
+  { id: 'c24', name: 'Lava Fiend',            img: '/creatures/creature24.png', tier: 3, desc: 'Crawls from volcanic fissures. Its body burns at temperatures that melt steel.' },
+  { id: 'c25', name: 'Rift Horror',           img: '/creatures/creature25.png', tier: 3, desc: 'Slips between planes of existence. Wounds from it do not heal naturally.' },
+  // T4 — Elite (named, unique)
+  { id: 'e1',  name: 'Morvane, the Frozen Condemned',   img: '/bosses/frozen-zombie.png',         tier: 4, desc: 'A warrior executed in winter and cursed to walk forever. His rage has not thawed in three centuries.' },
+  { id: 'e2',  name: 'Seraphine the Bloodless',          img: '/bosses/undead-vampire-woman.png',  tier: 4, desc: 'Once a high priestess, now an undying predator. She drains life with a whisper.' },
+  { id: 'e3',  name: 'Grakthar the Unbroken',            img: '/bosses/orc-chief.png',             tier: 4, desc: 'No blade has ever drawn his blood. He has crushed every challenger beneath his fists.' },
+  { id: 'e4',  name: 'Gryvara, Ironblood Matriarch',     img: '/bosses/orc-lady.png',              tier: 4, desc: 'Commander of a dozen warbands. She leads from the front and leaves nothing standing.' },
+  { id: 'e5',  name: 'Korruk the Merciless',             img: '/bosses/orc-warrior.png',           tier: 4, desc: 'Has never offered quarter and never asked for it. His battlefield record spans forty years of war.' },
+  // T5 — Legendary (apex, named with titles)
+  { id: 'l1',  name: 'Sylvaris, Queen of Ruin',          img: '/bosses/dark-elf-queen.png',        tier: 5, desc: 'She dismantled an empire from within. Now she builds something far worse from its ashes.' },
+  { id: 'l2',  name: 'Malachar, the Eternal Lich',       img: '/undead-king.png',                  tier: 5, desc: 'His phylactery has never been found. He has died seventeen times and returned each time stronger.' },
 ];
+
+const getFusionResult = (a, b) => {
+  if (!a || !b || a.tier !== b.tier || a.tier >= 5) return null;
+  const pool = CREATURE_INDEX.filter(c => c.tier === a.tier + 1);
+  if (!pool.length) return null;
+  const seed = (a.name + b.name).split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  return pool[seed % pool.length];
+};
 
 const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [openStats, setOpenStats] = useState({});
   const [activeTab, setActiveTab] = useState('stable');
+  const [fusionSlots, setFusionSlots] = useState([null, null]); // IDs of selected monsters
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -181,7 +192,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
       >
         {/* Tab bar */}
         <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
-          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }].map(t => (
+          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }, { key: 'fusion', label: '⚗ Fusion' }].map(t => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
@@ -229,9 +240,9 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
           {/* ── CREATURE INDEX TAB ── */}
           {activeTab === 'index' && (
             <div>
-              {[3, 2, 1].map(tier => {
+              {[5, 4, 3, 2, 1].map(tier => {
                 const entries = CREATURE_INDEX.filter(c => c.tier === tier);
-                const tierLabel = { 1: 'Common', 2: 'Elite', 3: 'Legendary' }[tier];
+                const tierLabel = TIER_LABELS[tier];
                 return (
                   <div key={tier} style={{ marginBottom: '32px' }}>
                     {/* Tier section header */}
@@ -285,6 +296,145 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
               })}
             </div>
           )}
+
+          {/* ── FUSION TAB ── */}
+          {activeTab === 'fusion' && (() => {
+            const slotA = capturedMonsters.find(m => m.id === fusionSlots[0]) || null;
+            const slotB = capturedMonsters.find(m => m.id === fusionSlots[1]) || null;
+            const result = getFusionResult(slotA, slotB);
+            const tierMismatch = slotA && slotB && slotA.tier !== slotB.tier;
+            const canFuse = !!result;
+
+            const selectForSlot = (monsterId) => {
+              setFusionSlots(prev => {
+                if (prev[0] === monsterId) return [null, prev[1]];
+                if (prev[1] === monsterId) return [prev[0], null];
+                if (!prev[0]) return [monsterId, prev[1]];
+                if (!prev[1]) return [prev[0], monsterId];
+                return [monsterId, prev[1]];
+              });
+            };
+
+            const performFusion = () => {
+              if (!canFuse) return;
+              const newMonster = {
+                ...result,
+                id: `fused_${Date.now()}`,
+                fusedFrom: [slotA.name, slotB.name],
+              };
+              setCapturedMonsters(prev => [
+                ...prev.filter(m => m.id !== slotA.id && m.id !== slotB.id),
+                newMonster,
+              ]);
+              setFusionSlots([null, null]);
+              addLog(`Fusion complete — ${newMonster.name} emerged from the ritual.`);
+            };
+
+            const SlotCard = ({ monster, slotIdx }) => (
+              <div style={{
+                flex: 1, minHeight: 180, borderRadius: '12px', padding: '16px', textAlign: 'center',
+                background: monster ? `linear-gradient(135deg, ${TIER_GLOW[monster.tier]}, rgba(0,0,0,0.6))` : 'rgba(0,0,0,0.3)',
+                border: `2px dashed ${monster ? TIER_BORDER[monster.tier] : 'rgba(212,175,55,0.2)'}`,
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                position: 'relative',
+              }}>
+                <div style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.4)', marginBottom: '4px' }}>
+                  SLOT {slotIdx + 1}
+                </div>
+                {monster ? (
+                  <>
+                    <img src={getMonsterImg(monster)} alt={monster.name} style={{ width: 72, height: 72, objectFit: 'contain', filter: `drop-shadow(0 0 8px ${TIER_COLORS[monster.tier]}66)` }} />
+                    <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.8rem', color: TIER_COLORS[monster.tier], lineHeight: 1.3, margin: 0 }}>{monster.name}</p>
+                    <span style={{ fontSize: '0.65rem', color: TIER_COLORS[monster.tier], opacity: 0.7, background: 'rgba(0,0,0,0.5)', padding: '2px 8px', borderRadius: '4px', border: `1px solid ${TIER_BORDER[monster.tier]}` }}>{TIER_LABELS[monster.tier]}</span>
+                    <button onClick={() => setFusionSlots(prev => prev.map((v, i) => i === slotIdx ? null : v))} style={{ fontSize: '0.65rem', color: 'rgba(239,68,68,0.6)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '4px' }}>✕ Remove</button>
+                  </>
+                ) : (
+                  <p style={{ color: 'rgba(212,175,55,0.3)', fontStyle: 'italic', fontSize: '0.8rem' }}>Select a creature below</p>
+                )}
+              </div>
+            );
+
+            return (
+              <div>
+                {/* Header */}
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'rgba(212,175,55,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '0 0 6px' }}>Ritual of Binding</p>
+                  <p style={{ fontSize: '0.78rem', color: 'rgba(245,245,220,0.5)', fontStyle: 'italic', margin: 0 }}>Select two creatures of the same tier to fuse them into something stronger.</p>
+                </div>
+
+                {/* Fusion slots + arrow + result */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
+                  <SlotCard monster={slotA} slotIdx={0} />
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+                    <span style={{ fontSize: '1.5rem', color: tierMismatch ? '#EF4444' : canFuse ? '#D4AF37' : 'rgba(212,175,55,0.2)' }}>⚗</span>
+                    <span style={{ fontSize: '0.9rem', color: tierMismatch ? '#EF4444' : canFuse ? '#D4AF37' : 'rgba(212,175,55,0.2)' }}>→</span>
+                  </div>
+                  <SlotCard monster={slotB} slotIdx={1} />
+                </div>
+
+                {/* Tier mismatch warning */}
+                {tierMismatch && (
+                  <p style={{ textAlign: 'center', color: '#EF4444', fontSize: '0.78rem', fontStyle: 'italic', marginBottom: '16px' }}>
+                    Both creatures must be the same tier to fuse.
+                  </p>
+                )}
+
+                {/* Result preview */}
+                {canFuse && (
+                  <div style={{ textAlign: 'center', marginBottom: '20px', padding: '16px', borderRadius: '12px', background: `linear-gradient(135deg, ${TIER_GLOW[result.tier]}, rgba(0,0,0,0.5))`, border: `1px solid ${TIER_BORDER[result.tier]}` }}>
+                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.5)', marginBottom: '10px' }}>FUSION RESULT</p>
+                    <img src={result.img} alt={result.name} style={{ width: 80, height: 80, objectFit: 'contain', margin: '0 auto 10px', display: 'block', filter: `drop-shadow(0 0 12px ${TIER_COLORS[result.tier]}88)` }} />
+                    <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: TIER_COLORS[result.tier], marginBottom: '4px' }}>{result.name}</p>
+                    <span style={{ fontSize: '0.65rem', color: TIER_COLORS[result.tier], opacity: 0.8, background: 'rgba(0,0,0,0.5)', padding: '2px 10px', borderRadius: '4px', border: `1px solid ${TIER_BORDER[result.tier]}` }}>{TIER_LABELS[result.tier]}</span>
+                    <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.55)', fontStyle: 'italic', marginTop: '10px', lineHeight: 1.5 }}>{result.desc}</p>
+                    <button
+                      onClick={performFusion}
+                      style={{
+                        marginTop: '14px', padding: '10px 32px', fontFamily: 'Cinzel, serif', fontWeight: 700,
+                        fontSize: '0.85rem', letterSpacing: '0.15em', cursor: 'pointer', borderRadius: '8px',
+                        background: `linear-gradient(135deg, ${TIER_GLOW[result.tier]}, rgba(0,0,0,0.7))`,
+                        border: `1px solid ${TIER_COLORS[result.tier]}`, color: TIER_COLORS[result.tier],
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Perform Fusion
+                    </button>
+                  </div>
+                )}
+
+                {/* Stable creature picker */}
+                <div style={{ borderTop: '1px solid rgba(212,175,55,0.15)', paddingTop: '20px' }}>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.4)', textTransform: 'uppercase', marginBottom: '12px' }}>Your Stable</p>
+                  {capturedMonsters.length === 0 ? (
+                    <p style={{ color: 'rgba(192,192,192,0.4)', fontStyle: 'italic', fontSize: '0.8rem' }}>No creatures in your stable.</p>
+                  ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '10px' }}>
+                      {capturedMonsters.map(monster => {
+                        const inSlot = fusionSlots.includes(monster.id);
+                        return (
+                          <button
+                            key={monster.id}
+                            onClick={() => selectForSlot(monster.id)}
+                            style={{
+                              borderRadius: '10px', padding: '12px 10px', textAlign: 'center', cursor: 'pointer',
+                              background: inSlot ? `linear-gradient(135deg, ${TIER_GLOW[monster.tier]}, rgba(0,0,0,0.4))` : 'rgba(0,0,0,0.35)',
+                              border: `1px solid ${inSlot ? TIER_COLORS[monster.tier] : TIER_BORDER[monster.tier]}`,
+                              boxShadow: inSlot ? `0 0 16px ${TIER_COLORS[monster.tier]}44` : 'none',
+                              transition: 'all 0.15s',
+                            }}
+                          >
+                            <img src={getMonsterImg(monster)} alt={monster.name} style={{ width: 52, height: 52, objectFit: 'contain', display: 'block', margin: '0 auto 8px', filter: `drop-shadow(0 0 6px ${TIER_COLORS[monster.tier]}55)` }} />
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.72rem', color: TIER_COLORS[monster.tier], margin: '0 0 4px', lineHeight: 1.3 }}>{monster.name}</p>
+                            <span style={{ fontSize: '0.6rem', color: TIER_COLORS[monster.tier], opacity: 0.6 }}>{TIER_LABELS[monster.tier]}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* ── STABLE TAB ── */}
           {activeTab === 'stable' && capturedMonsters.length === 0 ? (
