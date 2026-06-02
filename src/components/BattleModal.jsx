@@ -333,7 +333,10 @@ const BattleModal = ({
     if (pct < 0.30 && !hasTriggeredLowHpTaunt.current) {
       hasTriggeredLowHpTaunt.current = true;
       const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.PLAYER_LOW_HP;
-      setTimeout(() => setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]), 600);
+      setTimeout(() => {
+        sounds.negotiateFail();
+        setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
+      }, 600);
     }
   }, [hp]);
 
@@ -348,6 +351,7 @@ const BattleModal = ({
     if (bossHpPct > 0.55 && playerHpPct < 0.45) {
       upperHandCooldown.current = now;
       const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.UPPER_HAND;
+      sounds.negotiateFail();
       setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
     }
   }, [turnPhase]);
