@@ -168,7 +168,7 @@ const ContractsTab = ({
                             boxShadow: `0 0 6px ${guildRank.color}88`,
                           }} />
                         </div>
-                        <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.62rem', letterSpacing:'0.14em', color:'rgba(230,210,170,0.9)', textAlign:'center', marginTop:'5px', textTransform:'uppercase' }}>
+                        <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', letterSpacing:'0.14em', color:'rgba(230,210,170,0.9)', textAlign:'center', marginTop:'5px', textTransform:'uppercase' }}>
                           {nextRank.min - guildPoints} GP to {nextRank.name}
                         </p>
                       </div>
