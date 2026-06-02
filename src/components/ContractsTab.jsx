@@ -183,6 +183,11 @@ const ContractsTab = ({
               })()}
 
               {/* Tier legend */}
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
+                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
+              </div>
               <div className="flex items-center justify-center gap-5 flex-wrap">
                 {['copper','silver','gold','platinum','mythril'].map(t => (
                   <span key={t} style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', textTransform:'uppercase', color: TIER[t].color, opacity: 0.95 }}>
