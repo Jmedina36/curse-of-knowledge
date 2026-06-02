@@ -395,7 +395,7 @@ const ContractsTab = ({
                       }}>
                         <div style={{ padding: '12px 16px 8px', borderBottom: `1px solid rgba(212,175,55,0.12)` }}>
                           <div className="flex items-center justify-between mb-1">
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.35em', color: TIER.gold.color, textTransform:'uppercase', opacity:0.95 }}>
+                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.35em', color: TIER.gold.color, textTransform:'uppercase', opacity:0.95 }}>
                               Gold Contract
                             </span>
                             <div style={{ display:'flex', gap:'5px' }}>
@@ -409,10 +409,10 @@ const ContractsTab = ({
                               ))}
                             </div>
                           </div>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'1rem', fontWeight:700, color:'#F0D898', letterSpacing:'0.08em', margin:0 }}>
+                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.15rem', fontWeight:700, color:'#F0D898', letterSpacing:'0.08em', margin:0 }}>
                             {allCaptainsDown ? 'Bandit Lord Cutter' : `Bandit Raid — Wave ${nextWave}`}
                           </p>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.7rem', color:'rgba(220,195,140,0.8)', marginTop:'3px' }}>
+                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(220,195,140,0.8)', marginTop:'3px' }}>
                             {allCaptainsDown ? 'All captains fallen. Cutter awaits.' : `Captains eliminated: ${captDefeated}/3`}
                           </p>
                         </div>
@@ -421,7 +421,7 @@ const ContractsTab = ({
                             onClick={() => { sounds.click(); onRaid(nextWave, banditCaptainsDefeated || []); }}
                             style={{
                               width:'100%', padding:'8px', borderRadius:'4px', fontFamily:'Cinzel,serif',
-                              fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase',
+                              fontSize:'0.78rem', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase',
                               background: 'rgba(55,38,0,0.7)', border: `1px solid ${TIER.gold.border}`,
                               color: TIER.gold.color, cursor:'pointer', transition:'all 0.2s',
                             }}
@@ -448,7 +448,7 @@ const ContractsTab = ({
                       }}>
                         <div style={{ padding: '12px 16px 8px', borderBottom: `1px solid rgba(212,175,55,0.12)` }}>
                           <div className="flex items-center justify-between mb-1">
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.35em', color: TIER.gold.color, textTransform:'uppercase', opacity:0.95 }}>
+                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.35em', color: TIER.gold.color, textTransform:'uppercase', opacity:0.95 }}>
                               Gold Contract
                             </span>
                             <div style={{ display:'flex', gap:'5px' }}>
@@ -462,10 +462,10 @@ const ContractsTab = ({
                               ))}
                             </div>
                           </div>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'1rem', fontWeight:700, color:'rgba(225,205,255,0.98)', letterSpacing:'0.08em', margin:0 }}>
+                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.15rem', fontWeight:700, color:'rgba(225,205,255,0.98)', letterSpacing:'0.08em', margin:0 }}>
                             {allCaptainsDown ? 'Dusk Queen Mira' : `Daughters of Dusk — Wave ${nextWave}`}
                           </p>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.7rem', color:'rgba(200,175,240,0.85)', marginTop:'3px' }}>
+                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(200,175,240,0.85)', marginTop:'3px' }}>
                             {allCaptainsDown ? 'All captains silenced. Mira awaits in the dark.' : `Captains silenced: ${captDefeated}/3`}
                           </p>
                         </div>
@@ -474,7 +474,7 @@ const ContractsTab = ({
                             onClick={() => { sounds.click(); onDaughtersRaid(nextWave, daughtersCaptainsDefeated || []); }}
                             style={{
                               width:'100%', padding:'8px', borderRadius:'4px', fontFamily:'Cinzel,serif',
-                              fontSize:'0.65rem', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase',
+                              fontSize:'0.78rem', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase',
                               background: 'rgba(30,10,50,0.7)', border: `1px solid ${TIER.gold.border}`,
                               color: TIER.gold.color, cursor:'pointer', transition:'all 0.2s',
                             }}
@@ -514,11 +514,11 @@ const ContractsTab = ({
                   }}>
                     <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid rgba(220,220,220,0.06)' }}>
                       <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.4em', color: TIER.platinum.color, textTransform:'uppercase', opacity:0.9 }}>
+                        <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.4em', color: TIER.platinum.color, textTransform:'uppercase', opacity:0.9 }}>
                           Platinum Contract
                         </span>
                         {eliteBossDefeatedToday && (
-                          <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.5rem', letterSpacing:'0.2em', color:'rgba(80,200,100,0.8)', textTransform:'uppercase' }}>
+                          <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.2em', color:'rgba(80,200,100,0.8)', textTransform:'uppercase' }}>
                             Sealed today
                           </span>
                         )}
@@ -526,7 +526,7 @@ const ContractsTab = ({
                       <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.2rem', fontWeight:800, color: eliteBossDefeatedToday ? 'rgba(180,220,180,0.85)' : '#F0F0F5', letterSpacing:'0.1em', margin:'0 0 4px' }}>
                         Blood Contract
                       </p>
-                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', color:'rgba(210,210,225,0.75)', margin:0 }}>
+                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(210,210,225,0.75)', margin:0 }}>
                         {eliteBossDefeatedToday
                           ? 'The guardian has been silenced. Curse clears at midnight.'
                           : 'Complete your daily trials to summon the guardian.'}
@@ -552,10 +552,10 @@ const ContractsTab = ({
                             }} />
                           </div>
                           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.65rem', letterSpacing:'0.12em', color: taskGateMet ? TIER.platinum.color : 'rgba(210,185,120,0.9)', textTransform:'uppercase' }}>
+                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.75rem', letterSpacing:'0.12em', color: taskGateMet ? TIER.platinum.color : 'rgba(210,185,120,0.9)', textTransform:'uppercase' }}>
                               {tasks.length === 0 ? 'Add tasks to unlock' : taskGateMet ? 'Guardian awakens' : `${completedTasks} / ${requiredTasks} tasks`}
                             </span>
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.62rem', color:'rgba(210,210,225,0.65)' }}>
+                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', color:'rgba(210,210,225,0.65)' }}>
                               {Math.round(pct)}%
                             </span>
                           </div>
@@ -566,7 +566,7 @@ const ContractsTab = ({
                         disabled={isDisabled}
                         style={{
                           width:'100%', padding:'10px', borderRadius:'6px',
-                          fontFamily:'Cinzel,serif', fontSize:'0.68rem', fontWeight:700,
+                          fontFamily:'Cinzel,serif', fontSize:'0.8rem', fontWeight:700,
                           letterSpacing:'0.22em', textTransform:'uppercase',
                           background: isDisabled ? 'rgba(20,20,28,0.5)' : 'rgba(40,40,55,0.8)',
                           border: `1px solid ${isDisabled ? 'rgba(180,180,200,0.12)' : TIER.platinum.border}`,
@@ -606,11 +606,11 @@ const ContractsTab = ({
                   }}>
                     <div style={{ padding: '16px 20px 12px', borderBottom: 'rgba(125,249,255,0.04) solid 1px' }}>
                       <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.4em', color: TIER.mythril.color, textTransform:'uppercase', opacity: gauntletUnlocked ? 0.9 : 0.55 }}>
+                        <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.4em', color: TIER.mythril.color, textTransform:'uppercase', opacity: gauntletUnlocked ? 0.9 : 0.55 }}>
                           Mythril Contract
                         </span>
                         {!gauntletUnlocked && (
-                          <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.6rem', letterSpacing:'0.2em', color:'rgba(125,249,255,0.65)', textTransform:'uppercase' }}>
+                          <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', color:'rgba(125,249,255,0.65)', textTransform:'uppercase' }}>
                             {gauntletMilestone - xp} XP to unseal
                           </span>
                         )}
@@ -621,7 +621,7 @@ const ContractsTab = ({
                       }}>
                         The Black Contract
                       </p>
-                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', color:'rgba(125,249,255,0.65)', margin:0 }}>
+                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(125,249,255,0.65)', margin:0 }}>
                         {!gauntletUnlocked
                           ? 'This contract is sealed. Earn enough renown to break the lock.'
                           : !allDone
@@ -647,7 +647,7 @@ const ContractsTab = ({
                         disabled={isDisabled}
                         style={{
                           width:'100%', padding:'10px', borderRadius:'6px',
-                          fontFamily:'Cinzel,serif', fontSize:'0.68rem', fontWeight:700,
+                          fontFamily:'Cinzel,serif', fontSize:'0.8rem', fontWeight:700,
                           letterSpacing:'0.22em', textTransform:'uppercase',
                           background: isDisabled ? 'rgba(0,10,12,0.6)' : 'rgba(0,25,30,0.9)',
                           border: `1px solid ${isDisabled ? 'rgba(125,249,255,0.08)' : TIER.mythril.border}`,
