@@ -130,7 +130,7 @@ const ContractsTab = ({
         <>
           {/* ── BOARD SHELL ── */}
           <div className="rounded-xl p-5 border-2" style={{
-            backgroundImage: 'url(/Contract%20board.png)',
+            background: 'linear-gradient(rgba(8,5,2,0.55), rgba(8,5,2,0.55)), url("/Contract board.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -255,12 +255,12 @@ const ContractsTab = ({
                         style={{
                           position: 'relative',
                           background: t.done
-                            ? 'linear-gradient(160deg,#1a1a12,#141410)'
+                            ? 'linear-gradient(160deg,rgba(26,26,18,0.82),rgba(20,20,16,0.82))'
                             : t.overdue
-                              ? 'linear-gradient(160deg,#2a0a08,#1c0806)'
+                              ? 'linear-gradient(160deg,rgba(42,10,8,0.85),rgba(28,8,6,0.85))'
                               : t.priority === 'important'
-                                ? 'linear-gradient(160deg,#1e1e22,#161618)'
-                                : 'linear-gradient(160deg,#1e1608,#16120a)',
+                                ? 'linear-gradient(160deg,rgba(30,30,34,0.82),rgba(22,22,24,0.82))'
+                                : 'linear-gradient(160deg,rgba(30,22,8,0.82),rgba(22,18,10,0.82))',
                           border: t.done
                             ? '1px solid rgba(80,100,60,0.45)'
                             : t.overdue
@@ -387,7 +387,7 @@ const ContractsTab = ({
                     return (
                       <div className="rounded-xl border overflow-hidden" style={{
                         borderColor: TIER.gold.border,
-                        background: 'linear-gradient(160deg, #1c1007 0%, #110b04 100%)',
+                        background: 'linear-gradient(160deg, rgba(28,16,7,0.82) 0%, rgba(17,11,4,0.82) 100%)',
                         boxShadow: `0 4px 18px ${TIER.gold.glow.replace('0.5','0.12')}`,
                       }}>
                         <div style={{ padding: '12px 16px 8px', borderBottom: `1px solid rgba(212,175,55,0.12)` }}>
@@ -440,7 +440,7 @@ const ContractsTab = ({
                     return (
                       <div className="rounded-xl border overflow-hidden" style={{
                         borderColor: TIER.gold.border,
-                        background: 'linear-gradient(160deg, #140c1a 0%, #0d0810 100%)',
+                        background: 'linear-gradient(160deg, rgba(20,12,26,0.82) 0%, rgba(13,8,16,0.82) 100%)',
                         boxShadow: `0 4px 18px rgba(139,92,246,0.1)`,
                       }}>
                         <div style={{ padding: '12px 16px 8px', borderBottom: `1px solid rgba(212,175,55,0.12)` }}>
@@ -502,7 +502,7 @@ const ContractsTab = ({
                   <div style={{
                     borderRadius: '10px',
                     border: `1px solid ${eliteBossDefeatedToday ? 'rgba(80,200,100,0.3)' : taskGateMet && isDayActive ? 'rgba(220,220,220,0.45)' : TIER.platinum.border}`,
-                    background: 'linear-gradient(160deg, #14141e 0%, #0c0c14 100%)',
+                    background: 'linear-gradient(160deg, rgba(20,20,30,0.82) 0%, rgba(12,12,20,0.82) 100%)',
                     boxShadow: taskGateMet && !eliteBossDefeatedToday && isDayActive
                       ? '0 0 28px rgba(232,232,232,0.1), 0 0 60px rgba(220,220,220,0.04)'
                       : 'none',
@@ -594,7 +594,7 @@ const ContractsTab = ({
                   <div style={{
                     borderRadius: '10px',
                     border: `1px solid ${gauntletUnlocked && allDone ? TIER.mythril.border : 'rgba(125,249,255,0.1)'}`,
-                    background: 'linear-gradient(160deg, #020e10 0%, #010809 100%)',
+                    background: 'linear-gradient(160deg, rgba(2,14,16,0.88) 0%, rgba(1,8,9,0.88) 100%)',
                     boxShadow: gauntletUnlocked && allDone
                       ? `0 0 36px ${TIER.mythril.glow.replace('0.45','0.1')}, 0 0 80px rgba(125,249,255,0.04)`
                       : 'none',
