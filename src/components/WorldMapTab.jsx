@@ -49,7 +49,7 @@ const LOCATIONS = [
     marker: '/worldmap/big-ship.png',
     type: 'contract',
     unlockDay: 1,
-    position: { left: '72%', top: '88%' },
+    position: { left: '28%', top: '79%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'Missing Crew',
   },
@@ -76,7 +76,7 @@ const LOCATIONS = [
     type: 'hunting',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockDay: 2,
-    position: { left: '28%', top: '67%' },
+    position: { left: '16%', top: '75%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
   },
   {
@@ -87,7 +87,7 @@ const LOCATIONS = [
     marker: '/worldmap/holy-tree.png',
     type: 'contract',
     unlockDay: 2,
-    position: { left: '16%', top: '75%' },
+    position: { left: '28%', top: '67%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Protect the Grove',
   },
@@ -99,7 +99,7 @@ const LOCATIONS = [
     marker: '/worldmap/thorny-ivy.png',
     type: 'contract',
     unlockDay: 2,
-    position: { left: '28%', top: '79%' },
+    position: { left: '72%', top: '88%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Clear the Road',
   },
@@ -312,6 +312,7 @@ const LOCATIONS = [
     unlockDay: null,
     isLegendary: true,
     position: { left: '82%', top: '4%' },
+    markerSize: 72,
     danger: 5, dangerLabel: 'Legendary', dangerColor: '#F59E0B',
     contract: 'The Black Contract',
   },
@@ -427,7 +428,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                       src={loc.marker}
                       alt={loc.name}
                       style={{
-                        width: '44px', height: '44px',
+                        width: `${loc.markerSize || 44}px`, height: `${loc.markerSize || 44}px`,
                         objectFit: 'contain',
                         filter: unlocked
                           ? isActive
