@@ -790,7 +790,7 @@ const BattleModal = ({
                       src={isBanditWave && banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
                       alt={bossName}
                       style={{
-                        height: isBanditWave ? 'clamp(130px, 19vh, 220px)' : 'clamp(110px, 16vh, 190px)',
+                        height: isBanditWave ? 'clamp(150px, 22vh, 250px)' : 'clamp(130px, 19vh, 215px)',
                         objectFit: 'contain',
                         objectPosition: 'top',
                         filter: bossFlash
@@ -1025,15 +1025,14 @@ const BattleModal = ({
         <div className="flex-1 flex flex-col px-6 pt-2 pb-3">
 
           {/* Player identity */}
-          <div className="flex justify-between items-baseline mb-1">
-            <span className="font-bold" style={{ fontFamily: 'Cinzel, serif', color: '#68D391', fontSize: '1.4rem' }}>{hero?.name}</span>
+          <div className="flex justify-end items-baseline mb-1">
             <span className="text-sm uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
           </div>
 
           {/* Player HP */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-0.5">
-              <span className="text-sm uppercase tracking-widest" style={{ color: '#68D391' }}>HP</span>
+              <span className="text-sm uppercase tracking-widest" style={{ color: '#68D391' }}>{hero?.name}</span>
               <span className="text-sm font-bold" style={{ color: '#F5F5DC' }}>{hp} / {getMaxHp()}</span>
             </div>
             <div className="h-4 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(0, 100, 0, 0.4)', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5)' }}>
