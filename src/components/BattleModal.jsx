@@ -1045,10 +1045,6 @@ const BattleModal = ({
         {/* ══════════════════════════════════════════════════════════════════ */}
         <div className="flex-1 flex flex-col px-6 pt-2 pb-3">
 
-          {/* Player identity */}
-          <div className="flex justify-end items-baseline mb-1">
-            <span className="text-sm uppercase tracking-widest" style={{ color: '#A0AEC0' }}>Lv.{level} {hero?.class?.name}</span>
-          </div>
 
           {/* Player HP */}
           <div className="mb-1">
