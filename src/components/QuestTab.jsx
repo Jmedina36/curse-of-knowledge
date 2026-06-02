@@ -56,6 +56,7 @@ const QuestTab = ({
   setSuppliesTab,
   setShowInventoryModal,
   setShowCraftingModal,
+  onOpenHealer,
   capturedMonsters,
   fusionCrystals,
   onReleaseMonster,
@@ -195,7 +196,7 @@ const QuestTab = ({
             </div>
 
             {/* ── Destination Buttons ── */}
-            <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'}}>
+            <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'}}>
 
               <button
                 onClick={() => { sounds.click(); setSuppliesTab('potions'); setShowInventoryModal(true); }}
@@ -221,6 +222,21 @@ const QuestTab = ({
               >
                 <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.85rem,2vw,1rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'3px'}}>The Merchant</p>
                 <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(200,165,70,0.75)',textTransform:'uppercase'}}>Craft • Trade</p>
+              </button>
+
+              <button
+                onClick={() => { sounds.click(); onOpenHealer && onOpenHealer(); }}
+                style={{padding:'14px 10px',borderRadius:'8px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(135deg,#0a2218,#0f3326)',
+                  border:'1px solid rgba(52,211,153,0.5)',
+                  boxShadow:'0 3px 12px rgba(0,0,0,0.4)',transition:'all 0.2s',
+                  display:'flex',flexDirection:'column',alignItems:'center',gap:'6px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='0 6px 20px rgba(52,211,153,0.3)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 3px 12px rgba(0,0,0,0.4)';}}
+              >
+                <img src="/npcs/medic.png" alt="Healer" style={{width:'38px',height:'38px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(52,211,153,0.5)'}}/>
+                <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(0.75rem,1.8vw,0.9rem)',letterSpacing:'0.15em',textTransform:'uppercase',color:'rgba(110,231,183,1)',marginBottom:'2px'}}>Healer</p>
+                <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',letterSpacing:'0.12em',color:'rgba(52,211,153,0.7)',textTransform:'uppercase'}}>Restore HP</p>
               </button>
 
             </div>
