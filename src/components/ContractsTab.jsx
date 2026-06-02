@@ -315,7 +315,7 @@ const ContractsTab = ({
 
                         {/* Contract title */}
                         <p style={{
-                          fontFamily:'Cinzel,serif', fontSize:'0.88rem', fontWeight:600,
+                          fontFamily:'Cinzel,serif', fontSize:'1.05rem', fontWeight:600,
                           letterSpacing:'0.04em', lineHeight:1.45,
                           color: t.done ? 'rgba(180,175,150,0.65)' : t.overdue ? '#FF9980' : '#F5F0E0',
                           textDecoration: t.done ? 'line-through' : 'none',
