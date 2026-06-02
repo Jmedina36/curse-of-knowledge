@@ -7599,13 +7599,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack} chargedStrike={chargedStrike}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}
-              flee={flee} dodge={dodge} advance={advance} die={die} negotiate={negotiate}
+              flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}
               fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
               onShakedown={shakedownEnemy} onCapture={captureMonster}
               isBanditWave={isBanditWave || isDaughtersWave} banditEnemyImg={banditEnemyImg}
-              onBeg={isBanditWave ? handleBeg : handleDaughtersBeg}
               raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : null}
             />
           )}

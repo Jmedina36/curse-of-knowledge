@@ -159,7 +159,6 @@ const BattleModal = ({
   dodge,
   advance,
   die,
-  negotiate,
   addLog,
   setStamina,
   setStaminaPots,
@@ -170,7 +169,6 @@ const BattleModal = ({
   onCapture,
   isBanditWave,
   banditEnemyImg,
-  onBeg,
   raidFaction,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
@@ -200,18 +198,7 @@ const BattleModal = ({
   const [musicMuted, setMusicMuted] = useState(() => audioManager.muted);
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
-  const [negotiatePhase, setNegotiatePhase] = useState('idle'); // 'idle'|'open'|'result'
-  const [negotiateResult, setNegotiateResult] = useState(null); // {success,enraged}
-  const [hasBeggedThisBattle, setHasBeggedThisBattle] = useState(false);
   const [heroDialogue, setHeroDialogue] = useState('');
-  const [negotiateOutcome, setNegotiateOutcome] = useState(null); // null | 'success' | 'fail'
-  // Bribe cost fixed per battle — CHA lowers the price
-  const [bribeCost] = useState(() => {
-    const chaMod = Math.floor(((hero?.abilities?.cha || 10) - 10) / 2);
-    const day = Math.max(1, currentDay || 1);
-    const base = Math.floor(day * 4 + Math.random() * day * 3);
-    return Math.max(5, Math.floor(base * Math.max(0.5, 1 - chaMod * 0.1)));
-  });
 
 
   const [enemySpecialAnim, setEnemySpecialAnim] = useState(null); // 'bleed' | 'armorBreak' | 'overwhelmingForce'
@@ -416,7 +403,7 @@ const BattleModal = ({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col overflow-hidden"
+      className="fixed inset-0 z-50 flex flex-col overflow-y-auto"
       animate={shaking
         ? { x: [-9, 9, -7, 7, -4, 4, -2, 2, 0] }
         : { x: 0 }
@@ -885,27 +872,6 @@ const BattleModal = ({
             </div>
           </div>
 
-          {/* ── Beg (bandit waves only, < 40% HP) ── */}
-          {isBanditWave && bossEntered && bossHp > 0 && bossHpPct < 40 && (
-            <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(239,68,68,0.25)' }}>
-              <p className="text-xs text-center uppercase tracking-widest mb-2" style={{ color: 'rgba(239,68,68,0.7)', fontFamily: 'Cinzel, serif' }}>
-                {raidFaction === 'daughters' ? 'You could plead to the shadows...' : 'You could beg for mercy...'}
-              </p>
-              <button
-                disabled={turnPhase !== 'player'}
-                onClick={() => { if (turnPhase !== 'player') return; onBeg(); }}
-                style={{
-                  width: '100%', padding: '8px', borderRadius: '8px', fontSize: '11px', fontWeight: 700,
-                  fontFamily: 'Cinzel, serif', letterSpacing: '0.05em',
-                  background: 'linear-gradient(to bottom, rgba(127,29,29,0.6), rgba(100,20,20,0.65))',
-                  border: '1px solid rgba(239,68,68,0.5)', color: '#F5F5DC', cursor: 'pointer',
-                }}
-              >
-                🏳️ Beg for Mercy (Wave resets — no credit)
-              </button>
-            </div>
-          )}
-
           {/* ── Capture Buttons (< 40% HP, non-boss, non-bandit) ── */}
           {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
             <div className="mb-3 rounded-lg p-3" style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.25)' }}>
@@ -1215,7 +1181,7 @@ const BattleModal = ({
                       );
                     })()}
 
-                    <div className={`grid gap-3 mb-3 ${(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 ? 'grid-cols-3' : (canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                    <div className={`grid gap-3 mb-3 ${(canFlee || showDodgeButton) ? 'grid-cols-3' : 'grid-cols-2'}`}>
                       <button onClick={() => { sounds.click(); setBattleMenu('fight'); }}
                         className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
                         style={{ background: 'linear-gradient(to bottom, rgba(160, 8, 8, 0.9), rgba(90, 4, 4, 0.9))', border: '2px solid rgba(200, 30, 30, 0.7)', color: '#F5F5DC', boxShadow: '0 4px 15px rgba(139, 0, 0, 0.4)', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
@@ -1228,14 +1194,6 @@ const BattleModal = ({
                         style={{ background: (healthPots > 0 || staminaPots > 0) ? 'linear-gradient(to bottom, rgba(180, 130, 10, 0.9), rgba(110, 80, 6, 0.9))' : 'rgba(30, 40, 55, 0.7)', border: `2px solid ${(healthPots > 0 || staminaPots > 0) ? 'rgba(212, 175, 55, 0.6)' : 'rgba(80,80,80,0.3)'}`, color: '#F5F5DC', boxShadow: (healthPots > 0 || staminaPots > 0) ? '0 4px 15px rgba(180, 130, 10, 0.3)' : 'none', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em' }}>
                         Items
                       </button>
-
-                      {(battleType === 'regular' || battleType === 'wave') && hp / getMaxHp() <= 0.40 && !hasBeggedThisBattle && (
-                        <button onClick={() => { sounds.negotiateOpen(); setBattleMenu('negotiate'); setNegotiatePhase('open'); }}
-                          className="py-3 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
-                          style={{ background: 'linear-gradient(to bottom, rgba(80,10,10,0.95), rgba(50,5,5,0.95))', border: '2px solid rgba(200,50,50,0.7)', color: '#FCA5A5', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 0 12px rgba(200,50,50,0.4)' }}>
-                          Beg
-                        </button>
-                      )}
 
                       {canFlee && (
                         <button onClick={() => handlePlayerAction(flee, 'Flee', true)}
@@ -1257,81 +1215,6 @@ const BattleModal = ({
                       )}
                     </div>
 
-                  </motion.div>
-                )}
-
-                {/* ── Negotiate Submenu ── */}
-                {turnPhase === 'player' && battleMenu === 'negotiate' && (
-                  <motion.div key="negotiate" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.12 }}>
-                    {negotiatePhase === 'open' && (
-                      <>
-                        <div className="grid grid-cols-2 gap-3 mb-3">
-                          <button
-                            disabled={hasBeggedThisBattle}
-                            onClick={() => {
-                              if (turnPhase !== 'player' || hasBeggedThisBattle) return;
-                              setHeroDialogue("I am not ready. Not here, not like this... There is still so much left unfinished. Please.");
-                              setHasBeggedThisBattle(true);
-                              // Wait for hero text to finish before enemy responds
-                              setTimeout(() => {
-                                const result = negotiate('persuade');
-                                if (result?.success) {
-                                  setNegotiateOutcome('success');
-                                } else {
-                                  setNegotiateOutcome('fail');
-                                  setTimeout(() => {
-                                    setBattleMenu('main');
-                                    setNegotiatePhase('idle');
-                                    setNegotiateOutcome(null);
-                                  }, 4000);
-                                }
-                              }, 2200);
-                            }}
-                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed"
-                            style={{ background: 'linear-gradient(to bottom, rgba(30,60,100,0.9), rgba(15,35,60,0.9))', border: '2px solid rgba(96,165,250,0.5)', color: '#93C5FD', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
-                          >
-                            Persuade
-                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>
-                              WIS · {Math.round(Math.max(5, 30 + Math.floor(((hero?.abilities?.wis||10)-10)/2) * 8))}% chance
-                            </div>
-                          </button>
-                          <button
-                            disabled={hasBeggedThisBattle}
-                            onClick={() => {
-                              if (turnPhase !== 'player' || hasBeggedThisBattle) return;
-                              setHeroDialogue("Take the gold. All of it. I want nothing but my life — is that not worth more to you?");
-                              setHasBeggedThisBattle(true);
-                              // Wait for hero text to finish before enemy responds
-                              setTimeout(() => {
-                                const result = negotiate('bribe', bribeCost);
-                                if (result?.success) {
-                                  setNegotiateOutcome('success');
-                                } else {
-                                  setNegotiateOutcome('fail');
-                                  setTimeout(() => {
-                                    setBattleMenu('main');
-                                    setNegotiatePhase('idle');
-                                    setNegotiateOutcome(null);
-                                  }, 4000);
-                                }
-                              }, 2200);
-                            }}
-                            className="py-4 rounded font-black text-sm uppercase tracking-widest transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed"
-                            style={{ background: 'linear-gradient(to bottom, rgba(100,70,10,0.9), rgba(60,40,5,0.9))', border: '2px solid rgba(180,140,30,0.5)', color: '#FCD34D', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em' }}
-                          >
-                            Bribe
-                            <div style={{ fontSize: '0.6rem', fontWeight: 'normal', marginTop: '3px', opacity: 0.65 }}>
-                              {bribeCost}g · CHA price
-                            </div>
-                          </button>
-                        </div>
-                        <button onClick={() => { setBattleMenu('main'); setNegotiatePhase('idle'); setHeroDialogue(''); setEnemyDialogue(''); setNegotiateOutcome(null); }}
-                          className="w-full py-2 rounded text-sm uppercase tracking-widest transition-all hover:opacity-80"
-                          style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(80,80,80,0.3)', color: 'rgba(180,180,180,0.6)', fontFamily: 'Cinzel, serif' }}>
-                          ← Back
-                        </button>
-                      </>
-                    )}
                   </motion.div>
                 )}
 
@@ -1494,20 +1377,6 @@ const BattleModal = ({
                       className="text-2xl leading-relaxed"
                       style={{ color: '#F5F5DC' }}>
                       <TypewriterText text={battleLine} speed={25} />
-                    </motion.p>
-                  ) : battleMenu === 'negotiate' && negotiateOutcome === 'fail' ? (
-                    <motion.p key="beg-fail"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-base uppercase tracking-[0.2em] w-full text-center"
-                      style={{ color: '#FCA5A5', fontFamily: 'Cinzel, serif' }}>
-                      ✗ The shadow refuses. Brace yourself...
-                    </motion.p>
-                  ) : battleMenu === 'negotiate' ? (
-                    <motion.p key="beg-event"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      className="text-base uppercase tracking-[0.25em] w-full text-center animate-pulse"
-                      style={{ color: '#FCA5A5', fontFamily: 'Cinzel, serif' }}>
-                      ⚠ {hero?.name || 'The hero'} begs for mercy...
                     </motion.p>
                   ) : (
                     <motion.p key="idle"
