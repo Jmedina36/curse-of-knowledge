@@ -35,8 +35,11 @@ const getMonsterImg = (monster) => {
   return `/creatures/creature${1 + (idx % 8)}.png`;
 };
 
+const STAT_LABELS = { hp: 'HP', atk: 'ATK', def: 'DEF', spd: 'SPD', mag: 'MAG' };
+
 const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
+  const [openStats, setOpenStats] = useState({});
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
@@ -211,19 +214,53 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                     {monster.name}
                   </p>
 
-                  {/* Release button */}
-                  <button
-                    onClick={() => releaseMonster(monster)}
-                    style={{
-                      padding: '5px 14px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
-                      background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(192,192,192,0.18)',
-                      color: 'rgba(192,192,192,0.4)', cursor: 'pointer', transition: 'all 0.15s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)'; e.currentTarget.style.color = '#EF4444'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(192,192,192,0.18)'; e.currentTarget.style.color = 'rgba(192,192,192,0.4)'; }}
-                  >
-                    Release
-                  </button>
+                  {/* Stats panel */}
+                  {openStats[monster.id] && monster.stats && (
+                    <div style={{
+                      margin: '10px 0 8px',
+                      background: 'rgba(0,0,0,0.45)',
+                      border: `1px solid ${TIER_BORDER[monster.tier]}`,
+                      borderRadius: '8px',
+                      padding: '8px 10px',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(5, 1fr)',
+                      gap: '4px',
+                      textAlign: 'center',
+                    }}>
+                      {Object.entries(STAT_LABELS).map(([key, label]) => (
+                        <div key={key}>
+                          <div style={{ fontSize: '9px', color: COLORS.silver, letterSpacing: '0.08em', marginBottom: '2px' }}>{label}</div>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: TIER_COLORS[monster.tier] }}>{monster.stats[key]}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Buttons row */}
+                  <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                    <button
+                      onClick={() => setOpenStats(prev => ({ ...prev, [monster.id]: !prev[monster.id] }))}
+                      style={{
+                        padding: '5px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
+                        background: 'rgba(0,0,0,0.4)', border: `1px solid ${openStats[monster.id] ? TIER_BORDER[monster.tier] : 'rgba(192,192,192,0.18)'}`,
+                        color: openStats[monster.id] ? TIER_COLORS[monster.tier] : 'rgba(192,192,192,0.5)', cursor: 'pointer', transition: 'all 0.15s',
+                      }}
+                    >
+                      Stats
+                    </button>
+                    <button
+                      onClick={() => releaseMonster(monster)}
+                      style={{
+                        padding: '5px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
+                        background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(192,192,192,0.18)',
+                        color: 'rgba(192,192,192,0.4)', cursor: 'pointer', transition: 'all 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(239,68,68,0.5)'; e.currentTarget.style.color = '#EF4444'; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(192,192,192,0.18)'; e.currentTarget.style.color = 'rgba(192,192,192,0.4)'; }}
+                    >
+                      Release
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

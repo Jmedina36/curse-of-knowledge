@@ -222,6 +222,20 @@ const BattleModal = ({
   const [capturePhase, setCapturePhase] = useState('idle'); // 'idle'|'result'
   const [captureResult, setCaptureResult] = useState(null);
   const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
+
+  // Stats generated once when battle opens — carried over if captured
+  const [bossStats] = useState(() => {
+    const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
+    const roll = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const ranges = {
+      1: { hp:[40,120],  atk:[5,14],   def:[3,10],  spd:[4,10],  mag:[2,8]  },
+      2: { hp:[180,380], atk:[18,38],  def:[14,28], spd:[10,20], mag:[12,28] },
+      3: { hp:[500,900], atk:[55,95],  def:[40,65], spd:[18,35], mag:[40,80] },
+    };
+    const r = ranges[tier];
+    return { hp: roll(...r.hp), atk: roll(...r.atk), def: roll(...r.def), spd: roll(...r.spd), mag: roll(...r.mag) };
+  });
+
   const turnTimers = useRef([]);
   const turnCountRef = useRef(0);
   const logRef = useRef(null);
@@ -928,7 +942,7 @@ const BattleModal = ({
                     const captureImg = isBanditWave && banditEnemyImg
                       ? banditEnemyImg
                       : getCreatureImg(bossName, battleType, isFinalBoss);
-                    const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, captureImg);
+                    const result = onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, captureImg, bossStats);
                     setCaptureResult({ type: 'capture', ...result });
                     setTimeout(() => setCaptureResult(null), 2500);
                   }}

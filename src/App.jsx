@@ -5616,7 +5616,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     return goldGained;
   };
 
-  const captureMonster = (bossName, bossHpPct, battleType, isFinalBoss, img) => {
+  const captureMonster = (bossName, bossHpPct, battleType, isFinalBoss, img, preRolledStats) => {
     if (capturedMonsters.length >= 4) {
       addLog('Your stable is full! Release a monster first.');
       return { success: false, reason: 'full' };
@@ -5631,7 +5631,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     const success = Math.random() < chance;
     if (success) {
       const tier = isFinalBoss ? 3 : battleType === 'elite' ? 2 : 1;
-      const monster = { id: Date.now(), name: bossName, tier, img };
+      const stats = preRolledStats || (() => {
+        const roll = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const ranges = {
+          1: { hp:[40,120],  atk:[5,14],   def:[3,10],  spd:[4,10],  mag:[2,8]  },
+          2: { hp:[180,380], atk:[18,38],  def:[14,28], spd:[10,20], mag:[12,28] },
+          3: { hp:[500,900], atk:[55,95],  def:[40,65], spd:[18,35], mag:[40,80] },
+        };
+        const r = ranges[tier];
+        return { hp: roll(...r.hp), atk: roll(...r.atk), def: roll(...r.def), spd: roll(...r.spd), mag: roll(...r.mag) };
+      })();
+      const monster = { id: Date.now(), name: bossName, tier, img, stats };
       setCapturedMonsters(prev => [...prev, monster]);
       addLog(`${bossName} has been captured! Added to your stable.`);
       return { success: true, chance: Math.round(chance * 100) };
