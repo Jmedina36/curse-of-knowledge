@@ -903,7 +903,7 @@ const BattleModal = ({
           {/* Boss HP Bar */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-0">
                 <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#FFFFFF' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
                 {currentBattleCreature && (() => {
                   const TIER_META = {
@@ -915,27 +915,15 @@ const BattleModal = ({
                   };
                   const meta = TIER_META[currentBattleCreature.tier];
                   const quality = currentBattleCreature.roll != null ? getCreatureQuality(currentBattleCreature.roll) : null;
+                  if (!meta && !quality) return null;
+                  const displayColor = quality ? quality.color : meta.color;
+                  const parts = [meta?.label, quality?.label].filter(Boolean).join(' · ');
                   return (
-                    <>
-                      {meta && (
-                        <span style={{
-                          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em',
-                          textTransform: 'uppercase', color: meta.color,
-                          border: `1px solid ${meta.color}55`,
-                          background: `${meta.color}18`,
-                          padding: '1px 6px', borderRadius: '3px',
-                        }}>{meta.label}</span>
-                      )}
-                      {quality && (
-                        <span style={{
-                          fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.15em',
-                          textTransform: 'uppercase', color: quality.color,
-                          border: `1px solid ${quality.color}55`,
-                          background: `${quality.color}18`,
-                          padding: '1px 6px', borderRadius: '3px',
-                        }}>{quality.label}</span>
-                      )}
-                    </>
+                    <span style={{
+                      fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em',
+                      textTransform: 'uppercase', color: displayColor,
+                      lineHeight: 1.2,
+                    }}>{parts}</span>
                   );
                 })()}
               </div>
