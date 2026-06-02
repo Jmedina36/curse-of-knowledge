@@ -2892,10 +2892,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 };
   
   const miniBoss = () => {
-    const eliteXpRequired = 150;
-    
-    if (xp < eliteXpRequired) {
-      addLog(`The hero needs ${eliteXpRequired} XP to face the darkness! (${xp}/${eliteXpRequired})`);
+    const completedTasks = tasks.filter(t => t.done).length;
+    const requiredTasks = Math.min(3, tasks.length);
+
+    if (tasks.length === 0 || completedTasks < requiredTasks) {
+      addLog(`Complete ${requiredTasks} tasks to summon the Blood Contract guardian. (${completedTasks}/${requiredTasks})`);
       return;
     }
     

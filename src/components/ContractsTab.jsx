@@ -431,24 +431,42 @@ const ContractsTab = ({
                   })()}
 
                   <div className="grid md:grid-cols-2 gap-4 mt-6">
-                    <button
-  onClick={() => { sounds.click(); miniBoss(); }}
-  disabled={!isDayActive || eliteBossDefeatedToday || xp < 150}
-  className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase" style={{backgroundColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)', borderColor: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)', color: '#F5F5DC', opacity: (!isDayActive || eliteBossDefeatedToday || xp < 150) ? 0.5 : 1}} onMouseEnter={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'}} onMouseLeave={(e) => {if (isDayActive && !eliteBossDefeatedToday && xp >= 150) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'}}
->
-  <div className="text-center">
-    <div className="mb-2">BLOOD CONTRACT</div>
-    {!isDayActive ? (
-      <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Day dormant — add tasks to begin</div>
-    ) : eliteBossDefeatedToday ? (
-      <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>✓ Today's trial complete</div>
-    ) : (
-      <div className="text-xs font-normal uppercase" style={{color: xp >= 150 ? '#4ADE80' : '#FBBF24'}}>
-        {xp >= 150 ? `Ready • 150 XP` : `${150 - xp} XP needed`}
-      </div>
-    )}
-  </div>
-</button>
+                    {(() => {
+                      const completedTasks = tasks.filter(t => t.done).length;
+                      const requiredTasks = Math.min(3, tasks.length);
+                      const taskGateMet = tasks.length > 0 && completedTasks >= requiredTasks;
+                      const isDisabled = !isDayActive || eliteBossDefeatedToday || !taskGateMet;
+                      return (
+                        <button
+                          onClick={() => { sounds.click(); miniBoss(); }}
+                          disabled={isDisabled}
+                          className="px-8 py-6 rounded-xl font-bold text-xl transition-all border-2 disabled:cursor-not-allowed uppercase"
+                          style={{
+                            backgroundColor: isDisabled ? 'rgba(30, 41, 59, 0.5)' : 'rgba(30, 41, 59, 0.8)',
+                            borderColor: isDisabled ? 'rgba(71, 85, 105, 0.5)' : 'rgba(71, 85, 105, 0.8)',
+                            color: '#F5F5DC',
+                            opacity: isDisabled ? 0.5 : 1,
+                          }}
+                          onMouseEnter={(e) => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'rgba(51, 65, 85, 0.9)'; }}
+                          onMouseLeave={(e) => { if (!isDisabled) e.currentTarget.style.backgroundColor = 'rgba(30, 41, 59, 0.8)'; }}
+                        >
+                          <div className="text-center">
+                            <div className="mb-2">BLOOD CONTRACT</div>
+                            {!isDayActive ? (
+                              <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Day dormant — add tasks to begin</div>
+                            ) : eliteBossDefeatedToday ? (
+                              <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>Today's trial complete</div>
+                            ) : tasks.length === 0 ? (
+                              <div className="text-xs font-normal uppercase" style={{color: '#9CA3AF'}}>Add tasks to unlock</div>
+                            ) : taskGateMet ? (
+                              <div className="text-xs font-normal uppercase" style={{color: '#4ADE80'}}>Guardian awakens — {completedTasks}/{requiredTasks} tasks done</div>
+                            ) : (
+                              <div className="text-xs font-normal uppercase" style={{color: '#FBBF24'}}>{completedTasks}/{requiredTasks} tasks — guardian stirs</div>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })()}
                     <button
   onClick={() => { sounds.click(); finalBoss(); }}
   disabled={!gauntletUnlocked || tasks.length === 0 || tasks.filter(t => t.done).length < tasks.length}
