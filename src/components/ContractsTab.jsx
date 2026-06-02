@@ -673,11 +673,16 @@ const ContractsTab = ({
           {/* Chronicle of Events */}
           <div className="bg-black bg-opacity-50 rounded-xl p-4 border border-gray-800">
             <div className="text-center mb-4">
-              <h3 className="text-lg font-bold mb-2" style={{color:'#D4AF37',letterSpacing:'0.15em'}}>CHRONICLE OF EVENTS</h3>
-              <div className="flex items-center justify-center gap-2">
-                <div style={{width:'60px',height:'1px',background:'linear-gradient(to right,transparent,rgba(212,175,55,0.5))'}}/>
-                <span style={{color:'rgba(212,175,55,0.6)',fontSize:'8px'}}>◆</span>
-                <div style={{width:'60px',height:'1px',background:'linear-gradient(to left,transparent,rgba(212,175,55,0.5))'}}/>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
+                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
+              </div>
+              <h3 className="text-lg font-bold mb-3" style={{color:'#D4AF37',letterSpacing:'0.15em'}}>CHRONICLE OF EVENTS</h3>
+              <div className="flex items-center justify-center gap-3">
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
+                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
               </div>
             </div>
             {log.length === 0
