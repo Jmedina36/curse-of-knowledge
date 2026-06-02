@@ -384,13 +384,6 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
               <div>
                 {/* Ritual header */}
                 <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
-                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.2))' }} />
-                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.35em', color: 'rgba(212,175,55,0.5)', textTransform: 'uppercase' }}>
-                      ◆ Ritual of Binding ◆
-                    </span>
-                    <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.2))' }} />
-                  </div>
                   {/* Tier chain */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', flexWrap: 'wrap' }}>
                     {[1,2,3,4,5].map((t, i) => (
