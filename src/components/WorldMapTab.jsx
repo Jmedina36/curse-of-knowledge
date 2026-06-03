@@ -442,24 +442,42 @@ const WorldMapTab = ({
 
               {/* Decorative assets — non-interactive, terrain-matched */}
               {DECORATIONS.map((d, i) => (
-                <img
+                <div
                   key={`deco-${i}`}
-                  src={d.src}
-                  alt=""
                   style={{
                     position: 'absolute',
                     left: d.pos.left,
                     top: d.pos.top,
                     transform: 'translate(-50%, -50%)',
-                    width: `${d.size}px`,
-                    height: `${d.size}px`,
-                    objectFit: 'contain',
                     pointerEvents: 'none',
-                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
-                    opacity: 0.8,
                     zIndex: 2,
                   }}
-                />
+                >
+                  <img
+                    src={d.src}
+                    alt=""
+                    style={{
+                      width: `${d.size}px`,
+                      height: `${d.size}px`,
+                      objectFit: 'contain',
+                      display: 'block',
+                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
+                      opacity: 0.8,
+                    }}
+                  />
+                  <div style={{
+                    position: 'absolute',
+                    top: '-8px', left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(0,0,0,0.85)',
+                    color: '#FFD700',
+                    fontSize: '8px',
+                    fontWeight: 700,
+                    padding: '1px 3px',
+                    borderRadius: '3px',
+                    whiteSpace: 'nowrap',
+                  }}>{i + 1}</div>
+                </div>
               ))}
 
               {/* All location markers */}
