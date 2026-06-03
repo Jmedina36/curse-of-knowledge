@@ -87,7 +87,7 @@ const LOCATIONS = [
     marker: '/worldmap/holy-tree.png',
     type: 'contract',
     unlockDay: 2,
-    position: { left: '28%', top: '67%' },
+    position: { left: '38%', top: '67%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Protect the Grove',
   },
