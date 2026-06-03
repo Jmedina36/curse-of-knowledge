@@ -12,8 +12,8 @@ export const LOCATION_CONTRACTS = [
     desc: 'Ships rot at the docks. The crew didn\'t disappear — they were taken. Whatever took them is still there.',
     zone: 1,
     encounter: {
+      enemyType: 'bandit',
       waveSize: 3,
-      tierWeights: { 1: 4, 2: 6, 3: 0 }, // heavier T2 — tougher than outskirts
     },
     rewards: [
       { type: 'gold',       amount: 25 },
@@ -29,8 +29,9 @@ export const LOCATION_CONTRACTS = [
     desc: 'Something ancient hunts within the grove. Drive it out before the tree falls dark.',
     zone: 1,
     encounter: {
+      enemyType: 'creature',
       waveSize: 2,
-      tierWeights: { 1: 3, 2: 7, 3: 0 }, // mostly T2 — dangerous for early levels
+      tierWeights: { 1: 3, 2: 7, 3: 0 },
     },
     rewards: [
       { type: 'staminaPots', amount: 2  },
@@ -46,8 +47,9 @@ export const LOCATION_CONTRACTS = [
     desc: 'The outpost has gone silent. Fight through what lurks there and bring back word.',
     zone: 1,
     encounter: {
+      enemyType: 'creature',
       waveSize: 2,
-      tierWeights: { 1: 7, 2: 3, 3: 0 }, // mostly T1 — accessible but still a wave
+      tierWeights: { 1: 7, 2: 3, 3: 0 },
     },
     rewards: [
       { type: 'fusionCrystals', amount: 1  },

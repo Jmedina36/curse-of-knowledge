@@ -3453,8 +3453,23 @@ if (battleType === 'elite') {
   addLog('Today\'s elite trial complete. Curse will be cleared at midnight.');
 }
   
-  // Check if bandit wave continues
-  if (isBanditWave) {
+  // Location contract bandit wave — handle separately from the raid system
+  let skipBanditRaidHandler = false;
+  if (isBanditWave && activeContractRef.current?.type === 'location') {
+    const nextIdx = banditLineupIdxRef.current + 1;
+    const lineup = banditLineupRef.current;
+    if (nextIdx < lineup.length) {
+      addLog(`Another closes in...`);
+      setTimeout(() => spawnBanditEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+      return;
+    }
+    // All contract enemies down — clear bandit flag and fall through to regular victory path
+    setIsBanditWave(false);
+    skipBanditRaidHandler = true;
+  }
+
+  // Check if bandit RAID wave continues
+  if (isBanditWave && !skipBanditRaidHandler) {
     const nextIdx = banditLineupIdxRef.current + 1;
     const lineup = banditLineupRef.current;
     const defeatedEnemy = lineup[banditLineupIdxRef.current];
@@ -7062,10 +7077,28 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 const _ac = activeContractRef.current;
                 if (_ac?.type === 'location') {
                   const lc = _ac.contract;
-                  contractEncounterRef.current = { tierWeights: lc.encounter.tierWeights };
-                  setWaveCount(lc.encounter.waveSize);
-                  addLog(`Contract battle: "${lc.name}" — ${lc.encounter.waveSize} enemies stand between you and your reward.`);
-                  setTimeout(() => spawnRegularEnemy(true, 1, lc.encounter.waveSize), 1000);
+                  const { enemyType, waveSize, tierWeights } = lc.encounter;
+                  addLog(`Contract battle: "${lc.name}" — ${waveSize} enemies stand between you and your reward.`);
+                  if (enemyType === 'bandit') {
+                    // Build a grunt lineup from the bandit pool
+                    const lineup = [];
+                    const usedIdxs = new Set();
+                    for (let i = 0; i < waveSize; i++) {
+                      let gIdx;
+                      do { gIdx = Math.floor(Math.random() * BANDIT_POOL.grunts.length); }
+                      while (usedIdxs.has(gIdx) && usedIdxs.size < BANDIT_POOL.grunts.length);
+                      usedIdxs.add(gIdx);
+                      const g = BANDIT_POOL.grunts[gIdx];
+                      lineup.push({ img: g.img, name: g.names[Math.floor(Math.random() * g.names.length)], isCapt: false, isLeader: false });
+                    }
+                    banditLineupRef.current = lineup;
+                    banditLineupIdxRef.current = 0;
+                    setTimeout(() => spawnBanditEnemy(lineup[0], 0, lineup.length), 1000);
+                  } else {
+                    contractEncounterRef.current = { tierWeights };
+                    setWaveCount(waveSize);
+                    setTimeout(() => spawnRegularEnemy(true, 1, waveSize), 1000);
+                  }
                 } else {
                   const waveRoll = Math.random();
                   if (waveRoll < 0.2) {
