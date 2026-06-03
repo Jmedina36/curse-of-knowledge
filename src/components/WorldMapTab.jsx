@@ -37,7 +37,7 @@ const LOCATIONS = [
     marker: '/worldmap/fountain.png',
     type: 'contract',
     unlockDay: 1,
-    position: { left: '62%', top: '71%' },
+    position: { left: '62%', top: '67%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'The Warden\'s Request',
   },
@@ -400,7 +400,8 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                       position: 'absolute',
                       left: loc.position.left,
                       top: loc.position.top,
-                      transform: 'translate(-50%, -50%)',
+                      x: '-50%',
+                      y: '-50%',
                       cursor: 'pointer',
                       zIndex: isActive ? 10 : 5,
                     }}
