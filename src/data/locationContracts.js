@@ -32,12 +32,17 @@ export const LOCATION_CONTRACTS = [
     locationId: 'holy_tree',
     locationName: 'The Sacred Grove',
     name: 'Protect the Grove',
-    desc: 'The sacred tree is dying. Dark creatures have taken root deep in the grove and are draining it of life. Stop them before the corruption spreads too far to undo.',
+    desc: 'The sacred tree is dying. A cult has taken root in the grove — draining it, defiling it. Drive them out before the corruption becomes permanent.',
     zone: 1,
     encounter: {
-      enemyType: 'creature',
-      waveSize: 2,
-      tierWeights: { 1: 2, 2: 8, 3: 0 },
+      enemyType: 'bandit',
+      waveSize: 3,
+      enemyNames: ['Grove Cultist', 'Defiler', 'Dark Acolyte'],
+      dialogue: [
+        "The tree belongs to the darkness now.",
+        "Your blood will feed the ritual.",
+        "The grove will fall. You cannot stop it.",
+      ],
     },
     rewards: [
       { type: 'staminaPots', amount: 2  },
