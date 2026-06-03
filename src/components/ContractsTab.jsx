@@ -81,6 +81,8 @@ const ContractsTab = ({
   guildPoints,
   guildRank,
   guildRanks,
+  locationContracts,
+  completedLocationContracts,
 }) => {
   return (
     <div className="space-y-4">
@@ -375,6 +377,114 @@ const ContractsTab = ({
                     </label>
                   </div>
                 )}
+              </>
+            )}
+
+            {/* ── ZONE 1 LOCATION CONTRACTS ── */}
+            {isDayActive && locationContracts?.length > 0 && (
+              <>
+                <TierDivider tier="copper" label="Field Contracts — Zone 1" />
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                  {locationContracts.map(lc => {
+                    const isCompleted = completedLocationContracts?.includes(lc.id);
+                    const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
+                    return (
+                      <div key={lc.id} style={{
+                        position: 'relative',
+                        background: isCompleted
+                          ? 'linear-gradient(160deg,rgba(55,55,42,0.52),rgba(42,42,35,0.52))'
+                          : 'linear-gradient(160deg,rgba(65,48,18,0.55),rgba(50,38,15,0.55))',
+                        border: isCompleted
+                          ? '1px solid rgba(80,100,60,0.45)'
+                          : `1px solid ${TIER.copper.border}`,
+                        borderRadius: '4px',
+                        padding: '14px 14px 12px',
+                        opacity: isCompleted ? 0.65 : 1,
+                      }}>
+                        {/* Push-pin */}
+                        <div style={{
+                          position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
+                          width: '12px', height: '12px', borderRadius: '50%',
+                          background: isCompleted ? 'rgba(80,120,60,0.8)' : TIER.copper.color,
+                          border: '1px solid rgba(255,255,255,0.15)',
+                          boxShadow: `0 1px 5px rgba(0,0,0,0.6)`,
+                        }} />
+
+                        {/* Tier + location badge */}
+                        <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                          <span style={{
+                            fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.22em',
+                            textTransform: 'uppercase', padding: '2px 8px', borderRadius: '2px',
+                            background: isCompleted ? 'rgba(60,90,40,0.3)' : 'rgba(45,25,8,0.5)',
+                            border: isCompleted ? '1px solid rgba(80,120,60,0.4)' : `1px solid ${TIER.copper.border}`,
+                            color: isCompleted ? 'rgba(150,220,110,0.95)' : TIER.copper.color,
+                          }}>
+                            {isCompleted ? 'Sealed' : 'Copper'}
+                          </span>
+                          <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.7rem', color: 'rgba(180,160,120,0.6)' }}>
+                            {lc.locationName}
+                          </span>
+                        </div>
+
+                        {/* Contract title */}
+                        <p style={{
+                          fontFamily: 'Cinzel,serif', fontSize: '1.0rem', fontWeight: 600,
+                          letterSpacing: '0.04em', lineHeight: 1.4,
+                          color: isCompleted ? 'rgba(180,175,150,0.65)' : '#F5F0E0',
+                          textDecoration: isCompleted ? 'line-through' : 'none',
+                          marginBottom: '6px',
+                        }}>{lc.name}</p>
+
+                        {/* Description */}
+                        <p style={{
+                          fontSize: '0.72rem', color: 'rgba(180,165,140,0.6)',
+                          lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic',
+                        }}>{lc.desc}</p>
+
+                        {/* Rewards */}
+                        {!isCompleted && (
+                          <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                            <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.72rem', color: 'rgba(180,220,120,0.8)' }}>+{lc.xpReward} XP</span>
+                            <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
+                            <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.72rem', color: 'rgba(212,175,55,0.8)' }}>+{lc.goldReward} Gold</span>
+                          </div>
+                        )}
+
+                        {/* Action */}
+                        {!isCompleted && (
+                          isActive ? (
+                            <div style={{
+                              fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em',
+                              padding: '5px 10px', borderRadius: '2px', textAlign: 'center',
+                              background: 'rgba(80,55,0,0.5)', border: '1px solid rgba(212,175,55,0.4)',
+                              color: 'rgba(212,175,55,0.9)',
+                            }}>On Map</div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                sounds.click();
+                                setActiveContract({ type: 'location', contract: lc });
+                                setActiveTab('map');
+                              }}
+                              disabled={!!activeContract}
+                              style={{
+                                width: '100%',
+                                fontFamily: 'Cinzel,serif', fontSize: '0.82rem', letterSpacing: '0.15em',
+                                padding: '5px 12px', borderRadius: '2px',
+                                background: activeContract ? 'rgba(30,20,5,0.4)' : 'rgba(80,55,10,0.6)',
+                                border: `1px solid ${activeContract ? 'rgba(180,140,40,0.18)' : 'rgba(180,140,40,0.5)'}`,
+                                color: activeContract ? 'rgba(180,150,80,0.3)' : 'rgba(212,175,55,0.95)',
+                                cursor: activeContract ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={e => { if (!activeContract) e.currentTarget.style.background = 'rgba(100,70,15,0.8)'; }}
+                              onMouseLeave={e => { if (!activeContract) e.currentTarget.style.background = 'rgba(80,55,10,0.6)'; }}
+                            >Accept</button>
+                          )
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </>
             )}
 

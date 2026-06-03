@@ -401,7 +401,8 @@ const WorldMapTab = ({
                 const hasActiveContract =
                   (isHunting && activeContract?.type === 'task') ||
                   (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
-                  (loc.id === 'skull_cave' && activeContract?.type === 'final');
+                  (loc.id === 'skull_cave' && activeContract?.type === 'final') ||
+                  (activeContract?.type === 'location' && activeContract.contract.locationId === loc.id);
 
                 // Selected hunting ground with active contract pulses a different color
                 const isActiveHuntZone = isHunting && selectedZone?.id === loc.id;
@@ -746,6 +747,22 @@ const WorldMapTab = ({
                       }}
                     >Set as Hunting Ground</button>
                   )
+                ) : activeContract?.type === 'location' && activeContract.contract.locationId === displayed.id ? (
+                  <button
+                    onClick={() => isDayActive && onBeginContract()}
+                    disabled={!isDayActive}
+                    style={{
+                      width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                      color: isDayActive ? '#000' : 'rgba(212,175,55,0.3)',
+                      background: isDayActive ? '#D4AF37' : 'rgba(20,15,0,0.5)',
+                      border: '1px solid rgba(212,175,55,0.5)',
+                      borderRadius: '4px', padding: '8px',
+                      cursor: isDayActive ? 'pointer' : 'not-allowed',
+                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      boxShadow: isDayActive ? '0 0 16px rgba(212,175,55,0.4)' : 'none',
+                      animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
+                    }}
+                  >Begin Contract</button>
                 ) : (
                   <div style={{
                     fontSize: '0.56rem', color: 'rgba(212,175,55,0.5)',
