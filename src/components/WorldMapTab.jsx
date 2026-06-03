@@ -399,7 +399,7 @@ const WorldMapTab = ({
 
                 // Glow when this location has an accepted active contract
                 const hasActiveContract =
-                  (isHunting && selectedZone?.id === loc.id && activeContract?.type === 'task') ||
+                  (isHunting && activeContract?.type === 'task') ||
                   (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
                   (loc.id === 'skull_cave' && activeContract?.type === 'final');
 
