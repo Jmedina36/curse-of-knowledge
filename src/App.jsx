@@ -7460,7 +7460,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setHealthPots(0);
                     setStaminaPots(0);
                     setCleansePots(0);
-                    
+                    setFusionCrystals(0);
+                    setCapturedMonsters([]);
+
                     // Reset old gear system (for compatibility)
                     setWeapon(0);
                     setArmor(0);
@@ -7476,7 +7478,25 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setPendantInventory([]);
                     setRingInventory([]);
                     setWaveGoldTotal(0);
-                    
+
+                    // Reset market
+                    setMarketModifiers({ weapon: 1.0, armor: 1.0, pendant: 1.0, ring: 1.0, healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0, weaponOil: 1.0, armorPolish: 1.0, luckyCharm: 1.0 });
+                    setLastMarketUpdateDay(0);
+                    setShopInventory([]);
+                    setDaysSinceShop(0);
+                    setDailyQuestCompleted(false);
+                    setGuildPoints(0);
+                    setGauntletMilestone(1500);
+                    setGauntletUnlocked(false);
+                    setLastRealDay(null);
+
+                    // Reset contract / map state
+                    setSelectedZone(null);
+                    setActiveContract(null);
+                    setCompletedLocationContracts([]);
+                    setPendingLocationRewards([]);
+                    contractEncounterRef.current = null;
+
                     setTasks([]);
                     setActiveTask(null);
                     setTimer(0);
@@ -7514,7 +7534,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setPlayerFlash(false);
                     setCurrentWaveEnemy(0);
                     setTotalWaveEnemies(1);
-                    
+                    setWaveCount(0);
+                    setCurrentBattleCreature(null);
+                    setIsBanditWave(false);
+                    setBanditWaveNumber(0);
+                    setBanditCaptainsDefeated([]);
+                    setIsDaughtersWave(false);
+                    setDaughtersWaveNumber(0);
+                    setDaughtersCaptainsDefeated([]);
+                    setChargeStacks(0);
+
                     setEnemyDialogue('');
                     setEnragedTurns(0);
                     
