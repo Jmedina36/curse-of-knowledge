@@ -403,6 +403,10 @@ const WorldMapTab = ({
                   (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
                   (loc.id === 'skull_cave' && activeContract?.type === 'final');
 
+                // Selected hunting ground with active contract pulses a different color
+                const isActiveHuntZone = isHunting && selectedZone?.id === loc.id;
+                const pulseColor = isActiveHuntZone ? loc.dangerColor : '#D4AF37';
+
                 return (
                   <motion.div
                     key={loc.id}
@@ -425,12 +429,12 @@ const WorldMapTab = ({
                     {hasActiveContract && (
                       <motion.div
                         animate={{ opacity: [0.5, 1, 0.5], scale: [0.85, 1.15, 0.85] }}
-                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                        transition={{ duration: isActiveHuntZone ? 1.2 : 1.8, repeat: Infinity, ease: 'easeInOut' }}
                         style={{
-                          position: 'absolute', inset: '-14px',
+                          position: 'absolute', inset: isActiveHuntZone ? '-16px' : '-14px',
                           borderRadius: '50%',
-                          border: '2px solid #D4AF37',
-                          boxShadow: '0 0 20px #D4AF3799',
+                          border: `2px solid ${pulseColor}`,
+                          boxShadow: `0 0 ${isActiveHuntZone ? 24 : 16}px ${pulseColor}99`,
                           pointerEvents: 'none',
                         }}
                       />
