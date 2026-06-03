@@ -125,7 +125,7 @@ const LOCATIONS = [
     marker: '/worldmap/treasure-chest.png',
     type: 'contract',
     unlockLevel: 3,
-    position: { left: '38%', top: '23%' },
+    position: { left: '38%', top: '28%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'The Lost Cache',
   },
