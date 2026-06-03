@@ -149,7 +149,7 @@ const LOCATIONS = [
     marker: '/worldmap/old-tree.png',
     type: 'contract',
     unlockLevel: 5,
-    position: { left: '78%', top: '44%' },
+    position: { left: '78%', top: '50%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Extermination Order',
   },
@@ -197,7 +197,7 @@ const LOCATIONS = [
     marker: '/worldmap/column.png',
     type: 'contract',
     unlockLevel: 5,
-    position: { left: '62%', top: '34%' },
+    position: { left: '62%', top: '28%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Temple Cleansing',
   },
@@ -225,7 +225,7 @@ const LOCATIONS = [
     type: 'hunting',
     tierWeights: { 1: 0, 2: 2, 3: 8 },
     unlockLevel: 8,
-    position: { left: '22%', top: '18%' },
+    position: { left: '10%', top: '24%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
   {
@@ -236,7 +236,7 @@ const LOCATIONS = [
     marker: '/worldmap/cliff.png',
     type: 'contract',
     unlockLevel: 8,
-    position: { left: '10%', top: '24%' },
+    position: { left: '22%', top: '18%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Edge of the World',
   },
@@ -356,14 +356,14 @@ const DECORATIONS = [
   { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 34 },
 
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
-  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '14%' }, size: 34 },
+  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 34 },
   { src: '/worldmap/red-rocks.png',           pos: { left: '36%', top: '22%' }, size: 32 },
   { src: '/worldmap/dry-wood-2.png',          pos: { left: '16%', top: '32%' }, size: 34 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
-  { src: '/worldmap/lava.png',                pos: { left: '68%', top: '13%' }, size: 34 },
-  { src: '/worldmap/old-lava.png',            pos: { left: '82%', top: '16%' }, size: 32 },
-  { src: '/worldmap/lava-pit.png',            pos: { left: '42%', top: '14%' }, size: 30 },
+  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 34 },
+  { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 32 },
+  { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 30 },
   { src: '/worldmap/green-crystal-stone.png', pos: { left: '32%', top: '2%'  }, size: 32 },
 ];
 
