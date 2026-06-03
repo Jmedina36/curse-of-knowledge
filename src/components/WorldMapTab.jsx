@@ -37,7 +37,7 @@ const LOCATIONS = [
     marker: '/worldmap/fountain.png',
     type: 'contract',
     unlockLevel: 3,
-    position: { left: '62%', top: '67%' },
+    position: { left: '68%', top: '67%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'The Warden\'s Request',
   },
@@ -76,7 +76,7 @@ const LOCATIONS = [
     type: 'hunting',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockLevel: 3,
-    position: { left: '72%', top: '77%' },
+    position: { left: '78%', top: '77%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
   },
   {
@@ -99,7 +99,7 @@ const LOCATIONS = [
     marker: '/worldmap/thorny-ivy.png',
     type: 'contract',
     unlockLevel: 3,
-    position: { left: '72%', top: '88%' },
+    position: { left: '66%', top: '93%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Clear the Road',
   },
@@ -342,7 +342,7 @@ const DECORATIONS = [
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
   { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 40 },
   { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '72%' }, size: 34 },
-  { src: '/worldmap/rustic-stone.png',        pos: { left: '24%', top: '75%' }, size: 32 },
+  { src: '/worldmap/rustic-stone.png',        pos: { left: '36%', top: '75%' }, size: 32 },
 
   // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
   { src: '/worldmap/low-rocks.png',           pos: { left: '26%', top: '53%' }, size: 32 },
