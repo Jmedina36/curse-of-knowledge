@@ -83,6 +83,8 @@ const ContractsTab = ({
   guildRanks,
   locationContracts,
   completedLocationContracts,
+  pendingLocationRewards,
+  onCollectLocationReward,
 }) => {
   return (
     <div className="space-y-4">
@@ -387,16 +389,22 @@ const ContractsTab = ({
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
                   {locationContracts.map(lc => {
                     const isCompleted = completedLocationContracts?.includes(lc.id);
+                    const isPending = pendingLocationRewards?.includes(lc.id);
                     const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
                     return (
                       <div key={lc.id} style={{
                         position: 'relative',
                         background: isCompleted
                           ? 'linear-gradient(160deg,rgba(55,55,42,0.52),rgba(42,42,35,0.52))'
-                          : 'linear-gradient(160deg,rgba(65,48,18,0.55),rgba(50,38,15,0.55))',
+                          : isPending
+                            ? 'linear-gradient(160deg,rgba(40,55,20,0.6),rgba(30,45,15,0.6))'
+                            : 'linear-gradient(160deg,rgba(65,48,18,0.55),rgba(50,38,15,0.55))',
                         border: isCompleted
                           ? '1px solid rgba(80,100,60,0.45)'
-                          : `1px solid ${TIER.copper.border}`,
+                          : isPending
+                            ? '1px solid rgba(100,180,60,0.5)'
+                            : `1px solid ${TIER.copper.border}`,
+                        boxShadow: isPending ? '0 0 16px rgba(100,200,60,0.2)' : undefined,
                         borderRadius: '4px',
                         padding: '14px 14px 12px',
                         opacity: isCompleted ? 0.65 : 1,
@@ -441,8 +449,8 @@ const ContractsTab = ({
                           lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic',
                         }}>{lc.desc}</p>
 
-                        {/* Rewards */}
-                        {!isCompleted && (
+                        {/* Rewards — shown inline on Collect button when pending */}
+                        {!isCompleted && !isPending && (
                           <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
                             <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.72rem', color: 'rgba(180,220,120,0.8)' }}>+{lc.xpReward} XP</span>
                             <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
@@ -452,7 +460,24 @@ const ContractsTab = ({
 
                         {/* Action */}
                         {!isCompleted && (
-                          isActive ? (
+                          isPending ? (
+                            <button
+                              onClick={() => { sounds.click(); onCollectLocationReward(lc.id); }}
+                              style={{
+                                width: '100%',
+                                fontFamily: 'Cinzel,serif', fontSize: '0.82rem', letterSpacing: '0.15em',
+                                padding: '6px 12px', borderRadius: '2px',
+                                background: 'rgba(30,80,15,0.7)',
+                                border: '1px solid rgba(100,200,60,0.6)',
+                                color: 'rgba(150,240,100,0.95)',
+                                cursor: 'pointer', transition: 'all 0.2s',
+                                boxShadow: '0 0 10px rgba(100,200,60,0.25)',
+                                animation: 'intro-hint-pulse 2s ease-in-out infinite',
+                              }}
+                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40,110,20,0.85)'; }}
+                              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(30,80,15,0.7)'; }}
+                            >Collect Reward — +{lc.xpReward} XP, +{lc.goldReward} Gold</button>
+                          ) : isActive ? (
                             <div style={{
                               fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em',
                               padding: '5px 10px', borderRadius: '2px', textAlign: 'center',

@@ -510,6 +510,7 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const selectedZoneRef = useRef(null);
   const [activeContract, setActiveContract] = useState(null);
   const [completedLocationContracts, setCompletedLocationContracts] = useState([]);
+  const [pendingLocationRewards, setPendingLocationRewards] = useState([]);
   const activeContractRef = useRef(null);
   const pomodoroFromMapRef = useRef(false);
   const [battleType, setBattleType] = useState('regular');
@@ -746,7 +747,17 @@ const getDateKey = useCallback((date) => {
   // Keep selectedZoneRef in sync for use inside useCallback closures
   useEffect(() => { selectedZoneRef.current = selectedZone; }, [selectedZone]);
   useEffect(() => { activeContractRef.current = activeContract; }, [activeContract]);
-  
+
+  const collectLocationReward = (contractId) => {
+    const lc = LOCATION_CONTRACTS.find(c => c.id === contractId);
+    if (!lc) return;
+    setXp(x => x + lc.xpReward);
+    setGold(g => g + lc.goldReward);
+    addLog(`Reward collected: "${lc.name}" — +${lc.xpReward} XP, +${lc.goldReward} Gold.`);
+    setCompletedLocationContracts(prev => [...prev, contractId]);
+    setPendingLocationRewards(prev => prev.filter(id => id !== contractId));
+  };
+
   // Study Links Functions
   const addStudyWebsite = useCallback(() => {
     if (!newWebsiteName.trim() || !newWebsiteUrl.trim()) {
@@ -1036,6 +1047,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.studyWebsites) setStudyWebsites(data.studyWebsites);
         if (data.guildPoints !== undefined) setGuildPoints(data.guildPoints);
         if (data.completedLocationContracts) setCompletedLocationContracts(data.completedLocationContracts);
+        if (data.pendingLocationRewards) setPendingLocationRewards(data.pendingLocationRewards);
       } catch (e) {
         console.error('Failed to load save:', e);
         // If saved data is corrupted, generate new hero
@@ -1095,7 +1107,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
-  studyWebsites, guildPoints, completedLocationContracts
+  studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
       
@@ -1103,7 +1115,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -3537,10 +3549,8 @@ if (battleType === 'elite') {
     pendingBattleSpawnRef.current = null;
     setActiveContract(null);
   } else if (_ac?.type === 'location') {
-    setCompletedLocationContracts(prev => [...prev, _ac.contract.id]);
-    setXp(x => x + _ac.contract.xpReward);
-    setGold(g => g + _ac.contract.goldReward);
-    addLog(`Contract fulfilled: "${_ac.contract.name}" — +${_ac.contract.xpReward} XP, +${_ac.contract.goldReward} Gold.`);
+    setPendingLocationRewards(prev => [...prev, _ac.contract.id]);
+    addLog(`Contract fulfilled: "${_ac.contract.name}" — return to the board to collect your reward.`);
     setActiveContract(null);
   }
 
@@ -6978,6 +6988,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               guildPoints={guildPoints} guildRank={guildRank} guildRanks={GUILD_RANKS}
               locationContracts={LOCATION_CONTRACTS}
               completedLocationContracts={completedLocationContracts}
+              pendingLocationRewards={pendingLocationRewards}
+              onCollectLocationReward={collectLocationReward}
             />
           )}
 
