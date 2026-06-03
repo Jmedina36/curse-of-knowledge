@@ -347,11 +347,11 @@ const DECORATIONS = [
   // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
 
   { src: '/worldmap/stone-arch.png',          pos: { left: '28%', top: '36%' }, size: 36 },
-  { src: '/worldmap/rock-2.png',              pos: { left: '42%', top: '38%' }, size: 30 },
+  { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 30 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
-  { src: '/worldmap/rock-column.png',         pos: { left: '88%', top: '42%' }, size: 34 },
-  { src: '/worldmap/rocks-1.png',             pos: { left: '16%', top: '32%' }, size: 32 },
+  { src: '/worldmap/rock-column.png',         pos: { left: '42%', top: '38%' }, size: 34 },
+  { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 32 },
   { src: '/worldmap/rock-1.png',              pos: { left: '46%', top: '50%' }, size: 30 },
   { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 34 },
 
@@ -364,7 +364,7 @@ const DECORATIONS = [
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 34 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 32 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 30 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '32%', top: '2%'  }, size: 32 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '16%', top: '32%' }, size: 32 },
 ];
 
 const TIER_META = {
