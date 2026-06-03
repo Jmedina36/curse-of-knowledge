@@ -617,10 +617,14 @@ const WorldMapTab = ({
                   </div>
                 )}
 
-                {/* Contract name */}
+                {/* Contract name — only when active */}
                 {displayed.contract && (
+                  (displayed.id === 'dungeon' && activeContract?.type === 'elite') ||
+                  (displayed.id === 'skull_cave' && activeContract?.type === 'final') ||
+                  (activeContract?.type === 'location' && activeContract.contract.locationId === displayed.id)
+                ) && (
                   <div style={{ marginBottom: '10px' }}>
-                    <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '3px' }}>Contract</div>
+                    <div style={{ fontSize: '0.48rem', color: 'rgba(212,175,55,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '3px' }}>Active Contract</div>
                     <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#D4AF37', letterSpacing: '0.08em' }}>"{displayed.contract}"</div>
                   </div>
                 )}
