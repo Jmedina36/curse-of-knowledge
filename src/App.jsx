@@ -1319,21 +1319,6 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
             setIsBreak(true);
             setPomodoroTimer(5 * 60); // 5 minute break
             // If started from the map, auto-close pomodoro and spawn battle
-            if (pomodoroFromMapRef.current) {
-              pomodoroFromMapRef.current = false;
-              setShowPomodoro(false);
-              setTimeout(() => {
-                const waveRoll = Math.random();
-                if (waveRoll < 0.2) {
-                  const numEnemies = Math.floor(Math.random() * 2) + 2;
-                  setWaveCount(numEnemies);
-                  addLog(`Wave incoming! ${numEnemies} enemies detected!`);
-                  setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
-                } else {
-                  spawnRegularEnemy(false, 0, 1);
-                }
-              }, 600);
-            }
           } else {
             // Break done - stop and wait for user to resume
             addLog(`The break ends. Ready for another pomodoro?`);
@@ -7040,6 +7025,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               eliteBossDefeatedToday={eliteBossDefeatedToday}
               gauntletUnlocked={gauntletUnlocked}
               tasks={tasks}
+              onBeginContract={() => {
+                const waveRoll = Math.random();
+                if (waveRoll < 0.2) {
+                  const numEnemies = Math.floor(Math.random() * 2) + 2;
+                  setWaveCount(numEnemies);
+                  addLog(`Wave incoming! ${numEnemies} enemies detected!`);
+                  setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
+                } else {
+                  spawnRegularEnemy(false, 0, 1);
+                }
+              }}
               onStartPomodoro={(task) => {
                 const t = task || { title: selectedZoneRef.current?.name || 'Hunt', id: '_map_hunt_' + Date.now() };
                 setPomodoroTask(t);
@@ -7048,8 +7044,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 setPomodorosCompleted(0);
                 setIsBreak(false);
                 setPomodoroRunning(true);
-                pomodoroFromMapRef.current = true;
-                addLog(`Heading out: "${t.title}"`);
+                addLog(`Focus session: "${t.title}"`);
               }}
               onEliteBoss={miniBoss}
               onFinalBoss={finalBoss}

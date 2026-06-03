@@ -327,7 +327,7 @@ const TIER_META = {
 const WorldMapTab = ({
   currentDay, selectedZone, setSelectedZone,
   activeContract, setActiveContract,
-  onStartPomodoro, onEliteBoss, onFinalBoss,
+  onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
@@ -687,7 +687,7 @@ const WorldMapTab = ({
                 ) : displayed.type === 'hunting' ? (
                   selectedZone?.id === displayed.id ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {/* Active task contract on this hunting ground */}
+                      {/* Active task contract label */}
                       {activeContract?.type === 'task' && (
                         <div style={{
                           fontSize: '0.52rem', color: '#D4AF37',
@@ -695,12 +695,11 @@ const WorldMapTab = ({
                           border: '1px solid rgba(212,175,55,0.25)',
                           borderRadius: '3px', padding: '5px 8px',
                           letterSpacing: '0.08em',
-                        }}>
-                          ✦ {activeContract.task.title}
-                        </div>
+                        }}>✦ {activeContract.task.title}</div>
                       )}
+                      {/* Begin Contract / Hunt Here — starts battle immediately */}
                       <button
-                        onClick={() => isDayActive && onStartPomodoro(activeContract?.type === 'task' ? activeContract.task : null)}
+                        onClick={() => isDayActive && onBeginContract()}
                         disabled={!isDayActive}
                         style={{
                           width: '100%', fontSize: '0.56rem', fontWeight: 700,
@@ -713,11 +712,26 @@ const WorldMapTab = ({
                           boxShadow: isDayActive ? `0 0 12px ${displayed.dangerColor}55` : 'none',
                           transition: 'all 0.15s',
                         }}
-                      >
-                        {activeContract?.type === 'task' ? '⚔ Begin Contract' : '🏹 Hunt Here'}
-                      </button>
+                      >{activeContract?.type === 'task' ? '⚔ Begin Contract' : '⚔ Hunt Here'}</button>
+                      {/* Optional Pomodoro — study before fighting */}
+                      {activeContract?.type === 'task' && (
+                        <button
+                          onClick={() => onStartPomodoro(activeContract.task)}
+                          style={{
+                            width: '100%', fontSize: '0.5rem', fontWeight: 600,
+                            color: 'rgba(160,130,220,0.85)',
+                            background: 'rgba(60,30,80,0.4)',
+                            border: '1px solid rgba(150,100,200,0.3)',
+                            borderRadius: '4px', padding: '5px 8px',
+                            cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
+                            transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background='rgba(80,40,110,0.6)'}
+                          onMouseLeave={e => e.currentTarget.style.background='rgba(60,30,80,0.4)'}
+                        >🕐 Focus Session (Optional)</button>
+                      )}
                       <button
-                        onClick={() => { setSelectedZone(null); }}
+                        onClick={() => setSelectedZone(null)}
                         style={{
                           width: '100%', fontSize: '0.48rem', fontWeight: 600,
                           color: 'rgba(180,160,140,0.4)',
