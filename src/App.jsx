@@ -7017,6 +7017,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {activeTab === 'map' && (
             <WorldMapTab
               currentDay={currentDay}
+              level={level}
               selectedZone={selectedZone}
               setSelectedZone={setSelectedZone}
               activeContract={activeContract}

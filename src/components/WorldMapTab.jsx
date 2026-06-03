@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 //   Top-right island (Day 6+): x 44-88%,  y  2-15%
 
 const LOCATIONS = [
-  // ── SANDY ISLAND — Day 1 safe (bottom-right) ──────────────────────────────
+  // ── SANDY ISLAND — Level 1 safe (bottom-right) ────────────────────────────
   {
     id: 'outskirts',
     name: 'The Outskirts',
@@ -25,7 +25,7 @@ const LOCATIONS = [
     marker: '/worldmap/wooden-house.png',
     type: 'hunting',
     tierWeights: { 1: 10, 2: 0, 3: 0 },
-    unlockDay: 1,
+    unlockLevel: 1,
     position: { left: '56%', top: '80%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
   },
@@ -36,7 +36,7 @@ const LOCATIONS = [
     desc: 'The water still runs clean. Those who drink from it speak of strange clarity.',
     marker: '/worldmap/fountain.png',
     type: 'contract',
-    unlockDay: 1,
+    unlockLevel: 1,
     position: { left: '62%', top: '67%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'The Warden\'s Request',
@@ -48,13 +48,13 @@ const LOCATIONS = [
     desc: 'Ships rot at the docks. Whatever happened here, the crews did not survive to tell it.',
     marker: '/worldmap/big-ship.png',
     type: 'contract',
-    unlockDay: 1,
+    unlockLevel: 1,
     position: { left: '28%', top: '79%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'Missing Crew',
   },
 
-  // ── GREEN ISLAND — Day 1-2 (bottom-left) ──────────────────────────────────
+  // ── GREEN ISLAND — Level 1-3 (bottom-left) ────────────────────────────────
   {
     id: 'canopy_outpost',
     name: 'Canopy Outpost',
@@ -62,7 +62,7 @@ const LOCATIONS = [
     desc: 'A watchtower built into the oldest tree. Scouts report strange movement in the wilds.',
     marker: '/worldmap/tree-house.png',
     type: 'contract',
-    unlockDay: 1,
+    unlockLevel: 1,
     position: { left: '22%', top: '63%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'Scouting Report',
@@ -75,7 +75,7 @@ const LOCATIONS = [
     marker: '/worldmap/tree.png',
     type: 'hunting',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
-    unlockDay: 2,
+    unlockLevel: 3,
     position: { left: '72%', top: '77%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
   },
@@ -86,7 +86,7 @@ const LOCATIONS = [
     desc: 'The tree still blooms despite the darkness around it. A last ember of something ancient.',
     marker: '/worldmap/holy-tree.png',
     type: 'contract',
-    unlockDay: 2,
+    unlockLevel: 3,
     position: { left: '38%', top: '67%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Protect the Grove',
@@ -98,13 +98,13 @@ const LOCATIONS = [
     desc: 'The road is barely visible under the thorns. Something has been growing here for a long time.',
     marker: '/worldmap/thorny-ivy.png',
     type: 'contract',
-    unlockDay: 2,
+    unlockLevel: 3,
     position: { left: '72%', top: '88%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Clear the Road',
   },
 
-  // ── CENTRAL LANDMASS — Day 2-5 ────────────────────────────────────────────
+  // ── CENTRAL LANDMASS — Level 3-5 ──────────────────────────────────────────
   {
     id: 'stone_bridge',
     name: 'The Old Crossing',
@@ -112,7 +112,7 @@ const LOCATIONS = [
     desc: 'A bridge that has stood for centuries. Something lives beneath it now.',
     marker: '/worldmap/rock-bridge.png',
     type: 'contract',
-    unlockDay: 2,
+    unlockLevel: 3,
     position: { left: '58%', top: '55%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Toll of the Deep',
@@ -124,7 +124,7 @@ const LOCATIONS = [
     desc: 'Someone hid something here and never came back for it. The guardians they left behind did not leave.',
     marker: '/worldmap/treasure-chest.png',
     type: 'contract',
-    unlockDay: 3,
+    unlockLevel: 3,
     position: { left: '36%', top: '53%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'The Lost Cache',
@@ -137,7 +137,7 @@ const LOCATIONS = [
     marker: '/worldmap/old-swords.png',
     type: 'hunting',
     tierWeights: { 1: 2, 2: 6, 3: 2 },
-    unlockDay: 3,
+    unlockLevel: 5,
     position: { left: '48%', top: '47%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
   },
@@ -148,7 +148,7 @@ const LOCATIONS = [
     desc: 'A massive dead tree used as a landmark by hunters. Something has nested inside.',
     marker: '/worldmap/old-tree.png',
     type: 'contract',
-    unlockDay: 3,
+    unlockLevel: 5,
     position: { left: '72%', top: '44%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Extermination Order',
@@ -160,7 +160,7 @@ const LOCATIONS = [
     desc: 'Ancient runes carved into the bedrock. Whatever ritual was performed here never stopped.',
     marker: '/worldmap/runic-stone.png',
     type: 'contract',
-    unlockDay: 4,
+    unlockLevel: 5,
     position: { left: '20%', top: '46%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Silence the Stones',
@@ -173,7 +173,7 @@ const LOCATIONS = [
     marker: '/worldmap/stonehenge.png',
     type: 'hunting',
     tierWeights: { 1: 1, 2: 4, 3: 5 },
-    unlockDay: 4,
+    unlockLevel: 5,
     position: { left: '36%', top: '38%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
   },
@@ -184,7 +184,7 @@ const LOCATIONS = [
     desc: 'The stone hums with residual energy. Creatures drawn to it are changed by it.',
     marker: '/worldmap/magic-stone.png',
     type: 'contract',
-    unlockDay: 4,
+    unlockLevel: 5,
     position: { left: '50%', top: '34%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Shatter the Node',
@@ -196,7 +196,7 @@ const LOCATIONS = [
     desc: 'A temple reduced to columns. The god it was built for still watches from somewhere.',
     marker: '/worldmap/column.png',
     type: 'contract',
-    unlockDay: 4,
+    unlockLevel: 5,
     position: { left: '62%', top: '40%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Temple Cleansing',
@@ -208,14 +208,14 @@ const LOCATIONS = [
     desc: 'Elite horrors have claimed this place. Enter only when the contracts demand it.',
     marker: '/worldmap/dungeon.png',
     type: 'contract',
-    unlockDay: null,
+    unlockLevel: null,
     isElite: true,
     position: { left: '74%', top: '36%' },
     danger: 5, dangerLabel: 'Elite', dangerColor: '#A855F7',
     contract: 'Blood Contract',
   },
 
-  // ── TOP-LEFT MASS — Day 5-6 dangerous ─────────────────────────────────────
+  // ── TOP-LEFT MASS — Level 8+ dire ─────────────────────────────────────────
   {
     id: 'stoneback_cave',
     name: 'Stoneback Cavern',
@@ -224,7 +224,7 @@ const LOCATIONS = [
     marker: '/worldmap/cave.png',
     type: 'hunting',
     tierWeights: { 1: 0, 2: 2, 3: 8 },
-    unlockDay: 5,
+    unlockLevel: 8,
     position: { left: '22%', top: '18%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
@@ -235,7 +235,7 @@ const LOCATIONS = [
     desc: 'The cliff marks the edge of the known world. Beyond it, the darkness is uncharted.',
     marker: '/worldmap/cliff.png',
     type: 'contract',
-    unlockDay: 5,
+    unlockLevel: 8,
     position: { left: '10%', top: '24%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Edge of the World',
@@ -247,7 +247,7 @@ const LOCATIONS = [
     desc: 'A forest that burned and never recovered. The dead trees still move when no one is watching.',
     marker: '/worldmap/dry-tree.png',
     type: 'contract',
-    unlockDay: 5,
+    unlockLevel: 8,
     position: { left: '34%', top: '27%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'The Restless Dead',
@@ -259,13 +259,13 @@ const LOCATIONS = [
     desc: 'The crystals grew from corrupted earth. Everything that feeds on them grows wrong.',
     marker: '/worldmap/crystal-stones.png',
     type: 'contract',
-    unlockDay: 6,
+    unlockLevel: 8,
     position: { left: '20%', top: '10%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Purge the Corruption',
   },
 
-  // ── TOP-RIGHT ISLAND — Day 6 dire / Legendary ─────────────────────────────
+  // ── TOP-RIGHT ISLAND — Level 8+ dire / Legendary ──────────────────────────
   {
     id: 'lava_wastes',
     name: 'Lava Wastes',
@@ -274,7 +274,7 @@ const LOCATIONS = [
     marker: '/worldmap/lava-lake.png',
     type: 'hunting',
     tierWeights: { 1: 0, 2: 0, 3: 10 },
-    unlockDay: 6,
+    unlockLevel: 8,
     position: { left: '58%', top: '14%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
@@ -285,7 +285,7 @@ const LOCATIONS = [
     desc: 'Where lava meets corrupted crystal. The things that survive here are not natural.',
     marker: '/worldmap/crystal-lava.png',
     type: 'contract',
-    unlockDay: 6,
+    unlockLevel: 8,
     position: { left: '50%', top: '5%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Into the Melt',
@@ -297,7 +297,7 @@ const LOCATIONS = [
     desc: 'The crystal grew from nothing. Around it, reality is thinner than it should be.',
     marker: '/worldmap/crystal-column.png',
     type: 'contract',
-    unlockDay: 6,
+    unlockLevel: 8,
     position: { left: '70%', top: '7%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Seal the Fracture',
@@ -309,7 +309,7 @@ const LOCATIONS = [
     desc: 'No one speaks of what lives inside. Those who returned did not speak at all.',
     marker: '/worldmap/skull-cave.png',
     type: 'contract',
-    unlockDay: null,
+    unlockLevel: null,
     isLegendary: true,
     position: { left: '82%', top: '4%' },
     markerSize: 72,
@@ -325,7 +325,7 @@ const TIER_META = {
 };
 
 const WorldMapTab = ({
-  currentDay, selectedZone, setSelectedZone,
+  currentDay, level, selectedZone, setSelectedZone,
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
@@ -339,7 +339,7 @@ const WorldMapTab = ({
     }
   }, []);
 
-  const isUnlocked = (_loc) => true;
+  const isUnlocked = (loc) => loc.unlockLevel === null || (level ?? 1) >= loc.unlockLevel;
 
   const displayed = activeLocation
     ? LOCATIONS.find(l => l.id === activeLocation)
@@ -683,7 +683,7 @@ const WorldMapTab = ({
                     border: '1px solid rgba(255,255,255,0.06)',
                     borderRadius: '4px', padding: '6px 8px',
                     textAlign: 'center', letterSpacing: '0.08em',
-                  }}>Unlocks Day {displayed.unlockDay}</div>
+                  }}>Unlocks at Level {displayed.unlockLevel}</div>
                 ) : displayed.type === 'hunting' ? (
                   selectedZone?.id === displayed.id ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
