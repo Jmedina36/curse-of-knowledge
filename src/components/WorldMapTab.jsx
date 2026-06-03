@@ -318,44 +318,53 @@ const LOCATIONS = [
   },
 ];
 
-// Non-interactive decorative assets — terrain-matched, placed to fill the map.
+// Non-interactive decorative assets — anchored near confirmed location markers.
 // Keep size <= 42px so they stay visually subordinate to location markers (76px+).
+//
+// Confirmed land anchors used for placement:
+//   Sandy island:   outskirts(56,80) fountain(62,67) whisper_forest(72,77) ivy_crossing(72,88)
+//   Green island:   harbor(28,79) canopy_outpost(22,63) holy_tree(38,67)
+//   Central:        runic_circle(20,46) stonehenge(36,38) barrow_ruins(48,47)
+//                   treasure_vault(36,53) stone_bridge(58,55) magic_stone(50,34)
+//                   old_tree(72,44) column_ruins(62,40) dungeon(74,36)
+//   Top-left:       crystal_stones(20,10) stoneback_cave(22,18) precipice(10,24) dry_tree(34,27)
+//   Top-right:      crystal_lava(50,5) lava_wastes(58,14) crystal_column(70,7) skull_cave(82,4)
 const DECORATIONS = [
-  // ── Water / shoreline ──────────────────────────────────────────────────────
-  { src: '/worldmap/small-ship.png',          pos: { left: '48%', top: '92%' }, size: 40 },
-  { src: '/worldmap/wave-tile-1.png',         pos: { left: '76%', top: '95%' }, size: 30 },
-  { src: '/worldmap/wave-tile-2.png',         pos: { left: '43%', top: '89%' }, size: 30 },
+  // ── Water near Ghost Harbor (ship sits in the water south of harbor) ────────
+  { src: '/worldmap/small-ship.png',          pos: { left: '34%', top: '84%' }, size: 38 },
+  { src: '/worldmap/wave-tile-1.png',         pos: { left: '44%', top: '78%' }, size: 28 },
+  { src: '/worldmap/wave-tile-2.png',         pos: { left: '42%', top: '88%' }, size: 28 },
 
-  // ── Sandy island ───────────────────────────────────────────────────────────
-  { src: '/worldmap/cactus-1.png',            pos: { left: '52%', top: '94%' }, size: 30 },
-  { src: '/worldmap/cactus-2.png',            pos: { left: '80%', top: '83%' }, size: 30 },
+  // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
+  { src: '/worldmap/cactus-1.png',            pos: { left: '68%', top: '86%' }, size: 30 },
+  { src: '/worldmap/cactus-2.png',            pos: { left: '52%', top: '88%' }, size: 30 },
 
-  // ── Green island / forest ──────────────────────────────────────────────────
-  { src: '/worldmap/tree-2.png',              pos: { left: '10%', top: '71%' }, size: 40 },
-  { src: '/worldmap/dry-wood-1.png',          pos: { left: '14%', top: '84%' }, size: 34 },
+  // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
+  { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 40 },
+  { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '72%' }, size: 34 },
+  { src: '/worldmap/rustic-stone.png',        pos: { left: '24%', top: '75%' }, size: 32 },
 
-  // ── Central — left ─────────────────────────────────────────────────────────
-  { src: '/worldmap/rustic-stone.png',        pos: { left: '28%', top: '58%' }, size: 34 },
-  { src: '/worldmap/low-rocks.png',           pos: { left: '14%', top: '54%' }, size: 32 },
-  { src: '/worldmap/stone-arch.png',          pos: { left: '24%', top: '34%' }, size: 36 },
-  { src: '/worldmap/rock-2.png',              pos: { left: '14%', top: '37%' }, size: 30 },
+  // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
+  { src: '/worldmap/low-rocks.png',           pos: { left: '26%', top: '53%' }, size: 32 },
+  { src: '/worldmap/stone-arch.png',          pos: { left: '28%', top: '42%' }, size: 36 },
+  { src: '/worldmap/rock-2.png',              pos: { left: '42%', top: '38%' }, size: 30 },
 
-  // ── Central — right ────────────────────────────────────────────────────────
-  { src: '/worldmap/rock-column.png',         pos: { left: '82%', top: '47%' }, size: 34 },
-  { src: '/worldmap/rocks-1.png',             pos: { left: '68%', top: '58%' }, size: 32 },
-  { src: '/worldmap/rock-1.png',              pos: { left: '44%', top: '58%' }, size: 30 },
-  { src: '/worldmap/stone-crystal.png',       pos: { left: '60%', top: '28%' }, size: 34 },
+  // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
+  { src: '/worldmap/rock-column.png',         pos: { left: '78%', top: '40%' }, size: 34 },
+  { src: '/worldmap/rocks-1.png',             pos: { left: '64%', top: '50%' }, size: 32 },
+  { src: '/worldmap/rock-1.png',              pos: { left: '46%', top: '50%' }, size: 30 },
+  { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 34 },
 
-  // ── Top-left — dire / ashen ────────────────────────────────────────────────
-  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '12%' }, size: 34 },
-  { src: '/worldmap/red-rocks.png',           pos: { left: '38%', top: '14%' }, size: 32 },
-  { src: '/worldmap/dry-wood-2.png',          pos: { left: '30%', top: '21%' }, size: 34 },
+  // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
+  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '14%', top: '14%' }, size: 34 },
+  { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '22%' }, size: 32 },
+  { src: '/worldmap/dry-wood-2.png',          pos: { left: '16%', top: '26%' }, size: 34 },
 
-  // ── Top-right — lava / volcanic ────────────────────────────────────────────
-  { src: '/worldmap/lava.png',                pos: { left: '64%', top: '18%' }, size: 34 },
-  { src: '/worldmap/old-lava.png',            pos: { left: '80%', top: '16%' }, size: 32 },
-  { src: '/worldmap/lava-pit.png',            pos: { left: '72%', top: '20%' }, size: 30 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '46%', top: '13%' }, size: 32 },
+  // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
+  { src: '/worldmap/lava.png',                pos: { left: '62%', top: '13%' }, size: 34 },
+  { src: '/worldmap/old-lava.png',            pos: { left: '76%', top: '10%' }, size: 32 },
+  { src: '/worldmap/lava-pit.png',            pos: { left: '54%', top: '8%'  }, size: 30 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '46%', top: '6%'  }, size: 32 },
 ];
 
 const TIER_META = {
