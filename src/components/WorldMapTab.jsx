@@ -208,7 +208,7 @@ const LOCATIONS = [
     desc: 'Elite horrors have claimed this place. Enter only when the contracts demand it.',
     marker: '/worldmap/dungeon.png',
     type: 'contract',
-    unlockLevel: null,
+    unlockLevel: 5,
     isElite: true,
     position: { left: '74%', top: '36%' },
     danger: 5, dangerLabel: 'Elite', dangerColor: '#A855F7',
@@ -274,7 +274,7 @@ const LOCATIONS = [
     marker: '/worldmap/lava-lake.png',
     type: 'hunting',
     tierWeights: { 1: 0, 2: 0, 3: 10 },
-    unlockLevel: 8,
+    unlockLevel: 10,
     position: { left: '58%', top: '14%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
@@ -285,7 +285,7 @@ const LOCATIONS = [
     desc: 'Where lava meets corrupted crystal. The things that survive here are not natural.',
     marker: '/worldmap/crystal-lava.png',
     type: 'contract',
-    unlockLevel: 8,
+    unlockLevel: 10,
     position: { left: '50%', top: '5%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Into the Melt',
@@ -297,7 +297,7 @@ const LOCATIONS = [
     desc: 'The crystal grew from nothing. Around it, reality is thinner than it should be.',
     marker: '/worldmap/crystal-column.png',
     type: 'contract',
-    unlockLevel: 8,
+    unlockLevel: 10,
     position: { left: '70%', top: '7%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Seal the Fracture',
@@ -309,7 +309,7 @@ const LOCATIONS = [
     desc: 'No one speaks of what lives inside. Those who returned did not speak at all.',
     marker: '/worldmap/skull-cave.png',
     type: 'contract',
-    unlockLevel: null,
+    unlockLevel: 10,
     isLegendary: true,
     position: { left: '82%', top: '4%' },
     markerSize: 72,
@@ -655,7 +655,15 @@ const WorldMapTab = ({
                   )
                 ) : displayed.id === 'skull_cave' ? (
                   // Legendary boss location
-                  activeContract?.type === 'final' ? (
+                  !isUnlocked(displayed) ? (
+                    <div style={{
+                      fontSize: '0.56rem', color: '#555',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '4px', padding: '6px 8px',
+                      textAlign: 'center', letterSpacing: '0.08em',
+                    }}>Unlocks at Level {displayed.unlockLevel}</div>
+                  ) : activeContract?.type === 'final' ? (
                     <button
                       onClick={() => { onFinalBoss(); setActiveContract(null); }}
                       disabled={!isDayActive}
