@@ -54,6 +54,19 @@ const LOCATIONS = [
     contract: 'Missing Crew',
   },
 
+  {
+    id: 'cactus_flats',
+    name: 'The Cactus Flats',
+    subtitle: 'Sandy Landmark',
+    desc: 'Two ancient cacti that have stood here longer than any map. Travelers use them to mark the far edge of the island before the wilds begin.',
+    marker: '/worldmap/cactus-1.png',
+    type: 'landmark',
+    unlockLevel: 1,
+    position: { left: '78%', top: '82%' },
+    markerSize: 62,
+    danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
+  },
+
   // ── GREEN ISLAND — Level 1-3 (bottom-left) ────────────────────────────────
   {
     id: 'canopy_outpost',
@@ -336,8 +349,6 @@ const DECORATIONS = [
 
 
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
-  { src: '/worldmap/cactus-1.png',            pos: { left: '86%', top: '86%' }, size: 38 },
-  { src: '/worldmap/cactus-2.png',            pos: { left: '70%', top: '76%' }, size: 38 },
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
   { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 48 },
@@ -564,9 +575,9 @@ const WorldMapTab = ({
                       position: 'absolute', bottom: '-2px', right: '-2px',
                       width: '8px', height: '8px',
                       borderRadius: '50%',
-                      background: isHunting ? loc.dangerColor : 'rgba(212,175,55,0.85)',
+                      background: isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : 'rgba(212,175,55,0.85)',
                       border: '1px solid rgba(0,0,0,0.6)',
-                      boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : '#D4AF37'}`,
+                      boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : '#D4AF37'}`,
                     }} />
 
                     {/* Lock */}
@@ -649,12 +660,12 @@ const WorldMapTab = ({
                   <div style={{
                     fontSize: '0.48rem', fontWeight: 700,
                     letterSpacing: '0.14em', textTransform: 'uppercase',
-                    color: displayed.type === 'hunting' ? displayed.dangerColor : '#D4AF37',
-                    background: displayed.type === 'hunting' ? `${displayed.dangerColor}14` : 'rgba(212,175,55,0.08)',
-                    border: `1px solid ${displayed.type === 'hunting' ? displayed.dangerColor + '30' : 'rgba(212,175,55,0.2)'}`,
+                    color: displayed.type === 'hunting' ? displayed.dangerColor : displayed.type === 'landmark' ? 'rgba(180,160,140,0.5)' : '#D4AF37',
+                    background: displayed.type === 'hunting' ? `${displayed.dangerColor}14` : displayed.type === 'landmark' ? 'rgba(180,160,140,0.06)' : 'rgba(212,175,55,0.08)',
+                    border: `1px solid ${displayed.type === 'hunting' ? displayed.dangerColor + '30' : displayed.type === 'landmark' ? 'rgba(180,160,140,0.15)' : 'rgba(212,175,55,0.2)'}`,
                     padding: '2px 6px', borderRadius: '3px',
                   }}>
-                    {displayed.type === 'hunting' ? 'Hunting Ground' : 'Contract Location'}
+                    {displayed.type === 'hunting' ? 'Hunting Ground' : displayed.type === 'landmark' ? 'Landmark' : 'Contract Location'}
                   </div>
                 </div>
 
@@ -840,6 +851,8 @@ const WorldMapTab = ({
                       }}
                     >Set as Hunting Ground</button>
                   )
+                ) : displayed.type === 'landmark' ? (
+                  null
                 ) : activeContract?.type === 'location' && activeContract.contract.locationId === displayed.id ? (
                   <button
                     onClick={() => isDayActive && onBeginContract()}
