@@ -86,7 +86,7 @@ const LOCATIONS = [
     desc: 'The tree still blooms despite the darkness around it. A last ember of something ancient.',
     marker: '/worldmap/holy-tree.png',
     type: 'contract',
-    unlockLevel: 3,
+    unlockLevel: 1,
     position: { left: '38%', top: '67%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Protect the Grove',
