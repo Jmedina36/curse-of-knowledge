@@ -37,7 +37,7 @@ const LOCATIONS = [
     marker: '/worldmap/fountain.png',
     type: 'contract',
     unlockDay: 1,
-    position: { left: '68%', top: '72%' },
+    position: { left: '62%', top: '76%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'The Warden\'s Request',
   },
