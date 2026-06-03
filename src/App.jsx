@@ -29,7 +29,7 @@ import HealerModal from './components/HealerModal';
 import ASIModal from './components/ASIModal';
 import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
-import { LOCATION_CONTRACTS } from './data/locationContracts';
+import { LOCATION_CONTRACTS, REWARD_LABELS } from './data/locationContracts';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
@@ -511,6 +511,7 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [activeContract, setActiveContract] = useState(null);
   const [completedLocationContracts, setCompletedLocationContracts] = useState([]);
   const [pendingLocationRewards, setPendingLocationRewards] = useState([]);
+  const contractEncounterRef = useRef(null); // tier weights for active location contract battle
   const activeContractRef = useRef(null);
   const pomodoroFromMapRef = useRef(false);
   const [battleType, setBattleType] = useState('regular');
@@ -751,9 +752,16 @@ const getDateKey = useCallback((date) => {
   const collectLocationReward = (contractId) => {
     const lc = LOCATION_CONTRACTS.find(c => c.id === contractId);
     if (!lc) return;
-    setXp(x => x + lc.xpReward);
-    setGold(g => g + lc.goldReward);
-    addLog(`Reward collected: "${lc.name}" — +${lc.xpReward} XP, +${lc.goldReward} Gold.`);
+    lc.rewards.forEach(r => {
+      if (r.type === 'gold')           setGold(g => g + r.amount);
+      else if (r.type === 'xp')        setXp(x => x + r.amount);
+      else if (r.type === 'healthPots')    setHealthPots(p => p + r.amount);
+      else if (r.type === 'staminaPots')   setStaminaPots(p => p + r.amount);
+      else if (r.type === 'cleansePots')   setCleansePots(p => p + r.amount);
+      else if (r.type === 'fusionCrystals') setFusionCrystals(f => f + r.amount);
+    });
+    const rewardText = lc.rewards.map(r => `+${r.amount} ${REWARD_LABELS[r.type]}`).join(', ');
+    addLog(`Reward collected: "${lc.name}" — ${rewardText}.`);
     setCompletedLocationContracts(prev => [...prev, contractId]);
     setPendingLocationRewards(prev => prev.filter(id => id !== contractId));
   };
@@ -2548,8 +2556,8 @@ pendingBattleSpawnRef.current = () => {
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
 
-  // Pick a creature — use zone weights if a hunting ground is selected, otherwise fall back to day weights
-  const zone = selectedZoneRef.current;
+  // Pick a creature — contract encounter overrides zone, zone overrides day
+  const zone = contractEncounterRef.current || selectedZoneRef.current;
   const creature = zone?.tierWeights
     ? pickCreatureForZone(zone.tierWeights)
     : pickCreatureForDay(currentDay);
@@ -3549,6 +3557,7 @@ if (battleType === 'elite') {
     pendingBattleSpawnRef.current = null;
     setActiveContract(null);
   } else if (_ac?.type === 'location') {
+    contractEncounterRef.current = null;
     setPendingLocationRewards(prev => [...prev, _ac.contract.id]);
     addLog(`Contract fulfilled: "${_ac.contract.name}" — return to the board to collect your reward.`);
     setActiveContract(null);
@@ -7050,14 +7059,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               gauntletUnlocked={gauntletUnlocked}
               tasks={tasks}
               onBeginContract={() => {
-                const waveRoll = Math.random();
-                if (waveRoll < 0.2) {
-                  const numEnemies = Math.floor(Math.random() * 2) + 2;
-                  setWaveCount(numEnemies);
-                  addLog(`Wave incoming! ${numEnemies} enemies detected!`);
-                  setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
+                const _ac = activeContractRef.current;
+                if (_ac?.type === 'location') {
+                  const lc = _ac.contract;
+                  contractEncounterRef.current = { tierWeights: lc.encounter.tierWeights };
+                  setWaveCount(lc.encounter.waveSize);
+                  addLog(`Contract battle: "${lc.name}" — ${lc.encounter.waveSize} enemies stand between you and your reward.`);
+                  setTimeout(() => spawnRegularEnemy(true, 1, lc.encounter.waveSize), 1000);
                 } else {
-                  spawnRegularEnemy(false, 0, 1);
+                  const waveRoll = Math.random();
+                  if (waveRoll < 0.2) {
+                    const numEnemies = Math.floor(Math.random() * 2) + 2;
+                    setWaveCount(numEnemies);
+                    addLog(`Wave incoming! ${numEnemies} enemies detected!`);
+                    setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
+                  } else {
+                    spawnRegularEnemy(false, 0, 1);
+                  }
                 }
               }}
               onStartPomodoro={(task) => {

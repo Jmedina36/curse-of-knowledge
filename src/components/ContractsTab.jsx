@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar, GripVertical, Plus } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import { REWARD_LABELS, REWARD_COLORS } from '../data/locationContracts';
 
 const TIER = {
   copper:   { label: 'Copper',   color: '#CD7F32', glow: 'rgba(205,127,50,0.5)',  border: 'rgba(205,127,50,0.4)',  bg: 'rgba(50,25,8,0.6)'   },
@@ -449,12 +450,18 @@ const ContractsTab = ({
                           lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic',
                         }}>{lc.desc}</p>
 
-                        {/* Rewards — shown inline on Collect button when pending */}
-                        {!isCompleted && !isPending && (
-                          <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                            <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.72rem', color: 'rgba(180,220,120,0.8)' }}>+{lc.xpReward} XP</span>
-                            <span style={{ color: 'rgba(255,255,255,0.15)' }}>|</span>
-                            <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.72rem', color: 'rgba(212,175,55,0.8)' }}>+{lc.goldReward} Gold</span>
+                        {/* Rewards */}
+                        {!isCompleted && (
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                            {lc.rewards.map((r, i) => (
+                              <span key={i} style={{
+                                fontFamily: 'Cinzel,serif', fontSize: '0.7rem',
+                                color: REWARD_COLORS[r.type] || 'rgba(200,200,200,0.8)',
+                                background: 'rgba(0,0,0,0.2)',
+                                border: `1px solid ${(REWARD_COLORS[r.type] || 'rgba(200,200,200,0.3)')}44`,
+                                borderRadius: '2px', padding: '1px 6px',
+                              }}>+{r.amount} {REWARD_LABELS[r.type]}</span>
+                            ))}
                           </div>
                         )}
 
@@ -476,7 +483,7 @@ const ContractsTab = ({
                               }}
                               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40,110,20,0.85)'; }}
                               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(30,80,15,0.7)'; }}
-                            >Collect Reward — +{lc.xpReward} XP, +{lc.goldReward} Gold</button>
+                            >Complete — Collect Rewards</button>
                           ) : isActive ? (
                             <div style={{
                               fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em',
