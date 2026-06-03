@@ -357,17 +357,6 @@ const ContractsTab = ({
                                 onMouseLeave={e=>{ if (!activeContract) { e.currentTarget.style.background='rgba(80,55,10,0.6)'; }}}
                               >Accept</button>
                             )}
-                            <button
-                              onClick={() => { sounds.click(); complete(t.id); }}
-                              style={{
-                                fontFamily:'Cinzel,serif',fontSize:'0.82rem',letterSpacing:'0.15em',
-                                padding:'5px 12px',borderRadius:'2px',
-                                background:'rgba(20,60,30,0.6)',border:'1px solid rgba(50,160,80,0.6)',
-                                color:'rgba(130,230,150,0.95)',cursor:'pointer',transition:'all 0.2s',
-                              }}
-                              onMouseEnter={e=>{e.currentTarget.style.background='rgba(25,80,40,0.8)';e.currentTarget.style.color='rgba(130,220,150,1)';}}
-                              onMouseLeave={e=>{e.currentTarget.style.background='rgba(20,60,30,0.6)';e.currentTarget.style.color='rgba(100,200,120,0.85)';}}
-                            >Complete</button>
                           </div>
                         )}
                       </div>

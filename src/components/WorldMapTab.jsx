@@ -647,7 +647,7 @@ const WorldMapTab = ({
                         boxShadow: isDayActive ? '0 0 16px rgba(168,85,247,0.4)' : 'none',
                         animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                       }}
-                    >⚔ Begin Blood Contract</button>
+                    >Begin Blood Contract</button>
                   ) : (
                     <div style={{ fontSize: '0.56rem', color: 'rgba(168,85,247,0.45)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                       Accept on Contracts Board
@@ -670,7 +670,7 @@ const WorldMapTab = ({
                         boxShadow: isDayActive ? '0 0 20px rgba(245,158,11,0.5)' : 'none',
                         animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                       }}
-                    >☠ Enter the Gauntlet</button>
+                    >Enter the Gauntlet</button>
                   ) : (
                     <div style={{ fontSize: '0.56rem', color: 'rgba(245,158,11,0.4)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                       Accept on Contracts Board
@@ -712,24 +712,7 @@ const WorldMapTab = ({
                           boxShadow: isDayActive ? `0 0 12px ${displayed.dangerColor}55` : 'none',
                           transition: 'all 0.15s',
                         }}
-                      >{activeContract?.type === 'task' ? '⚔ Begin Contract' : '⚔ Hunt Here'}</button>
-                      {/* Optional Pomodoro — study before fighting */}
-                      {activeContract?.type === 'task' && (
-                        <button
-                          onClick={() => onStartPomodoro(activeContract.task)}
-                          style={{
-                            width: '100%', fontSize: '0.5rem', fontWeight: 600,
-                            color: 'rgba(160,130,220,0.85)',
-                            background: 'rgba(60,30,80,0.4)',
-                            border: '1px solid rgba(150,100,200,0.3)',
-                            borderRadius: '4px', padding: '5px 8px',
-                            cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
-                            transition: 'all 0.15s',
-                          }}
-                          onMouseEnter={e => e.currentTarget.style.background='rgba(80,40,110,0.6)'}
-                          onMouseLeave={e => e.currentTarget.style.background='rgba(60,30,80,0.4)'}
-                        >🕐 Focus Session (Optional)</button>
-                      )}
+                      >{activeContract?.type === 'task' ? 'Begin Contract' : 'Hunt Here'}</button>
                       <button
                         onClick={() => setSelectedZone(null)}
                         style={{
