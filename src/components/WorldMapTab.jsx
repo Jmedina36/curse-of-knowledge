@@ -76,7 +76,7 @@ const LOCATIONS = [
     type: 'hunting',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockLevel: 3,
-    position: { left: '83%', top: '77%' },
+    position: { left: '83%', top: '71%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
   },
   {
@@ -337,7 +337,7 @@ const DECORATIONS = [
 
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
   { src: '/worldmap/cactus-1.png',            pos: { left: '86%', top: '86%' }, size: 30 },
-  { src: '/worldmap/cactus-2.png',            pos: { left: '58%', top: '88%' }, size: 30 },
+  { src: '/worldmap/cactus-2.png',            pos: { left: '70%', top: '76%' }, size: 30 },
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
   { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 40 },
