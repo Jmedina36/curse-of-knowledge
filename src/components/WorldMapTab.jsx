@@ -174,7 +174,7 @@ const LOCATIONS = [
     type: 'hunting',
     tierWeights: { 1: 1, 2: 4, 3: 5 },
     unlockLevel: 5,
-    position: { left: '36%', top: '38%' },
+    position: { left: '30%', top: '44%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
   },
   {
@@ -248,7 +248,7 @@ const LOCATIONS = [
     marker: '/worldmap/dry-tree.png',
     type: 'contract',
     unlockLevel: 8,
-    position: { left: '34%', top: '27%' },
+    position: { left: '38%', top: '23%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'The Restless Dead',
   },
@@ -332,11 +332,11 @@ const LOCATIONS = [
 const DECORATIONS = [
   // ── Water near Ghost Harbor (ship sits in the water south of harbor) ────────
   { src: '/worldmap/small-ship.png',          pos: { left: '34%', top: '84%' }, size: 38 },
-  { src: '/worldmap/wave-tile-1.png',         pos: { left: '44%', top: '78%' }, size: 28 },
+
   { src: '/worldmap/wave-tile-2.png',         pos: { left: '42%', top: '88%' }, size: 28 },
 
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
-  { src: '/worldmap/cactus-1.png',            pos: { left: '74%', top: '86%' }, size: 30 },
+  { src: '/worldmap/cactus-1.png',            pos: { left: '80%', top: '86%' }, size: 30 },
   { src: '/worldmap/cactus-2.png',            pos: { left: '52%', top: '88%' }, size: 30 },
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
@@ -346,7 +346,7 @@ const DECORATIONS = [
 
   // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
   { src: '/worldmap/low-rocks.png',           pos: { left: '26%', top: '53%' }, size: 32 },
-  { src: '/worldmap/stone-arch.png',          pos: { left: '28%', top: '42%' }, size: 36 },
+  { src: '/worldmap/stone-arch.png',          pos: { left: '28%', top: '36%' }, size: 36 },
   { src: '/worldmap/rock-2.png',              pos: { left: '42%', top: '38%' }, size: 30 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
@@ -357,7 +357,7 @@ const DECORATIONS = [
 
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
   { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 34 },
-  { src: '/worldmap/red-rocks.png',           pos: { left: '36%', top: '16%' }, size: 32 },
+  { src: '/worldmap/red-rocks.png',           pos: { left: '36%', top: '20%' }, size: 32 },
   { src: '/worldmap/dry-wood-2.png',          pos: { left: '64%', top: '50%' }, size: 34 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
