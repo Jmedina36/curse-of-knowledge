@@ -139,7 +139,7 @@ const LOCATIONS = [
     tierWeights: { 1: 2, 2: 6, 3: 2 },
     unlockDay: 3,
     position: { left: '48%', top: '47%' },
-    danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
+    danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
   },
   {
     id: 'old_tree',
@@ -150,7 +150,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockDay: 3,
     position: { left: '72%', top: '44%' },
-    danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
+    danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Extermination Order',
   },
   {
@@ -211,7 +211,7 @@ const LOCATIONS = [
     unlockDay: null,
     isElite: true,
     position: { left: '74%', top: '36%' },
-    danger: 4, dangerLabel: 'Elite', dangerColor: '#A855F7',
+    danger: 5, dangerLabel: 'Elite', dangerColor: '#A855F7',
     contract: 'Blood Contract',
   },
 
@@ -226,7 +226,7 @@ const LOCATIONS = [
     tierWeights: { 1: 0, 2: 2, 3: 8 },
     unlockDay: 5,
     position: { left: '22%', top: '18%' },
-    danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
   {
     id: 'precipice',
@@ -237,7 +237,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockDay: 5,
     position: { left: '10%', top: '24%' },
-    danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Edge of the World',
   },
   {
@@ -249,7 +249,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockDay: 5,
     position: { left: '34%', top: '27%' },
-    danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'The Restless Dead',
   },
   {
@@ -261,7 +261,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockDay: 6,
     position: { left: '20%', top: '10%' },
-    danger: 3, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Purge the Corruption',
   },
 
@@ -276,7 +276,7 @@ const LOCATIONS = [
     tierWeights: { 1: 0, 2: 0, 3: 10 },
     unlockDay: 6,
     position: { left: '58%', top: '14%' },
-    danger: 3, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
   {
     id: 'crystal_lava',
@@ -287,7 +287,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockDay: 6,
     position: { left: '50%', top: '5%' },
-    danger: 3, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Into the Melt',
   },
   {
@@ -299,7 +299,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockDay: 6,
     position: { left: '70%', top: '7%' },
-    danger: 3, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Seal the Fracture',
   },
   {
@@ -672,11 +672,12 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
               Map Overview
             </div>
             {[
-              { label: 'Tame',      color: '#9CA3AF', count: LOCATIONS.filter(l => l.danger === 1).length },
-              { label: 'Moderate',  color: '#CD7F32', count: LOCATIONS.filter(l => l.danger === 2).length },
-              { label: 'Dangerous', color: '#DC2626', count: LOCATIONS.filter(l => l.danger === 3).length },
-              { label: 'Elite',     color: '#A855F7', count: LOCATIONS.filter(l => l.danger === 4).length },
-              { label: 'Legendary', color: '#F59E0B', count: LOCATIONS.filter(l => l.danger === 5).length },
+              { label: 'Tame',      color: '#9CA3AF', count: LOCATIONS.filter(l => l.dangerLabel === 'Tame').length },
+              { label: 'Moderate',  color: '#CD7F32', count: LOCATIONS.filter(l => l.dangerLabel === 'Moderate').length },
+              { label: 'Dangerous', color: '#DC2626', count: LOCATIONS.filter(l => l.dangerLabel === 'Dangerous').length },
+              { label: 'Dire',      color: '#7C3AED', count: LOCATIONS.filter(l => l.dangerLabel === 'Dire').length },
+              { label: 'Elite',     color: '#A855F7', count: LOCATIONS.filter(l => l.dangerLabel === 'Elite').length },
+              { label: 'Legendary', color: '#F59E0B', count: LOCATIONS.filter(l => l.dangerLabel === 'Legendary').length },
             ].map(row => (
               <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
                 <span style={{ fontSize: '0.55rem', color: row.color, letterSpacing: '0.08em' }}>{row.label}</span>
