@@ -260,7 +260,7 @@ const LOCATIONS = [
     marker: '/worldmap/crystal-stones.png',
     type: 'contract',
     unlockLevel: 8,
-    position: { left: '20%', top: '10%' },
+    position: { left: '20%', top: '5%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Purge the Corruption',
   },
@@ -298,7 +298,7 @@ const LOCATIONS = [
     marker: '/worldmap/crystal-column.png',
     type: 'contract',
     unlockLevel: 10,
-    position: { left: '76%', top: '13%' },
+    position: { left: '76%', top: '19%' },
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'Seal the Fracture',
   },
@@ -363,8 +363,8 @@ const DECORATIONS = [
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
   { src: '/worldmap/lava.png',                pos: { left: '62%', top: '13%' }, size: 34 },
   { src: '/worldmap/old-lava.png',            pos: { left: '76%', top: '16%' }, size: 32 },
-  { src: '/worldmap/lava-pit.png',            pos: { left: '48%', top: '14%' }, size: 30 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '34%', top: '2%'  }, size: 32 },
+  { src: '/worldmap/lava-pit.png',            pos: { left: '42%', top: '14%' }, size: 30 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '28%', top: '2%'  }, size: 32 },
 ];
 
 const TIER_META = {
