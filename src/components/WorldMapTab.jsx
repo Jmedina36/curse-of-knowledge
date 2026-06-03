@@ -358,13 +358,13 @@ const DECORATIONS = [
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
   { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '14%', top: '14%' }, size: 34 },
   { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '22%' }, size: 32 },
-  { src: '/worldmap/dry-wood-2.png',          pos: { left: '16%', top: '26%' }, size: 34 },
+  { src: '/worldmap/dry-wood-2.png',          pos: { left: '16%', top: '32%' }, size: 34 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
   { src: '/worldmap/lava.png',                pos: { left: '62%', top: '13%' }, size: 34 },
-  { src: '/worldmap/old-lava.png',            pos: { left: '76%', top: '10%' }, size: 32 },
-  { src: '/worldmap/lava-pit.png',            pos: { left: '54%', top: '8%'  }, size: 30 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '40%', top: '6%'  }, size: 32 },
+  { src: '/worldmap/old-lava.png',            pos: { left: '76%', top: '16%' }, size: 32 },
+  { src: '/worldmap/lava-pit.png',            pos: { left: '48%', top: '14%' }, size: 30 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '34%', top: '2%'  }, size: 32 },
 ];
 
 const TIER_META = {
