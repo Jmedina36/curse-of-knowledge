@@ -2680,9 +2680,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     addLog(label);
 
     setEnemyDialogue(
-      enemy.isLeader ? "You've made a grave mistake coming here."
-      : enemy.isCapt ? "Stand down, or I'll make you regret it."
-      : "Your coin or your life!"
+      enemy.contractDialogue
+        ? enemy.contractDialogue
+        : enemy.isLeader ? "You've made a grave mistake coming here."
+        : enemy.isCapt ? "Stand down, or I'll make you regret it."
+        : "Your coin or your life!"
     );
 
     const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
@@ -7080,7 +7082,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   const { enemyType, waveSize, tierWeights } = lc.encounter;
                   addLog(`Contract battle: "${lc.name}" — ${waveSize} enemies stand between you and your reward.`);
                   if (enemyType === 'bandit') {
-                    // Build a grunt lineup from the bandit pool
+                    const { enemyNames, dialogue } = lc.encounter;
+                    // Build a grunt lineup, using contract-specific names/dialogue if defined
                     const lineup = [];
                     const usedIdxs = new Set();
                     for (let i = 0; i < waveSize; i++) {
@@ -7089,7 +7092,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       while (usedIdxs.has(gIdx) && usedIdxs.size < BANDIT_POOL.grunts.length);
                       usedIdxs.add(gIdx);
                       const g = BANDIT_POOL.grunts[gIdx];
-                      lineup.push({ img: g.img, name: g.names[Math.floor(Math.random() * g.names.length)], isCapt: false, isLeader: false });
+                      const name = enemyNames
+                        ? enemyNames[i % enemyNames.length]
+                        : g.names[Math.floor(Math.random() * g.names.length)];
+                      const line = dialogue
+                        ? dialogue[Math.min(i, dialogue.length - 1)]
+                        : null;
+                      lineup.push({ img: g.img, name, isCapt: false, isLeader: false, contractDialogue: line });
                     }
                     banditLineupRef.current = lineup;
                     banditLineupIdxRef.current = 0;

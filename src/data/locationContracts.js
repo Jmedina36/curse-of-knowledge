@@ -14,6 +14,12 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'bandit',
       waveSize: 3,
+      enemyNames: ['Harbor Thug', 'Dock Lurker', 'Salvager'],
+      dialogue: [
+        "You shouldn't have come looking.",
+        "The harbor belongs to us now.",
+        "The crew's gone. And so are you.",
+      ],
     },
     rewards: [
       { type: 'gold',       amount: 25 },
