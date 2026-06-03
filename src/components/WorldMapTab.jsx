@@ -197,7 +197,7 @@ const LOCATIONS = [
     marker: '/worldmap/column.png',
     type: 'contract',
     unlockLevel: 5,
-    position: { left: '62%', top: '40%' },
+    position: { left: '62%', top: '34%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'Temple Cleansing',
   },
@@ -312,7 +312,7 @@ const LOCATIONS = [
     unlockLevel: 10,
     isLegendary: true,
     position: { left: '82%', top: '4%' },
-    markerSize: 116,
+    markerSize: 132,
     danger: 5, dangerLabel: 'Legendary', dangerColor: '#F59E0B',
     contract: 'The Black Contract',
   },
@@ -336,7 +336,7 @@ const DECORATIONS = [
   { src: '/worldmap/wave-tile-2.png',         pos: { left: '42%', top: '88%' }, size: 28 },
 
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
-  { src: '/worldmap/cactus-1.png',            pos: { left: '68%', top: '86%' }, size: 30 },
+  { src: '/worldmap/cactus-1.png',            pos: { left: '74%', top: '86%' }, size: 30 },
   { src: '/worldmap/cactus-2.png',            pos: { left: '52%', top: '88%' }, size: 30 },
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
@@ -356,15 +356,15 @@ const DECORATIONS = [
   { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 34 },
 
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
-  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '14%', top: '14%' }, size: 34 },
-  { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '22%' }, size: 32 },
+  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '14%' }, size: 34 },
+  { src: '/worldmap/red-rocks.png',           pos: { left: '36%', top: '22%' }, size: 32 },
   { src: '/worldmap/dry-wood-2.png',          pos: { left: '16%', top: '32%' }, size: 34 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
-  { src: '/worldmap/lava.png',                pos: { left: '62%', top: '13%' }, size: 34 },
-  { src: '/worldmap/old-lava.png',            pos: { left: '76%', top: '16%' }, size: 32 },
+  { src: '/worldmap/lava.png',                pos: { left: '68%', top: '13%' }, size: 34 },
+  { src: '/worldmap/old-lava.png',            pos: { left: '82%', top: '16%' }, size: 32 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '42%', top: '14%' }, size: 30 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '28%', top: '2%'  }, size: 32 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '32%', top: '2%'  }, size: 32 },
 ];
 
 const TIER_META = {
