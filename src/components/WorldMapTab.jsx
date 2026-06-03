@@ -210,7 +210,7 @@ const LOCATIONS = [
     type: 'contract',
     unlockLevel: 5,
     isElite: true,
-    position: { left: '74%', top: '36%' },
+    position: { left: '74%', top: '42%' },
     danger: 5, dangerLabel: 'Elite', dangerColor: '#A855F7',
     contract: 'Blood Contract',
   },
@@ -350,15 +350,15 @@ const DECORATIONS = [
   { src: '/worldmap/rock-2.png',              pos: { left: '42%', top: '38%' }, size: 30 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
-  { src: '/worldmap/rock-column.png',         pos: { left: '78%', top: '40%' }, size: 34 },
-  { src: '/worldmap/rocks-1.png',             pos: { left: '64%', top: '50%' }, size: 32 },
+  { src: '/worldmap/rock-column.png',         pos: { left: '78%', top: '46%' }, size: 34 },
+  { src: '/worldmap/rocks-1.png',             pos: { left: '16%', top: '32%' }, size: 32 },
   { src: '/worldmap/rock-1.png',              pos: { left: '46%', top: '50%' }, size: 30 },
   { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 34 },
 
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
   { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 34 },
-  { src: '/worldmap/red-rocks.png',           pos: { left: '36%', top: '22%' }, size: 32 },
-  { src: '/worldmap/dry-wood-2.png',          pos: { left: '16%', top: '32%' }, size: 34 },
+  { src: '/worldmap/red-rocks.png',           pos: { left: '36%', top: '16%' }, size: 32 },
+  { src: '/worldmap/dry-wood-2.png',          pos: { left: '64%', top: '50%' }, size: 34 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 34 },
