@@ -336,13 +336,13 @@ const DECORATIONS = [
 
 
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
-  { src: '/worldmap/cactus-1.png',            pos: { left: '80%', top: '86%' }, size: 30 },
-  { src: '/worldmap/cactus-2.png',            pos: { left: '52%', top: '88%' }, size: 30 },
+  { src: '/worldmap/cactus-1.png',            pos: { left: '86%', top: '86%' }, size: 30 },
+  { src: '/worldmap/cactus-2.png',            pos: { left: '58%', top: '88%' }, size: 30 },
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
   { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 40 },
   { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 34 },
-  { src: '/worldmap/rustic-stone.png',        pos: { left: '42%', top: '75%' }, size: 32 },
+  { src: '/worldmap/rustic-stone.png',        pos: { left: '64%', top: '50%' }, size: 32 },
 
   // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
 
@@ -350,7 +350,7 @@ const DECORATIONS = [
   { src: '/worldmap/rock-2.png',              pos: { left: '42%', top: '38%' }, size: 30 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
-  { src: '/worldmap/rock-column.png',         pos: { left: '84%', top: '46%' }, size: 34 },
+  { src: '/worldmap/rock-column.png',         pos: { left: '88%', top: '42%' }, size: 34 },
   { src: '/worldmap/rocks-1.png',             pos: { left: '16%', top: '32%' }, size: 32 },
   { src: '/worldmap/rock-1.png',              pos: { left: '46%', top: '50%' }, size: 30 },
   { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 34 },
@@ -358,7 +358,7 @@ const DECORATIONS = [
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
   { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 34 },
   { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '20%' }, size: 32 },
-  { src: '/worldmap/dry-wood-2.png',          pos: { left: '64%', top: '50%' }, size: 34 },
+  { src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 34 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 34 },
