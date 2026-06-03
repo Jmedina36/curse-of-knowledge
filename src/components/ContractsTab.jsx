@@ -66,6 +66,9 @@ const ContractsTab = ({
   start,
   miniBoss,
   finalBoss,
+  activeContract,
+  setActiveContract,
+  setActiveTab,
   setShowImportModal,
   log,
   addLog,
@@ -326,24 +329,34 @@ const ContractsTab = ({
 
                         {/* Actions */}
                         {!t.done && (
-                          <div style={{display:'flex',gap:'6px',justifyContent:'flex-end'}}>
-                            <button
-                              onClick={() => {
-                                sounds.click();
-                                setPomodoroTask(t); setShowPomodoro(true);
-                                setPomodoroTimer(25 * 60); setPomodorosCompleted(0);
-                                setIsBreak(false); setPomodoroRunning(true);
-                                addLog(`Starting focus session: ${t.title}`);
-                              }}
-                              style={{
-                                fontFamily:'Cinzel,serif',fontSize:'0.82rem',letterSpacing:'0.15em',
-                                padding:'5px 12px',borderRadius:'2px',
-                                background:'rgba(60,30,80,0.6)',border:'1px solid rgba(150,100,200,0.6)',
-                                color:'rgba(210,170,255,0.95)',cursor:'pointer',transition:'all 0.2s',
-                              }}
-                              onMouseEnter={e=>{e.currentTarget.style.background='rgba(80,40,110,0.8)';e.currentTarget.style.color='rgba(200,170,240,1)';}}
-                              onMouseLeave={e=>{e.currentTarget.style.background='rgba(60,30,80,0.6)';e.currentTarget.style.color='rgba(180,140,220,0.85)';}}
-                            >Focus</button>
+                          <div style={{display:'flex',gap:'6px',justifyContent:'flex-end',alignItems:'center'}}>
+                            {activeContract?.type === 'task' && activeContract.task.id === t.id ? (
+                              <div style={{
+                                fontFamily:'Cinzel,serif', fontSize:'0.75rem', letterSpacing:'0.1em',
+                                padding:'5px 10px', borderRadius:'2px',
+                                background:'rgba(80,55,0,0.5)', border:'1px solid rgba(212,175,55,0.4)',
+                                color:'rgba(212,175,55,0.9)', display:'flex', alignItems:'center', gap:'4px',
+                              }}>✦ On Map</div>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  sounds.click();
+                                  setActiveContract({ type: 'task', task: t });
+                                  setActiveTab('map');
+                                }}
+                                disabled={!!activeContract}
+                                style={{
+                                  fontFamily:'Cinzel,serif', fontSize:'0.82rem', letterSpacing:'0.15em',
+                                  padding:'5px 12px', borderRadius:'2px',
+                                  background: activeContract ? 'rgba(30,20,5,0.4)' : 'rgba(80,55,10,0.6)',
+                                  border: `1px solid ${activeContract ? 'rgba(180,140,40,0.18)' : 'rgba(180,140,40,0.5)'}`,
+                                  color: activeContract ? 'rgba(180,150,80,0.3)' : 'rgba(212,175,55,0.95)',
+                                  cursor: activeContract ? 'not-allowed' : 'pointer', transition:'all 0.2s',
+                                }}
+                                onMouseEnter={e=>{ if (!activeContract) { e.currentTarget.style.background='rgba(100,70,15,0.8)'; }}}
+                                onMouseLeave={e=>{ if (!activeContract) { e.currentTarget.style.background='rgba(80,55,10,0.6)'; }}}
+                              >Accept</button>
+                            )}
                             <button
                               onClick={() => { sounds.click(); complete(t.id); }}
                               style={{
@@ -562,24 +575,28 @@ const ContractsTab = ({
                         </div>
                       )}
                       <button
-                        onClick={() => { sounds.click(); miniBoss(); }}
+                        onClick={() => {
+                          sounds.click();
+                          setActiveContract({ type: 'elite' });
+                          setActiveTab('map');
+                        }}
                         disabled={isDisabled}
                         style={{
                           width:'100%', padding:'10px', borderRadius:'6px',
                           fontFamily:'Cinzel,serif', fontSize:'0.8rem', fontWeight:700,
                           letterSpacing:'0.22em', textTransform:'uppercase',
-                          background: isDisabled ? 'rgba(20,20,28,0.5)' : 'rgba(40,40,55,0.8)',
+                          background: isDisabled ? 'rgba(20,20,28,0.5)' : activeContract?.type === 'elite' ? TIER.platinum.color : 'rgba(40,40,55,0.8)',
                           border: `1px solid ${isDisabled ? 'rgba(180,180,200,0.12)' : TIER.platinum.border}`,
-                          color: isDisabled ? 'rgba(180,180,200,0.3)' : TIER.platinum.color,
+                          color: isDisabled ? 'rgba(180,180,200,0.3)' : activeContract?.type === 'elite' ? '#000' : TIER.platinum.color,
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           transition:'all 0.2s',
                           boxShadow: taskGateMet && !isDisabled ? `0 0 16px ${TIER.platinum.glow}` : 'none',
-                          animation: taskGateMet && !isDisabled ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
+                          animation: taskGateMet && !isDisabled && activeContract?.type !== 'elite' ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                         }}
-                        onMouseEnter={e => { if (!isDisabled) { e.currentTarget.style.background='rgba(60,60,80,0.9)'; e.currentTarget.style.boxShadow=`0 0 22px ${TIER.platinum.glow}`; } }}
-                        onMouseLeave={e => { if (!isDisabled) { e.currentTarget.style.background='rgba(40,40,55,0.8)'; e.currentTarget.style.boxShadow=taskGateMet ? `0 0 16px ${TIER.platinum.glow}` : 'none'; } }}
+                        onMouseEnter={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=`0 0 22px ${TIER.platinum.glow}`; } }}
+                        onMouseLeave={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=taskGateMet ? `0 0 16px ${TIER.platinum.glow}` : 'none'; } }}
                       >
-                        {eliteBossDefeatedToday ? 'Contract Complete' : taskGateMet ? 'Invoke the Blood Contract' : 'Locked'}
+                        {eliteBossDefeatedToday ? 'Contract Complete' : activeContract?.type === 'elite' ? '✦ Active — Go to Dungeon' : taskGateMet ? 'Accept Blood Contract' : 'Locked'}
                       </button>
                     </div>
                   </div>
@@ -643,24 +660,28 @@ const ContractsTab = ({
                         </div>
                       )}
                       <button
-                        onClick={() => { sounds.click(); finalBoss(); }}
+                        onClick={() => {
+                          sounds.click();
+                          setActiveContract({ type: 'final' });
+                          setActiveTab('map');
+                        }}
                         disabled={isDisabled}
                         style={{
                           width:'100%', padding:'10px', borderRadius:'6px',
                           fontFamily:'Cinzel,serif', fontSize:'0.8rem', fontWeight:700,
                           letterSpacing:'0.22em', textTransform:'uppercase',
-                          background: isDisabled ? 'rgba(0,10,12,0.6)' : 'rgba(0,25,30,0.9)',
+                          background: isDisabled ? 'rgba(0,10,12,0.6)' : activeContract?.type === 'final' ? TIER.mythril.color : 'rgba(0,25,30,0.9)',
                           border: `1px solid ${isDisabled ? 'rgba(125,249,255,0.08)' : TIER.mythril.border}`,
-                          color: isDisabled ? 'rgba(125,249,255,0.2)' : TIER.mythril.color,
+                          color: isDisabled ? 'rgba(125,249,255,0.2)' : activeContract?.type === 'final' ? '#000' : TIER.mythril.color,
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           transition:'all 0.2s',
                           boxShadow: !isDisabled ? `0 0 18px ${TIER.mythril.glow}` : 'none',
-                          animation: !isDisabled ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
+                          animation: !isDisabled && activeContract?.type !== 'final' ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                         }}
-                        onMouseEnter={e => { if (!isDisabled) { e.currentTarget.style.background='rgba(0,40,48,0.95)'; e.currentTarget.style.boxShadow=`0 0 28px ${TIER.mythril.glow}`; } }}
-                        onMouseLeave={e => { if (!isDisabled) { e.currentTarget.style.background='rgba(0,25,30,0.9)'; e.currentTarget.style.boxShadow=`0 0 18px ${TIER.mythril.glow}`; } }}
+                        onMouseEnter={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=`0 0 28px ${TIER.mythril.glow}`; } }}
+                        onMouseLeave={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=`0 0 18px ${TIER.mythril.glow}`; } }}
                       >
-                        {!gauntletUnlocked ? 'Sealed' : !allDone ? 'Fulfill all contracts first' : 'Enter the Gauntlet'}
+                        {!gauntletUnlocked ? 'Sealed' : !allDone ? 'Fulfill all contracts first' : activeContract?.type === 'final' ? '✦ Active — Go to Skull Cavern' : 'Accept the Black Contract'}
                       </button>
                     </div>
                   </div>

@@ -507,6 +507,9 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [currentBattleCreature, setCurrentBattleCreature] = useState(null);
   const [selectedZone, setSelectedZone] = useState(null);
   const selectedZoneRef = useRef(null);
+  const [activeContract, setActiveContract] = useState(null);
+  const activeContractRef = useRef(null);
+  const pomodoroFromMapRef = useRef(false);
   const [battleType, setBattleType] = useState('regular');
 const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
@@ -740,6 +743,7 @@ const getDateKey = useCallback((date) => {
 
   // Keep selectedZoneRef in sync for use inside useCallback closures
   useEffect(() => { selectedZoneRef.current = selectedZone; }, [selectedZone]);
+  useEffect(() => { activeContractRef.current = activeContract; }, [activeContract]);
   
   // Study Links Functions
   const addStudyWebsite = useCallback(() => {
@@ -1314,7 +1318,22 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
             addLog(`Pomodoro session #${pomodorosCompleted + 1} completed! Starting break...`);
             setIsBreak(true);
             setPomodoroTimer(5 * 60); // 5 minute break
-            // Keep running so break auto-starts
+            // If started from the map, auto-close pomodoro and spawn battle
+            if (pomodoroFromMapRef.current) {
+              pomodoroFromMapRef.current = false;
+              setShowPomodoro(false);
+              setTimeout(() => {
+                const waveRoll = Math.random();
+                if (waveRoll < 0.2) {
+                  const numEnemies = Math.floor(Math.random() * 2) + 2;
+                  setWaveCount(numEnemies);
+                  addLog(`Wave incoming! ${numEnemies} enemies detected!`);
+                  setTimeout(() => spawnRegularEnemy(true, 1, numEnemies), 1000);
+                } else {
+                  spawnRegularEnemy(false, 0, 1);
+                }
+              }, 600);
+            }
           } else {
             // Break done - stop and wait for user to resume
             addLog(`The break ends. Ready for another pomodoro?`);
@@ -3522,6 +3541,14 @@ if (battleType === 'elite') {
   setBattling(false);
   setBattleMode(false);
   setCurrentBattleCreature(null);
+
+  // Complete active task contract on regular battle victory
+  const _ac = activeContractRef.current;
+  if (_ac?.type === 'task') {
+    complete(_ac.task.id);
+    pendingBattleSpawnRef.current = null; // Battle already happened — no double-spawn
+    setActiveContract(null);
+  }
 
   // Pendant regenHP: restore HP after combat victory
   if (equippedPendant?.affixes?.regenHP) {
@@ -6944,6 +6971,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
               setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
               start={start} miniBoss={miniBoss} finalBoss={finalBoss}
+              activeContract={activeContract} setActiveContract={setActiveContract}
+              setActiveTab={setActiveTab}
               setShowImportModal={setShowImportModal}
               log={log} addLog={addLog}
               onRaid={spawnBanditWave}
@@ -7005,6 +7034,25 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               currentDay={currentDay}
               selectedZone={selectedZone}
               setSelectedZone={setSelectedZone}
+              activeContract={activeContract}
+              setActiveContract={setActiveContract}
+              isDayActive={isDayActive}
+              eliteBossDefeatedToday={eliteBossDefeatedToday}
+              gauntletUnlocked={gauntletUnlocked}
+              tasks={tasks}
+              onStartPomodoro={(task) => {
+                const t = task || { title: selectedZoneRef.current?.name || 'Hunt', id: '_map_hunt_' + Date.now() };
+                setPomodoroTask(t);
+                setShowPomodoro(true);
+                setPomodoroTimer(25 * 60);
+                setPomodorosCompleted(0);
+                setIsBreak(false);
+                setPomodoroRunning(true);
+                pomodoroFromMapRef.current = true;
+                addLog(`Heading out: "${t.title}"`);
+              }}
+              onEliteBoss={miniBoss}
+              onFinalBoss={finalBoss}
             />
           )}
           {activeTab === 'debug' && (

@@ -324,7 +324,12 @@ const TIER_META = {
   3: { label: 'Dire',     color: '#DC2626' },
 };
 
-const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
+const WorldMapTab = ({
+  currentDay, selectedZone, setSelectedZone,
+  activeContract, setActiveContract,
+  onStartPomodoro, onEliteBoss, onFinalBoss,
+  isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
+}) => {
   const [activeLocation, setActiveLocation] = useState(null);
   const scrollRef = useRef(null);
 
@@ -391,7 +396,12 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                 const unlocked = isUnlocked(loc);
                 const isHunting = loc.type === 'hunting';
                 const isActive = activeLocation === loc.id || selectedZone?.id === loc.id;
-                const isHovered = false; // handled via state if needed
+
+                // Glow when this location has an accepted active contract
+                const hasActiveContract =
+                  (isHunting && selectedZone?.id === loc.id && activeContract?.type === 'task') ||
+                  (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
+                  (loc.id === 'skull_cave' && activeContract?.type === 'final');
 
                 return (
                   <motion.div
@@ -403,7 +413,7 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                       x: '-50%',
                       y: '-50%',
                       cursor: 'pointer',
-                      zIndex: isActive ? 10 : 5,
+                      zIndex: hasActiveContract ? 15 : isActive ? 10 : 5,
                     }}
                     whileHover={{ scale: 1.15 }}
                     onClick={() => {
@@ -411,8 +421,23 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                       if (isHunting && unlocked) setSelectedZone(loc);
                     }}
                   >
+                    {/* Contract pulse ring */}
+                    {hasActiveContract && (
+                      <motion.div
+                        animate={{ opacity: [0.5, 1, 0.5], scale: [0.85, 1.15, 0.85] }}
+                        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          position: 'absolute', inset: '-14px',
+                          borderRadius: '50%',
+                          border: '2px solid #D4AF37',
+                          boxShadow: '0 0 20px #D4AF3799',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
+
                     {/* Active ring */}
-                    {isActive && (
+                    {isActive && !hasActiveContract && (
                       <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -600,15 +625,53 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                   {displayed.desc}
                 </p>
 
-                {/* Status */}
-                {displayed.isElite || displayed.isLegendary ? (
-                  <div style={{
-                    fontSize: '0.56rem', color: displayed.dangerColor,
-                    background: `${displayed.dangerColor}0e`,
-                    border: `1px solid ${displayed.dangerColor}28`,
-                    borderRadius: '4px', padding: '6px 8px',
-                    textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase',
-                  }}>Contract Access Only</div>
+                {/* Status / Action */}
+                {displayed.id === 'dungeon' ? (
+                  // Elite boss location
+                  activeContract?.type === 'elite' ? (
+                    <button
+                      onClick={() => { onEliteBoss(); setActiveContract(null); }}
+                      disabled={!isDayActive}
+                      style={{
+                        width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                        color: isDayActive ? '#000' : 'rgba(168,85,247,0.3)',
+                        background: isDayActive ? '#A855F7' : 'rgba(20,10,30,0.5)',
+                        border: '1px solid rgba(168,85,247,0.5)',
+                        borderRadius: '4px', padding: '8px',
+                        cursor: isDayActive ? 'pointer' : 'not-allowed',
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        boxShadow: isDayActive ? '0 0 16px rgba(168,85,247,0.4)' : 'none',
+                        animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
+                      }}
+                    >⚔ Begin Blood Contract</button>
+                  ) : (
+                    <div style={{ fontSize: '0.56rem', color: 'rgba(168,85,247,0.45)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      Accept on Contracts Board
+                    </div>
+                  )
+                ) : displayed.id === 'skull_cave' ? (
+                  // Legendary boss location
+                  activeContract?.type === 'final' ? (
+                    <button
+                      onClick={() => { onFinalBoss(); setActiveContract(null); }}
+                      disabled={!isDayActive}
+                      style={{
+                        width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                        color: isDayActive ? '#000' : 'rgba(245,158,11,0.3)',
+                        background: isDayActive ? '#F59E0B' : 'rgba(20,12,0,0.5)',
+                        border: '1px solid rgba(245,158,11,0.5)',
+                        borderRadius: '4px', padding: '8px',
+                        cursor: isDayActive ? 'pointer' : 'not-allowed',
+                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        boxShadow: isDayActive ? '0 0 20px rgba(245,158,11,0.5)' : 'none',
+                        animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
+                      }}
+                    >☠ Enter the Gauntlet</button>
+                  ) : (
+                    <div style={{ fontSize: '0.56rem', color: 'rgba(245,158,11,0.4)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      Accept on Contracts Board
+                    </div>
+                  )
                 ) : !isUnlocked(displayed) ? (
                   <div style={{
                     fontSize: '0.56rem', color: '#555',
@@ -618,21 +681,62 @@ const WorldMapTab = ({ currentDay, selectedZone, setSelectedZone }) => {
                     textAlign: 'center', letterSpacing: '0.08em',
                   }}>Unlocks Day {displayed.unlockDay}</div>
                 ) : displayed.type === 'hunting' ? (
-                  <button
-                    onClick={() => setSelectedZone(displayed)}
-                    style={{
-                      width: '100%',
-                      fontSize: '0.56rem', fontWeight: 700,
-                      color: selectedZone?.id === displayed.id ? '#000' : displayed.dangerColor,
-                      background: selectedZone?.id === displayed.id ? displayed.dangerColor : `${displayed.dangerColor}14`,
-                      border: `1px solid ${displayed.dangerColor}50`,
-                      borderRadius: '4px', padding: '7px 8px',
-                      cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase',
-                      transition: 'all 0.15s',
-                    }}
-                  >
-                    {selectedZone?.id === displayed.id ? '✦ Active Hunting Ground ✦' : 'Set as Hunting Ground'}
-                  </button>
+                  selectedZone?.id === displayed.id ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      {/* Active task contract on this hunting ground */}
+                      {activeContract?.type === 'task' && (
+                        <div style={{
+                          fontSize: '0.52rem', color: '#D4AF37',
+                          background: 'rgba(212,175,55,0.08)',
+                          border: '1px solid rgba(212,175,55,0.25)',
+                          borderRadius: '3px', padding: '5px 8px',
+                          letterSpacing: '0.08em',
+                        }}>
+                          ✦ {activeContract.task.title}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => isDayActive && onStartPomodoro(activeContract?.type === 'task' ? activeContract.task : null)}
+                        disabled={!isDayActive}
+                        style={{
+                          width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                          color: isDayActive ? '#000' : 'rgba(220,38,38,0.3)',
+                          background: isDayActive ? displayed.dangerColor : 'rgba(10,5,5,0.5)',
+                          border: `1px solid ${displayed.dangerColor}50`,
+                          borderRadius: '4px', padding: '7px 8px',
+                          cursor: isDayActive ? 'pointer' : 'not-allowed',
+                          letterSpacing: '0.12em', textTransform: 'uppercase',
+                          boxShadow: isDayActive ? `0 0 12px ${displayed.dangerColor}55` : 'none',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        {activeContract?.type === 'task' ? '⚔ Begin Contract' : '🏹 Hunt Here'}
+                      </button>
+                      <button
+                        onClick={() => { setSelectedZone(null); }}
+                        style={{
+                          width: '100%', fontSize: '0.48rem', fontWeight: 600,
+                          color: 'rgba(180,160,140,0.4)',
+                          background: 'transparent', border: '1px solid rgba(255,255,255,0.05)',
+                          borderRadius: '4px', padding: '4px 8px',
+                          cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
+                        }}
+                      >Deselect Zone</button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setSelectedZone(displayed)}
+                      style={{
+                        width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                        color: displayed.dangerColor,
+                        background: `${displayed.dangerColor}14`,
+                        border: `1px solid ${displayed.dangerColor}50`,
+                        borderRadius: '4px', padding: '7px 8px',
+                        cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase',
+                        transition: 'all 0.15s',
+                      }}
+                    >Set as Hunting Ground</button>
+                  )
                 ) : (
                   <div style={{
                     fontSize: '0.56rem', color: 'rgba(212,175,55,0.5)',
