@@ -312,10 +312,50 @@ const LOCATIONS = [
     unlockLevel: 10,
     isLegendary: true,
     position: { left: '82%', top: '4%' },
-    markerSize: 72,
+    markerSize: 96,
     danger: 5, dangerLabel: 'Legendary', dangerColor: '#F59E0B',
     contract: 'The Black Contract',
   },
+];
+
+// Non-interactive decorative assets — terrain-matched, placed to fill the map.
+// Keep size <= 42px so they stay visually subordinate to location markers (76px+).
+const DECORATIONS = [
+  // ── Water / shoreline ──────────────────────────────────────────────────────
+  { src: '/worldmap/small-ship.png',          pos: { left: '48%', top: '92%' }, size: 40 },
+  { src: '/worldmap/wave-tile-1.png',         pos: { left: '76%', top: '95%' }, size: 30 },
+  { src: '/worldmap/wave-tile-2.png',         pos: { left: '43%', top: '89%' }, size: 30 },
+
+  // ── Sandy island ───────────────────────────────────────────────────────────
+  { src: '/worldmap/cactus-1.png',            pos: { left: '52%', top: '94%' }, size: 30 },
+  { src: '/worldmap/cactus-2.png',            pos: { left: '80%', top: '83%' }, size: 30 },
+
+  // ── Green island / forest ──────────────────────────────────────────────────
+  { src: '/worldmap/tree-2.png',              pos: { left: '10%', top: '71%' }, size: 40 },
+  { src: '/worldmap/dry-wood-1.png',          pos: { left: '14%', top: '84%' }, size: 34 },
+
+  // ── Central — left ─────────────────────────────────────────────────────────
+  { src: '/worldmap/rustic-stone.png',        pos: { left: '28%', top: '58%' }, size: 34 },
+  { src: '/worldmap/low-rocks.png',           pos: { left: '14%', top: '54%' }, size: 32 },
+  { src: '/worldmap/stone-arch.png',          pos: { left: '24%', top: '34%' }, size: 36 },
+  { src: '/worldmap/rock-2.png',              pos: { left: '14%', top: '37%' }, size: 30 },
+
+  // ── Central — right ────────────────────────────────────────────────────────
+  { src: '/worldmap/rock-column.png',         pos: { left: '82%', top: '47%' }, size: 34 },
+  { src: '/worldmap/rocks-1.png',             pos: { left: '68%', top: '58%' }, size: 32 },
+  { src: '/worldmap/rock-1.png',              pos: { left: '44%', top: '58%' }, size: 30 },
+  { src: '/worldmap/stone-crystal.png',       pos: { left: '60%', top: '28%' }, size: 34 },
+
+  // ── Top-left — dire / ashen ────────────────────────────────────────────────
+  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '12%' }, size: 34 },
+  { src: '/worldmap/red-rocks.png',           pos: { left: '38%', top: '14%' }, size: 32 },
+  { src: '/worldmap/dry-wood-2.png',          pos: { left: '30%', top: '21%' }, size: 34 },
+
+  // ── Top-right — lava / volcanic ────────────────────────────────────────────
+  { src: '/worldmap/lava.png',                pos: { left: '64%', top: '18%' }, size: 34 },
+  { src: '/worldmap/old-lava.png',            pos: { left: '80%', top: '16%' }, size: 32 },
+  { src: '/worldmap/lava-pit.png',            pos: { left: '72%', top: '20%' }, size: 30 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '46%', top: '13%' }, size: 32 },
 ];
 
 const TIER_META = {
@@ -391,6 +431,28 @@ const WorldMapTab = ({
                 background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.04) 75%, rgba(0,0,0,0.18) 100%)',
               }} />
 
+              {/* Decorative assets — non-interactive, terrain-matched */}
+              {DECORATIONS.map((d, i) => (
+                <img
+                  key={`deco-${i}`}
+                  src={d.src}
+                  alt=""
+                  style={{
+                    position: 'absolute',
+                    left: d.pos.left,
+                    top: d.pos.top,
+                    transform: 'translate(-50%, -50%)',
+                    width: `${d.size}px`,
+                    height: `${d.size}px`,
+                    objectFit: 'contain',
+                    pointerEvents: 'none',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
+                    opacity: 0.8,
+                    zIndex: 2,
+                  }}
+                />
+              ))}
+
               {/* All location markers */}
               {LOCATIONS.map(loc => {
                 const unlocked = isUnlocked(loc);
@@ -459,7 +521,7 @@ const WorldMapTab = ({
                       src={loc.marker}
                       alt={loc.name}
                       style={{
-                        width: `${loc.markerSize || 56}px`, height: `${loc.markerSize || 56}px`,
+                        width: `${loc.markerSize || 76}px`, height: `${loc.markerSize || 76}px`,
                         objectFit: 'contain',
                         filter: unlocked
                           ? isActive
