@@ -74,7 +74,7 @@ const LOCATIONS = [
     marker: '/worldmap/stone-crystal.png',
     type: 'landmark',
     unlockLevel: 3,
-    position: { left: '54%', top: '42%' },
+    position: { left: '28%', top: '36%' },
     markerSize: 54,
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
   },
@@ -393,7 +393,7 @@ const DECORATIONS = [
 
   // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
 
-  { src: '/worldmap/stone-arch.png',          pos: { left: '28%', top: '36%' }, size: 44 },
+  { src: '/worldmap/stone-arch.png',          pos: { left: '54%', top: '42%' }, size: 44 },
   { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
