@@ -396,21 +396,77 @@ const LOCATIONS = [
 //   Top-left:       crystal_stones(20,10) stoneback_cave(22,18) precipice(10,24) dry_tree(34,27)
 //   Top-right:      crystal_lava(50,5) lava_wastes(58,14) crystal_column(70,7) skull_cave(82,4)
 const DECORATIONS = [
-  // zone = geographic zone for wild encounter scaling
-  { src: '/worldmap/tree-2.png',              pos: { left: '14%', top: '67%' }, size: 48, zone: 1 },
-  { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42, zone: 1 },
-  { src: '/worldmap/stone-arch.png',          pos: { left: '54%', top: '42%' }, size: 44, zone: 3 },
-  { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38, zone: 3 },
-  { src: '/worldmap/rock-column.png',         pos: { left: '34%', top: '37%' }, size: 42, zone: 3 },
-  { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40, zone: 4 },
-  { src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38, zone: 2 },
-  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 42, zone: 4 },
-  { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '20%' }, size: 40, zone: 4 },
-  { src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42, zone: 2 },
-  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42, zone: 5 },
-  { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40, zone: 5 },
-  { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38, zone: 4 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 58, zone: 2 },
+  // zone = geographic zone for wild encounter scaling and lock gating
+  {
+    src: '/worldmap/tree-2.png',              pos: { left: '14%', top: '67%' }, size: 48, zone: 1,
+    name: 'The Gnarled Oak',
+    desc: 'A twisted old tree at the edge of the island trail. Travelers mark it as the last safe waypoint before the wilds begin.',
+  },
+  {
+    src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42, zone: 1,
+    name: 'Fallen Timber',
+    desc: 'A massive trunk brought down long ago. Something hollowed it out from the inside.',
+  },
+  {
+    src: '/worldmap/stone-arch.png',          pos: { left: '54%', top: '42%' }, size: 44, zone: 3,
+    name: 'The Broken Arch',
+    desc: 'The remains of a structure no one can date. Half of it collapsed inward. The other half should have followed, but hasn't.',
+  },
+  {
+    src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38, zone: 3,
+    name: 'The Outcrop',
+    desc: 'A jagged shelf of rock jutting out from the eastern ridge. Things nest in the crevices below.',
+  },
+  {
+    src: '/worldmap/rock-column.png',         pos: { left: '34%', top: '37%' }, size: 42, zone: 3,
+    name: 'The Standing Stone',
+    desc: 'A single column of rock, too regular to be natural. No inscription. No origin. It simply stands.',
+  },
+  {
+    src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40, zone: 4,
+    name: 'The Scree',
+    desc: 'A loose field of shattered rock from a collapse long past. Crossing it announces your presence to anything nearby.',
+  },
+  {
+    src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38, zone: 2,
+    name: 'Coastal Boulder',
+    desc: 'A lone boulder at the island's edge, worn smooth by wind and salt. Something carved marks into the base.',
+  },
+  {
+    src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 42, zone: 4,
+    name: 'The Jagged Spire',
+    desc: 'A cluster of upthrust rock that tears at anything passing too close. The ground around it is stained dark.',
+  },
+  {
+    src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '20%' }, size: 40, zone: 4,
+    name: 'The Crimson Shelf',
+    desc: 'Iron-rich stone that bleeds red in the light. The color is natural. The smell is not.',
+  },
+  {
+    src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42, zone: 2,
+    name: 'The Dry Thicket',
+    desc: 'A cluster of dead brush that refuses to rot. The wood is bone-white and snaps at a touch.',
+  },
+  {
+    src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42, zone: 5,
+    name: 'Lava Vent',
+    desc: 'A fissure in the earth venting heat from below. The ground around it shifts. Slowly. Then stops.',
+  },
+  {
+    src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40, zone: 5,
+    name: 'The Cooled Flow',
+    desc: 'Hardened lava from an eruption old enough that no one recorded it. The surface still radiates heat at night.',
+  },
+  {
+    src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38, zone: 4,
+    name: 'The Ember Pit',
+    desc: 'A shallow depression filled with glowing coals that never fully die. No fire burns here. It simply remains.',
+  },
+  {
+    src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 58, zone: 2,
+    name: 'Crystal Formation',
+    desc: 'A growth of pale green crystal pushing through the sand. It hums faintly at dusk. No one knows why.',
+  },
 ];
 
 const WILD_ENCOUNTERS = {
@@ -460,22 +516,33 @@ const WorldMapTab = ({
     }
   }, []);
 
-  // Activate a random decoration every 2 minutes (max 3 active at once)
+  // Returns true if a deco's zone is accessible (same gate as contract locations)
+  const isDecoZoneUnlocked = (decoZone) => {
+    if (decoZone <= 1) return true;
+    const prevZoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === decoZone - 1);
+    return prevZoneContracts.length === 0 ||
+      prevZoneContracts.every(c => completedLocationContracts?.includes(c.id));
+  };
+
+  // Activate a random unlocked decoration every 2 minutes (max 3 active at once)
   useEffect(() => {
     if (!isDayActive) return;
     const activate = () => {
       setActiveDecos(prev => {
         if (prev.length >= 3) return prev;
-        const available = DECORATIONS.map((_, i) => i).filter(i => !prev.includes(i));
+        const available = DECORATIONS
+          .map((d, i) => ({ d, i }))
+          .filter(({ d, i }) => !prev.includes(i) && isDecoZoneUnlocked(d.zone))
+          .map(({ i }) => i);
         if (available.length === 0) return prev;
         const idx = available[Math.floor(Math.random() * available.length)];
         return [...prev, idx];
       });
     };
-    const t = setTimeout(activate, 30 * 1000); // first after 30s
+    const t = setTimeout(activate, 30 * 1000);
     const iv = setInterval(activate, 2 * 60 * 1000);
     return () => { clearTimeout(t); clearInterval(iv); };
-  }, [isDayActive]);
+  }, [isDayActive, completedLocationContracts]);
 
   const isZoneContractUnlocked = (loc) => {
     if (loc.type !== 'contract' || !loc.contractZone || loc.contractZone <= 1) return true;
@@ -557,7 +624,7 @@ const WorldMapTab = ({
                     }}
                     onClick={isWild ? () => {
                       const monster = pool[Math.floor(Math.random() * pool.length)];
-                      setDecoPopup({ decoIdx: i, monster, zone: d.zone });
+                      setDecoPopup({ decoIdx: i, monster, zone: d.zone, location: d.name });
                       setActiveDecos(prev => prev.filter(idx => idx !== i));
                     } : undefined}
                   >
@@ -799,19 +866,25 @@ const WorldMapTab = ({
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
 
-                {/* Zone badge */}
-                <div style={{
-                  fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-                  color: 'rgba(220,80,80,0.8)', marginBottom: '6px',
-                }}>Wild Encounter · Zone {decoPopup.zone}</div>
+                {/* Location name + zone badge */}
+                <div style={{ marginBottom: '10px' }}>
+                  <p style={{
+                    fontFamily: 'Cinzel,serif', fontSize: '0.72rem', fontWeight: 600,
+                    color: 'rgba(200,180,140,0.9)', letterSpacing: '0.08em', marginBottom: '3px',
+                  }}>{decoPopup.location}</p>
+                  <div style={{
+                    fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+                    color: 'rgba(220,80,80,0.7)',
+                  }}>Wild Encounter · Zone {decoPopup.zone}</div>
+                </div>
 
-                {/* Name */}
+                {/* Monster name */}
                 <p style={{
                   fontFamily: 'Cinzel,serif', fontSize: '1rem', fontWeight: 700,
                   color: '#F5F0E0', marginBottom: '8px', letterSpacing: '0.05em',
                 }}>{decoPopup.monster.name}</p>
 
-                {/* Description */}
+                {/* Monster description */}
                 <p style={{
                   fontSize: '0.7rem', color: 'rgba(180,160,130,0.75)',
                   lineHeight: 1.55, fontStyle: 'italic', marginBottom: '16px',
