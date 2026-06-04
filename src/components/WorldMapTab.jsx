@@ -62,7 +62,7 @@ const LOCATIONS = [
     marker: '/worldmap/rustic-stone.png',
     type: 'landmark',
     unlockLevel: 1,
-    position: { left: '18%', top: '75%' },
+    position: { left: '22%', top: '71%' },
     markerSize: 54,
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
   },
@@ -112,7 +112,7 @@ const LOCATIONS = [
     marker: '/worldmap/tree-house.png',
     type: 'contract',
     unlockLevel: 1,
-    position: { left: '22%', top: '63%' },
+    position: { left: '22%', top: '58%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'Scouting Report',
   },
@@ -387,7 +387,7 @@ const DECORATIONS = [
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
-  { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 48 },
+  { src: '/worldmap/tree-2.png',              pos: { left: '18%', top: '75%' }, size: 48 },
   { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42 },
 
 
