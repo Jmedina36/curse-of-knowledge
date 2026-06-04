@@ -443,7 +443,7 @@ const DECORATIONS = [
     desc: 'Iron-rich stone that bleeds red in the light. The color is natural. The smell is not.',
   },
   {
-    src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42, zone: 2,
+    src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42, zone: 1,
     name: 'The Dry Thicket',
     desc: 'A cluster of dead brush that refuses to rot. The wood is bone-white and snaps at a touch.',
   },
