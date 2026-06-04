@@ -55,6 +55,30 @@ const LOCATIONS = [
   },
 
   {
+    id: 'wardens_stone',
+    name: "The Warden's Stone",
+    subtitle: 'Forest Marker',
+    desc: 'A weathered stone marker at the edge of the old forest. The inscription is worn beyond reading, but hunters say it marks where the grove\'s first warden stood watch.',
+    marker: '/worldmap/rustic-stone.png',
+    type: 'landmark',
+    unlockLevel: 1,
+    position: { left: '18%', top: '75%' },
+    markerSize: 54,
+    danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
+  },
+  {
+    id: 'old_nexus',
+    name: 'The Old Nexus',
+    subtitle: 'Convergence Point',
+    desc: 'A place where ley lines cross and old power pools. No one built it — it was always here. Hunters use it as a waypoint. Nothing lingers here long.',
+    marker: '/worldmap/stone-crystal.png',
+    type: 'landmark',
+    unlockLevel: 3,
+    position: { left: '54%', top: '42%' },
+    markerSize: 54,
+    danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
+  },
+  {
     id: 'ghost_fleet',
     name: 'The Ghost Fleet',
     subtitle: 'Sunken Wreck',
@@ -149,9 +173,9 @@ const LOCATIONS = [
     desc: 'A vault sealed by someone who never returned for it. The guardians they posted are still at their post.',
     marker: '/worldmap/treasure-chest.png',
     type: 'contract',
-    unlockLevel: 3,
+    unlockLevel: 8,
     position: { left: '38%', top: '24%' },
-    danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
     contract: 'The Lost Cache',
   },
   {
@@ -272,9 +296,9 @@ const LOCATIONS = [
     desc: 'A forest that burned from the inside out and never recovered. The dead trees move when you aren\'t looking directly at them.',
     marker: '/worldmap/dry-tree.png',
     type: 'contract',
-    unlockLevel: 8,
+    unlockLevel: 5,
     position: { left: '36%', top: '53%' },
-    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+    danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'The Restless Dead',
   },
   {
@@ -365,7 +389,7 @@ const DECORATIONS = [
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
   { src: '/worldmap/tree-2.png',              pos: { left: '22%', top: '71%' }, size: 48 },
   { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42 },
-  { src: '/worldmap/rustic-stone.png',        pos: { left: '64%', top: '50%' }, size: 40 },
+
 
   // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
 
@@ -376,7 +400,7 @@ const DECORATIONS = [
   { src: '/worldmap/rock-column.png',         pos: { left: '42%', top: '38%' }, size: 42 },
   { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40 },
   { src: '/worldmap/rock-1.png',              pos: { left: '46%', top: '50%' }, size: 38 },
-  { src: '/worldmap/stone-crystal.png',       pos: { left: '54%', top: '42%' }, size: 42 },
+
 
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
   { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 42 },
