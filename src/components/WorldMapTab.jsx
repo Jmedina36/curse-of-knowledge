@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LOCATION_CONTRACTS } from '../data/locationContracts';
 
 // Zone types:
 //   'hunting'  — selectable hunting ground, drives encounter pool
@@ -36,6 +37,7 @@ const LOCATIONS = [
     desc: 'The fountain still flows, but the warden has gone quiet. Something is wrong with the spring.',
     marker: '/worldmap/fountain.png',
     type: 'contract',
+    contractZone: 1,
     unlockLevel: 3,
     position: { left: '68%', top: '62%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
@@ -44,6 +46,7 @@ const LOCATIONS = [
   {
     id: 'harbor',
     name: 'Ghost Harbor',
+    contractZone: 1,
     subtitle: 'Abandoned Port',
     desc: 'Ships rot at the docks. The crews didn\'t vanish — they were taken by the men who now run this harbor.',
     marker: '/worldmap/big-ship.png',
@@ -107,6 +110,7 @@ const LOCATIONS = [
   {
     id: 'canopy_outpost',
     name: 'Canopy Outpost',
+    contractZone: 1,
     subtitle: 'Scout Post',
     desc: 'A watchtower built into the oldest tree in the canopy. Raiders claimed it — no scouts have reported back since.',
     marker: '/worldmap/tree-house.png',
@@ -131,6 +135,7 @@ const LOCATIONS = [
   {
     id: 'holy_tree',
     name: 'The Sacred Grove',
+    contractZone: 1,
     subtitle: 'Holy Ground',
     desc: 'The sacred tree is darkening. Cultists have taken root in the grove and are draining it dry.',
     marker: '/worldmap/holy-tree.png',
@@ -143,6 +148,7 @@ const LOCATIONS = [
   {
     id: 'ivy_crossing',
     name: 'Ivy Crossing',
+    contractZone: 2,
     subtitle: 'Overgrown Path',
     desc: 'The road is gone beneath the thornvine. Whatever is growing here has been at it for years and isn\'t done.',
     marker: '/worldmap/thorny-ivy.png',
@@ -157,6 +163,7 @@ const LOCATIONS = [
   {
     id: 'stone_bridge',
     name: 'The Old Crossing',
+    contractZone: 2,
     subtitle: 'Ancient Bridge',
     desc: 'A bridge that outlasted the kingdom that built it. The river below has something old and patient living in it.',
     marker: '/worldmap/rock-bridge.png',
@@ -169,6 +176,7 @@ const LOCATIONS = [
   {
     id: 'treasure_vault',
     name: 'The Vault',
+    contractZone: 4,
     subtitle: 'Hidden Cache',
     desc: 'A vault sealed by someone who never returned for it. The guardians they posted are still at their post.',
     marker: '/worldmap/treasure-chest.png',
@@ -193,6 +201,7 @@ const LOCATIONS = [
   {
     id: 'old_tree',
     name: 'The Hollow',
+    contractZone: 3,
     subtitle: 'Dead Landmark',
     desc: 'Hunters used this dead giant as a waypoint for a century. Nobody stops there anymore.',
     marker: '/worldmap/old-tree.png',
@@ -205,6 +214,7 @@ const LOCATIONS = [
   {
     id: 'runic_circle',
     name: 'Runic Circle',
+    contractZone: 3,
     subtitle: 'Arcane Site',
     desc: 'Runes cut into bedrock that pulse without heat or wind. The ritual is still running — no one knows what it\'s building toward.',
     marker: '/worldmap/runic-stone.png',
@@ -229,6 +239,7 @@ const LOCATIONS = [
   {
     id: 'magic_stone',
     name: 'The Arcane Monolith',
+    contractZone: 3,
     subtitle: 'Power Node',
     desc: 'The monolith radiates something unnamed. The creatures that gather around it are not what they were before.',
     marker: '/worldmap/magic-stone.png',
@@ -241,6 +252,7 @@ const LOCATIONS = [
   {
     id: 'column_ruins',
     name: 'The Pillars',
+    contractZone: 3,
     subtitle: 'Fallen Temple',
     desc: 'A god\'s temple, now rubble and pillars. The god it honored hasn\'t gone anywhere.',
     marker: '/worldmap/column.png',
@@ -280,6 +292,7 @@ const LOCATIONS = [
   {
     id: 'precipice',
     name: 'The Precipice',
+    contractZone: 4,
     subtitle: 'Sheer Cliff Face',
     desc: 'The edge of the mapped world. Beyond the cliff face is uncharted dark — and something that doesn\'t want you at the edge.',
     marker: '/worldmap/cliff.png',
@@ -292,6 +305,7 @@ const LOCATIONS = [
   {
     id: 'dry_tree',
     name: 'The Withered Wood',
+    contractZone: 3,
     subtitle: 'Ashen Forest',
     desc: 'A forest that burned from the inside out and never recovered. The dead trees move when you aren\'t looking directly at them.',
     marker: '/worldmap/dry-tree.png',
@@ -304,6 +318,7 @@ const LOCATIONS = [
   {
     id: 'crystal_stones',
     name: 'Crystal Wastes',
+    contractZone: 4,
     subtitle: 'Corrupted Ground',
     desc: 'Crystals that grew from poisoned ground. They spread into everything — stone, soil, bone. Nothing that feeds on them stays what it was.',
     marker: '/worldmap/crystal-stones.png',
@@ -330,6 +345,7 @@ const LOCATIONS = [
   {
     id: 'crystal_lava',
     name: 'The Melt',
+    contractZone: 5,
     subtitle: 'Crystallized Hellscape',
     desc: 'Lava fused with corruption crystal into something that shouldn\'t exist. What survives here didn\'t survive as anything natural.',
     marker: '/worldmap/crystal-lava.png',
@@ -342,6 +358,7 @@ const LOCATIONS = [
   {
     id: 'crystal_column',
     name: 'Void Spire',
+    contractZone: 5,
     subtitle: 'Dimensional Fracture',
     desc: 'A crystal spire that appeared where nothing should grow. The space around it behaves differently — distances are wrong, sounds arrive late.',
     marker: '/worldmap/crystal-column.png',
@@ -425,6 +442,7 @@ const WorldMapTab = ({
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
+  completedLocationContracts,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
   const scrollRef = useRef(null);
@@ -435,7 +453,17 @@ const WorldMapTab = ({
     }
   }, []);
 
-  const isUnlocked = (loc) => loc.unlockLevel === null || (level ?? 1) >= loc.unlockLevel;
+  const isZoneContractUnlocked = (loc) => {
+    if (loc.type !== 'contract' || !loc.contractZone || loc.contractZone <= 1) return true;
+    const prevZoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === loc.contractZone - 1);
+    return prevZoneContracts.length === 0 ||
+      prevZoneContracts.every(c => completedLocationContracts?.includes(c.id));
+  };
+
+  const isUnlocked = (loc) => {
+    if (loc.unlockLevel !== null && (level ?? 1) < loc.unlockLevel) return false;
+    return isZoneContractUnlocked(loc);
+  };
 
   const displayed = activeLocation
     ? LOCATIONS.find(l => l.id === activeLocation)
@@ -803,7 +831,10 @@ const WorldMapTab = ({
                       border: '1px solid rgba(255,255,255,0.06)',
                       borderRadius: '4px', padding: '6px 8px',
                       textAlign: 'center', letterSpacing: '0.08em',
-                    }}>Unlocks at Level {displayed.unlockLevel}</div>
+                    }}>{displayed.contractZone > 1 && isZoneContractUnlocked(displayed) === false
+                      ? `Complete Zone ${displayed.contractZone - 1} contracts to unlock`
+                      : `Unlocks at Level ${displayed.unlockLevel}`
+                    }</div>
                   ) : activeContract?.type === 'final' ? (
                     <button
                       onClick={() => { onFinalBoss(); setActiveContract(null); }}

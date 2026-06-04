@@ -7075,6 +7075,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               eliteBossDefeatedToday={eliteBossDefeatedToday}
               gauntletUnlocked={gauntletUnlocked}
               tasks={tasks}
+              completedLocationContracts={completedLocationContracts}
               onBeginContract={() => {
                 const _ac = activeContractRef.current;
                 if (_ac?.type === 'location') {
