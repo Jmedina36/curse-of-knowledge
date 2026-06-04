@@ -613,7 +613,8 @@ const WorldMapTab = ({
 
               {/* Decorative assets — terrain-matched, occasionally active for wild encounters */}
               {DECORATIONS.map((d, i) => {
-                const isWild = isDayActive && activeDecos.includes(i) && !activeContract;
+                const isLocked = !isDecoZoneUnlocked(d.zone);
+                const isWild = !isLocked && isDayActive && activeDecos.includes(i) && !activeContract;
                 const pool = WILD_ENCOUNTERS[d.zone] || WILD_ENCOUNTERS[1];
                 return (
                   <motion.div
@@ -661,11 +662,35 @@ const WorldMapTab = ({
                         display: 'block',
                         filter: isWild
                           ? 'drop-shadow(0 0 8px rgba(220,40,40,0.9)) brightness(1.15)'
-                          : 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
+                          : isLocked
+                            ? 'grayscale(1) brightness(0.3)'
+                            : 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
                         opacity: 0.8,
                         transition: 'filter 0.3s',
                       }}
                     />
+                    {/* Lock overlay */}
+                    {isLocked && (
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        pointerEvents: 'none',
+                      }}>
+                        <div style={{
+                          background: 'rgba(0,0,0,0.72)',
+                          borderRadius: '6px',
+                          padding: '2px 5px',
+                          display: 'flex', flexDirection: 'column',
+                          alignItems: 'center', gap: '1px',
+                        }}>
+                          <span style={{ fontSize: '13px', lineHeight: 1 }}>🔒</span>
+                          <span style={{ fontSize: '6px', color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1 }}>
+                            Lv {ZONE_MIN_LEVEL[d.zone]}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                     {/* Selected ring */}
                     {selectedDeco === i && !isWild && (
                       <div style={{
