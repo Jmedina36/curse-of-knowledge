@@ -416,7 +416,7 @@ const DECORATIONS = [
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
   { src: '/worldmap/rock-column.png',         pos: { left: '46%', top: '33%' }, size: 42 },
   { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40 },
-  { src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '76%' }, size: 38 },
+  { src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38 },
 
 
   // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
@@ -428,7 +428,7 @@ const DECORATIONS = [
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '76%' }, size: 58 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 58 },
 ];
 
 const TIER_META = {
