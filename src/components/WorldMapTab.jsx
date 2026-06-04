@@ -508,6 +508,7 @@ const WorldMapTab = ({
   const [activeLocation, setActiveLocation] = useState(null);
   const [activeDecos, setActiveDecos] = useState([]);
   const [decoPopup, setDecoPopup] = useState(null); // { decoIdx, monster, zone }
+  const [hoveredDeco, setHoveredDeco] = useState(null);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -618,10 +619,12 @@ const WorldMapTab = ({
                       left: d.pos.left,
                       top: d.pos.top,
                       transform: 'translate(-50%, -50%)',
-                      pointerEvents: isWild ? 'auto' : 'none',
-                      zIndex: isWild ? 8 : 2,
+                      pointerEvents: 'auto',
+                      zIndex: isWild ? 8 : hoveredDeco === i ? 6 : 2,
                       cursor: isWild ? 'pointer' : 'default',
                     }}
+                    onMouseEnter={() => setHoveredDeco(i)}
+                    onMouseLeave={() => setHoveredDeco(null)}
                     onClick={isWild ? () => {
                       const monster = pool[Math.floor(Math.random() * pool.length)];
                       setDecoPopup({ decoIdx: i, monster, zone: d.zone, location: d.name });
@@ -656,6 +659,34 @@ const WorldMapTab = ({
                         transition: 'filter 0.3s',
                       }}
                     />
+                    {/* Hover tooltip */}
+                    {hoveredDeco === i && d.name && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '100%',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        marginBottom: '6px',
+                        background: 'rgba(10,8,5,0.95)',
+                        border: '1px solid rgba(180,150,90,0.35)',
+                        borderRadius: '4px',
+                        padding: '7px 10px',
+                        width: '140px',
+                        pointerEvents: 'none',
+                        zIndex: 20,
+                      }}>
+                        <p style={{
+                          fontFamily: 'Cinzel,serif', fontSize: '0.65rem', fontWeight: 700,
+                          color: 'rgba(210,185,130,0.95)', marginBottom: '4px',
+                          letterSpacing: '0.04em', whiteSpace: 'nowrap',
+                          overflow: 'hidden', textOverflow: 'ellipsis',
+                        }}>{d.name}</p>
+                        <p style={{
+                          fontSize: '0.6rem', color: 'rgba(160,140,110,0.75)',
+                          lineHeight: 1.5, fontStyle: 'italic',
+                        }}>{d.desc}</p>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
