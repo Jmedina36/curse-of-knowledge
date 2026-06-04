@@ -239,6 +239,7 @@ const ContractsTab = ({
               </div>
             ) : (
               <>
+                <TierDivider tier="copper" label="Posted Contracts" />
                 <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(240px,1fr))',gap:'16px',padding:'4px 2px'}}>
                   {[...tasks].sort((a, b) => {
                     if (!a.done && b.done) return -1;
@@ -386,7 +387,7 @@ const ContractsTab = ({
             {/* ── ZONE 1 LOCATION CONTRACTS ── */}
             {isDayActive && locationContracts?.length > 0 && (
               <>
-                <TierDivider tier="copper" label="Field Contracts — Zone 1" />
+                <TierDivider tier="silver" label="Field Contracts" />
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
                   {locationContracts.map(lc => {
                     const isCompleted = completedLocationContracts?.includes(lc.id);
@@ -396,16 +397,16 @@ const ContractsTab = ({
                       <div key={lc.id} style={{
                         position: 'relative',
                         background: isCompleted
-                          ? 'linear-gradient(160deg,rgba(55,55,42,0.52),rgba(42,42,35,0.52))'
+                          ? 'linear-gradient(160deg,rgba(42,42,48,0.52),rgba(35,35,42,0.52))'
                           : isPending
                             ? 'linear-gradient(160deg,rgba(40,55,20,0.6),rgba(30,45,15,0.6))'
-                            : 'linear-gradient(160deg,rgba(65,48,18,0.55),rgba(50,38,15,0.55))',
+                            : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
                         border: isCompleted
                           ? '1px solid rgba(80,100,60,0.45)'
                           : isPending
                             ? '1px solid rgba(100,180,60,0.5)'
-                            : `1px solid ${TIER.copper.border}`,
-                        boxShadow: isPending ? '0 0 16px rgba(100,200,60,0.2)' : undefined,
+                            : `1px solid ${TIER.silver.border}`,
+                        boxShadow: isPending ? '0 0 16px rgba(100,200,60,0.2)' : `0 2px 8px ${TIER.silver.glow.replace('0.4','0.08')}`,
                         borderRadius: '4px',
                         padding: '14px 14px 12px',
                         opacity: isCompleted ? 0.65 : 1,
@@ -414,7 +415,7 @@ const ContractsTab = ({
                         <div style={{
                           position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
                           width: '12px', height: '12px', borderRadius: '50%',
-                          background: isCompleted ? 'rgba(80,120,60,0.8)' : TIER.copper.color,
+                          background: isCompleted ? 'rgba(80,120,60,0.8)' : TIER.silver.color,
                           border: '1px solid rgba(255,255,255,0.15)',
                           boxShadow: `0 1px 5px rgba(0,0,0,0.6)`,
                         }} />
@@ -424,11 +425,11 @@ const ContractsTab = ({
                           <span style={{
                             fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.22em',
                             textTransform: 'uppercase', padding: '2px 8px', borderRadius: '2px',
-                            background: isCompleted ? 'rgba(60,90,40,0.3)' : 'rgba(45,25,8,0.5)',
-                            border: isCompleted ? '1px solid rgba(80,120,60,0.4)' : `1px solid ${TIER.copper.border}`,
-                            color: isCompleted ? 'rgba(150,220,110,0.95)' : TIER.copper.color,
+                            background: isCompleted ? 'rgba(60,90,40,0.3)' : 'rgba(35,35,42,0.5)',
+                            border: isCompleted ? '1px solid rgba(80,120,60,0.4)' : `1px solid ${TIER.silver.border}`,
+                            color: isCompleted ? 'rgba(150,220,110,0.95)' : TIER.silver.color,
                           }}>
-                            {isCompleted ? 'Sealed' : 'Copper'}
+                            {isCompleted ? 'Sealed' : 'Silver'}
                           </span>
                           <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.7rem', color: 'rgba(180,160,120,0.6)' }}>
                             {lc.locationName}
