@@ -620,9 +620,10 @@ const WorldMapTab = ({
                       top: d.pos.top,
                       transform: 'translate(-50%, -50%)',
                       pointerEvents: 'auto',
-                      zIndex: isWild ? 8 : selectedDeco === i ? 6 : 2,
-                      cursor: isWild ? 'pointer' : 'default',
+                      zIndex: isWild ? 8 : selectedDeco === i ? 6 : 3,
+                      cursor: 'pointer',
                     }}
+                    whileHover={{ scale: 1.15 }}
                     onClick={() => {
                       if (isWild) {
                         const monster = pool[Math.floor(Math.random() * pool.length)];
