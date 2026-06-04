@@ -5,6 +5,29 @@
 
 export const LOCATION_CONTRACTS = [
   {
+    id: 'lc_wellspring',
+    locationId: 'fountain',
+    locationName: 'Wellspring',
+    name: "The Warden's Request",
+    desc: 'The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water. Find out what happened and drive it out.',
+    zone: 1,
+    encounter: {
+      enemyType: 'bandit',
+      waveSize: 3,
+      enemyNames: ['Spring Defiler', 'Venom Bearer', 'Foul Keeper'],
+      dialogue: [
+        "The warden won't be coming back.",
+        "The spring belongs to us now.",
+        "The water runs dark for a reason.",
+      ],
+    },
+    rewards: [
+      { type: 'cleansePots', amount: 2  },
+      { type: 'gold',        amount: 20 },
+      { type: 'xp',         amount: 50 },
+    ],
+  },
+  {
     id: 'lc_harbor',
     locationId: 'harbor',
     locationName: 'Ghost Harbor',
