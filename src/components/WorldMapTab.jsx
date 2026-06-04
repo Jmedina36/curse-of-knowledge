@@ -540,6 +540,18 @@ const WorldMapTab = ({
                       opacity: 0.8,
                     }}
                   />
+                  <div style={{
+                    position: 'absolute',
+                    top: '-8px', left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'rgba(0,0,0,0.85)',
+                    color: '#FFD700',
+                    fontSize: '8px',
+                    fontWeight: 700,
+                    padding: '1px 3px',
+                    borderRadius: '3px',
+                    whiteSpace: 'nowrap',
+                  }}>{i + 1}</div>
                 </div>
               ))}
 
