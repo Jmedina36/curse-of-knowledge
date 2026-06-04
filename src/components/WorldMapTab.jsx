@@ -492,6 +492,9 @@ const WILD_ENCOUNTERS = {
   ],
 };
 
+// Minimum player level required per zone
+const ZONE_MIN_LEVEL = { 1: 1, 2: 3, 3: 5, 4: 8, 5: 10 };
+
 const TIER_META = {
   1: { label: 'Grunt',    color: '#A8A8A8' },
   2: { label: 'Predator', color: '#CD7F32' },
@@ -517,9 +520,6 @@ const WorldMapTab = ({
     }
   }, []);
 
-  // Minimum level required per zone — mirrors contract location unlockLevels
-  const ZONE_MIN_LEVEL = { 1: 1, 2: 3, 3: 5, 4: 8, 5: 10 };
-
   // Returns true if a deco's zone is accessible (level + contract completion gate)
   const isDecoZoneUnlocked = (decoZone) => {
     if ((level ?? 1) < (ZONE_MIN_LEVEL[decoZone] ?? 1)) return false;
@@ -533,21 +533,28 @@ const WorldMapTab = ({
   useEffect(() => {
     if (!isDayActive) return;
     const activate = () => {
+      // Compute unlocked indices here (not inside setState) so closure uses fresh values
+      const unlockedIndices = DECORATIONS
+        .map((d, i) => ({ d, i }))
+        .filter(({ d }) => {
+          if ((level ?? 1) < (ZONE_MIN_LEVEL[d.zone] ?? 1)) return false;
+          if (d.zone <= 1) return true;
+          const prev = LOCATION_CONTRACTS.filter(c => c.zone === d.zone - 1);
+          return prev.length === 0 || prev.every(c => completedLocationContracts?.includes(c.id));
+        })
+        .map(({ i }) => i);
       setActiveDecos(prev => {
         if (prev.length >= 3) return prev;
-        const available = DECORATIONS
-          .map((d, i) => ({ d, i }))
-          .filter(({ d, i }) => !prev.includes(i) && isDecoZoneUnlocked(d.zone))
-          .map(({ i }) => i);
+        const available = unlockedIndices.filter(i => !prev.includes(i));
         if (available.length === 0) return prev;
         const idx = available[Math.floor(Math.random() * available.length)];
         return [...prev, idx];
       });
     };
-    const t = setTimeout(activate, 30 * 1000);
+    const t = setTimeout(activate, 15 * 1000); // first after 15s
     const iv = setInterval(activate, 2 * 60 * 1000);
     return () => { clearTimeout(t); clearInterval(iv); };
-  }, [isDayActive, completedLocationContracts]);
+  }, [isDayActive, level, completedLocationContracts]);
 
   const isZoneContractUnlocked = (loc) => {
     if (loc.type !== 'contract' || !loc.contractZone || loc.contractZone <= 1) return true;
