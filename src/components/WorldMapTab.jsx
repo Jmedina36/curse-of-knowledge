@@ -414,7 +414,7 @@ const DECORATIONS = [
   { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
-  { src: '/worldmap/rock-column.png',         pos: { left: '40%', top: '37%' }, size: 42 },
+  { src: '/worldmap/rock-column.png',         pos: { left: '34%', top: '37%' }, size: 42 },
   { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40 },
   { src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38 },
 
