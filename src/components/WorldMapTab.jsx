@@ -74,7 +74,7 @@ const LOCATIONS = [
     marker: '/worldmap/stone-crystal.png',
     type: 'landmark',
     unlockLevel: 3,
-    position: { left: '28%', top: '36%' },
+    position: { left: '28%', top: '31%' },
     markerSize: 54,
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
   },
@@ -397,7 +397,7 @@ const DECORATIONS = [
   { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38 },
 
   // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
-  { src: '/worldmap/rock-column.png',         pos: { left: '42%', top: '38%' }, size: 42 },
+  { src: '/worldmap/rock-column.png',         pos: { left: '46%', top: '33%' }, size: 42 },
   { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40 },
   { src: '/worldmap/rock-1.png',              pos: { left: '46%', top: '50%' }, size: 38 },
 
@@ -408,7 +408,7 @@ const DECORATIONS = [
   { src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
-  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
+  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '8%'  }, size: 42 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
   { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '76%' }, size: 58 },
