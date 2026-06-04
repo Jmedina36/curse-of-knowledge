@@ -55,6 +55,18 @@ const LOCATIONS = [
   },
 
   {
+    id: 'ghost_fleet',
+    name: 'The Ghost Fleet',
+    subtitle: 'Sunken Wreck',
+    desc: 'A ship that never made it out of the harbor. The crew of the Missing Crew contract were last seen boarding here. It sits half-submerged, listing toward the dark.',
+    marker: '/worldmap/small-ship.png',
+    type: 'landmark',
+    unlockLevel: 1,
+    position: { left: '34%', top: '84%' },
+    markerSize: 54,
+    danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
+  },
+  {
     id: 'cactus_flats',
     name: 'The Cactus Flats',
     subtitle: 'Sandy Landmark',
@@ -344,7 +356,7 @@ const LOCATIONS = [
 //   Top-right:      crystal_lava(50,5) lava_wastes(58,14) crystal_column(70,7) skull_cave(82,4)
 const DECORATIONS = [
   // ── Water near Ghost Harbor (ship sits in the water south of harbor) ────────
-  { src: '/worldmap/small-ship.png',          pos: { left: '34%', top: '84%' }, size: 46 },
+
 
 
 
@@ -375,7 +387,7 @@ const DECORATIONS = [
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '16%', top: '32%' }, size: 40 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 40 },
 ];
 
 const TIER_META = {
