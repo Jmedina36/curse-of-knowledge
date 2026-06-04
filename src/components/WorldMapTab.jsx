@@ -411,7 +411,7 @@ const DECORATIONS = [
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '76%' }, size: 40 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '76%' }, size: 58 },
 ];
 
 const TIER_META = {
