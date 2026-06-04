@@ -396,40 +396,45 @@ const LOCATIONS = [
 //   Top-left:       crystal_stones(20,10) stoneback_cave(22,18) precipice(10,24) dry_tree(34,27)
 //   Top-right:      crystal_lava(50,5) lava_wastes(58,14) crystal_column(70,7) skull_cave(82,4)
 const DECORATIONS = [
-  // ── Water near Ghost Harbor (ship sits in the water south of harbor) ────────
-
-
-
-
-  // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
-
-  // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
-  { src: '/worldmap/tree-2.png',              pos: { left: '14%', top: '67%' }, size: 48 },
-  { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42 },
-
-
-  // ── Central left — near runic_circle(20,46) stonehenge(36,38) ───────────────
-
-  { src: '/worldmap/stone-arch.png',          pos: { left: '54%', top: '42%' }, size: 44 },
-  { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38 },
-
-  // ── Central right — near old_tree(72,44) column_ruins(62,40) bridge(58,55) ──
-  { src: '/worldmap/rock-column.png',         pos: { left: '34%', top: '37%' }, size: 42 },
-  { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40 },
-  { src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38 },
-
-
-  // ── Top-left — near crystal_stones(20,10) stoneback(22,18) dry_tree(34,27) ──
-  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 42 },
-  { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '20%' }, size: 40 },
-  { src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42 },
-
-  // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
-  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
-  { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
-  { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 58 },
+  // zone = geographic zone for wild encounter scaling
+  { src: '/worldmap/tree-2.png',              pos: { left: '14%', top: '67%' }, size: 48, zone: 1 },
+  { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42, zone: 1 },
+  { src: '/worldmap/stone-arch.png',          pos: { left: '54%', top: '42%' }, size: 44, zone: 3 },
+  { src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38, zone: 3 },
+  { src: '/worldmap/rock-column.png',         pos: { left: '34%', top: '37%' }, size: 42, zone: 3 },
+  { src: '/worldmap/rocks-1.png',             pos: { left: '32%', top: '2%'  }, size: 40, zone: 4 },
+  { src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38, zone: 2 },
+  { src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 42, zone: 4 },
+  { src: '/worldmap/red-rocks.png',           pos: { left: '30%', top: '20%' }, size: 40, zone: 4 },
+  { src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42, zone: 2 },
+  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42, zone: 5 },
+  { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40, zone: 5 },
+  { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38, zone: 4 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 58, zone: 2 },
 ];
+
+const WILD_ENCOUNTERS = {
+  1: [
+    { name: 'Stray Wolf',    desc: "A mangy predator lurking the outer trails. It has been watching you.",       img: '/bandits/bandit-1.png' },
+    { name: 'Marsh Creeper', desc: "Something slow and patient. It has been following you since the tree line.", img: '/bandits/bandit-2.png' },
+  ],
+  2: [
+    { name: 'Road Marauder', desc: "Armed and looking for easy prey. You fit the description.",                  img: '/bandits/bandit-3.png' },
+    { name: 'Feral Tracker', desc: "Hunts by scent through the undergrowth. It found you first.",               img: '/bandits/bandit-4.png' },
+  ],
+  3: [
+    { name: 'Hollow Beast',  desc: "Something twisted and wrong. It doesn't belong to the natural world.",      img: '/bandits/bandit-5.png' },
+    { name: 'Wilds Prowler', desc: "Patient. Dangerous. It has been circling you for some time.",               img: '/bandits/bandit-6.png' },
+  ],
+  4: [
+    { name: 'Stone Wraith',  desc: "An ancient spirit bound to the crags. Your presence disturbed it.",         img: '/bandits/bandit-7.png' },
+    { name: 'Blightcrawler', desc: "Corrupted and hostile to everything living. It will not stop.",             img: '/bandits/captain-1.png' },
+  ],
+  5: [
+    { name: 'Lava Spawn',    desc: "Born from the fractures below. It hunts by heat signature.",                img: '/bandits/captain-2.png' },
+    { name: 'Void Stalker',  desc: "It shouldn't exist here. Yet here it is, and it has noticed you.",         img: '/bandits/captain-3.png' },
+  ],
+};
 
 const TIER_META = {
   1: { label: 'Grunt',    color: '#A8A8A8' },
@@ -442,9 +447,11 @@ const WorldMapTab = ({
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
-  completedLocationContracts,
+  completedLocationContracts, onWildEncounter,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
+  const [activeDecos, setActiveDecos] = useState([]);
+  const [decoPopup, setDecoPopup] = useState(null); // { decoIdx, monster, zone }
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -452,6 +459,23 @@ const WorldMapTab = ({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, []);
+
+  // Activate a random decoration every 2 minutes (max 3 active at once)
+  useEffect(() => {
+    if (!isDayActive) return;
+    const activate = () => {
+      setActiveDecos(prev => {
+        if (prev.length >= 3) return prev;
+        const available = DECORATIONS.map((_, i) => i).filter(i => !prev.includes(i));
+        if (available.length === 0) return prev;
+        const idx = available[Math.floor(Math.random() * available.length)];
+        return [...prev, idx];
+      });
+    };
+    const t = setTimeout(activate, 30 * 1000); // first after 30s
+    const iv = setInterval(activate, 2 * 60 * 1000);
+    return () => { clearTimeout(t); clearInterval(iv); };
+  }, [isDayActive]);
 
   const isZoneContractUnlocked = (loc) => {
     if (loc.type !== 'contract' || !loc.contractZone || loc.contractZone <= 1) return true;
@@ -515,45 +539,71 @@ const WorldMapTab = ({
                 background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.04) 75%, rgba(0,0,0,0.18) 100%)',
               }} />
 
-              {/* Decorative assets — non-interactive, terrain-matched */}
-              {DECORATIONS.map((d, i) => (
-                <div
-                  key={`deco-${i}`}
-                  style={{
-                    position: 'absolute',
-                    left: d.pos.left,
-                    top: d.pos.top,
-                    transform: 'translate(-50%, -50%)',
-                    pointerEvents: 'none',
-                    zIndex: 2,
-                  }}
-                >
-                  <img
-                    src={d.src}
-                    alt=""
+              {/* Decorative assets — terrain-matched, occasionally active for wild encounters */}
+              {DECORATIONS.map((d, i) => {
+                const isWild = isDayActive && activeDecos.includes(i) && !activeContract;
+                const pool = WILD_ENCOUNTERS[d.zone] || WILD_ENCOUNTERS[1];
+                return (
+                  <motion.div
+                    key={`deco-${i}`}
                     style={{
-                      width: `${d.size}px`,
-                      height: `${d.size}px`,
-                      objectFit: 'contain',
-                      display: 'block',
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
-                      opacity: 0.8,
+                      position: 'absolute',
+                      left: d.pos.left,
+                      top: d.pos.top,
+                      transform: 'translate(-50%, -50%)',
+                      pointerEvents: isWild ? 'auto' : 'none',
+                      zIndex: isWild ? 8 : 2,
+                      cursor: isWild ? 'pointer' : 'default',
                     }}
-                  />
-                  <div style={{
-                    position: 'absolute',
-                    top: '-8px', left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'rgba(0,0,0,0.85)',
-                    color: '#FFD700',
-                    fontSize: '8px',
-                    fontWeight: 700,
-                    padding: '1px 3px',
-                    borderRadius: '3px',
-                    whiteSpace: 'nowrap',
-                  }}>{i + 1}</div>
-                </div>
-              ))}
+                    onClick={isWild ? () => {
+                      const monster = pool[Math.floor(Math.random() * pool.length)];
+                      setDecoPopup({ decoIdx: i, monster, zone: d.zone });
+                      setActiveDecos(prev => prev.filter(idx => idx !== i));
+                    } : undefined}
+                  >
+                    {isWild && (
+                      <motion.div
+                        animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
+                        transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          position: 'absolute', inset: '-10px',
+                          borderRadius: '50%',
+                          background: 'radial-gradient(circle, rgba(220,40,40,0.35) 0%, transparent 70%)',
+                          boxShadow: '0 0 18px rgba(220,40,40,0.7)',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
+                    <img
+                      src={d.src}
+                      alt=""
+                      style={{
+                        width: `${d.size}px`,
+                        height: `${d.size}px`,
+                        objectFit: 'contain',
+                        display: 'block',
+                        filter: isWild
+                          ? 'drop-shadow(0 0 8px rgba(220,40,40,0.9)) brightness(1.15)'
+                          : 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
+                        opacity: 0.8,
+                        transition: 'filter 0.3s',
+                      }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      top: '-8px', left: '50%',
+                      transform: 'translateX(-50%)',
+                      background: 'rgba(0,0,0,0.85)',
+                      color: '#FFD700',
+                      fontSize: '8px',
+                      fontWeight: 700,
+                      padding: '1px 3px',
+                      borderRadius: '3px',
+                      whiteSpace: 'nowrap',
+                    }}>{i + 1}</div>
+                  </motion.div>
+                );
+              })}
 
               {/* All location markers */}
               {LOCATIONS.map(loc => {
@@ -712,6 +762,95 @@ const WorldMapTab = ({
             <span style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.3)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>· scroll to explore · day 1 at bottom ·</span>
           </div>
         </div>
+
+        {/* Wild encounter popup */}
+        <AnimatePresence>
+          {decoPopup && (
+            <motion.div
+              key="wild-popup"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              style={{
+                position: 'absolute', inset: 0, zIndex: 50,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(0,0,0,0.65)',
+              }}
+            >
+              <div style={{
+                background: 'linear-gradient(160deg,rgba(35,20,15,0.97),rgba(20,10,8,0.97))',
+                border: '1px solid rgba(220,40,40,0.5)',
+                boxShadow: '0 0 40px rgba(220,40,40,0.25)',
+                borderRadius: '6px',
+                padding: '20px',
+                width: '220px',
+                textAlign: 'center',
+              }}>
+                {/* Monster portrait */}
+                <div style={{
+                  width: '80px', height: '80px', margin: '0 auto 12px',
+                  borderRadius: '50%',
+                  border: '2px solid rgba(220,40,40,0.6)',
+                  boxShadow: '0 0 20px rgba(220,40,40,0.3)',
+                  overflow: 'hidden',
+                  background: 'rgba(0,0,0,0.4)',
+                }}>
+                  <img src={decoPopup.monster.img} alt={decoPopup.monster.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+
+                {/* Zone badge */}
+                <div style={{
+                  fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase',
+                  color: 'rgba(220,80,80,0.8)', marginBottom: '6px',
+                }}>Wild Encounter · Zone {decoPopup.zone}</div>
+
+                {/* Name */}
+                <p style={{
+                  fontFamily: 'Cinzel,serif', fontSize: '1rem', fontWeight: 700,
+                  color: '#F5F0E0', marginBottom: '8px', letterSpacing: '0.05em',
+                }}>{decoPopup.monster.name}</p>
+
+                {/* Description */}
+                <p style={{
+                  fontSize: '0.7rem', color: 'rgba(180,160,130,0.75)',
+                  lineHeight: 1.55, fontStyle: 'italic', marginBottom: '16px',
+                }}>{decoPopup.monster.desc}</p>
+
+                {/* Buttons */}
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    onClick={() => {
+                      onWildEncounter({ monster: decoPopup.monster, zone: decoPopup.zone });
+                      setDecoPopup(null);
+                    }}
+                    style={{
+                      flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.75rem',
+                      letterSpacing: '0.12em', padding: '7px 10px', borderRadius: '3px',
+                      background: 'rgba(160,30,30,0.7)',
+                      border: '1px solid rgba(220,60,60,0.6)',
+                      color: 'rgba(255,180,180,0.95)', cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,40,40,0.85)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(160,30,30,0.7)'}
+                  >Fight</button>
+                  <button
+                    onClick={() => setDecoPopup(null)}
+                    style={{
+                      flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.75rem',
+                      letterSpacing: '0.12em', padding: '7px 10px', borderRadius: '3px',
+                      background: 'rgba(30,20,15,0.7)',
+                      border: '1px solid rgba(120,100,80,0.35)',
+                      color: 'rgba(160,140,110,0.7)', cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(50,35,25,0.85)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'rgba(30,20,15,0.7)'}
+                  >Ignore</button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Info panel */}
         <div style={{ width: '215px', flexShrink: 0 }}>

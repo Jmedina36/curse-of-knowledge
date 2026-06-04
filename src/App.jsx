@@ -3457,7 +3457,7 @@ if (battleType === 'elite') {
   
   // Location contract bandit wave — handle separately from the raid system
   let skipBanditRaidHandler = false;
-  if (isBanditWave && activeContractRef.current?.type === 'location') {
+  if (isBanditWave && (activeContractRef.current?.type === 'location' || activeContractRef.current?.type === 'wild')) {
     const nextIdx = banditLineupIdxRef.current + 1;
     const lineup = banditLineupRef.current;
     if (nextIdx < lineup.length) {
@@ -3578,6 +3578,9 @@ if (battleType === 'elite') {
     setPendingLocationRewards(prev => [...prev, _ac.contract.id]);
     addLog(`Contract fulfilled: "${_ac.contract.name}" — return to the board to collect your reward.`);
     setActiveContract(null);
+  } else if (_ac?.type === 'wild') {
+    setActiveContract(null);
+    addLog(`You drove off the creature. Something glints in the dirt.`);
   }
 
   // Pendant regenHP: restore HP after combat victory
@@ -7076,6 +7079,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               gauntletUnlocked={gauntletUnlocked}
               tasks={tasks}
               completedLocationContracts={completedLocationContracts}
+              onWildEncounter={({ monster, zone }) => {
+                const lineup = [{ img: monster.img, name: monster.name, isCapt: false, isLeader: false, contractDialogue: null }];
+                banditLineupRef.current = lineup;
+                banditLineupIdxRef.current = 0;
+                setActiveContract({ type: 'wild', zone });
+                setIsBanditWave(true);
+                setTimeout(() => spawnBanditEnemy(lineup[0], 0, 1), 1000);
+              }}
               onBeginContract={() => {
                 const _ac = activeContractRef.current;
                 if (_ac?.type === 'location') {
