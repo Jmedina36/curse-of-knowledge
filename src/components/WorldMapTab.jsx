@@ -410,7 +410,7 @@ const DECORATIONS = [
   {
     src: '/worldmap/stone-arch.png',          pos: { left: '54%', top: '42%' }, size: 44, zone: 3,
     name: 'The Broken Arch',
-    desc: 'The remains of a structure no one can date. Half of it collapsed inward. The other half should have followed, but hasn't.',
+    desc: "The remains of a structure no one can date. Half of it collapsed inward. The other half should have followed, but hasn't.",
   },
   {
     src: '/worldmap/rock-2.png',              pos: { left: '88%', top: '42%' }, size: 38, zone: 3,
@@ -430,7 +430,7 @@ const DECORATIONS = [
   {
     src: '/worldmap/rock-1.png',              pos: { left: '68%', top: '80%' }, size: 38, zone: 2,
     name: 'Coastal Boulder',
-    desc: 'A lone boulder at the island's edge, worn smooth by wind and salt. Something carved marks into the base.',
+    desc: "A lone boulder at the island's edge, worn smooth by wind and salt. Something carved marks into the base.",
   },
   {
     src: '/worldmap/sharp-rocks-1.png',       pos: { left: '8%',  top: '18%' }, size: 42, zone: 4,
