@@ -508,7 +508,7 @@ const WorldMapTab = ({
   const [activeLocation, setActiveLocation] = useState(null);
   const [activeDecos, setActiveDecos] = useState([]);
   const [decoPopup, setDecoPopup] = useState(null); // { decoIdx, monster, zone }
-  const [hoveredDeco, setHoveredDeco] = useState(null);
+  const [selectedDeco, setSelectedDeco] = useState(null); // index of selected decoration
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -620,16 +620,19 @@ const WorldMapTab = ({
                       top: d.pos.top,
                       transform: 'translate(-50%, -50%)',
                       pointerEvents: 'auto',
-                      zIndex: isWild ? 8 : hoveredDeco === i ? 6 : 2,
+                      zIndex: isWild ? 8 : selectedDeco === i ? 6 : 2,
                       cursor: isWild ? 'pointer' : 'default',
                     }}
-                    onMouseEnter={() => setHoveredDeco(i)}
-                    onMouseLeave={() => setHoveredDeco(null)}
-                    onClick={isWild ? () => {
-                      const monster = pool[Math.floor(Math.random() * pool.length)];
-                      setDecoPopup({ decoIdx: i, monster, zone: d.zone, location: d.name });
-                      setActiveDecos(prev => prev.filter(idx => idx !== i));
-                    } : undefined}
+                    onClick={() => {
+                      if (isWild) {
+                        const monster = pool[Math.floor(Math.random() * pool.length)];
+                        setDecoPopup({ decoIdx: i, monster, zone: d.zone, location: d.name });
+                        setActiveDecos(prev => prev.filter(idx => idx !== i));
+                      } else {
+                        setSelectedDeco(i);
+                        setActiveLocation(null);
+                      }
+                    }}
                   >
                     {isWild && (
                       <motion.div
@@ -659,33 +662,14 @@ const WorldMapTab = ({
                         transition: 'filter 0.3s',
                       }}
                     />
-                    {/* Hover tooltip */}
-                    {hoveredDeco === i && d.name && (
+                    {/* Selected ring */}
+                    {selectedDeco === i && !isWild && (
                       <div style={{
-                        position: 'absolute',
-                        bottom: '100%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        marginBottom: '6px',
-                        background: 'rgba(10,8,5,0.95)',
-                        border: '1px solid rgba(180,150,90,0.35)',
-                        borderRadius: '4px',
-                        padding: '7px 10px',
-                        width: '140px',
+                        position: 'absolute', inset: '-8px',
+                        borderRadius: '50%',
+                        border: '1px solid rgba(180,150,90,0.5)',
                         pointerEvents: 'none',
-                        zIndex: 20,
-                      }}>
-                        <p style={{
-                          fontFamily: 'Cinzel,serif', fontSize: '0.65rem', fontWeight: 700,
-                          color: 'rgba(210,185,130,0.95)', marginBottom: '4px',
-                          letterSpacing: '0.04em', whiteSpace: 'nowrap',
-                          overflow: 'hidden', textOverflow: 'ellipsis',
-                        }}>{d.name}</p>
-                        <p style={{
-                          fontSize: '0.6rem', color: 'rgba(160,140,110,0.75)',
-                          lineHeight: 1.5, fontStyle: 'italic',
-                        }}>{d.desc}</p>
-                      </div>
+                      }} />
                     )}
                   </motion.div>
                 );
@@ -723,6 +707,7 @@ const WorldMapTab = ({
                     whileHover={{ scale: 1.15 }}
                     onClick={() => {
                       setActiveLocation(loc.id);
+                      setSelectedDeco(null);
                       if (isHunting && unlocked) setSelectedZone(loc);
                     }}
                   >
@@ -947,7 +932,91 @@ const WorldMapTab = ({
         {/* Info panel */}
         <div style={{ width: '215px', flexShrink: 0 }}>
           <AnimatePresence mode="wait">
-            {displayed ? (
+            {selectedDeco !== null && DECORATIONS[selectedDeco] ? (() => {
+              const d = DECORATIONS[selectedDeco];
+              const isActive = activeDecos.includes(selectedDeco);
+              const zoneUnlocked = isDecoZoneUnlocked(d.zone);
+              return (
+                <motion.div
+                  key={`deco-info-${selectedDeco}`}
+                  initial={{ opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 8 }}
+                  transition={{ duration: 0.18 }}
+                  style={{
+                    background: 'linear-gradient(to bottom, rgba(22,10,6,0.98), rgba(10,4,2,0.98))',
+                    border: '1px solid rgba(180,150,90,0.2)',
+                    borderRadius: '8px',
+                    padding: '14px',
+                  }}
+                >
+                  {/* Type pill */}
+                  <div style={{ marginBottom: '10px' }}>
+                    <div style={{
+                      display: 'inline-block',
+                      fontSize: '0.48rem', fontWeight: 700,
+                      letterSpacing: '0.14em', textTransform: 'uppercase',
+                      color: isActive ? 'rgba(220,80,80,0.9)' : 'rgba(180,160,140,0.5)',
+                      background: isActive ? 'rgba(220,40,40,0.1)' : 'rgba(180,160,140,0.06)',
+                      border: `1px solid ${isActive ? 'rgba(220,80,80,0.3)' : 'rgba(180,160,140,0.15)'}`,
+                      padding: '2px 6px', borderRadius: '3px',
+                    }}>
+                      {isActive ? 'Creature Nearby' : `Zone ${d.zone} Terrain`}
+                    </div>
+                  </div>
+
+                  {/* Name */}
+                  <div style={{ marginBottom: '10px' }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.07em', lineHeight: 1.2 }}>
+                      {d.name}
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div style={{ height: '1px', background: 'rgba(180,150,90,0.12)', marginBottom: '10px' }} />
+
+                  {/* Description */}
+                  <p style={{ fontSize: '0.68rem', color: 'rgba(180,165,140,0.7)', lineHeight: 1.6, fontStyle: 'italic', marginBottom: '12px' }}>
+                    {d.desc}
+                  </p>
+
+                  {/* Zone info */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <span style={{ fontSize: '0.52rem', color: 'rgba(160,140,110,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                      Zone {d.zone}
+                    </span>
+                    {!zoneUnlocked && (
+                      <span style={{ fontSize: '0.52rem', color: 'rgba(180,80,80,0.7)', letterSpacing: '0.08em' }}>
+                        Locked
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Status message */}
+                  {!zoneUnlocked ? (
+                    <div style={{
+                      fontSize: '0.56rem', color: '#555',
+                      background: 'rgba(255,255,255,0.02)',
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '4px', padding: '6px 8px',
+                      textAlign: 'center', letterSpacing: '0.08em',
+                    }}>Complete Zone {d.zone - 1} contracts to unlock</div>
+                  ) : isActive ? (
+                    <div style={{
+                      fontSize: '0.6rem', color: 'rgba(220,100,100,0.85)',
+                      background: 'rgba(220,40,40,0.08)',
+                      border: '1px solid rgba(220,80,80,0.25)',
+                      borderRadius: '4px', padding: '6px 8px',
+                      textAlign: 'center', letterSpacing: '0.06em', fontStyle: 'italic',
+                    }}>Something stirs nearby. Click to investigate.</div>
+                  ) : (
+                    <div style={{ fontSize: '0.56rem', color: 'rgba(180,150,90,0.35)', textAlign: 'center', letterSpacing: '0.08em' }}>
+                      No activity detected
+                    </div>
+                  )}
+                </motion.div>
+              );
+            })() : displayed ? (
               <motion.div
                 key={displayed.id}
                 initial={{ opacity: 0, x: 8 }}
