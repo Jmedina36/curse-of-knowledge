@@ -25,7 +25,7 @@ const LOCATIONS = [
     marker: '/worldmap/wooden-house.png',
     type: 'hunting',
     tierWeights: { 1: 10, 2: 0, 3: 0 },
-    unlockLevel: 3,
+    unlockLevel: 1,
     position: { left: '56%', top: '80%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
   },
@@ -408,7 +408,7 @@ const DECORATIONS = [
   { src: '/worldmap/dry-wood-2.png',          pos: { left: '42%', top: '75%' }, size: 42 },
 
   // ── Top-right — near lava_wastes(58,14) crystal_column(70,7) skull(82,4) ───
-  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '8%'  }, size: 42 },
+  { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
   { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '76%' }, size: 58 },
@@ -512,18 +512,6 @@ const WorldMapTab = ({
                       opacity: 0.8,
                     }}
                   />
-                  <div style={{
-                    position: 'absolute',
-                    top: '-8px', left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'rgba(0,0,0,0.85)',
-                    color: '#FFD700',
-                    fontSize: '8px',
-                    fontWeight: 700,
-                    padding: '1px 3px',
-                    borderRadius: '3px',
-                    whiteSpace: 'nowrap',
-                  }}>{i + 1}</div>
                 </div>
               ))}
 
@@ -616,15 +604,27 @@ const WorldMapTab = ({
                       boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : '#D4AF37'}`,
                     }} />
 
-                    {/* Lock */}
-                    {!unlocked && !loc.isElite && !loc.isLegendary && (
+                    {/* Lock overlay */}
+                    {!unlocked && (
                       <div style={{
-                        position: 'absolute', top: '-3px', left: '-3px',
-                        background: 'rgba(0,0,0,0.85)', borderRadius: '50%',
-                        width: '14px', height: '14px',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '7px',
-                      }}>🔒</div>
+                        position: 'absolute', inset: 0,
+                        display: 'flex', flexDirection: 'column',
+                        alignItems: 'center', justifyContent: 'center',
+                        pointerEvents: 'none',
+                      }}>
+                        <div style={{
+                          background: 'rgba(0,0,0,0.72)',
+                          borderRadius: '6px',
+                          padding: '2px 5px',
+                          display: 'flex', flexDirection: 'column',
+                          alignItems: 'center', gap: '1px',
+                        }}>
+                          <span style={{ fontSize: '13px', lineHeight: 1 }}>🔒</span>
+                          <span style={{ fontSize: '6px', color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1 }}>
+                            Lv {loc.unlockLevel}
+                          </span>
+                        </div>
+                      </div>
                     )}
 
                     {/* Name label */}
