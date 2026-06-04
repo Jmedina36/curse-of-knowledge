@@ -112,7 +112,7 @@ const LOCATIONS = [
     marker: '/worldmap/tree-house.png',
     type: 'contract',
     unlockLevel: 1,
-    position: { left: '22%', top: '58%' },
+    position: { left: '26%', top: '62%' },
     danger: 1, dangerLabel: 'Tame', dangerColor: '#9CA3AF',
     contract: 'Scouting Report',
   },
@@ -387,7 +387,7 @@ const DECORATIONS = [
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
-  { src: '/worldmap/tree-2.png',              pos: { left: '18%', top: '75%' }, size: 48 },
+  { src: '/worldmap/tree-2.png',              pos: { left: '18%', top: '63%' }, size: 48 },
   { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42 },
 
 
@@ -411,7 +411,7 @@ const DECORATIONS = [
   { src: '/worldmap/lava.png',                pos: { left: '74%', top: '13%' }, size: 42 },
   { src: '/worldmap/old-lava.png',            pos: { left: '88%', top: '16%' }, size: 40 },
   { src: '/worldmap/lava-pit.png',            pos: { left: '36%', top: '9%'  }, size: 38 },
-  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '70%' }, size: 40 },
+  { src: '/worldmap/green-crystal-stone.png', pos: { left: '68%', top: '76%' }, size: 40 },
 ];
 
 const TIER_META = {
