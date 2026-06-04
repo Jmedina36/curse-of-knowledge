@@ -387,7 +387,7 @@ const DECORATIONS = [
   // ── Sandy island — between outskirts(56,80) whisper(72,77) ivy(72,88) ───────
 
   // ── Green island — between harbor(28,79) canopy(22,63) holy_tree(38,67) ────
-  { src: '/worldmap/tree-2.png',              pos: { left: '18%', top: '63%' }, size: 48 },
+  { src: '/worldmap/tree-2.png',              pos: { left: '14%', top: '67%' }, size: 48 },
   { src: '/worldmap/dry-wood-1.png',          pos: { left: '32%', top: '66%' }, size: 42 },
 
 
