@@ -517,8 +517,12 @@ const WorldMapTab = ({
     }
   }, []);
 
-  // Returns true if a deco's zone is accessible (same gate as contract locations)
+  // Minimum level required per zone — mirrors contract location unlockLevels
+  const ZONE_MIN_LEVEL = { 1: 1, 2: 3, 3: 5, 4: 8, 5: 10 };
+
+  // Returns true if a deco's zone is accessible (level + contract completion gate)
   const isDecoZoneUnlocked = (decoZone) => {
+    if ((level ?? 1) < (ZONE_MIN_LEVEL[decoZone] ?? 1)) return false;
     if (decoZone <= 1) return true;
     const prevZoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === decoZone - 1);
     return prevZoneContracts.length === 0 ||
@@ -1000,7 +1004,11 @@ const WorldMapTab = ({
                       border: '1px solid rgba(255,255,255,0.06)',
                       borderRadius: '4px', padding: '6px 8px',
                       textAlign: 'center', letterSpacing: '0.08em',
-                    }}>Complete Zone {d.zone - 1} contracts to unlock</div>
+                    }}>
+                      {(level ?? 1) < (ZONE_MIN_LEVEL[d.zone] ?? 1)
+                        ? `Unlocks at Level ${ZONE_MIN_LEVEL[d.zone]}`
+                        : `Complete Zone ${d.zone - 1} contracts to unlock`}
+                    </div>
                   ) : isActive ? (
                     <div style={{
                       fontSize: '0.6rem', color: 'rgba(220,100,100,0.85)',
