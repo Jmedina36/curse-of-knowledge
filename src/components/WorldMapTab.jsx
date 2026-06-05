@@ -730,14 +730,15 @@ const WorldMapTab = ({
                 const isActive = activeLocation === loc.id || selectedZone?.id === loc.id;
 
                 // Glow when this location has an accepted active contract
+                const isTaskEligible = !loc.isElite && !loc.isLegendary && unlocked;
                 const hasActiveContract =
-                  (isHunting && activeContract?.type === 'task') ||
+                  (isTaskEligible && activeContract?.type === 'task') ||
                   (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
                   (loc.id === 'skull_cave' && activeContract?.type === 'final') ||
                   (activeContract?.type === 'location' && activeContract.contract.locationId === loc.id);
 
-                // Selected hunting ground with active contract pulses a different color
-                const isActiveHuntZone = isHunting && selectedZone?.id === loc.id;
+                // Selected zone with active task contract pulses a different color
+                const isActiveHuntZone = selectedZone?.id === loc.id && activeContract?.type === 'task';
                 const pulseColor = isActiveHuntZone ? loc.dangerColor : '#D4AF37';
 
                 return (
@@ -756,7 +757,7 @@ const WorldMapTab = ({
                     onClick={() => {
                       setActiveLocation(loc.id);
                       setSelectedDeco(null);
-                      if (isHunting && unlocked) setSelectedZone(loc);
+                      if (unlocked && !loc.isElite && !loc.isLegendary) setSelectedZone(loc);
                     }}
                   >
                     {/* Contract pulse ring */}
@@ -1228,7 +1229,7 @@ const WorldMapTab = ({
                     borderRadius: '4px', padding: '6px 8px',
                     textAlign: 'center', letterSpacing: '0.08em',
                   }}>Unlocks at Level {displayed.unlockLevel}</div>
-                ) : displayed.type === 'hunting' ? (
+                ) : displayed.type === 'hunting' || (activeContract?.type === 'task' && !displayed.isElite && !displayed.isLegendary) ? (
                   selectedZone?.id === displayed.id ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       {/* Active task contract label */}
