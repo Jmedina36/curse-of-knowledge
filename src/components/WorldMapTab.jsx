@@ -507,21 +507,12 @@ const WILD_ENCOUNTERS = {
 // Minimum player level required per zone
 const ZONE_MIN_LEVEL = { 1: 1, 2: 3, 3: 5, 4: 8, 5: 10 };
 
-// Approximate geographic bounds for each zone — used for dark fog overlay
-// Derived from confirmed anchor positions in the land anchor comments above
-const ZONE_FOG = [
-  // zone 2 — right coastal shelf, between islands and central
-  { zone: 2, top: '55%', left: '52%', width: '48%', height: '32%',
-    gradient: 'radial-gradient(ellipse 80% 60% at 75% 50%, rgba(2,3,14,0.7) 0%, rgba(2,3,14,0.5) 50%, rgba(2,3,14,0.05) 100%)' },
-  // zone 3 — central landmass
-  { zone: 3, top: '22%', left: '4%',  width: '92%', height: '40%',
-    gradient: 'radial-gradient(ellipse 90% 80% at 50% 50%, rgba(2,3,14,0.72) 0%, rgba(2,3,14,0.5) 55%, rgba(2,3,14,0.05) 100%)' },
-  // zone 4 — top-left highlands
-  { zone: 4, top: '0%',  left: '0%',  width: '46%', height: '34%',
-    gradient: 'radial-gradient(ellipse 80% 70% at 35% 55%, rgba(2,3,14,0.75) 0%, rgba(2,3,14,0.5) 55%, rgba(2,3,14,0.05) 100%)' },
-  // zone 5 — top-right volcanic island
-  { zone: 5, top: '0%',  left: '36%', width: '64%', height: '24%',
-    gradient: 'radial-gradient(ellipse 80% 70% at 60% 40%, rgba(8,2,2,0.78) 0%, rgba(8,2,2,0.5) 55%, rgba(8,2,2,0.05) 100%)' },
+// Zone unlock label positions — shown when a zone is locked
+const ZONE_LABELS = [
+  { zone: 2, left: '72%', top: '72%' },
+  { zone: 3, left: '50%', top: '42%' },
+  { zone: 4, left: '20%', top: '14%' },
+  { zone: 5, left: '66%', top:  '7%' },
 ];
 
 // Persists scroll position across tab switches
@@ -756,22 +747,34 @@ const WorldMapTab = ({
                 transition: 'background 1.2s ease',
               }} />
 
-              {/* Zone fog overlays — locked zones get a dark mist layer */}
+              {/* Zone unlock labels — shown when zone is locked */}
               <AnimatePresence>
-                {ZONE_FOG.map(zf => !isDecoZoneUnlocked(zf.zone) && (
+                {ZONE_LABELS.map(zl => !isDecoZoneUnlocked(zl.zone) && (
                   <motion.div
-                    key={`zone-fog-${zf.zone}`}
+                    key={`zone-label-${zl.zone}`}
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    transition={{ duration: 1.2 }}
+                    transition={{ duration: 0.8 }}
                     style={{
                       position: 'absolute',
-                      top: zf.top, left: zf.left,
-                      width: zf.width, height: zf.height,
-                      background: zf.gradient,
-                      pointerEvents: 'none',
-                      zIndex: 2,
+                      left: zl.left, top: zl.top,
+                      transform: 'translate(-50%, -50%)',
+                      pointerEvents: 'none', zIndex: 2,
+                      textAlign: 'center',
                     }}
-                  />
+                  >
+                    <div style={{
+                      fontSize: '0.44rem', fontWeight: 700,
+                      color: 'rgba(180,160,130,0.45)',
+                      letterSpacing: '0.14em', textTransform: 'uppercase',
+                      textShadow: '0 1px 4px rgba(0,0,0,1)',
+                      background: 'rgba(0,0,0,0.45)',
+                      border: '1px solid rgba(180,160,130,0.12)',
+                      borderRadius: '3px', padding: '3px 7px',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      Zone {zl.zone} · Lv {ZONE_MIN_LEVEL[zl.zone]}
+                    </div>
+                  </motion.div>
                 ))}
               </AnimatePresence>
 
