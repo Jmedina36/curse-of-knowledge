@@ -527,8 +527,12 @@ const WorldMapTab = ({
   const [hoveredLocation, setHoveredLocation] = useState(null);
   const [hoveredDeco, setHoveredDeco] = useState(null);
   const [spawnCountdown, setSpawnCountdown] = useState(15);
+  const [blockedFlash, setBlockedFlash] = useState(null); // deco index that flashed
   const prevDecoCount = useRef(0);
   const scrollRef = useRef(null);
+
+  // Clear panel state on unmount (tab switch)
+  useEffect(() => () => { setActiveLocation(null); setSelectedDeco(null); }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -748,7 +752,7 @@ const WorldMapTab = ({
                       }}>
                         <div style={{
                           height: '100%', borderRadius: '2px', background: 'rgba(212,175,55,0.5)',
-                          width: `${((spawnCountdown <= 15 ? spawnCountdown / 15 : (spawnCountdown - 15) / 105) * 100)}%`,
+                          width: `${(spawnCountdown / 120) * 100}%`,
                           transition: 'width 1s linear',
                         }} />
                       </div>
@@ -798,7 +802,10 @@ const WorldMapTab = ({
                     onHoverStart={() => setHoveredDeco(i)}
                     onHoverEnd={() => setHoveredDeco(null)}
                     onClick={() => {
-                      if (isWild) {
+                      if (hasCreature && activeContract) {
+                        setBlockedFlash(i);
+                        setTimeout(() => setBlockedFlash(null), 1200);
+                      } else if (isWild) {
                         const monster = pool[Math.floor(Math.random() * pool.length)];
                         setDecoPopup({ decoIdx: i, monster, zone: d.zone, location: d.name });
                       } else {
@@ -868,6 +875,22 @@ const WorldMapTab = ({
                         pointerEvents: 'none',
                       }} />
                     )}
+                    {/* Blocked flash tooltip */}
+                    <AnimatePresence>
+                      {blockedFlash === i && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: -8 }} exit={{ opacity: 0, y: -12 }}
+                          transition={{ duration: 0.2 }}
+                          style={{
+                            position: 'absolute', bottom: '100%', left: '50%', transform: 'translateX(-50%)',
+                            whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 25, marginBottom: '4px',
+                            background: 'rgba(30,5,5,0.92)', border: '1px solid rgba(220,60,60,0.5)',
+                            borderRadius: '3px', padding: '3px 7px',
+                            fontSize: '0.46rem', color: 'rgba(255,120,120,0.9)', letterSpacing: '0.08em',
+                          }}
+                        >Finish your contract first</motion.div>
+                      )}
+                    </AnimatePresence>
                     {/* Hover name label */}
                     {hoveredDeco === i && (
                       <div style={{
@@ -905,6 +928,10 @@ const WorldMapTab = ({
                   (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
                   (loc.id === 'skull_cave' && activeContract?.type === 'final') ||
                   (activeContract?.type === 'location' && activeContract.contract.locationId === loc.id);
+
+                // Completed location contract check
+                const locContract = LOCATION_CONTRACTS.find(c => c.locationId === loc.id);
+                const isContractCompleted = locContract && completedLocationContracts?.includes(locContract.id);
 
                 // Selected zone with active task contract — amber double-ring
                 const isActiveHuntZone = selectedZone?.id === loc.id && activeContract?.type === 'task';
@@ -960,6 +987,21 @@ const WorldMapTab = ({
                       </>
                     )}
 
+                    {/* Elite / Legendary ambient aura */}
+                    {(loc.isElite || loc.isLegendary) && unlocked && (
+                      <motion.div
+                        animate={{ opacity: [0.3, 0.7, 0.3], scale: [0.9, 1.1, 0.9] }}
+                        transition={{ duration: loc.isLegendary ? 2.5 : 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          position: 'absolute', inset: loc.isLegendary ? '-22px' : '-18px',
+                          borderRadius: '50%',
+                          background: `radial-gradient(circle, ${loc.dangerColor}30 0%, transparent 70%)`,
+                          boxShadow: `0 0 ${loc.isLegendary ? 36 : 24}px ${loc.dangerColor}66`,
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    )}
+
                     {/* Active ring */}
                     {isActive && !hasActiveContract && (
                       <motion.div
@@ -1000,6 +1042,18 @@ const WorldMapTab = ({
                       border: '1px solid rgba(0,0,0,0.6)',
                       boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : '#D4AF37'}`,
                     }} />
+
+                    {/* Completed contract badge */}
+                    {isContractCompleted && (
+                      <div style={{
+                        position: 'absolute', top: '-3px', left: '-3px',
+                        width: '14px', height: '14px', borderRadius: '50%',
+                        background: 'rgba(16,185,129,0.9)', border: '1.5px solid rgba(0,0,0,0.6)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '8px', lineHeight: 1, pointerEvents: 'none', zIndex: 5,
+                        boxShadow: '0 0 6px rgba(16,185,129,0.6)',
+                      }}>✓</div>
+                    )}
 
                     {/* Lock overlay */}
                     {!unlocked && (
@@ -1155,6 +1209,15 @@ const WorldMapTab = ({
                   </div>
                 </div>
 
+                {/* Level vs zone feedback */}
+                {(level ?? 1) >= ZONE_MIN_LEVEL[decoPopup.zone] + 4 && (
+                  <div style={{
+                    fontSize: '0.46rem', color: 'rgba(180,200,180,0.5)',
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    marginBottom: '8px', fontStyle: 'italic',
+                  }}>Trivial for your level</div>
+                )}
+
                 {/* Monster name */}
                 <p style={{
                   fontFamily: 'Cinzel,serif', fontSize: '1rem', fontWeight: 700,
@@ -1204,7 +1267,7 @@ const WorldMapTab = ({
         </AnimatePresence>
 
         {/* Info panel */}
-        <div style={{ width: '215px', flexShrink: 0 }}>
+        <div style={{ width: '215px', flexShrink: 0, maxHeight: '560px', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: 'rgba(180,150,90,0.2) transparent' }}>
           <AnimatePresence mode="wait">
             {selectedDeco !== null && DECORATIONS[selectedDeco] ? (() => {
               const d = DECORATIONS[selectedDeco];
