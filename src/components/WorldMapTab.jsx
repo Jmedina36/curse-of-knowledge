@@ -514,13 +514,14 @@ const TIER_META = {
 };
 
 const WorldMapTab = ({
-  currentDay, level, selectedZone, setSelectedZone,
+  currentDay, level, gold, hp, maxHp, selectedZone, setSelectedZone,
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
   completedLocationContracts, onWildEncounter,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
+  const [typeFilter, setTypeFilter] = useState('all');
   const [activeDecos, setActiveDecos] = useState([]);
   const [decoPopup, setDecoPopup] = useState(null); // { decoIdx, monster, zone }
   const [selectedDeco, setSelectedDeco] = useState(null); // index of selected decoration
@@ -637,19 +638,43 @@ const WorldMapTab = ({
   return (
     <div style={{ maxWidth: '980px', margin: '0 auto', paddingBottom: '40px' }}>
       {/* Header */}
-      <div className="text-center mb-5">
+      <div className="text-center mb-4">
         <p style={{ fontSize: '0.6rem', color: 'rgba(212,175,55,0.4)', letterSpacing: '0.35em', textTransform: 'uppercase', marginBottom: '6px' }}>World of</p>
         <h2 style={{
           fontFamily: "'Cinzel', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)',
           letterSpacing: '0.25em', color: '#D4AF37', textTransform: 'uppercase',
           textShadow: '0 0 30px rgba(212,175,55,0.3)',
         }}>Ararlul</h2>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '6px' }}>
-          <div style={{ width: '40px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
-          <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.4)', letterSpacing: '0.25em', textTransform: 'uppercase' }}>
-            {LOCATIONS.filter(l => l.type === 'hunting').length} Hunting Grounds · {LOCATIONS.filter(l => l.type === 'contract').length} Contract Locations
-          </p>
-          <div style={{ width: '40px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
+        {/* Player stat bar */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '8px' }}>
+          {[
+            { label: 'Level', value: level ?? 1, color: '#D4AF37' },
+            { label: 'HP', value: `${hp ?? 0}/${maxHp ?? 0}`, color: hp / maxHp > 0.5 ? '#4ade80' : hp / maxHp > 0.25 ? '#fbbf24' : '#f87171' },
+            { label: 'Gold', value: gold ?? 0, color: '#D4AF37' },
+            { label: 'Day', value: currentDay ?? 1, color: 'rgba(180,165,150,0.7)' },
+          ].map(({ label, value, color }) => (
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
+              <span style={{ fontSize: '0.42rem', color: 'rgba(180,160,130,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{ fontSize: '0.62rem', fontWeight: 700, color, letterSpacing: '0.05em' }}>{value}</span>
+            </div>
+          ))}
+        </div>
+        {/* Type filter */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px' }}>
+          {['all', 'hunting', 'contract', 'landmark'].map(f => (
+            <button
+              key={f}
+              onClick={() => setTypeFilter(f)}
+              style={{
+                fontSize: '0.44rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+                padding: '3px 8px', borderRadius: '3px', cursor: 'pointer',
+                background: typeFilter === f ? 'rgba(212,175,55,0.15)' : 'transparent',
+                border: `1px solid ${typeFilter === f ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.08)'}`,
+                color: typeFilter === f ? '#D4AF37' : 'rgba(180,160,130,0.4)',
+                transition: 'all 0.15s',
+              }}
+            >{f === 'all' ? 'All' : f === 'hunting' ? 'Hunting' : f === 'contract' ? 'Contracts' : 'Landmarks'}</button>
+          ))}
         </div>
       </div>
 
@@ -697,10 +722,13 @@ const WorldMapTab = ({
               {!isDayActive && (
                 <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
                   {[
-                    { left: '12%', top: '5%' }, { left: '28%', top: '3%' }, { left: '45%', top: '7%' },
-                    { left: '62%', top: '2%' }, { left: '78%', top: '6%' }, { left: '88%', top: '3%' },
-                    { left: '20%', top: '12%' }, { left: '55%', top: '10%' }, { left: '72%', top: '14%' },
-                    { left: '35%', top: '16%' }, { left: '90%', top: '11%' }, { left: '8%', top: '18%' },
+                    { left: '12%', top: '5%'  }, { left: '28%', top: '3%'  }, { left: '45%', top: '7%'  },
+                    { left: '62%', top: '2%'  }, { left: '78%', top: '6%'  }, { left: '88%', top: '3%'  },
+                    { left: '20%', top: '22%' }, { left: '55%', top: '18%' }, { left: '72%', top: '26%' },
+                    { left: '35%', top: '35%' }, { left: '90%', top: '30%' }, { left: '8%',  top: '42%' },
+                    { left: '50%', top: '50%' }, { left: '15%', top: '58%' }, { left: '80%', top: '55%' },
+                    { left: '40%', top: '68%' }, { left: '65%', top: '72%' }, { left: '25%', top: '80%' },
+                    { left: '70%', top: '85%' }, { left: '5%',  top: '88%' }, { left: '92%', top: '78%' },
                   ].map((s, i) => (
                     <motion.div
                       key={i}
@@ -948,11 +976,14 @@ const WorldMapTab = ({
                       y: '-50%',
                       cursor: 'pointer',
                       zIndex: hasActiveContract ? 15 : isActive ? 10 : 5,
+                      opacity: typeFilter === 'all' || typeFilter === loc.type ? 1 : 0.15,
+                      transition: 'opacity 0.25s',
                     }}
                     whileHover={{ scale: 1.15 }}
                     onHoverStart={() => setHoveredLocation(loc.id)}
                     onHoverEnd={() => setHoveredLocation(null)}
                     onClick={() => {
+                      if (activeLocation === loc.id) { setActiveLocation(null); return; }
                       setActiveLocation(loc.id);
                       setSelectedDeco(null);
                       if (unlocked && !loc.isElite && !loc.isLegendary && activeContract?.type !== 'task') setSelectedZone(loc);
@@ -1487,6 +1518,19 @@ const WorldMapTab = ({
                   </div>
                 )}
 
+                {/* Gold estimate for hunting grounds */}
+                {displayed.tierWeights && (() => {
+                  const base = 4 + (currentDay ?? 1) * 2;
+                  return (
+                    <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Est. Reward</span>
+                      <span style={{ fontSize: '0.56rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)', letterSpacing: '0.05em' }}>
+                        ~{base}–{Math.floor(base * 1.6)} gold
+                      </span>
+                    </div>
+                  );
+                })()}
+
                 {/* Contract name — only when active */}
                 {displayed.contract && (
                   (displayed.id === 'dungeon' && activeContract?.type === 'elite') ||
@@ -1660,14 +1704,28 @@ const WorldMapTab = ({
                       animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                     }}
                   >Begin Contract</button>
-                ) : (
-                  <div style={{
-                    fontSize: '0.56rem', color: 'rgba(212,175,55,0.5)',
-                    textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase',
-                  }}>
-                    Find contract in the Contracts tab
-                  </div>
-                )}
+                ) : (() => {
+                  const lc = LOCATION_CONTRACTS.find(c => c.locationId === displayed.id);
+                  const completed = lc && completedLocationContracts?.includes(lc.id);
+                  return completed ? (
+                    <div style={{
+                      fontSize: '0.54rem', fontWeight: 700,
+                      color: 'rgba(74,222,128,0.7)',
+                      background: 'rgba(16,185,129,0.07)',
+                      border: '1px solid rgba(74,222,128,0.2)',
+                      borderRadius: '4px', padding: '6px 8px',
+                      textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase',
+                    }}>✓ Contract Complete</div>
+                  ) : (
+                    <div style={{
+                      fontSize: '0.52rem', color: 'rgba(212,175,55,0.45)',
+                      background: 'rgba(212,175,55,0.05)',
+                      border: '1px solid rgba(212,175,55,0.15)',
+                      borderRadius: '4px', padding: '6px 8px',
+                      textAlign: 'center', letterSpacing: '0.08em',
+                    }}>Accept on Contracts Board</div>
+                  );
+                })()}
               </motion.div>
             ) : (
               <motion.div

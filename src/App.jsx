@@ -7093,6 +7093,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <WorldMapTab
               currentDay={currentDay}
               level={level}
+              gold={gold}
+              hp={hp}
+              maxHp={getMaxHp()}
               selectedZone={selectedZone}
               setSelectedZone={setSelectedZone}
               activeContract={activeContract}
