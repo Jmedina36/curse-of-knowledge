@@ -512,6 +512,7 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [completedLocationContracts, setCompletedLocationContracts] = useState([]);
   const [pendingLocationRewards, setPendingLocationRewards] = useState([]);
   const contractEncounterRef = useRef(null); // tier weights for active location contract battle
+  const wildCreatureOverrideRef = useRef(null); // map wild encounter: override name/img in spawnRegularEnemy
   const activeContractRef = useRef(null);
   const pomodoroFromMapRef = useRef(false);
   const [battleType, setBattleType] = useState('regular');
@@ -2586,8 +2587,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setTimeout(() => setCurrentAnimation(null), 500);
   isWave ? sounds.waveEntrance() : sounds.enemyEntrance();
 
-  setBossName(creature.name);
-  setBanditEnemyImg(creature.img);
+  // Wild encounter overrides the creature's display name/img with the map popup creature
+  const wildOverride = wildCreatureOverrideRef.current;
+  wildCreatureOverrideRef.current = null;
+
+  setBossName(wildOverride ? wildOverride.name : creature.name);
+  setBanditEnemyImg(wildOverride ? wildOverride.img : creature.img);
   setBossHp(enemyHp);
   setBossMax(enemyHp);
   setShowBoss(true);
@@ -2625,7 +2630,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   } else {
     setBattleType('regular');
     audioManager.play(TRACKS.unholyKnight);
-    addLog(`${creature.name} emerges from the shadows!`);
+    addLog(`${wildOverride ? wildOverride.name : creature.name} emerges from the shadows!`);
   }
 
   // Initiative — player D20+DEX vs enemy D20
@@ -7107,12 +7112,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               completedLocationContracts={completedLocationContracts}
               onOpenBestiary={() => setActiveTab('bestiary')}
               onWildEncounter={({ monster, zone }) => {
-                const lineup = [{ img: monster.img, name: monster.name, isCapt: false, isLeader: false, contractDialogue: null }];
-                banditLineupRef.current = lineup;
-                banditLineupIdxRef.current = 0;
+                // Use zone-appropriate tier weights so HP/ATK scale correctly
+                const wildTierWeights = { 1:{1:10,2:0,3:0}, 2:{1:5,2:5,3:0}, 3:{1:1,2:5,3:4}, 4:{1:0,2:2,3:8}, 5:{1:0,2:0,3:10} };
+                contractEncounterRef.current = { tierWeights: wildTierWeights[zone] || wildTierWeights[1] };
+                // Override display name/img with the specific creature from the map popup
+                wildCreatureOverrideRef.current = { name: monster.name, img: monster.img };
+                setIsBanditWave(false);
                 setActiveContract({ type: 'wild', zone });
-                setIsBanditWave(true);
-                setTimeout(() => spawnBanditEnemy(lineup[0], 0, 1), 1000);
+                setTimeout(() => { spawnRegularEnemy(false); contractEncounterRef.current = null; }, 1000);
               }}
               onBeginContract={() => {
                 const _ac = activeContractRef.current;

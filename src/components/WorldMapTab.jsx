@@ -763,16 +763,17 @@ const WorldMapTab = ({
                     }}
                   >
                     <div style={{
-                      fontSize: '0.44rem', fontWeight: 700,
-                      color: 'rgba(180,160,130,0.45)',
-                      letterSpacing: '0.14em', textTransform: 'uppercase',
-                      textShadow: '0 1px 4px rgba(0,0,0,1)',
-                      background: 'rgba(0,0,0,0.45)',
-                      border: '1px solid rgba(180,160,130,0.12)',
-                      borderRadius: '3px', padding: '3px 7px',
+                      fontSize: '0.52rem', fontWeight: 700,
+                      color: 'rgba(210,185,140,0.85)',
+                      letterSpacing: '0.1em', textTransform: 'uppercase',
+                      textShadow: '0 1px 6px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,0.9)',
+                      background: 'rgba(0,0,0,0.72)',
+                      border: '1px solid rgba(210,185,140,0.25)',
+                      borderRadius: '4px', padding: '4px 9px',
                       whiteSpace: 'nowrap',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.8)',
                     }}>
-                      Zone {zl.zone} · Lv {ZONE_MIN_LEVEL[zl.zone]}
+                      🔒 Unlocks at Lv {ZONE_MIN_LEVEL[zl.zone]}
                     </div>
                   </motion.div>
                 ))}
@@ -1865,7 +1866,7 @@ const WorldMapTab = ({
             )}
           </AnimatePresence>
 
-          {/* Mini-map thumbnail + progress */}
+          {/* Progress bars */}
           {(() => {
             const contractLocs = LOCATIONS.filter(l => l.type === 'contract' && !l.isElite && !l.isLegendary);
             const unlockedCount = LOCATIONS.filter(l => isUnlocked(l)).length;
@@ -1878,70 +1879,6 @@ const WorldMapTab = ({
                 border: '1px solid rgba(212,175,55,0.06)',
                 borderRadius: '6px', padding: '10px 12px',
               }}>
-                <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.35)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>
-                  Map Overview
-                </div>
-
-                {/* Thumbnail */}
-                <div style={{
-                  position: 'relative', width: '100%', paddingTop: '135%',
-                  borderRadius: '4px', overflow: 'hidden', marginBottom: '10px',
-                  border: `1px solid ${isDayActive ? 'rgba(212,175,55,0.12)' : 'rgba(80,100,180,0.2)'}`,
-                  transition: 'border-color 1.2s',
-                }}>
-                  <div style={{
-                    position: 'absolute', inset: 0,
-                    backgroundImage: 'url(/worldmap/terrain.png)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center top',
-                    filter: isDayActive ? 'none' : 'brightness(0.38) saturate(0.5) hue-rotate(200deg)',
-                    transition: 'filter 1.2s ease',
-                  }}>
-                    {/* Night tint overlay on mini-map */}
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      background: isDayActive ? 'transparent' : 'rgba(5,8,30,0.4)',
-                      transition: 'background 1.2s ease',
-                      pointerEvents: 'none',
-                    }} />
-                    {/* Location dots */}
-                    {LOCATIONS.map(loc => {
-                      const locUnlocked = isUnlocked(loc);
-                      const lc = LOCATION_CONTRACTS.find(c => c.locationId === loc.id);
-                      const locDone = lc && completedLocationContracts?.includes(lc.id);
-                      const dotColor = !locUnlocked ? 'rgba(80,80,80,0.25)'
-                        : locDone ? 'rgba(74,222,128,0.85)'
-                        : loc.isLegendary ? '#F59E0B'
-                        : loc.isElite ? '#A855F7'
-                        : loc.type === 'hunting' ? loc.dangerColor
-                        : loc.type === 'landmark' ? 'rgba(180,160,140,0.5)'
-                        : '#D4AF37';
-                      return (
-                        <div
-                          key={loc.id}
-                          title={locUnlocked ? loc.name : '???'}
-                          onClick={() => { setActiveLocation(loc.id); setSelectedDeco(null); }}
-                          style={{
-                            position: 'absolute',
-                            left: loc.position.left,
-                            top: loc.position.top,
-                            transform: 'translate(-50%, -50%)',
-                            width: activeLocation === loc.id ? '7px' : '4px',
-                            height: activeLocation === loc.id ? '7px' : '4px',
-                            borderRadius: '50%',
-                            background: dotColor,
-                            boxShadow: locUnlocked ? `0 0 3px ${dotColor}` : 'none',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s',
-                            zIndex: activeLocation === loc.id ? 5 : 1,
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Progress stats */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Locations Unlocked</span>
                   <span style={{ fontSize: '0.58rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)' }}>{unlockedCount}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{LOCATIONS.length}</span></span>
