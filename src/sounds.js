@@ -50,6 +50,9 @@ export const sounds = {
   // ── Wave battle entrance: evil storm ────────────────────────────────────────
   waveEntrance: () => sfxPlay('mixkit-evil-storm-atmosphere-2404.wav', 0.7),
 
+  // ── Final boss entrance: monster evil voice ──────────────────────────────────
+  finalBossEntrance: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.9),
+
   // ── Beg screen opens: shadow acknowledges you ────────────────────────────────
   negotiateOpen: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.75),
 
