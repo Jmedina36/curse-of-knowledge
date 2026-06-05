@@ -633,7 +633,8 @@ const WorldMapTab = ({
               {/* Decorative assets — terrain-matched, occasionally active for wild encounters */}
               {DECORATIONS.map((d, i) => {
                 const isLocked = !isDecoZoneUnlocked(d.zone);
-                const isWild = !isLocked && isDayActive && activeDecos.includes(i) && !activeContract;
+                const hasCreature = !isLocked && isDayActive && activeDecos.includes(i);
+                const isWild = hasCreature && !activeContract;
                 const pool = WILD_ENCOUNTERS[d.zone] || WILD_ENCOUNTERS[1];
                 return (
                   <motion.div
@@ -644,7 +645,7 @@ const WorldMapTab = ({
                       top: d.pos.top,
                       transform: 'translate(-50%, -50%)',
                       pointerEvents: 'auto',
-                      zIndex: isWild ? 8 : selectedDeco === i ? 6 : 3,
+                      zIndex: hasCreature ? 8 : selectedDeco === i ? 6 : 3,
                       cursor: 'pointer',
                     }}
                     onClick={() => {
@@ -658,7 +659,7 @@ const WorldMapTab = ({
                       }
                     }}
                   >
-                    {isWild && (
+                    {hasCreature && (
                       <motion.div
                         animate={{ opacity: [0.4, 1, 0.4], scale: [0.8, 1.2, 0.8] }}
                         transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
@@ -679,7 +680,7 @@ const WorldMapTab = ({
                         height: `${d.size}px`,
                         objectFit: 'contain',
                         display: 'block',
-                        filter: isWild
+                        filter: hasCreature
                           ? 'drop-shadow(0 0 8px rgba(220,40,40,0.9)) brightness(1.15)'
                           : isLocked
                             ? 'grayscale(1) brightness(0.3)'
@@ -1055,13 +1056,35 @@ const WorldMapTab = ({
                         : `Complete Zone ${d.zone - 1} contracts to unlock`}
                     </div>
                   ) : isActive ? (
-                    <div style={{
-                      fontSize: '0.6rem', color: 'rgba(220,100,100,0.85)',
-                      background: 'rgba(220,40,40,0.08)',
-                      border: '1px solid rgba(220,80,80,0.25)',
-                      borderRadius: '4px', padding: '6px 8px',
-                      textAlign: 'center', letterSpacing: '0.06em', fontStyle: 'italic',
-                    }}>Something stirs nearby. Click to investigate.</div>
+                    activeContract ? (
+                      <div style={{
+                        fontSize: '0.56rem', color: 'rgba(220,100,100,0.5)',
+                        background: 'rgba(220,40,40,0.05)',
+                        border: '1px solid rgba(220,80,80,0.15)',
+                        borderRadius: '4px', padding: '6px 8px',
+                        textAlign: 'center', letterSpacing: '0.06em', fontStyle: 'italic',
+                      }}>Something stirs nearby — finish your contract first.</div>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          const pool = WILD_ENCOUNTERS[d.zone] || WILD_ENCOUNTERS[1];
+                          const monster = pool[Math.floor(Math.random() * pool.length)];
+                          setDecoPopup({ decoIdx: selectedDeco, monster, zone: d.zone, location: d.name });
+                          setActiveDecos(prev => prev.filter(idx => idx !== selectedDeco));
+                          setSelectedDeco(null);
+                        }}
+                        style={{
+                          width: '100%', fontSize: '0.6rem', fontWeight: 700,
+                          color: '#000',
+                          background: 'rgba(220,60,60,0.85)',
+                          border: '1px solid rgba(220,80,80,0.5)',
+                          borderRadius: '4px', padding: '7px 8px',
+                          cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
+                          boxShadow: '0 0 12px rgba(220,40,40,0.4)',
+                          transition: 'all 0.15s',
+                        }}
+                      >Investigate</button>
+                    )
                   ) : (
                     <div style={{ fontSize: '0.56rem', color: 'rgba(180,150,90,0.35)', textAlign: 'center', letterSpacing: '0.08em' }}>
                       No activity detected
