@@ -525,6 +525,9 @@ const WorldMapTab = ({
   const [decoPopup, setDecoPopup] = useState(null); // { decoIdx, monster, zone }
   const [selectedDeco, setSelectedDeco] = useState(null); // index of selected decoration
   const [hoveredLocation, setHoveredLocation] = useState(null);
+  const [hoveredDeco, setHoveredDeco] = useState(null);
+  const [spawnCountdown, setSpawnCountdown] = useState(15);
+  const prevDecoCount = useRef(0);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -542,9 +545,23 @@ const WorldMapTab = ({
       prevZoneContracts.every(c => completedLocationContracts?.includes(c.id));
   };
 
-  // Clear creatures at night
+  // Clear creatures at night and reset countdown
   useEffect(() => {
-    if (!isDayActive) setActiveDecos([]);
+    if (!isDayActive) { setActiveDecos([]); setSpawnCountdown(15); prevDecoCount.current = 0; }
+    else setSpawnCountdown(15);
+  }, [isDayActive]);
+
+  // Reset countdown when a new creature spawns; ignore removals
+  useEffect(() => {
+    if (activeDecos.length > prevDecoCount.current) setSpawnCountdown(120);
+    prevDecoCount.current = activeDecos.length;
+  }, [activeDecos.length]);
+
+  // Tick countdown every second
+  useEffect(() => {
+    if (!isDayActive) return;
+    const t = setInterval(() => setSpawnCountdown(s => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
   }, [isDayActive]);
 
   // Activate a random unlocked decoration every 2 minutes (max 3 active at once)
@@ -649,7 +666,10 @@ const WorldMapTab = ({
               transition: 'border-color 1s, box-shadow 1s',
             }}
           >
-            <div style={{ position: 'relative', width: '100%' }}>
+            <div
+              style={{ position: 'relative', width: '100%' }}
+              onClick={e => { if (e.target === e.currentTarget) { setActiveLocation(null); setSelectedDeco(null); } }}
+            >
               <img
                 src="/worldmap/terrain.png"
                 alt="Ararlul"
@@ -695,6 +715,51 @@ const WorldMapTab = ({
                 </div>
               )}
 
+              {/* Creature activity + spawn timer (day only) */}
+              {isDayActive && (
+                <div style={{
+                  position: 'absolute', top: '8px', right: '8px', zIndex: 30,
+                  pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px',
+                }}>
+                  {activeDecos.length > 0 && (
+                    <motion.div
+                      animate={{ opacity: [0.8, 1, 0.8] }}
+                      transition={{ duration: 1.6, repeat: Infinity }}
+                      style={{
+                        background: 'rgba(30,5,5,0.88)', border: '1px solid rgba(220,60,60,0.45)',
+                        borderRadius: '4px', padding: '3px 8px',
+                        display: 'flex', alignItems: 'center', gap: '5px',
+                      }}
+                    >
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#DC2626', boxShadow: '0 0 6px #DC2626' }} />
+                      <span style={{ fontSize: '0.48rem', color: 'rgba(255,140,140,0.9)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
+                        {activeDecos.length} creature{activeDecos.length > 1 ? 's' : ''} nearby
+                      </span>
+                    </motion.div>
+                  )}
+                  {activeDecos.length < 3 && (
+                    <div style={{
+                      background: 'rgba(5,5,5,0.7)', border: '1px solid rgba(212,175,55,0.15)',
+                      borderRadius: '4px', padding: '3px 8px',
+                      display: 'flex', alignItems: 'center', gap: '5px',
+                    }}>
+                      <div style={{
+                        width: '28px', height: '3px', background: 'rgba(255,255,255,0.08)', borderRadius: '2px', overflow: 'hidden',
+                      }}>
+                        <div style={{
+                          height: '100%', borderRadius: '2px', background: 'rgba(212,175,55,0.5)',
+                          width: `${((spawnCountdown <= 15 ? spawnCountdown / 15 : (spawnCountdown - 15) / 105) * 100)}%`,
+                          transition: 'width 1s linear',
+                        }} />
+                      </div>
+                      <span style={{ fontSize: '0.44rem', color: 'rgba(180,160,120,0.55)', letterSpacing: '0.1em' }}>
+                        {spawnCountdown > 0 ? `${spawnCountdown}s` : '...'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Night badge */}
               {!isDayActive && (
                 <div style={{
@@ -730,6 +795,8 @@ const WorldMapTab = ({
                       zIndex: hasCreature ? 8 : selectedDeco === i ? 6 : 3,
                       cursor: 'pointer',
                     }}
+                    onHoverStart={() => setHoveredDeco(i)}
+                    onHoverEnd={() => setHoveredDeco(null)}
                     onClick={() => {
                       if (isWild) {
                         const monster = pool[Math.floor(Math.random() * pool.length)];
@@ -801,6 +868,26 @@ const WorldMapTab = ({
                         pointerEvents: 'none',
                       }} />
                     )}
+                    {/* Hover name label */}
+                    {hoveredDeco === i && (
+                      <div style={{
+                        position: 'absolute', top: '100%', left: '50%',
+                        transform: 'translateX(-50%)', marginTop: '3px',
+                        whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20,
+                      }}>
+                        <div style={{
+                          fontSize: '0.48rem', fontWeight: 700,
+                          color: hasCreature ? 'rgba(255,140,140,0.9)' : 'rgba(210,195,170,0.8)',
+                          textShadow: '0 1px 4px rgba(0,0,0,1)',
+                          background: 'rgba(0,0,0,0.82)',
+                          border: `1px solid ${hasCreature ? 'rgba(220,60,60,0.4)' : 'rgba(180,150,90,0.2)'}`,
+                          padding: '2px 6px', borderRadius: '3px', letterSpacing: '0.05em', textAlign: 'center',
+                        }}>
+                          {d.name}
+                          {hasCreature && <div style={{ fontSize: '0.42rem', color: 'rgba(255,100,100,0.7)', marginTop: '1px' }}>Creature nearby</div>}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 );
               })}
@@ -819,9 +906,9 @@ const WorldMapTab = ({
                   (loc.id === 'skull_cave' && activeContract?.type === 'final') ||
                   (activeContract?.type === 'location' && activeContract.contract.locationId === loc.id);
 
-                // Selected zone with active task contract pulses a different color
+                // Selected zone with active task contract — amber double-ring
                 const isActiveHuntZone = selectedZone?.id === loc.id && activeContract?.type === 'task';
-                const pulseColor = isActiveHuntZone ? loc.dangerColor : '#D4AF37';
+                const pulseColor = isActiveHuntZone ? '#F59E0B' : '#D4AF37';
 
                 return (
                   <motion.div
@@ -846,17 +933,31 @@ const WorldMapTab = ({
                   >
                     {/* Contract pulse ring */}
                     {hasActiveContract && (
-                      <motion.div
-                        animate={{ opacity: [0.5, 1, 0.5], scale: [0.85, 1.15, 0.85] }}
-                        transition={{ duration: isActiveHuntZone ? 1.2 : 1.8, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{
-                          position: 'absolute', inset: isActiveHuntZone ? '-16px' : '-14px',
-                          borderRadius: '50%',
-                          border: `2px solid ${pulseColor}`,
-                          boxShadow: `0 0 ${isActiveHuntZone ? 24 : 16}px ${pulseColor}99`,
-                          pointerEvents: 'none',
-                        }}
-                      />
+                      <>
+                        <motion.div
+                          animate={{ opacity: [0.5, 1, 0.5], scale: [0.85, 1.15, 0.85] }}
+                          transition={{ duration: isActiveHuntZone ? 1.0 : 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                          style={{
+                            position: 'absolute', inset: isActiveHuntZone ? '-16px' : '-14px',
+                            borderRadius: '50%',
+                            border: `2px solid ${pulseColor}`,
+                            boxShadow: `0 0 ${isActiveHuntZone ? 28 : 16}px ${pulseColor}bb`,
+                            pointerEvents: 'none',
+                          }}
+                        />
+                        {isActiveHuntZone && (
+                          <motion.div
+                            animate={{ opacity: [0.2, 0.6, 0.2], scale: [0.95, 1.3, 0.95] }}
+                            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+                            style={{
+                              position: 'absolute', inset: '-24px',
+                              borderRadius: '50%',
+                              border: '1px solid #F59E0Baa',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        )}
+                      </>
                     )}
 
                     {/* Active ring */}
@@ -971,16 +1072,22 @@ const WorldMapTab = ({
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#DC2626', boxShadow: '0 0 4px #DC2626' }} />
-              <span style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Hunting Ground</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', padding: '0 2px' }}>
+            <div style={{ display: 'flex', gap: '14px' }}>
+              {[
+                { color: '#DC2626', label: 'Hunting Ground' },
+                { color: '#D4AF37', label: 'Contract' },
+                { color: 'rgba(180,160,140,0.45)', label: 'Landmark' },
+              ].map(({ color, label }) => (
+                <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, boxShadow: `0 0 4px ${color}` }} />
+                  <span style={{ fontSize: '0.46rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</span>
+                </div>
+              ))}
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#D4AF37', boxShadow: '0 0 4px #D4AF37' }} />
-              <span style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Contract Location</span>
-            </div>
-            <span style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.3)', letterSpacing: '0.12em', textTransform: 'uppercase' }}>· scroll to explore · day 1 at bottom ·</span>
+            <span style={{ fontSize: '0.46rem', color: 'rgba(180,160,140,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              Day {currentDay} · scroll to explore
+            </span>
           </div>
         </div>
 
@@ -1026,10 +1133,26 @@ const WorldMapTab = ({
                     fontFamily: 'Cinzel,serif', fontSize: '0.72rem', fontWeight: 600,
                     color: 'rgba(200,180,140,0.9)', letterSpacing: '0.08em', marginBottom: '3px',
                   }}>{decoPopup.location}</p>
-                  <div style={{
-                    fontSize: '0.58rem', letterSpacing: '0.2em', textTransform: 'uppercase',
-                    color: 'rgba(220,80,80,0.7)',
-                  }}>Wild Encounter · Zone {decoPopup.zone}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                    <div style={{
+                      fontSize: '0.52rem', letterSpacing: '0.15em', textTransform: 'uppercase',
+                      color: 'rgba(220,80,80,0.7)',
+                    }}>Wild · Zone {decoPopup.zone}</div>
+                    <div style={{ display: 'flex', gap: '2px' }}>
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <span key={i} style={{
+                          fontSize: '0.44rem',
+                          color: i < decoPopup.zone
+                            ? ['#9CA3AF','#CD7F32','#DC2626','#B91C1C','#7F1D1D'][decoPopup.zone - 1]
+                            : 'rgba(255,255,255,0.08)',
+                        }}>◆</span>
+                      ))}
+                    </div>
+                    <div style={{
+                      fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+                      color: ['#9CA3AF','#CD7F32','#DC2626','#B91C1C','#7F1D1D'][decoPopup.zone - 1],
+                    }}>{['Tame','Moderate','Dangerous','Dire','Lethal'][decoPopup.zone - 1]}</div>
+                  </div>
                 </div>
 
                 {/* Monster name */}
