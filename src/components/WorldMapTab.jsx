@@ -24,7 +24,7 @@ const LOCATIONS = [
     subtitle: 'Village Edge',
     desc: 'The last stretch of land before the wilds swallow the road. Weak, but nothing out here is friendly.',
     marker: '/worldmap/wooden-house.png',
-    type: 'hunting',
+    type: 'hunting', zone: 1,
     tierWeights: { 1: 10, 2: 0, 3: 0 },
     unlockLevel: 3,
     position: { left: '56%', top: '80%' },
@@ -63,7 +63,7 @@ const LOCATIONS = [
     subtitle: 'Forest Marker',
     desc: 'A weathered stone marker at the edge of the old forest. The inscription is worn beyond reading, but hunters say it marks where the grove\'s first warden stood watch.',
     marker: '/worldmap/rustic-stone.png',
-    type: 'landmark',
+    type: 'landmark', zone: 1,
     unlockLevel: 1,
     position: { left: '22%', top: '71%' },
     markerSize: 54,
@@ -75,7 +75,7 @@ const LOCATIONS = [
     subtitle: 'Convergence Point',
     desc: 'A place where ley lines cross and old power pools. No one built it — it was always here. Hunters use it as a waypoint. Nothing lingers here long.',
     marker: '/worldmap/stone-crystal.png',
-    type: 'landmark',
+    type: 'landmark', zone: 3,
     unlockLevel: 3,
     position: { left: '28%', top: '31%' },
     markerSize: 54,
@@ -87,7 +87,7 @@ const LOCATIONS = [
     subtitle: 'Sunken Wreck',
     desc: 'A ship that never made it out of the harbor. The crew of the Missing Crew contract were last seen boarding here. It sits half-submerged, listing toward the dark.',
     marker: '/worldmap/small-ship.png',
-    type: 'landmark',
+    type: 'landmark', zone: 1,
     unlockLevel: 1,
     position: { left: '34%', top: '84%' },
     markerSize: 54,
@@ -99,7 +99,7 @@ const LOCATIONS = [
     subtitle: 'Sandy Landmark',
     desc: 'Two ancient cacti that have stood here longer than any map. Travelers use them to mark the far edge of the island before the wilds begin.',
     marker: '/worldmap/cactus-1.png',
-    type: 'landmark',
+    type: 'landmark', zone: 1,
     unlockLevel: 3,
     position: { left: '78%', top: '82%' },
     markerSize: 62,
@@ -126,7 +126,7 @@ const LOCATIONS = [
     subtitle: 'Ancient Woodland',
     desc: 'Ancient trees, dense enough to swallow sound. The things inside learned to use that.',
     marker: '/worldmap/tree.png',
-    type: 'hunting',
+    type: 'hunting', zone: 2,
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockLevel: 3,
     position: { left: '83%', top: '71%' },
@@ -192,7 +192,7 @@ const LOCATIONS = [
     subtitle: 'Forgotten Battleground',
     desc: 'Old battlefield, old bones. Predators have made a home of it — they feed well here.',
     marker: '/worldmap/old-swords.png',
-    type: 'hunting',
+    type: 'hunting', zone: 3,
     tierWeights: { 1: 2, 2: 6, 3: 2 },
     unlockLevel: 5,
     position: { left: '48%', top: '47%' },
@@ -230,7 +230,7 @@ const LOCATIONS = [
     subtitle: 'Ancient Circle',
     desc: 'An ancient circle of standing stones. The power that gathered here never left — and neither do the creatures drawn to it.',
     marker: '/worldmap/stonehenge.png',
-    type: 'hunting',
+    type: 'hunting', zone: 3,
     tierWeights: { 1: 1, 2: 4, 3: 5 },
     unlockLevel: 5,
     position: { left: '30%', top: '44%' },
@@ -268,7 +268,7 @@ const LOCATIONS = [
     subtitle: 'Elite Territory',
     desc: 'Ruins above, dungeon below. Elite hunters go in. Not all come out. Enter when the contract calls for it.',
     marker: '/worldmap/dungeon.png',
-    type: 'contract',
+    type: 'contract', zone: 3,
     unlockLevel: 5,
     isElite: true,
     position: { left: '74%', top: '42%' },
@@ -283,7 +283,7 @@ const LOCATIONS = [
     subtitle: 'The Deep Dark',
     desc: 'A cave system that goes deeper than anyone has mapped. No light reaches the bottom — only dire things live down there.',
     marker: '/worldmap/cave.png',
-    type: 'hunting',
+    type: 'hunting', zone: 4,
     tierWeights: { 1: 0, 2: 2, 3: 8 },
     unlockLevel: 8,
     position: { left: '16%', top: '24%' },
@@ -336,7 +336,7 @@ const LOCATIONS = [
     subtitle: 'Scorched Earth',
     desc: 'Scorched earth and boiling stone as far as you can see. What lives here was built for one purpose.',
     marker: '/worldmap/lava-lake.png',
-    type: 'hunting',
+    type: 'hunting', zone: 5,
     tierWeights: { 1: 0, 2: 0, 3: 10 },
     unlockLevel: 10,
     position: { left: '58%', top: '14%' },
@@ -374,7 +374,7 @@ const LOCATIONS = [
     subtitle: 'Legendary Darkness',
     desc: 'The last point on the map. No record of what\'s inside. The few who came back couldn\'t describe it — or wouldn\'t.',
     marker: '/worldmap/skull-cave.png',
-    type: 'contract',
+    type: 'contract', zone: 5,
     unlockLevel: 10,
     isLegendary: true,
     position: { left: '82%', top: '4%' },
@@ -529,7 +529,7 @@ const WorldMapTab = ({
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
-  completedLocationContracts, onWildEncounter, onOpenBestiary,
+  completedLocationContracts, onWildEncounter, onOpenBestiary, onDebugCompleteZone,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
@@ -633,17 +633,16 @@ const WorldMapTab = ({
     }
   }, [activeContract?.type === 'task' ? activeContract.task?.id : null]);
 
-  const isZoneContractUnlocked = (loc) => {
-    if (loc.type !== 'contract' || !loc.contractZone || loc.contractZone <= 1) return true;
-    const prevZoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === loc.contractZone - 1);
-    return prevZoneContracts.length === 0 ||
-      prevZoneContracts.every(c => completedLocationContracts?.includes(c.id));
+  // Returns true if all contracts in the previous zone are complete (zone 1 always open)
+  const isZoneComplete = (zone) => {
+    if (!zone || zone <= 1) return true;
+    const prevContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone - 1);
+    return prevContracts.length === 0 || prevContracts.every(c => completedLocationContracts?.includes(c.id));
   };
 
-  const isUnlocked = (loc) => {
-    if (loc.unlockLevel !== null && (level ?? 1) < loc.unlockLevel) return false;
-    return isZoneContractUnlocked(loc);
-  };
+  const isZoneContractUnlocked = (loc) => isZoneComplete(loc.contractZone ?? loc.zone ?? 1);
+
+  const isUnlocked = (loc) => isZoneComplete(loc.contractZone ?? loc.zone ?? 1);
 
   const displayed = activeLocation
     ? LOCATIONS.find(l => l.id === activeLocation)
@@ -773,7 +772,7 @@ const WorldMapTab = ({
                       whiteSpace: 'nowrap',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.8)',
                     }}>
-                      🔒 Unlocks at Lv {ZONE_MIN_LEVEL[zl.zone]}
+                      🔒 Complete Zone {zl.zone - 1} Contracts
                     </div>
                   </motion.div>
                 ))}
@@ -1648,10 +1647,7 @@ const WorldMapTab = ({
                       border: '1px solid rgba(255,255,255,0.06)',
                       borderRadius: '4px', padding: '6px 8px',
                       textAlign: 'center', letterSpacing: '0.08em',
-                    }}>{displayed.contractZone > 1 && isZoneContractUnlocked(displayed) === false
-                      ? `Complete Zone ${displayed.contractZone - 1} contracts to unlock`
-                      : `Unlocks at Level ${displayed.unlockLevel}`
-                    }</div>
+                    }}>Complete Zone {(displayed.contractZone ?? displayed.zone ?? 1) - 1} contracts to unlock</div>
                   ) : activeContract?.type === 'final' ? (
                     <button
                       onClick={() => { onFinalBoss(); setActiveContract(null); }}
@@ -1681,9 +1677,7 @@ const WorldMapTab = ({
                     borderRadius: '4px', padding: '6px 8px',
                     textAlign: 'center', letterSpacing: '0.08em',
                   }}>
-                    {(level ?? 1) < (displayed.unlockLevel ?? 1)
-                      ? `Unlocks at Level ${displayed.unlockLevel}`
-                      : `Complete Zone ${(displayed.contractZone ?? 1) - 1} contracts to unlock`}
+                    {`Complete Zone ${((displayed.contractZone ?? displayed.zone ?? 1) - 1) || 1} contracts to unlock`}
                   </div>
                 ) : displayed.type === 'hunting' || (activeContract?.type === 'task' && !displayed.isElite && !displayed.isLegendary) ? (
                   selectedZone?.id === displayed.id ? (
@@ -1900,6 +1894,42 @@ const WorldMapTab = ({
           })()}
         </div>
       </div>
+
+      {/* Debug zone completion buttons */}
+      {onDebugCompleteZone && (
+        <div style={{
+          marginTop: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center',
+          padding: '10px 12px',
+          background: 'rgba(0,0,0,0.4)',
+          border: '1px solid rgba(255,80,80,0.15)',
+          borderRadius: '6px',
+        }}>
+          <span style={{ fontSize: '0.46rem', color: 'rgba(255,100,100,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', width: '100%', textAlign: 'center', marginBottom: '4px' }}>
+            ⚠ Debug — Complete Zone Contracts
+          </span>
+          {[1, 2, 3, 4, 5].map(zone => {
+            const zoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone);
+            const allDone = zoneContracts.every(c => completedLocationContracts?.includes(c.id));
+            return (
+              <button
+                key={zone}
+                onClick={() => onDebugCompleteZone(zone)}
+                disabled={allDone}
+                style={{
+                  fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.1em',
+                  padding: '5px 12px', borderRadius: '3px',
+                  background: allDone ? 'rgba(74,222,128,0.08)' : 'rgba(255,80,80,0.08)',
+                  border: `1px solid ${allDone ? 'rgba(74,222,128,0.25)' : 'rgba(255,80,80,0.25)'}`,
+                  color: allDone ? 'rgba(74,222,128,0.6)' : 'rgba(255,130,130,0.7)',
+                  cursor: allDone ? 'default' : 'pointer',
+                }}
+              >
+                {allDone ? '✓' : '+'} Zone {zone}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };

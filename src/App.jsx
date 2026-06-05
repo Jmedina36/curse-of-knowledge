@@ -7111,6 +7111,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               tasks={tasks}
               completedLocationContracts={completedLocationContracts}
               onOpenBestiary={() => setActiveTab('bestiary')}
+              onDebugCompleteZone={(zone) => {
+                const ids = LOCATION_CONTRACTS.filter(c => c.zone === zone).map(c => c.id);
+                setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+              }}
               onWildEncounter={({ monster, zone }) => {
                 // Use zone-appropriate tier weights so HP/ATK scale correctly
                 const wildTierWeights = { 1:{1:10,2:0,3:0}, 2:{1:5,2:5,3:0}, 3:{1:1,2:5,3:4}, 4:{1:0,2:2,3:8}, 5:{1:0,2:0,3:10} };
