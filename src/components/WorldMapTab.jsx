@@ -507,6 +507,9 @@ const WILD_ENCOUNTERS = {
 // Minimum player level required per zone
 const ZONE_MIN_LEVEL = { 1: 1, 2: 3, 3: 5, 4: 8, 5: 10 };
 
+// Persists scroll position across tab switches
+let savedMapScrollPos = 0;
+
 const TIER_META = {
   1: { label: 'Grunt',    color: '#A8A8A8' },
   2: { label: 'Predator', color: '#CD7F32' },
@@ -528,16 +531,21 @@ const WorldMapTab = ({
   const [hoveredLocation, setHoveredLocation] = useState(null);
   const [hoveredDeco, setHoveredDeco] = useState(null);
   const [spawnCountdown, setSpawnCountdown] = useState(15);
+  const [maxCountdown, setMaxCountdown] = useState(15);
   const [blockedFlash, setBlockedFlash] = useState(null); // deco index that flashed
+  const [lastWildCreature, setLastWildCreature] = useState(null);
   const prevDecoCount = useRef(0);
   const scrollRef = useRef(null);
 
-  // Clear panel state on unmount (tab switch)
-  useEffect(() => () => { setActiveLocation(null); setSelectedDeco(null); setTypeFilter('all'); }, []);
+  // Clear panel state on unmount (tab switch); save scroll position
+  useEffect(() => () => {
+    if (scrollRef.current) savedMapScrollPos = scrollRef.current.scrollTop;
+    setActiveLocation(null); setSelectedDeco(null); setTypeFilter('all');
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      scrollRef.current.scrollTop = savedMapScrollPos > 0 ? savedMapScrollPos : scrollRef.current.scrollHeight;
     }
   }, []);
 
@@ -552,13 +560,13 @@ const WorldMapTab = ({
 
   // Clear creatures at night and reset countdown
   useEffect(() => {
-    if (!isDayActive) { setActiveDecos([]); setSpawnCountdown(15); prevDecoCount.current = 0; }
-    else setSpawnCountdown(15);
+    if (!isDayActive) { setActiveDecos([]); setSpawnCountdown(15); setMaxCountdown(15); prevDecoCount.current = 0; }
+    else { setSpawnCountdown(15); setMaxCountdown(15); }
   }, [isDayActive]);
 
   // Reset countdown when a new creature spawns; ignore removals
   useEffect(() => {
-    if (activeDecos.length > prevDecoCount.current) setSpawnCountdown(120);
+    if (activeDecos.length > prevDecoCount.current) { setSpawnCountdown(120); setMaxCountdown(120); }
     prevDecoCount.current = activeDecos.length;
   }, [activeDecos.length]);
 
@@ -793,7 +801,7 @@ const WorldMapTab = ({
                       }}>
                         <div style={{
                           height: '100%', borderRadius: '2px', background: 'rgba(212,175,55,0.5)',
-                          width: `${(spawnCountdown / 120) * 100}%`,
+                          width: `${(spawnCountdown / maxCountdown) * 100}%`,
                           transition: 'width 1s linear',
                         }} />
                       </div>
@@ -902,7 +910,7 @@ const WorldMapTab = ({
                         }}>
                           <span style={{ fontSize: '13px', lineHeight: 1 }}>🔒</span>
                           <span style={{ fontSize: '6px', color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1 }}>
-                            Lv {ZONE_MIN_LEVEL[d.zone]}
+                            {(level ?? 1) < (ZONE_MIN_LEVEL[d.zone] ?? 1) ? `Lv ${ZONE_MIN_LEVEL[d.zone]}` : `Ct ${d.zone - 1}`}
                           </span>
                         </div>
                       </div>
@@ -1073,9 +1081,13 @@ const WorldMapTab = ({
                         filter: unlocked
                           ? isActive
                             ? `drop-shadow(0 0 10px ${loc.dangerColor}) brightness(1.1)`
-                            : isDayActive
-                              ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.95))'
-                              : 'drop-shadow(0 2px 6px rgba(0,0,0,0.95)) brightness(0.5) saturate(0.4)'
+                            : isContractCompleted
+                              ? isDayActive
+                                ? 'drop-shadow(0 0 7px rgba(74,222,128,0.45)) brightness(1.06)'
+                                : 'drop-shadow(0 0 5px rgba(74,222,128,0.3)) brightness(0.55) saturate(0.5)'
+                              : isDayActive
+                                ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.95))'
+                                : 'drop-shadow(0 2px 6px rgba(0,0,0,0.95)) brightness(0.5) saturate(0.4)'
                           : 'grayscale(1) brightness(0.3)',
                         transition: 'filter 0.4s',
                       }}
@@ -1283,6 +1295,7 @@ const WorldMapTab = ({
                   <button
                     onClick={() => {
                       setActiveDecos(prev => prev.filter(idx => idx !== decoPopup.decoIdx));
+                      setLastWildCreature({ monster: decoPopup.monster, zone: decoPopup.zone, location: decoPopup.location });
                       onWildEncounter({ monster: decoPopup.monster, zone: decoPopup.zone });
                       setDecoPopup(null);
                     }}
@@ -1761,16 +1774,41 @@ const WorldMapTab = ({
                 style={{
                   background: 'rgba(10,5,3,0.6)',
                   border: '1px solid rgba(212,175,55,0.06)',
-                  borderRadius: '8px', padding: '28px 16px', textAlign: 'center',
+                  borderRadius: '8px', padding: '20px 16px', textAlign: 'center',
                 }}
               >
-                <div style={{ fontSize: '1.8rem', marginBottom: '10px', opacity: 0.15 }}>◈</div>
-                <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.3)', lineHeight: 1.7, marginBottom: '10px' }}>
-                  Click any location to view details and begin contracts.
-                </p>
-                <p style={{ fontSize: '0.54rem', color: 'rgba(220,80,80,0.3)', lineHeight: 1.6, fontStyle: 'italic' }}>
-                  Terrain markers glow red when a creature is nearby — click to investigate.
-                </p>
+                {lastWildCreature ? (
+                  <>
+                    <div style={{ fontSize: '0.46rem', color: 'rgba(180,80,80,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                      Last Encounter
+                    </div>
+                    <img
+                      src={lastWildCreature.monster.img}
+                      alt={lastWildCreature.monster.name}
+                      style={{ width: '56px', height: '56px', objectFit: 'contain', opacity: 0.55, filter: 'grayscale(0.3)', marginBottom: '8px' }}
+                    />
+                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(220,150,150,0.6)', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                      {lastWildCreature.monster.name}
+                    </div>
+                    <div style={{ fontSize: '0.48rem', color: 'rgba(180,140,120,0.4)', marginBottom: '8px' }}>
+                      {lastWildCreature.location} · Zone {lastWildCreature.zone}
+                    </div>
+                    <div style={{ height: '1px', background: 'rgba(180,150,90,0.08)', marginBottom: '10px' }} />
+                    <p style={{ fontSize: '0.54rem', color: 'rgba(180,165,150,0.25)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                      Click any location to view details.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontSize: '1.8rem', marginBottom: '10px', opacity: 0.15 }}>◈</div>
+                    <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.3)', lineHeight: 1.7, marginBottom: '10px' }}>
+                      Click any location to view details and begin contracts.
+                    </p>
+                    <p style={{ fontSize: '0.54rem', color: 'rgba(220,80,80,0.3)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                      Terrain markers glow red when a creature is nearby — click to investigate.
+                    </p>
+                  </>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
