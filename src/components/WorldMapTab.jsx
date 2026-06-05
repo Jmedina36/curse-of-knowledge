@@ -524,6 +524,7 @@ const WorldMapTab = ({
   const [activeDecos, setActiveDecos] = useState([]);
   const [decoPopup, setDecoPopup] = useState(null); // { decoIdx, monster, zone }
   const [selectedDeco, setSelectedDeco] = useState(null); // index of selected decoration
+  const [hoveredLocation, setHoveredLocation] = useState(null);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -583,6 +584,14 @@ const WorldMapTab = ({
       const chosen = available[Math.floor(Math.random() * available.length)];
       setSelectedZone(chosen);
       setActiveLocation(chosen.id);
+      // Scroll the map to show the assigned zone
+      setTimeout(() => {
+        if (scrollRef.current) {
+          const pct = parseFloat(chosen.position.top) / 100;
+          const target = pct * scrollRef.current.scrollHeight - scrollRef.current.clientHeight / 2;
+          scrollRef.current.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [activeContract?.type === 'task' ? activeContract.task?.id : null]);
 
@@ -698,7 +707,7 @@ const WorldMapTab = ({
                 }}>
                   <span style={{ fontSize: '10px' }}>🌙</span>
                   <span style={{ fontSize: '0.52rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>
-                    Night — Rest to continue
+                    Night — Dawn approaches
                   </span>
                 </div>
               )}
@@ -827,6 +836,8 @@ const WorldMapTab = ({
                       zIndex: hasActiveContract ? 15 : isActive ? 10 : 5,
                     }}
                     whileHover={{ scale: 1.15 }}
+                    onHoverStart={() => setHoveredLocation(loc.id)}
+                    onHoverEnd={() => setHoveredLocation(null)}
                     onClick={() => {
                       setActiveLocation(loc.id);
                       setSelectedDeco(null);
@@ -871,9 +882,11 @@ const WorldMapTab = ({
                         filter: unlocked
                           ? isActive
                             ? `drop-shadow(0 0 10px ${loc.dangerColor}) brightness(1.1)`
-                            : 'drop-shadow(0 2px 6px rgba(0,0,0,0.95))'
+                            : isDayActive
+                              ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.95))'
+                              : 'drop-shadow(0 2px 6px rgba(0,0,0,0.95)) brightness(0.5) saturate(0.4)'
                           : 'grayscale(1) brightness(0.3)',
-                        transition: 'filter 0.2s',
+                        transition: 'filter 0.4s',
                       }}
                     />
 
@@ -910,7 +923,7 @@ const WorldMapTab = ({
                       </div>
                     )}
 
-                    {/* Name label */}
+                    {/* Name label — expands on hover */}
                     <div style={{
                       position: 'absolute',
                       top: '100%', left: '50%',
@@ -918,16 +931,31 @@ const WorldMapTab = ({
                       marginTop: '3px',
                       whiteSpace: 'nowrap',
                       pointerEvents: 'none',
+                      zIndex: 20,
                     }}>
                       <div style={{
                         fontSize: '0.5rem', fontWeight: 700,
                         color: isActive ? loc.dangerColor : 'rgba(235,220,200,0.8)',
                         textShadow: '0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.9)',
-                        background: 'rgba(0,0,0,0.5)',
-                        padding: '1px 4px', borderRadius: '2px',
+                        background: hoveredLocation === loc.id ? 'rgba(0,0,0,0.82)' : 'rgba(0,0,0,0.5)',
+                        border: hoveredLocation === loc.id ? `1px solid ${loc.dangerColor}40` : '1px solid transparent',
+                        padding: hoveredLocation === loc.id ? '3px 6px' : '1px 4px',
+                        borderRadius: '3px',
                         letterSpacing: '0.05em',
+                        transition: 'all 0.15s',
+                        textAlign: 'center',
                       }}>
                         {loc.name}
+                        {hoveredLocation === loc.id && (
+                          <div style={{
+                            fontSize: '0.44rem', fontWeight: 400,
+                            color: 'rgba(180,160,130,0.7)',
+                            letterSpacing: '0.08em', marginTop: '2px',
+                            textTransform: 'uppercase',
+                          }}>
+                            {loc.subtitle}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -1355,7 +1383,11 @@ const WorldMapTab = ({
                     border: '1px solid rgba(255,255,255,0.06)',
                     borderRadius: '4px', padding: '6px 8px',
                     textAlign: 'center', letterSpacing: '0.08em',
-                  }}>Unlocks at Level {displayed.unlockLevel}</div>
+                  }}>
+                    {(level ?? 1) < (displayed.unlockLevel ?? 1)
+                      ? `Unlocks at Level ${displayed.unlockLevel}`
+                      : `Complete Zone ${(displayed.contractZone ?? 1) - 1} contracts to unlock`}
+                  </div>
                 ) : displayed.type === 'hunting' || (activeContract?.type === 'task' && !displayed.isElite && !displayed.isLegendary) ? (
                   selectedZone?.id === displayed.id ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
