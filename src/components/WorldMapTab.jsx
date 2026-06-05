@@ -627,20 +627,75 @@ const WorldMapTab = ({
               height: '560px',
               overflowY: 'scroll',
               borderRadius: '8px',
-              border: '1px solid rgba(212,175,55,0.18)',
-              boxShadow: '0 0 40px rgba(0,0,0,0.6)',
+              border: `1px solid ${isDayActive ? 'rgba(212,175,55,0.18)' : 'rgba(100,120,200,0.25)'}`,
+              boxShadow: isDayActive ? '0 0 40px rgba(0,0,0,0.6)' : '0 0 40px rgba(20,20,60,0.8)',
               scrollbarWidth: 'thin',
               scrollbarColor: 'rgba(212,175,55,0.2) rgba(0,0,0,0.3)',
+              transition: 'border-color 1s, box-shadow 1s',
             }}
           >
             <div style={{ position: 'relative', width: '100%' }}>
-              <img src="/worldmap/terrain.png" alt="Ararlul" style={{ width: '100%', display: 'block' }} />
+              <img
+                src="/worldmap/terrain.png"
+                alt="Ararlul"
+                style={{
+                  width: '100%', display: 'block',
+                  filter: isDayActive ? 'none' : 'brightness(0.45) saturate(0.5) hue-rotate(200deg)',
+                  transition: 'filter 1.2s ease',
+                }}
+              />
 
-              {/* Overlay */}
+              {/* Day/night overlay */}
               <div style={{
                 position: 'absolute', inset: 0, pointerEvents: 'none',
-                background: 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.04) 75%, rgba(0,0,0,0.18) 100%)',
+                background: isDayActive
+                  ? 'linear-gradient(to bottom, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.04) 75%, rgba(0,0,0,0.18) 100%)'
+                  : 'linear-gradient(to bottom, rgba(5,8,30,0.55) 0%, rgba(10,15,50,0.35) 40%, rgba(5,8,30,0.55) 100%)',
+                transition: 'background 1.2s ease',
               }} />
+
+              {/* Night — stars */}
+              {!isDayActive && (
+                <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+                  {[
+                    { left: '12%', top: '5%' }, { left: '28%', top: '3%' }, { left: '45%', top: '7%' },
+                    { left: '62%', top: '2%' }, { left: '78%', top: '6%' }, { left: '88%', top: '3%' },
+                    { left: '20%', top: '12%' }, { left: '55%', top: '10%' }, { left: '72%', top: '14%' },
+                    { left: '35%', top: '16%' }, { left: '90%', top: '11%' }, { left: '8%', top: '18%' },
+                  ].map((s, i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 2 + (i % 3), repeat: Infinity, delay: i * 0.3, ease: 'easeInOut' }}
+                      style={{
+                        position: 'absolute', left: s.left, top: s.top,
+                        width: i % 3 === 0 ? '2px' : '1.5px',
+                        height: i % 3 === 0 ? '2px' : '1.5px',
+                        borderRadius: '50%',
+                        background: 'rgba(200,210,255,0.9)',
+                        boxShadow: '0 0 3px rgba(180,200,255,0.7)',
+                      }}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Night badge */}
+              {!isDayActive && (
+                <div style={{
+                  position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
+                  zIndex: 30, pointerEvents: 'none',
+                  background: 'rgba(5,8,30,0.82)',
+                  border: '1px solid rgba(100,120,220,0.35)',
+                  borderRadius: '4px', padding: '4px 12px',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                }}>
+                  <span style={{ fontSize: '10px' }}>🌙</span>
+                  <span style={{ fontSize: '0.52rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>
+                    Night — Rest to continue
+                  </span>
+                </div>
+              )}
 
               {/* Decorative assets — terrain-matched, occasionally active for wild encounters */}
               {DECORATIONS.map((d, i) => {
