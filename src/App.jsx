@@ -2744,6 +2744,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   const handleBeg = () => {
     // Reset the current wave — no xp/gold credit
+    sounds.banditLaugh();
     addLog('🏃 You begged for mercy. The bandits laugh and reset their formation...');
     setIsBanditWave(false);
     setBattling(false);
@@ -5889,7 +5890,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       return { success: true, enraged: false };
     } else {
       setEnemyDialogue(resultLine);
-      sounds.negotiateFail();
+      isBanditWave ? sounds.banditLaugh() : sounds.negotiateFail();
       return { success: false, enraged: true };
     }
   };
