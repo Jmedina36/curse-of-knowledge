@@ -732,7 +732,7 @@ const WorldMapTab = ({
                 // Glow when this location has an accepted active contract
                 const isTaskEligible = !loc.isElite && !loc.isLegendary && unlocked;
                 const hasActiveContract =
-                  (isTaskEligible && activeContract?.type === 'task') ||
+                  (isTaskEligible && activeContract?.type === 'task' && selectedZone?.id === loc.id) ||
                   (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
                   (loc.id === 'skull_cave' && activeContract?.type === 'final') ||
                   (activeContract?.type === 'location' && activeContract.contract.locationId === loc.id);
@@ -757,7 +757,7 @@ const WorldMapTab = ({
                     onClick={() => {
                       setActiveLocation(loc.id);
                       setSelectedDeco(null);
-                      if (unlocked && !loc.isElite && !loc.isLegendary) setSelectedZone(loc);
+                      if (unlocked && !loc.isElite && !loc.isLegendary && activeContract?.type !== 'task') setSelectedZone(loc);
                     }}
                   >
                     {/* Contract pulse ring */}
@@ -1258,16 +1258,18 @@ const WorldMapTab = ({
                           transition: 'all 0.15s',
                         }}
                       >{activeContract?.type === 'task' ? 'Begin Contract' : 'Hunt Here'}</button>
-                      <button
-                        onClick={() => setSelectedZone(null)}
-                        style={{
-                          width: '100%', fontSize: '0.48rem', fontWeight: 600,
-                          color: 'rgba(180,160,140,0.4)',
-                          background: 'transparent', border: '1px solid rgba(255,255,255,0.05)',
-                          borderRadius: '4px', padding: '4px 8px',
-                          cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
-                        }}
-                      >Deselect Zone</button>
+                      {activeContract?.type !== 'task' && (
+                        <button
+                          onClick={() => setSelectedZone(null)}
+                          style={{
+                            width: '100%', fontSize: '0.48rem', fontWeight: 600,
+                            color: 'rgba(180,160,140,0.4)',
+                            background: 'transparent', border: '1px solid rgba(255,255,255,0.05)',
+                            borderRadius: '4px', padding: '4px 8px',
+                            cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
+                          }}
+                        >Deselect Zone</button>
+                      )}
                     </div>
                   ) : (
                     <button
