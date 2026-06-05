@@ -61,6 +61,9 @@ export const sounds = {
   // ── Beg screen opens: shadow acknowledges you ────────────────────────────────
   negotiateOpen: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.75),
 
+  // ── Bandit laugh ─────────────────────────────────────────────────────────────
+  banditLaugh: () => sfxPlay('freesound_community-evil-laugh-89423.mp3', 0.8),
+
   // ── Negotiate / beg fails: shadow laughs ────────────────────────────────────
   negotiateFail: () => sfxPlay('mixkit-troll-warrior-laugh-409.wav', 0.8),
 
