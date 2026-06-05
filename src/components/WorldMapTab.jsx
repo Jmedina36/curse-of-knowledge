@@ -533,7 +533,7 @@ const WorldMapTab = ({
   const scrollRef = useRef(null);
 
   // Clear panel state on unmount (tab switch)
-  useEffect(() => () => { setActiveLocation(null); setSelectedDeco(null); }, []);
+  useEffect(() => () => { setActiveLocation(null); setSelectedDeco(null); setTypeFilter('all'); }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -646,10 +646,9 @@ const WorldMapTab = ({
           textShadow: '0 0 30px rgba(212,175,55,0.3)',
         }}>Ararlul</h2>
         {/* Player stat bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px', marginTop: '8px' }}>
           {[
             { label: 'Level', value: level ?? 1, color: '#D4AF37' },
-            { label: 'HP', value: `${hp ?? 0}/${maxHp ?? 0}`, color: hp / maxHp > 0.5 ? '#4ade80' : hp / maxHp > 0.25 ? '#fbbf24' : '#f87171' },
             { label: 'Gold', value: gold ?? 0, color: '#D4AF37' },
             { label: 'Day', value: currentDay ?? 1, color: 'rgba(180,165,150,0.7)' },
           ].map(({ label, value, color }) => (
@@ -658,6 +657,20 @@ const WorldMapTab = ({
               <span style={{ fontSize: '0.62rem', fontWeight: 700, color, letterSpacing: '0.05em' }}>{value}</span>
             </div>
           ))}
+          {/* HP with bar */}
+          {(() => {
+            const hpPct = Math.max(0, Math.min(1, (hp ?? 0) / (maxHp || 1)));
+            const hpColor = hpPct > 0.5 ? '#4ade80' : hpPct > 0.25 ? '#fbbf24' : '#f87171';
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                <span style={{ fontSize: '0.42rem', color: 'rgba(180,160,130,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>HP</span>
+                <span style={{ fontSize: '0.58rem', fontWeight: 700, color: hpColor }}>{hp ?? 0}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{maxHp ?? 0}</span></span>
+                <div style={{ width: '44px', height: '3px', background: 'rgba(255,255,255,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: `${hpPct * 100}%`, height: '100%', background: hpColor, borderRadius: '2px', transition: 'width 0.4s, background 0.4s' }} />
+                </div>
+              </div>
+            );
+          })()}
         </div>
         {/* Type filter */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px' }}>
@@ -976,7 +989,11 @@ const WorldMapTab = ({
                       y: '-50%',
                       cursor: 'pointer',
                       zIndex: hasActiveContract ? 15 : isActive ? 10 : 5,
-                      opacity: typeFilter === 'all' || typeFilter === loc.type ? 1 : 0.15,
+                      opacity: typeFilter === 'all'
+                        || (typeFilter === 'contract' && loc.type === 'contract' && !loc.isElite && !loc.isLegendary)
+                        || (typeFilter === 'hunting' && loc.type === 'hunting')
+                        || (typeFilter === 'landmark' && loc.type === 'landmark')
+                        ? 1 : 0.15,
                       transition: 'opacity 0.25s',
                     }}
                     whileHover={{ scale: 1.15 }}
@@ -1662,7 +1679,16 @@ const WorldMapTab = ({
                     </div>
                   ) : (
                     <button
-                      onClick={() => setSelectedZone(displayed)}
+                      onClick={() => {
+                        setSelectedZone(displayed);
+                        setTimeout(() => {
+                          if (scrollRef.current) {
+                            const pct = parseFloat(displayed.position.top) / 100;
+                            const target = pct * scrollRef.current.scrollHeight - scrollRef.current.clientHeight / 2;
+                            scrollRef.current.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+                          }
+                        }, 50);
+                      }}
                       style={{
                         width: '100%', fontSize: '0.56rem', fontWeight: 700,
                         color: displayed.dangerColor,
@@ -1739,37 +1765,54 @@ const WorldMapTab = ({
                 }}
               >
                 <div style={{ fontSize: '1.8rem', marginBottom: '10px', opacity: 0.15 }}>◈</div>
-                <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.3)', lineHeight: 1.7 }}>
-                  Click any location on the map to view it.
+                <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.3)', lineHeight: 1.7, marginBottom: '10px' }}>
+                  Click any location to view details and begin contracts.
+                </p>
+                <p style={{ fontSize: '0.54rem', color: 'rgba(220,80,80,0.3)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                  Terrain markers glow red when a creature is nearby — click to investigate.
                 </p>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Quick stats */}
-          <div style={{
-            marginTop: '12px',
-            background: 'rgba(10,5,3,0.5)',
-            border: '1px solid rgba(212,175,55,0.06)',
-            borderRadius: '6px', padding: '10px 12px',
-          }}>
-            <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.35)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Map Overview
-            </div>
-            {[
-              { label: 'Tame',      color: '#9CA3AF', count: LOCATIONS.filter(l => l.dangerLabel === 'Tame').length },
-              { label: 'Moderate',  color: '#CD7F32', count: LOCATIONS.filter(l => l.dangerLabel === 'Moderate').length },
-              { label: 'Dangerous', color: '#DC2626', count: LOCATIONS.filter(l => l.dangerLabel === 'Dangerous').length },
-              { label: 'Dire',      color: '#7C3AED', count: LOCATIONS.filter(l => l.dangerLabel === 'Dire').length },
-              { label: 'Elite',     color: '#A855F7', count: LOCATIONS.filter(l => l.dangerLabel === 'Elite').length },
-              { label: 'Legendary', color: '#F59E0B', count: LOCATIONS.filter(l => l.dangerLabel === 'Legendary').length },
-            ].map(row => (
-              <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px' }}>
-                <span style={{ fontSize: '0.55rem', color: row.color, letterSpacing: '0.08em' }}>{row.label}</span>
-                <span style={{ fontSize: '0.55rem', color: 'rgba(180,160,140,0.4)' }}>{row.count} locations</span>
+          {/* Map Overview */}
+          {(() => {
+            const contractLocs = LOCATIONS.filter(l => l.type === 'contract' && !l.isElite && !l.isLegendary);
+            const unlockedCount = LOCATIONS.filter(l => isUnlocked(l)).length;
+            const completedCount = (completedLocationContracts?.length) ?? 0;
+            const totalContracts = contractLocs.length;
+            return (
+              <div style={{
+                marginTop: '12px',
+                background: 'rgba(10,5,3,0.5)',
+                border: '1px solid rgba(212,175,55,0.06)',
+                borderRadius: '6px', padding: '10px 12px',
+              }}>
+                <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.35)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Map Overview
+                </div>
+                {/* Unlocked / total */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Locations Unlocked</span>
+                  <span style={{ fontSize: '0.58rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)' }}>{unlockedCount}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{LOCATIONS.length}</span></span>
+                </div>
+                {/* Progress bar for unlock */}
+                <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', marginBottom: '8px', overflow: 'hidden' }}>
+                  <div style={{ width: `${(unlockedCount / LOCATIONS.length) * 100}%`, height: '100%', background: 'rgba(212,175,55,0.5)', borderRadius: '2px', transition: 'width 0.4s' }} />
+                </div>
+                {/* Contracts completed */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Contracts Done</span>
+                  <span style={{ fontSize: '0.58rem', fontWeight: 700, color: completedCount === totalContracts ? 'rgba(74,222,128,0.8)' : 'rgba(212,175,55,0.7)' }}>
+                    {completedCount}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{totalContracts}</span>
+                  </span>
+                </div>
+                <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <div style={{ width: `${totalContracts > 0 ? (completedCount / totalContracts) * 100 : 0}%`, height: '100%', background: completedCount === totalContracts ? 'rgba(74,222,128,0.6)' : 'rgba(212,175,55,0.5)', borderRadius: '2px', transition: 'width 0.4s' }} />
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })()}
         </div>
       </div>
     </div>
