@@ -594,6 +594,7 @@ const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
   const [playerFlash, setPlayerFlash] = useState(false);
   const [victoryFlash, setVictoryFlash] = useState(false);
   const [victoryLoot, setVictoryLoot] = useState([]);
+  const [victoryChest, setVictoryChest] = useState(null); // { rarity, img }
   const [showDebug, setShowDebug] = useState(false);
   const [canCustomize, setCanCustomize] = useState(true);
 const [showCustomizeModal, setShowCustomizeModal] = useState(false);
@@ -2551,6 +2552,19 @@ pendingBattleSpawnRef.current = () => {
         break;
       }
     }
+    // Determine chest rarity from best loot found
+    const _rarityOrder = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
+    const _rarityRank = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
+    let chestRarity = 'common';
+    for (const r of _rarityOrder) {
+      const rName = GAME_CONSTANTS.RARITY_TIERS[r].name;
+      if (lootMessages.some(m => m.startsWith(rName + ' '))) { chestRarity = r; break; }
+    }
+    // Guaranteed minimums by battle type
+    if (isFinalBoss) chestRarity = 'legendary';
+    else if (battleType === 'elite' && _rarityRank[chestRarity] < 3) chestRarity = 'rare';
+    else if (battleType === 'wave'  && _rarityRank[chestRarity] < 2) chestRarity = 'uncommon';
+    setVictoryChest({ rarity: chestRarity, img: `/items/CHEST-${_rarityRank[chestRarity]}.png` });
   }, [luckyCharmActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
 
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
@@ -2584,7 +2598,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setCanFlee(true); // Allow fleeing from regular and wave enemies
   setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
-  setVictoryLoot([]); // Clear previous loot
+  setVictoryLoot([]);
+    setVictoryChest(null); // Clear previous loot
   
   // Reset charges at start of each battle
   setChargeStacks(0);
@@ -2660,6 +2675,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
+    setVictoryChest(null);
     setChargeStacks(0);
     setRecklessStacks(0);
     setEnragedTurns(0);
@@ -2755,6 +2771,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
+    setVictoryChest(null);
     setChargeStacks(0);
     setRecklessStacks(0);
     setEnragedTurns(0);
@@ -2857,7 +2874,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
-    setVictoryLoot([]); // Clear previous loot
+    setVictoryLoot([]);
+    setVictoryChest(null); // Clear previous loot
     
     // Reset charges at start of each battle
     setChargeStacks(0);
@@ -3011,7 +3029,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleMode(true);
     setIsFinalBoss(true);
     setCanFlee(false);
-    setVictoryLoot([]); // Clear previous loot
+    setVictoryLoot([]);
+    setVictoryChest(null); // Clear previous loot
 
     // Reset charges at start of each battle
     setChargeStacks(0);
@@ -3580,7 +3599,10 @@ if (battleType === 'elite') {
     setActiveContract(null);
   } else if (_ac?.type === 'wild') {
     setActiveContract(null);
-    addLog(`You drove off the creature. Something glints in the dirt.`);
+    const wildZone = _ac.zone || 1;
+    const wildGold = 5 + wildZone * 4 + Math.floor(Math.random() * 8);
+    setGold(g => g + wildGold);
+    generateVictoryLoot('regular', false, wildGold);
   }
 
   // Pendant regenHP: restore HP after combat victory
@@ -5735,7 +5757,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     ];
     
     setEnemyDialogue(fleeDialogue); // Show insult in enemy dialogue box
-    setVictoryLoot([]); // No loot when fleeing
+    setVictoryLoot([]);
+    setVictoryChest(null); // No loot when fleeing
     setHasFled(true); // Mark that we fled
     setBossHp(0); // Trigger victory screen
     setBattling(false);
@@ -7423,6 +7446,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setIsFinalBoss(true);
                     setCanFlee(false);
                     setVictoryLoot([]);
+    setVictoryChest(null);
                     addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
                   }} className="bg-purple-900 hover:bg-purple-800 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Final Boss</button>
                 </div>
@@ -7820,7 +7844,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               crusaderJudgmentCooldown={crusaderJudgmentCooldown}
               crusaderSmiteCooldown={crusaderSmiteCooldown}
               crusaderBastionOfFaithCooldown={crusaderBastionOfFaithCooldown}
-              victoryLoot={victoryLoot} log={log}
+              victoryLoot={victoryLoot} victoryChest={victoryChest} log={log}
               attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack} chargedStrike={chargedStrike}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}

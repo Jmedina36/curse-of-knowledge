@@ -151,6 +151,7 @@ const BattleModal = ({
   crusaderBastionOfFaithCooldown,
   // Victory
   victoryLoot,
+  victoryChest,
   // Battle log
   log,
   setEnemyDialogue,
@@ -204,6 +205,7 @@ const BattleModal = ({
   // ── Local effect state ──────────────────────────────────────────────────────
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [shaking, setShaking] = useState(false);
+  const [chestOpened, setChestOpened] = useState(false);
   const [musicMuted, setMusicMuted] = useState(() => audioManager.muted);
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
@@ -252,6 +254,9 @@ const BattleModal = ({
   };
 
   // Boss damage floats — gold for crits
+  // Reset chest state when a new chest arrives
+  useEffect(() => { setChestOpened(false); }, [victoryChest]);
+
   useEffect(() => {
     if (bossHp < prevBossHp.current && prevBossHp.current > 0) {
       const recentEntries = log.slice(Math.max(0, log.length - 3));
@@ -1427,19 +1432,54 @@ const BattleModal = ({
                 </div>
               )}
 
-              {!hasFled && victoryLoot.length > 0 && (
-                <div className="rounded p-4 mb-4" style={{ background: 'linear-gradient(to bottom, rgba(212, 175, 55, 0.12), rgba(180, 130, 10, 0.06))', border: '1px solid rgba(212, 175, 55, 0.5)', boxShadow: '0 0 25px rgba(212, 175, 55, 0.2)' }}>
-                  <p className="text-xs uppercase tracking-[0.3em] text-center mb-3" style={{ color: '#D4AF37' }}>Spoils of Battle</p>
-                  <div className="space-y-1.5">
-                    {victoryLoot.map((loot, idx) => (
-                      <motion.div key={idx} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.08 }}
-                        className="rounded px-3 py-1.5" style={{ backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
-                        <p className="text-sm" style={{ color: '#F5F5DC' }}>{loot}</p>
-                      </motion.div>
-                    ))}
+              {!hasFled && victoryChest && (() => {
+                const CHEST_COLORS = {
+                  common:    { border: 'rgba(180,180,180,0.5)', glow: 'rgba(200,200,200,0.3)', label: '#C0C0C0', bg: 'rgba(40,40,40,0.6)'    },
+                  uncommon:  { border: 'rgba(56,161,105,0.6)',  glow: 'rgba(56,161,105,0.35)', label: '#68D391', bg: 'rgba(10,30,15,0.6)'    },
+                  rare:      { border: 'rgba(66,153,225,0.6)',  glow: 'rgba(66,153,225,0.35)', label: '#63B3ED', bg: 'rgba(10,20,40,0.6)'    },
+                  epic:      { border: 'rgba(159,122,234,0.7)', glow: 'rgba(159,122,234,0.4)', label: '#B794F4', bg: 'rgba(20,10,40,0.6)'    },
+                  legendary: { border: 'rgba(236,153,75,0.8)',  glow: 'rgba(236,153,75,0.5)',  label: '#F6AD55', bg: 'rgba(40,20,5,0.65)'   },
+                };
+                const cc = CHEST_COLORS[victoryChest.rarity] || CHEST_COLORS.common;
+                const rarityLabel = victoryChest.rarity.charAt(0).toUpperCase() + victoryChest.rarity.slice(1);
+                return (
+                  <div className="rounded-lg p-4 mb-4" style={{ background: cc.bg, border: `1px solid ${cc.border}`, boxShadow: `0 0 24px ${cc.glow}` }}>
+                    {!chestOpened ? (
+                      /* ── Closed chest ── */
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', color: cc.label, textTransform: 'uppercase', fontFamily: 'Cinzel, serif' }}>{rarityLabel} Chest</p>
+                        <motion.img
+                          src={victoryChest.img} alt="Chest"
+                          animate={{ y: [0, -6, 0] }}
+                          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+                          style={{ width: 96, height: 96, objectFit: 'contain', filter: `drop-shadow(0 0 14px ${cc.glow}) drop-shadow(0 0 6px ${cc.border})`, cursor: 'pointer' }}
+                          onClick={() => setChestOpened(true)}
+                        />
+                        <motion.button
+                          onClick={() => setChestOpened(true)}
+                          whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}
+                          style={{ padding: '8px 24px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'Cinzel, serif', cursor: 'pointer', color: cc.label, background: 'rgba(0,0,0,0.45)', border: `1px solid ${cc.border}`, boxShadow: `0 0 10px ${cc.glow}` }}
+                        >Open</motion.button>
+                      </div>
+                    ) : (
+                      /* ── Opened chest + loot ── */
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', color: cc.label, textTransform: 'uppercase', fontFamily: 'Cinzel, serif' }}>{rarityLabel} Chest</p>
+                        <img src={victoryChest.img} alt="Chest" style={{ width: 56, height: 56, objectFit: 'contain', opacity: 0.55, filter: `drop-shadow(0 0 6px ${cc.border})` }} />
+                        <div style={{ width: '100%' }}>
+                          {victoryLoot.map((loot, idx) => (
+                            <motion.div key={idx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.09, duration: 0.25 }}
+                              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '5px 10px', marginBottom: '5px', borderRadius: '6px', background: 'rgba(0,0,0,0.35)', border: `1px solid ${cc.border}44` }}>
+                              <span style={{ fontSize: '12px', color: cc.label }}>◆</span>
+                              <p style={{ fontSize: '13px', color: '#F5F5DC', margin: 0 }}>{loot}</p>
+                            </motion.div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {(battleType === 'elite' || isFinalBoss) && (
                 <button onClick={advance} className="px-10 py-3 rounded font-black text-lg uppercase tracking-widest transition-all hover:scale-105"
