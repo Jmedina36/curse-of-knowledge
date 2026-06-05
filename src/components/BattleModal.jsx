@@ -343,7 +343,7 @@ const BattleModal = ({
       setTimeout(() => {
         raidFaction === 'daughters'
           ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
-          : sounds.negotiateFail();
+          : isFinalBoss ? sounds.finalBossEntrance() : sounds.negotiateFail();
         setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
       }, 600);
     }
@@ -362,7 +362,7 @@ const BattleModal = ({
       const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.UPPER_HAND;
       raidFaction === 'daughters'
         ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
-        : sounds.negotiateFail();
+        : isFinalBoss ? sounds.finalBossEntrance() : sounds.negotiateFail();
       setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
     }
   }, [turnPhase]);
