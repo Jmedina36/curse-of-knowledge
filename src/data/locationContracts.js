@@ -10,7 +10,7 @@ export const LOCATION_CONTRACTS = [
     locationName: 'Wellspring',
     name: "The Warden's Request",
     desc: 'The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water. Find out what happened and drive it out.',
-    zone: 1,
+    zone: 2,
     encounter: {
       enemyType: 'bandit',
       waveSize: 3,
