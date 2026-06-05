@@ -557,14 +557,8 @@ const WorldMapTab = ({
     }
   }, []);
 
-  // Returns true if a deco's zone is accessible (level + contract completion gate)
-  const isDecoZoneUnlocked = (decoZone) => {
-    if ((level ?? 1) < (ZONE_MIN_LEVEL[decoZone] ?? 1)) return false;
-    if (decoZone <= 1) return true;
-    const prevZoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === decoZone - 1);
-    return prevZoneContracts.length === 0 ||
-      prevZoneContracts.every(c => completedLocationContracts?.includes(c.id));
-  };
+  // Returns true if a deco's zone is accessible — same contract-zone gate as locations
+  const isDecoZoneUnlocked = (decoZone) => isZoneComplete(decoZone);
 
   // Clear creatures at night and reset countdown
   useEffect(() => {
@@ -592,12 +586,7 @@ const WorldMapTab = ({
       // Compute unlocked indices here (not inside setState) so closure uses fresh values
       const unlockedIndices = DECORATIONS
         .map((d, i) => ({ d, i }))
-        .filter(({ d }) => {
-          if ((level ?? 1) < (ZONE_MIN_LEVEL[d.zone] ?? 1)) return false;
-          if (d.zone <= 1) return true;
-          const prev = LOCATION_CONTRACTS.filter(c => c.zone === d.zone - 1);
-          return prev.length === 0 || prev.every(c => completedLocationContracts?.includes(c.id));
-        })
+        .filter(({ d }) => isDecoZoneUnlocked(d.zone))
         .map(({ i }) => i);
       setActiveDecos(prev => {
         if (prev.length >= 3) return prev;
@@ -633,11 +622,13 @@ const WorldMapTab = ({
     }
   }, [activeContract?.type === 'task' ? activeContract.task?.id : null]);
 
-  // Returns true if all contracts in the previous zone are complete (zone 1 always open)
+  // Returns true if all contracts in the previous zone are complete (zone 1 always open).
+  // If no contracts exist for the previous zone it returns false — zone isn't unlockable yet.
   const isZoneComplete = (zone) => {
     if (!zone || zone <= 1) return true;
     const prevContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone - 1);
-    return prevContracts.length === 0 || prevContracts.every(c => completedLocationContracts?.includes(c.id));
+    if (prevContracts.length === 0) return false;
+    return prevContracts.every(c => completedLocationContracts?.includes(c.id));
   };
 
   const isZoneContractUnlocked = (loc) => isZoneComplete(loc.contractZone ?? loc.zone ?? 1);
