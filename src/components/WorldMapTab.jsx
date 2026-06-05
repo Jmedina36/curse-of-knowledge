@@ -1061,12 +1061,28 @@ const WorldMapTab = ({
                   exit={{ opacity: 0, x: 8 }}
                   transition={{ duration: 0.18 }}
                   style={{
+                    position: 'relative',
                     background: 'linear-gradient(to bottom, rgba(22,10,6,0.98), rgba(10,4,2,0.98))',
                     border: '1px solid rgba(180,150,90,0.2)',
                     borderRadius: '8px',
                     padding: '14px',
                   }}
                 >
+                  {/* Close button */}
+                  <button
+                    onClick={() => setSelectedDeco(null)}
+                    style={{
+                      position: 'absolute', top: '8px', right: '8px',
+                      width: '18px', height: '18px',
+                      background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                      borderRadius: '3px', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '9px', color: 'rgba(180,160,140,0.5)',
+                      lineHeight: 1, padding: 0,
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(220,200,180,0.9)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(180,160,140,0.5)'; }}
+                  >✕</button>
                   {/* Type pill */}
                   <div style={{ marginBottom: '10px' }}>
                     <div style={{
@@ -1167,6 +1183,7 @@ const WorldMapTab = ({
                 exit={{ opacity: 0, x: 8 }}
                 transition={{ duration: 0.18 }}
                 style={{
+                  position: 'relative',
                   background: 'linear-gradient(to bottom, rgba(22,10,6,0.98), rgba(10,4,2,0.98))',
                   border: `1px solid ${displayed.dangerColor}28`,
                   borderRadius: '8px',
@@ -1174,6 +1191,21 @@ const WorldMapTab = ({
                   boxShadow: `0 0 24px ${displayed.dangerColor}0e`,
                 }}
               >
+                {/* Close button */}
+                <button
+                  onClick={() => { setActiveLocation(null); setSelectedZone(activeContract?.type === 'task' ? selectedZone : null); }}
+                  style={{
+                    position: 'absolute', top: '8px', right: '8px',
+                    width: '18px', height: '18px',
+                    background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '3px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '9px', color: 'rgba(180,160,140,0.5)',
+                    lineHeight: 1, padding: 0,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'rgba(220,200,180,0.9)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(180,160,140,0.5)'; }}
+                >✕</button>
                 {/* Type pill */}
                 <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <div style={{
