@@ -511,6 +511,7 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [activeContract, setActiveContract] = useState(null);
   const [completedLocationContracts, setCompletedLocationContracts] = useState([]);
   const [pendingLocationRewards, setPendingLocationRewards] = useState([]);
+  const [debugUnlockedZones, setDebugUnlockedZones] = useState([]);
   const contractEncounterRef = useRef(null); // tier weights for active location contract battle
   const wildCreatureOverrideRef = useRef(null); // map wild encounter: override name/img in spawnRegularEnemy
   const activeContractRef = useRef(null);
@@ -7110,13 +7111,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               gauntletUnlocked={gauntletUnlocked}
               tasks={tasks}
               completedLocationContracts={completedLocationContracts}
+              debugUnlockedZones={debugUnlockedZones}
               onOpenBestiary={() => setActiveTab('bestiary')}
               onDebugToggleZone={(zone, currentlyDone) => {
                 const ids = LOCATION_CONTRACTS.filter(c => c.zone === zone).map(c => c.id);
-                if (currentlyDone) {
-                  setCompletedLocationContracts(prev => prev.filter(id => !ids.includes(id)));
+                if (ids.length > 0) {
+                  if (currentlyDone) {
+                    setCompletedLocationContracts(prev => prev.filter(id => !ids.includes(id)));
+                  } else {
+                    setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+                  }
                 } else {
-                  setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+                  if (currentlyDone) {
+                    setDebugUnlockedZones(prev => prev.filter(z => z !== zone));
+                  } else {
+                    setDebugUnlockedZones(prev => [...prev, zone]);
+                  }
                 }
               }}
               onWildEncounter={({ monster, zone }) => {

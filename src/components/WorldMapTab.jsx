@@ -529,7 +529,7 @@ const WorldMapTab = ({
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
-  completedLocationContracts, onWildEncounter, onOpenBestiary, onDebugToggleZone,
+  completedLocationContracts, debugUnlockedZones, onWildEncounter, onOpenBestiary, onDebugToggleZone,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
@@ -626,6 +626,8 @@ const WorldMapTab = ({
   // If no contracts exist for the previous zone it returns false — zone isn't unlockable yet.
   const isZoneComplete = (zone) => {
     if (!zone || zone <= 1) return true;
+    // Debug override: if the previous zone is flagged as complete, unlock this zone
+    if (debugUnlockedZones?.includes(zone - 1)) return true;
     const prevContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone - 1);
     if (prevContracts.length === 0) return false;
     return prevContracts.every(c => completedLocationContracts?.includes(c.id));
@@ -1901,22 +1903,23 @@ const WorldMapTab = ({
           {[1, 2, 3, 4, 5].map(zone => {
             const zoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone);
             const hasContracts = zoneContracts.length > 0;
-            const allDone = hasContracts && zoneContracts.every(c => completedLocationContracts?.includes(c.id));
+            const allDone = hasContracts
+              ? zoneContracts.every(c => completedLocationContracts?.includes(c.id))
+              : debugUnlockedZones?.includes(zone) ?? false;
             return (
               <button
                 key={zone}
                 onClick={() => onDebugToggleZone(zone, allDone)}
-                disabled={!hasContracts}
                 style={{
                   fontSize: '0.5rem', fontWeight: 700, letterSpacing: '0.1em',
                   padding: '5px 12px', borderRadius: '3px',
-                  background: !hasContracts ? 'rgba(60,60,60,0.08)' : allDone ? 'rgba(74,222,128,0.08)' : 'rgba(255,80,80,0.08)',
-                  border: `1px solid ${!hasContracts ? 'rgba(60,60,60,0.2)' : allDone ? 'rgba(74,222,128,0.25)' : 'rgba(255,80,80,0.25)'}`,
-                  color: !hasContracts ? 'rgba(100,100,100,0.4)' : allDone ? 'rgba(74,222,128,0.7)' : 'rgba(255,130,130,0.7)',
-                  cursor: hasContracts ? 'pointer' : 'default',
+                  background: allDone ? 'rgba(74,222,128,0.08)' : 'rgba(255,80,80,0.08)',
+                  border: `1px solid ${allDone ? 'rgba(74,222,128,0.25)' : 'rgba(255,80,80,0.25)'}`,
+                  color: allDone ? 'rgba(74,222,128,0.7)' : 'rgba(255,130,130,0.7)',
+                  cursor: 'pointer',
                 }}
               >
-                {!hasContracts ? '—' : allDone ? '🔓' : '🔒'} Zone {zone}
+                {allDone ? '🔓' : '🔒'} Zone {zone}
               </button>
             );
           })}
