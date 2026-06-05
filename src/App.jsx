@@ -511,6 +511,7 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const [activeContract, setActiveContract] = useState(null);
   const [completedLocationContracts, setCompletedLocationContracts] = useState([]);
   const [pendingLocationRewards, setPendingLocationRewards] = useState([]);
+  const [huntingChallenges, setHuntingChallenges] = useState({}); // { locationId: timestamp }
   const [debugUnlockedZones, setDebugUnlockedZones] = useState([]);
   const contractEncounterRef = useRef(null); // tier weights for active location contract battle
   const wildCreatureOverrideRef = useRef(null); // map wild encounter: override name/img in spawnRegularEnemy
@@ -1059,6 +1060,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.guildPoints !== undefined) setGuildPoints(data.guildPoints);
         if (data.completedLocationContracts) setCompletedLocationContracts(data.completedLocationContracts);
         if (data.pendingLocationRewards) setPendingLocationRewards(data.pendingLocationRewards);
+        if (data.huntingChallenges) setHuntingChallenges(data.huntingChallenges);
       } catch (e) {
         console.error('Failed to load save:', e);
         // If saved data is corrupted, generate new hero
@@ -1118,7 +1120,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
-  studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards
+  studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
       
@@ -1126,7 +1128,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -3609,6 +3611,20 @@ if (battleType === 'elite') {
     const wildGold = 5 + wildZone * 4 + Math.floor(Math.random() * 8);
     setGold(g => g + wildGold);
     generateVictoryLoot('regular', false, wildGold);
+  } else if (_ac?.type === 'challenge') {
+    const chalZone = _ac.zone || 1;
+    const chalGoldBase = [0, 30, 50, 75, 100, 150][chalZone] || 30;
+    const chalXpBase   = [0, 60, 100, 150, 200, 300][chalZone] || 60;
+    const chalGold = chalGoldBase + Math.floor(Math.random() * Math.floor(chalGoldBase * 0.3));
+    const chalXp   = chalXpBase   + Math.floor(Math.random() * Math.floor(chalXpBase   * 0.2));
+    const crystalDrop = Math.random() < 0.25;
+    setGold(g => g + chalGold);
+    setXp(x => x + chalXp);
+    if (crystalDrop) setFusionCrystals(f => f + 1);
+    setHuntingChallenges(prev => ({ ...prev, [_ac.locationId]: Date.now() }));
+    addLog(`Challenge complete — ${chalGold} gold, ${chalXp} XP${crystalDrop ? ', Fusion Crystal' : ''} earned.`);
+    setActiveContract(null);
+    generateVictoryLoot('regular', false, chalGold);
   }
 
   // Pendant regenHP: restore HP after combat victory
@@ -7112,7 +7128,22 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               tasks={tasks}
               completedLocationContracts={completedLocationContracts}
               debugUnlockedZones={debugUnlockedZones}
+              huntingChallenges={huntingChallenges}
               onOpenBestiary={() => setActiveTab('bestiary')}
+              onHuntingChallenge={({ locationId, zone, faction }) => {
+                const challengeTierWeights = { 1:{1:6,2:4,3:0}, 2:{1:2,2:6,3:2}, 3:{1:0,2:4,3:6}, 4:{1:0,2:2,3:8}, 5:{1:0,2:0,3:10} };
+                contractEncounterRef.current = { tierWeights: challengeTierWeights[zone] || challengeTierWeights[1] };
+                if (faction === 'bandit') {
+                  const grunt = BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
+                  wildCreatureOverrideRef.current = { name: grunt.names[Math.floor(Math.random() * grunt.names.length)], img: grunt.img };
+                } else if (faction === 'daughters') {
+                  const member = DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
+                  wildCreatureOverrideRef.current = { name: member.names[Math.floor(Math.random() * member.names.length)], img: member.img };
+                }
+                setIsBanditWave(false);
+                setActiveContract({ type: 'challenge', locationId, zone });
+                setTimeout(() => { spawnRegularEnemy(false); contractEncounterRef.current = null; }, 1000);
+              }}
               onDebugToggleZone={(zone, currentlyDone) => {
                 const ids = LOCATION_CONTRACTS.filter(c => c.zone === zone).map(c => c.id);
                 if (ids.length > 0) {

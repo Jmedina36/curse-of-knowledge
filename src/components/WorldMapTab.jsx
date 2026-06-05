@@ -24,7 +24,7 @@ const LOCATIONS = [
     subtitle: 'Village Edge',
     desc: 'The last stretch of land before the wilds swallow the road. Weak, but nothing out here is friendly.',
     marker: '/worldmap/wooden-house.png',
-    type: 'hunting', zone: 1,
+    type: 'hunting', zone: 1, faction: 'bandit',
     tierWeights: { 1: 10, 2: 0, 3: 0 },
     unlockLevel: 3,
     position: { left: '56%', top: '80%' },
@@ -126,7 +126,7 @@ const LOCATIONS = [
     subtitle: 'Ancient Woodland',
     desc: 'Ancient trees, dense enough to swallow sound. The things inside learned to use that.',
     marker: '/worldmap/tree.png',
-    type: 'hunting', zone: 2,
+    type: 'hunting', zone: 2, faction: 'daughters',
     tierWeights: { 1: 5, 2: 5, 3: 0 },
     unlockLevel: 3,
     position: { left: '83%', top: '71%' },
@@ -192,7 +192,7 @@ const LOCATIONS = [
     subtitle: 'Forgotten Battleground',
     desc: 'Old battlefield, old bones. Predators have made a home of it — they feed well here.',
     marker: '/worldmap/old-swords.png',
-    type: 'hunting', zone: 3,
+    type: 'hunting', zone: 3, faction: 'bandit',
     tierWeights: { 1: 2, 2: 6, 3: 2 },
     unlockLevel: 5,
     position: { left: '48%', top: '47%' },
@@ -230,7 +230,7 @@ const LOCATIONS = [
     subtitle: 'Ancient Circle',
     desc: 'An ancient circle of standing stones. The power that gathered here never left — and neither do the creatures drawn to it.',
     marker: '/worldmap/stonehenge.png',
-    type: 'hunting', zone: 3,
+    type: 'hunting', zone: 3, faction: 'creature',
     tierWeights: { 1: 1, 2: 4, 3: 5 },
     unlockLevel: 5,
     position: { left: '30%', top: '44%' },
@@ -283,7 +283,7 @@ const LOCATIONS = [
     subtitle: 'The Deep Dark',
     desc: 'A cave system that goes deeper than anyone has mapped. No light reaches the bottom — only dire things live down there.',
     marker: '/worldmap/cave.png',
-    type: 'hunting', zone: 4,
+    type: 'hunting', zone: 4, faction: 'creature',
     tierWeights: { 1: 0, 2: 2, 3: 8 },
     unlockLevel: 8,
     position: { left: '16%', top: '24%' },
@@ -336,7 +336,7 @@ const LOCATIONS = [
     subtitle: 'Scorched Earth',
     desc: 'Scorched earth and boiling stone as far as you can see. What lives here was built for one purpose.',
     marker: '/worldmap/lava-lake.png',
-    type: 'hunting', zone: 5,
+    type: 'hunting', zone: 5, faction: 'creature',
     tierWeights: { 1: 0, 2: 0, 3: 10 },
     unlockLevel: 10,
     position: { left: '58%', top: '14%' },
@@ -529,8 +529,15 @@ const WorldMapTab = ({
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
-  completedLocationContracts, debugUnlockedZones, onWildEncounter, onOpenBestiary, onDebugToggleZone,
+  completedLocationContracts, debugUnlockedZones, huntingChallenges,
+  onWildEncounter, onOpenBestiary, onDebugToggleZone, onHuntingChallenge,
 }) => {
+  const CHALLENGE_COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
+  const getChallengeRemaining = (locationId) => {
+    const ts = huntingChallenges?.[locationId];
+    if (!ts) return 0;
+    return Math.max(0, CHALLENGE_COOLDOWN_MS - (Date.now() - ts));
+  };
   const [activeLocation, setActiveLocation] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
   const [activeDecos, setActiveDecos] = useState([]);
@@ -1137,17 +1144,6 @@ const WorldMapTab = ({
                           border: '1px solid rgba(0,0,0,0.6)',
                           boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : '#D4AF37'}`,
                         }} />
-                        {/* Completed contract badge */}
-                        {isContractCompleted && (
-                          <div style={{
-                            position: 'absolute', top: '-3px', left: '-3px',
-                            width: '14px', height: '14px', borderRadius: '50%',
-                            background: 'rgba(16,185,129,0.9)', border: '1.5px solid rgba(0,0,0,0.6)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            fontSize: '8px', lineHeight: 1, pointerEvents: 'none', zIndex: 5,
-                            boxShadow: '0 0 6px rgba(16,185,129,0.6)',
-                          }}>✓</div>
-                        )}
                       </>
                     ) : (
                       /* Fog of war — locked location */
@@ -1673,10 +1669,9 @@ const WorldMapTab = ({
                     {`Complete Zone ${((displayed.contractZone ?? displayed.zone ?? 1) - 1) || 1} contracts to unlock`}
                   </div>
                 ) : displayed.type === 'hunting' || (activeContract?.type === 'task' && !displayed.isElite && !displayed.isLegendary) ? (
-                  selectedZone?.id === displayed.id ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      {/* Active task contract label */}
-                      {activeContract?.type === 'task' && (
+                  activeContract?.type === 'task' ? (
+                    selectedZone?.id === displayed.id ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div style={{
                           fontSize: '0.52rem', color: '#D4AF37',
                           background: 'rgba(212,175,55,0.08)',
@@ -1684,59 +1679,92 @@ const WorldMapTab = ({
                           borderRadius: '3px', padding: '5px 8px',
                           letterSpacing: '0.08em',
                         }}>✦ {activeContract.task.title}</div>
-                      )}
-                      {/* Begin Contract / Hunt Here — starts battle immediately */}
+                        <button
+                          onClick={() => isDayActive && onBeginContract()}
+                          disabled={!isDayActive}
+                          style={{
+                            width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                            color: isDayActive ? '#000' : 'rgba(220,38,38,0.3)',
+                            background: isDayActive ? displayed.dangerColor : 'rgba(10,5,5,0.5)',
+                            border: `1px solid ${displayed.dangerColor}50`,
+                            borderRadius: '4px', padding: '7px 8px',
+                            cursor: isDayActive ? 'pointer' : 'not-allowed',
+                            letterSpacing: '0.12em', textTransform: 'uppercase',
+                            boxShadow: isDayActive ? `0 0 12px ${displayed.dangerColor}55` : 'none',
+                            transition: 'all 0.15s',
+                          }}
+                        >Begin Contract</button>
+                      </div>
+                    ) : (
                       <button
-                        onClick={() => isDayActive && onBeginContract()}
-                        disabled={!isDayActive}
+                        onClick={() => {
+                          setSelectedZone(displayed);
+                          setTimeout(() => {
+                            if (scrollRef.current) {
+                              const pct = parseFloat(displayed.position.top) / 100;
+                              const target = pct * scrollRef.current.scrollHeight - scrollRef.current.clientHeight / 2;
+                              scrollRef.current.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+                            }
+                          }, 50);
+                        }}
                         style={{
                           width: '100%', fontSize: '0.56rem', fontWeight: 700,
-                          color: isDayActive ? '#000' : 'rgba(220,38,38,0.3)',
-                          background: isDayActive ? displayed.dangerColor : 'rgba(10,5,5,0.5)',
+                          color: displayed.dangerColor,
+                          background: `${displayed.dangerColor}14`,
                           border: `1px solid ${displayed.dangerColor}50`,
                           borderRadius: '4px', padding: '7px 8px',
-                          cursor: isDayActive ? 'pointer' : 'not-allowed',
-                          letterSpacing: '0.12em', textTransform: 'uppercase',
-                          boxShadow: isDayActive ? `0 0 12px ${displayed.dangerColor}55` : 'none',
+                          cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase',
                           transition: 'all 0.15s',
                         }}
-                      >{activeContract?.type === 'task' ? 'Begin Contract' : 'Hunt Here'}</button>
-                      {activeContract?.type !== 'task' && (
-                        <button
-                          onClick={() => setSelectedZone(null)}
-                          style={{
-                            width: '100%', fontSize: '0.48rem', fontWeight: 600,
-                            color: 'rgba(180,160,140,0.4)',
-                            background: 'transparent', border: '1px solid rgba(255,255,255,0.05)',
-                            borderRadius: '4px', padding: '4px 8px',
-                            cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
-                          }}
-                        >Deselect Zone</button>
-                      )}
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setSelectedZone(displayed);
-                        setTimeout(() => {
-                          if (scrollRef.current) {
-                            const pct = parseFloat(displayed.position.top) / 100;
-                            const target = pct * scrollRef.current.scrollHeight - scrollRef.current.clientHeight / 2;
-                            scrollRef.current.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-                          }
-                        }, 50);
-                      }}
-                      style={{
-                        width: '100%', fontSize: '0.56rem', fontWeight: 700,
-                        color: displayed.dangerColor,
-                        background: `${displayed.dangerColor}14`,
-                        border: `1px solid ${displayed.dangerColor}50`,
-                        borderRadius: '4px', padding: '7px 8px',
-                        cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase',
-                        transition: 'all 0.15s',
-                      }}
-                    >Set as Hunting Ground</button>
-                  )
+                      >Travel Here</button>
+                    )
+                  ) : (() => {
+                    const remaining = getChallengeRemaining(displayed.id);
+                    const onCooldown = remaining > 0;
+                    const factionLabel = { bandit: 'Bandit Raiders', daughters: 'Daughters of Dusk', creature: 'Wild Creatures' }[displayed.faction] || 'Hostiles';
+                    const factionColor = { bandit: '#DC2626', daughters: '#A855F7', creature: '#CD7F32' }[displayed.faction] || displayed.dangerColor;
+                    const hrs = Math.floor(remaining / 3600000);
+                    const mins = Math.floor((remaining % 3600000) / 60000);
+                    return (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{
+                          fontSize: '0.48rem', color: factionColor,
+                          background: `${factionColor}10`,
+                          border: `1px solid ${factionColor}25`,
+                          borderRadius: '3px', padding: '4px 8px',
+                          letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700,
+                        }}>{factionLabel}</div>
+                        {onCooldown ? (
+                          <div style={{
+                            fontSize: '0.54rem', color: 'rgba(180,160,130,0.45)',
+                            background: 'rgba(255,255,255,0.02)',
+                            border: '1px solid rgba(255,255,255,0.06)',
+                            borderRadius: '4px', padding: '8px',
+                            textAlign: 'center', lineHeight: 1.6,
+                          }}>
+                            <div style={{ fontSize: '0.46rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '3px', opacity: 0.6 }}>Regrouping</div>
+                            {hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`} remaining
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => isDayActive && onHuntingChallenge({ locationId: displayed.id, zone: displayed.zone, faction: displayed.faction })}
+                            disabled={!isDayActive || !!activeContract}
+                            style={{
+                              width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                              color: (!isDayActive || activeContract) ? 'rgba(180,80,80,0.3)' : '#000',
+                              background: (!isDayActive || activeContract) ? 'rgba(10,5,5,0.5)' : factionColor,
+                              border: `1px solid ${factionColor}50`,
+                              borderRadius: '4px', padding: '7px 8px',
+                              cursor: (!isDayActive || activeContract) ? 'not-allowed' : 'pointer',
+                              letterSpacing: '0.12em', textTransform: 'uppercase',
+                              boxShadow: (!isDayActive || activeContract) ? 'none' : `0 0 12px ${factionColor}55`,
+                              transition: 'all 0.15s',
+                            }}
+                          >Challenge</button>
+                        )}
+                      </div>
+                    );
+                  })()
                 ) : displayed.type === 'landmark' ? (
                   <div style={{
                     fontSize: '0.52rem', color: 'rgba(180,160,140,0.35)',
