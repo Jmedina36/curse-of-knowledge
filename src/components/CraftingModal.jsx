@@ -150,8 +150,8 @@ const CraftingModal = ({
   // Equipment inventories
   weaponInventory,
   armorInventory,
-  pendantInventory,
-  ringInventory,
+  grimoireInventory,
+  tomeInventory,
   // Shop/merchant
   shopInventory,
   merchantTab,
@@ -450,8 +450,8 @@ const CraftingModal = ({
               entries={[
                 { label: 'Weapons',  mod: marketModifiers.weapon },
                 { label: 'Armor',    mod: marketModifiers.armor },
-                { label: 'Pendants', mod: marketModifiers.pendant },
-                { label: 'Rings',    mod: marketModifiers.ring },
+                { label: 'Grimoires', mod: marketModifiers.grimoire },
+                { label: 'Tomes',     mod: marketModifiers.tome },
               ]}
               footer={`Prices refresh every ${GAME_CONSTANTS.SHOP_CONFIG.refreshInterval} days`}
             />
@@ -484,8 +484,8 @@ const CraftingModal = ({
                           </p>
                           {item.type === 'weapon'  && <p className="text-xs" style={{ color: '#68D391' }}>+{item.attack} Attack</p>}
                           {item.type === 'armor'   && <p className="text-xs" style={{ color: '#6BB6FF' }}>+{item.defense} Defense</p>}
-                          {item.type === 'pendant' && <p className="text-xs" style={{ color: '#68D391' }}>+{item.hp} Health</p>}
-                          {item.type === 'ring'    && <p className="text-xs" style={{ color: '#6BB6FF' }}>+{item.stamina} STA</p>}
+                          {item.type === 'grimoire' && <p className="text-xs" style={{ color: '#68D391' }}>+{item.hp} Health</p>}
+                          {item.type === 'tome'    && <p className="text-xs" style={{ color: '#6BB6FF' }}>+{item.stamina} STA</p>}
                           {item.affixes && Object.keys(item.affixes).length > 0 && (
                             <div className="mt-1">
                               {Object.entries(item.affixes).map(([affix, value]) => (
@@ -537,8 +537,8 @@ const CraftingModal = ({
           const sellRows = [
             { title: 'WEAPONS',  items: sortByRarity(weaponInventory),   getStat: w => `+${w.attack} Attack`,   onSell: w => sellEquipment(w, 'weapon'),           sellType: 'weapon' },
             { title: 'ARMOR',    items: armorFlat,                        getStat: a => `+${a.defense} Defense \u2022 ${a.slot.charAt(0).toUpperCase() + a.slot.slice(1)}`, onSell: a => sellEquipment(a, 'armor', a.slot), sellType: 'armor' },
-            { title: 'PENDANTS', items: sortByRarity(pendantInventory),   getStat: p => `+${p.hp} Health`,       onSell: p => sellEquipment(p, 'pendant'),           sellType: 'pendant' },
-            { title: 'RINGS',    items: sortByRarity(ringInventory),      getStat: r => `+${r.stamina} STA`,     onSell: r => sellEquipment(r, 'ring'),              sellType: 'ring' },
+            { title: 'GRIMOIRES', items: sortByRarity(grimoireInventory),   getStat: p => `+${p.hp} Health`,       onSell: p => sellEquipment(p, 'grimoire'),           sellType: 'grimoire' },
+            { title: 'TOMES',    items: sortByRarity(tomeInventory),      getStat: r => `+${r.stamina} STA`,     onSell: r => sellEquipment(r, 'tome'),              sellType: 'tome' },
           ];
           const isEmpty = sellRows.every(r => r.items.length === 0);
           return (
@@ -547,8 +547,8 @@ const CraftingModal = ({
                 entries={[
                   { label: 'Weapons',  mod: marketModifiers.weapon },
                   { label: 'Armor',    mod: marketModifiers.armor },
-                  { label: 'Pendants', mod: marketModifiers.pendant },
-                  { label: 'Rings',    mod: marketModifiers.ring },
+                  { label: 'Grimoires', mod: marketModifiers.grimoire },
+                  { label: 'Tomes',     mod: marketModifiers.tome },
                 ]}
                 footer="Prices refresh daily"
               />

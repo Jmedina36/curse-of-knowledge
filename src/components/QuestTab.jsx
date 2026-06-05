@@ -69,8 +69,8 @@ const QuestTab = ({
   // Equipment
   equippedWeapon,
   equippedArmor,
-  equippedPendant,
-  equippedRing,
+  equippedGrimoire,
+  equippedTome,
   weaponOilActive,
   armorPolishActive,
   luckyCharmActive,

@@ -19,6 +19,10 @@ const getArmorSprite = (piece, slot) => {
   return ARMOR_SPRITES[slot][Math.abs(seed) % ARMOR_SPRITES[slot].length];
 };
 
+// Book sprite — rarity maps to MAGIC-BOOK-1 (common) through 5 (legendary)
+const RARITY_BOOK_INDEX = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
+const getBookSprite = (item) => `/items/MAGIC-BOOK-${RARITY_BOOK_INDEX[item?.rarity] || 1}.png`;
+
 // Weapon sprite assignment — keyword match on name so type matches PNG
 const getWeaponSprite = (wpn) => {
   const name = (wpn?.name || '').toLowerCase();
@@ -60,8 +64,8 @@ const DWARF_QUOTES = {
     weaponDown: ["Ye're downgradin'? Did ye take a knock to the head?", "That's worse. Congratulations on the step backward.", "I've seen farmers with better taste in iron."],
     armorUp:    ["Good. Maybe ye won't bleed out on the first hit now.", "Aye, cover yerself up. Ye were embarrassin' me.", "Defense up. Try not to walk into every axe ye see."],
     armorDown:  ["Ye swapped down in defense. Brilliant strategy.", "Less protection. Bold choice. Stupid, but bold.", "Ye'd be safer wearin' a barrel."],
-    pendant:    ["A bauble. At least yer HP's up — it ain't just pretty.", "Jewelry. Aye, very fierce.", "More HP from a necklace. I've seen worse."],
-    ring:       ["A ring. More stamina. Don't spend it all running away.", "Stamina up. Good. Dying tired is still dying.", "Fine. More endurance. Ye'll need it."],
+    grimoire:   ["A spellbook. Knowledge is HP now, apparently.", "Aye, crack it open. More HP never hurt anyone.", "More health from a grimoire. I've seen worse battle plans."],
+    tome:       ["A tome. More stamina. Don't spend it all running away.", "Stamina up. Good. Dying tired is still dying.", "Fine. More endurance. Ye'll need it."],
   },
   BORIN: {
     idle:       ["Found something like that in a ruin once. Sold it for a song. Regret it still.", "Every piece of iron has a story. This one's... boring.", "I've seen the frozen seas. Makes ye appreciate a warm forge.", "Aye, browse away. I'm not going anywhere. Again.", "You remind me of someone I met in the eastern wastes. They didn't make it.", "The road gives and the road takes. Same as gear.", "I've carried heavier loads than that. With one arm."],
@@ -69,8 +73,8 @@ const DWARF_QUOTES = {
     weaponDown: ["Downgradin'? I've made poor choices on the road too. Still regret 'em.", "Seen better on a bandit's corpse — and I robbed that bandit.", "The road doesn't care about bad gear. Neither do the things on it."],
     armorUp:    ["That'll hold. Kept me alive through worse.", "Better coverage. The wilds don't give second chances.", "Aye, seen that style before. Good craftwork."],
     armorDown:  ["Less armor's a choice. Usually the last one.", "Traded down? I've made that mistake. Once.", "The road doesn't care. The monsters do."],
-    pendant:    ["Found a pendant like that in a cave once. Don't ask what it was hanging from.", "More HP. Out there, every drop counts.", "Aye, wear it. You'll need the health."],
-    ring:       ["Stamina's the real currency out there, friend.", "Had a ring like that. Traded it for a mule. No regrets.", "Good. Tired fighters make mistakes. Dead mistakes."],
+    grimoire:   ["Found a grimoire like that in a cave once. Didn't read it. Still alive.", "More HP. Out there, every drop counts.", "Aye, study up. You'll need the health."],
+    tome:       ["Stamina's the real currency out there, friend.", "Had a tome like that. Traded it for a mule. No regrets.", "Good. Tired fighters make mistakes. Dead mistakes."],
   },
   HELGA: {
     idle:       ["Put that down. Ye don't know where it's been.", "I didn't forge this lot for ye to stand there gawking.", "My husband wore lesser iron. He's dead now. Lesson's free.", "Do ye want it or not? I've got stew on.", "Ye look like ye dress in the dark. Sort yerself out.", "I've hammered dents from braver souls than you.", "Yer mother would be ashamed of that equipment. I know I am."],
@@ -78,8 +82,8 @@ const DWARF_QUOTES = {
     weaponDown: ["Ye just downgraded. I raised my children better than that.", "That's a worse weapon. Explain yerself.", "I've seen stew ladles hit harder. What are ye doing?"],
     armorUp:    ["Good. Armor means ye might come back in one piece.", "Finally. Ye were practically naked before.", "About time. Now ye might last more than three hits."],
     armorDown:  ["Less armor. Bold decision. Wrong one.", "Downgrading yer defense? My husband did that. Once.", "Put something proper on. Ye're embarrassing the forge."],
-    pendant:    ["A pendant. At least yer HP's up. Wear it proudly.", "Jewelry too, is it? Fine. Whatever keeps ye breathing.", "More HP. Good. I'd rather not sweep ye off the floor."],
-    ring:       ["A ring. More stamina. Don't ye dare waste it.", "Endurance. Smart. The weak ones always die tired.", "Good. Fatigue is just dying slowly. Fight it."],
+    grimoire:   ["A spellbook. At least yer HP's up. Read it or carry it — doesn't matter.", "Knowledge stored as health now, is it? Fine. Whatever keeps ye breathing.", "More HP. Good. I'd rather not sweep ye off the floor."],
+    tome:       ["A tome. More stamina. Don't ye dare waste it.", "Endurance. Smart. The weak ones always die tired.", "Good. Fatigue is just dying slowly. Fight it."],
   },
 };
 
@@ -93,8 +97,8 @@ const InventoryModal = ({
   healthPots, staminaPots, cleansePots, setStaminaPots,
   equippedWeapon, setEquippedWeapon, weaponInventory, setWeaponInventory,
   equippedArmor, setEquippedArmor, armorInventory, setArmorInventory,
-  equippedPendant, setEquippedPendant, pendantInventory, setPendantInventory,
-  equippedRing, setEquippedRing, ringInventory, setRingInventory,
+  equippedGrimoire, setEquippedGrimoire, grimoireInventory, setGrimoireInventory,
+  equippedTome, setEquippedTome, tomeInventory, setTomeInventory,
   setStamina,
   curseLevel, luckyCharmActive,
   getRarityColor, sortByRarity,
@@ -150,22 +154,22 @@ const InventoryModal = ({
     setGrimdarQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   };
 
-  const equipPendant = (pend) => {
-    const old = equippedPendant;
-    setEquippedPendant(pend);
-    setPendantInventory(prev => [...prev.filter(p => p.id !== pend.id), ...(old ? [old] : [])]);
+  const equipGrimoire = (pend) => {
+    const old = equippedGrimoire;
+    setEquippedGrimoire(pend);
+    setGrimoireInventory(prev => [...prev.filter(p => p.id !== pend.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${pend.name} (+${pend.hp} HP)`);
     if (old) addLog(`Unequipped: ${old.name}`);
-    setGrimdarQuote(dq.pendant[Math.floor(Math.random() * dq.pendant.length)]);
+    setGrimdarQuote(dq.grimoire[Math.floor(Math.random() * dq.grimoire.length)]);
   };
 
-  const equipRing = (rng) => {
-    const old = equippedRing;
-    setEquippedRing(rng);
-    setRingInventory(prev => [...prev.filter(r => r.id !== rng.id), ...(old ? [old] : [])]);
+  const equipTome = (rng) => {
+    const old = equippedTome;
+    setEquippedTome(rng);
+    setTomeInventory(prev => [...prev.filter(r => r.id !== rng.id), ...(old ? [old] : [])]);
     addLog(`Equipped: ${rng.name} (+${rng.stamina} Stamina)`);
     if (old) addLog(`Unequipped: ${old.name}`);
-    setGrimdarQuote(dq.ring[Math.floor(Math.random() * dq.ring.length)]);
+    setGrimdarQuote(dq.tome[Math.floor(Math.random() * dq.tome.length)]);
   };
 
   // ── Shared styles ──
@@ -263,35 +267,41 @@ const InventoryModal = ({
   };
 
   const renderAccessories = () => {
-    const allPendants = [...(equippedPendant ? [{ ...equippedPendant, _eq: true }] : []), ...sortByRarity(pendantInventory)];
-    const allRings    = [...(equippedRing    ? [{ ...equippedRing,    _eq: true }] : []), ...sortByRarity(ringInventory)];
-    if (!allPendants.length && !allRings.length) return emptyMsg('No accessories found yet. Defeat enemies to find pendants and rings.');
+    const allPendants = [...(equippedGrimoire ? [{ ...equippedGrimoire, _eq: true }] : []), ...sortByRarity(grimoireInventory)];
+    const allRings    = [...(equippedTome    ? [{ ...equippedTome,    _eq: true }] : []), ...sortByRarity(tomeInventory)];
+    if (!allPendants.length && !allRings.length) return emptyMsg('No accessories found yet. Defeat enemies to find grimoires and tomes.');
     return (
       <>
         {allPendants.length > 0 && (
           <div style={{ marginBottom: '14px' }}>
-            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Pendant</p>
+            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Grimoire</p>
             {allPendants.map((pend, i) => (
               <div key={pend.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(pend.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
+                <img src={getBookSprite(pend)} alt={pend.name}
+                  style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
+                    filter: `drop-shadow(0 0 5px ${getRarityColor(pend.rarity || 'common')}70)` }}/>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ color: getRarityColor(pend.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{pend.name}</p>
                   <p style={{ color: '#FF6B6B', fontSize: '11px' }}>+{pend.hp} HP</p>
                 </div>
-                {pend._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipPendant(pend); }}>Equip</button>}
+                {pend._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipGrimoire(pend); }}>Equip</button>}
               </div>
             ))}
           </div>
         )}
         {allRings.length > 0 && (
           <div>
-            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Ring</p>
+            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Tome</p>
             {allRings.map((rng, i) => (
               <div key={rng.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(rng.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
+                <img src={getBookSprite(rng)} alt={rng.name}
+                  style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
+                    filter: `drop-shadow(0 0 5px ${getRarityColor(rng.rarity || 'common')}70)` }}/>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ color: getRarityColor(rng.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{rng.name}</p>
                   <p style={{ color: '#6BB6FF', fontSize: '11px' }}>+{rng.stamina} Stamina</p>
                 </div>
-                {rng._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipRing(rng); }}>Equip</button>}
+                {rng._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipTome(rng); }}>Equip</button>}
               </div>
             ))}
           </div>
@@ -340,12 +350,12 @@ const InventoryModal = ({
   });
 
   const totalDR      = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.percentDR || 0), 0);
-  const totalBonusHP = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.flatHP   || 0), 0) + (equippedPendant?.hp || 0);
+  const totalBonusHP = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.flatHP   || 0), 0) + (equippedGrimoire?.hp || 0);
 
   const counts = {
     weapons:     (equippedWeapon ? 1 : 0) + weaponInventory.length,
     armor:       ARMOR_SLOTS.reduce((s, { key }) => s + (equippedArmor[key] ? 1 : 0) + (armorInventory[key]?.length || 0), 0),
-    accessories: (equippedPendant ? 1 : 0) + pendantInventory.length + (equippedRing ? 1 : 0) + ringInventory.length,
+    accessories: (equippedGrimoire ? 1 : 0) + grimoireInventory.length + (equippedTome ? 1 : 0) + tomeInventory.length,
   };
 
   return (
@@ -502,26 +512,32 @@ const InventoryModal = ({
 
             {/* Accessory slots — 1×2 */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
-              <div style={slotBox(equippedPendant)}>
-                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>PENDANT</p>
-                {equippedPendant ? (
+              <div style={slotBox(equippedGrimoire)}>
+                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>GRIMOIRE</p>
+                {equippedGrimoire ? (
                   <>
-                    <p style={{ color: getRarityColor(equippedPendant.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedPendant.name}</p>
-                    <p style={{ color: '#FF6B6B', fontSize: '10px' }}>+{equippedPendant.hp} HP</p>
-                    {equippedPendant.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '9px' }}>+{Math.floor(equippedPendant.affixes.xpBonus)}% XP</p>}
+                    <img src={getBookSprite(equippedGrimoire)} alt={equippedGrimoire.name}
+                      style={{ width: 36, height: 36, objectFit: 'contain', marginBottom: '4px',
+                        filter: `drop-shadow(0 0 5px ${getRarityColor(equippedGrimoire.rarity || 'common')}70)` }}/>
+                    <p style={{ color: getRarityColor(equippedGrimoire.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedGrimoire.name}</p>
+                    <p style={{ color: '#FF6B6B', fontSize: '10px' }}>+{equippedGrimoire.hp} HP</p>
+                    {equippedGrimoire.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '9px' }}>+{Math.floor(equippedGrimoire.affixes.xpBonus)}% XP</p>}
                   </>
                 ) : (
                   <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
                 )}
               </div>
-              <div style={slotBox(equippedRing)}>
-                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>RING</p>
-                {equippedRing ? (
+              <div style={slotBox(equippedTome)}>
+                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>TOME</p>
+                {equippedTome ? (
                   <>
-                    <p style={{ color: getRarityColor(equippedRing.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedRing.name}</p>
-                    <p style={{ color: '#6BB6FF', fontSize: '10px' }}>+{equippedRing.stamina} STA</p>
-                    {equippedRing.affixes?.critChance > 0 && <p style={{ color: '#FFD700', fontSize: '9px' }}>+{Math.floor(equippedRing.affixes.critChance)}% Crit</p>}
-                    {equippedRing.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '9px' }}>+{Math.floor(equippedRing.affixes.goldBonus)}% Gold</p>}
+                    <img src={getBookSprite(equippedTome)} alt={equippedTome.name}
+                      style={{ width: 36, height: 36, objectFit: 'contain', marginBottom: '4px',
+                        filter: `drop-shadow(0 0 5px ${getRarityColor(equippedTome.rarity || 'common')}70)` }}/>
+                    <p style={{ color: getRarityColor(equippedTome.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedTome.name}</p>
+                    <p style={{ color: '#6BB6FF', fontSize: '10px' }}>+{equippedTome.stamina} STA</p>
+                    {equippedTome.affixes?.critChance > 0 && <p style={{ color: '#FFD700', fontSize: '9px' }}>+{Math.floor(equippedTome.affixes.critChance)}% Crit</p>}
+                    {equippedTome.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '9px' }}>+{Math.floor(equippedTome.affixes.goldBonus)}% Gold</p>}
                   </>
                 ) : (
                   <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>

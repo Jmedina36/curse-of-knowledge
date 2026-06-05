@@ -197,12 +197,12 @@ export const GAME_CONSTANTS = {
       percentDR: 3,            // 1 budget = +0.33% DR (capped at 40% total)
       flatHP: 2                // 1 budget = +0.5 HP
     },
-    pendant: {
+    grimoire: {
       flatHP: 1.5,             // 1 budget = +0.67 max HP
       regenHP: 3,              // 1 budget = +0.33 HP restored after combat
       xpBonus: 6               // 1 budget = +0.17% XP gain
     },
-    ring: {
+    tome: {
       flatStamina: 1.5,        // 1 budget = +0.67 max stamina
       critChance: 5,           // 1 budget = +0.2% crit chance
       goldBonus: 4             // 1 budget = +0.25% combat gold
@@ -450,24 +450,24 @@ export const GAME_CONSTANTS = {
   },
   
   ACCESSORY_STAT_RANGES: {
-    pendant: { min: 5, max: 25 },
-    ring: { min: 5, max: 25 }
+    grimoire: { min: 5, max: 25 },
+    tome: { min: 5, max: 25 }
   },
-  
+
   ACCESSORY_NAMES: {
-    pendant: {
-      common: ['Cracked Pendant', 'Worn Charm', 'Simple Talisman', 'Tarnished Medallion', 'Crude Necklace', 'Faded Amulet', 'Plain Pendant'],
-      uncommon: ['Quality Pendant', 'Sturdy Charm', 'Well-Made Talisman', 'Polished Medallion', 'Balanced Necklace', 'Clear Amulet', 'Solid Pendant'],
-      rare: ['Enchanted Medallion', 'Battle Charm', 'Mystic Pendant', 'Guardian\'s Talisman', 'Forged Amulet', 'Knight\'s Sigil', 'Warden\'s Necklace'],
-      epic: ['Dragonheart Pendant', 'Soulstone Amulet', 'Voidkeeper Charm', 'Titan\'s Medallion', 'Stormshard Talisman', 'Demonward Sigil', 'Wyrmheart Necklace'],
-      legendary: ['Eternity\'s Heart', 'The Infinite Soul', 'Heaven\'s Tear', 'World\'s Core', 'Fate\'s Promise', 'Cosmos Shard', 'The Primordial']
+    grimoire: {
+      common: ['Worn Spellbook', 'Faded Grimoire', 'Tattered Codex', 'Cracked Folio', 'Crude Compendium', 'Dusty Manual', 'Plain Spellbook'],
+      uncommon: ['Studied Grimoire', 'Bound Codex', 'Solid Compendium', 'Polished Manual', 'Clear Folio', 'Sturdy Spellbook', 'Well-Read Grimoire'],
+      rare: ['Arcane Grimoire', 'Scholar\'s Codex', 'Battle Manual', 'Guardian\'s Tome', 'Forged Compendium', 'Knight\'s Folio', 'Warden\'s Spellbook'],
+      epic: ['Dragonblood Grimoire', 'Soulscribed Codex', 'Voidkeeper\'s Manual', 'Titan\'s Tome', 'Stormshard Compendium', 'Demonward Folio', 'Wyrmheart Spellbook'],
+      legendary: ['Eternity\'s Script', 'The Infinite Word', 'Heaven\'s Chronicle', 'World\'s Verse', 'Fate\'s Inscription', 'Cosmos Text', 'The Primordial Script']
     },
-    ring: {
-      common: ['Bent Ring', 'Tarnished Band', 'Simple Loop', 'Worn Circle', 'Crude Band', 'Rusty Ring', 'Plain Loop'],
-      uncommon: ['Quality Ring', 'Sturdy Band', 'Well-Made Loop', 'Polished Circle', 'Balanced Band', 'Strong Ring', 'Solid Loop'],
-      rare: ['Engraved Band', 'Battle Ring', 'Enchanted Loop', 'Warden\'s Signet', 'Forged Circle', 'Knight\'s Ring', 'Mystic Band'],
-      epic: ['Dragonbone Ring', 'Soulbound Band', 'Voidcircle', 'Titan\'s Loop', 'Stormband', 'Demonward Ring', 'Wyrmscale Signet'],
-      legendary: ['Eternity Band', 'The Infinite Loop', 'Heaven\'s Circle', 'Worldbinder\'s Ring', 'Fate\'s Signet', 'Cosmos Ring', 'The Eternal']
+    tome: {
+      common: ['Tattered Tome', 'Worn Pages', 'Simple Guide', 'Crude Handbook', 'Faded Folio', 'Dusty Codex', 'Plain Manual'],
+      uncommon: ['Studied Tome', 'Bound Guide', 'Solid Handbook', 'Polished Folio', 'Clear Codex', 'Sturdy Pages', 'Well-Read Tome'],
+      rare: ['Arcane Tome', 'Scholar\'s Guide', 'Battle Handbook', 'Guardian\'s Folio', 'Forged Manual', 'Knight\'s Codex', 'Warden\'s Tome'],
+      epic: ['Dragonbone Tome', 'Soulbound Guide', 'Voidscribed Handbook', 'Titan\'s Manual', 'Stormbound Folio', 'Demonward Codex', 'Wyrmscale Tome'],
+      legendary: ['Eternity\'s Knowledge', 'The Infinite Guide', 'Heaven\'s Tome', 'Worldbinder\'s Manual', 'Fate\'s Codex', 'Cosmos Handbook', 'The Eternal Knowledge']
     }
   },
   
@@ -477,32 +477,32 @@ export const GAME_CONSTANTS = {
       chest: { name: 'Chainmail Vest', defense: 2 },
       gloves: { name: 'Leather Grips', defense: 1 },
       boots: { name: 'Steel-toed Boots', defense: 1 },
-      pendant: null,
-      ring: null
+      grimoire: null,
+      tome: null
     },
     Crusader: {
       helmet: { name: 'Holy Circlet', defense: 1 },
       chest: { name: 'Blessed Tunic', defense: 2 },
       gloves: { name: 'Prayer Wraps', defense: 1 },
       boots: { name: 'Temple Sandals', defense: 1 },
-      pendant: null,
-      ring: null
+      grimoire: null,
+      tome: null
     },
     Assassin: {
       helmet: { name: 'Shadow Cowl', defense: 1 },
       chest: { name: 'Dark Leather', defense: 2 },
       gloves: { name: 'Fingerless Gloves', defense: 1 },
       boots: { name: 'Soft Boots', defense: 1 },
-      pendant: { name: 'Lucky Charm', hp: 10 },
-      ring: null
+      grimoire: { name: 'Worn Spellbook', hp: 10 },
+      tome: null
     },
     Wizard: {
       helmet: { name: 'Apprentice Hat', defense: 1 },
       chest: { name: "Scholar's Robe", defense: 2 },
       gloves: { name: 'Silk Wraps', defense: 1 },
       boots: { name: 'Cloth Slippers', defense: 1 },
-      pendant: null,
-      ring: { name: 'Focusing Band', stamina: 10 }
+      grimoire: null,
+      tome: { name: 'Field Manual', stamina: 10 }
     }
   },
   

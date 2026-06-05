@@ -163,8 +163,8 @@ const FantasyStudyQuest = () => {
   const [marketModifiers, setMarketModifiers] = useState({
     weapon: 1.0,
     armor: 1.0,
-    pendant: 1.0,
-    ring: 1.0,
+    grimoire: 1.0,
+    tome: 1.0,
     healthPotion: 1.0,
     staminaPotion: 1.0,
     cleansePotion: 1.0,
@@ -210,14 +210,14 @@ const FantasyStudyQuest = () => {
   });
   
   // Accessory equipment system
-  const [equippedPendant, setEquippedPendant] = useState(null);
-  const [equippedRing, setEquippedRing] = useState(null);
-  const [pendantInventory, setPendantInventory] = useState([]);
-  const [ringInventory, setRingInventory] = useState([]);
+  const [equippedGrimoire, setEquippedGrimoire] = useState(null);
+  const [equippedTome, setEquippedTome] = useState(null);
+  const [grimoireInventory, setGrimoireInventory] = useState([]);
+  const [tomeInventory, setTomeInventory] = useState([]);
   
   const getMaxHp = useCallback(() => {
-    const pendantBonus = equippedPendant ? equippedPendant.hp : 0;
-    const pendantFlatHP = Math.floor(equippedPendant?.affixes?.flatHP || 0);
+    const pendantBonus = equippedGrimoire ? equippedGrimoire.hp : 0;
+    const pendantFlatHP = Math.floor(equippedGrimoire?.affixes?.flatHP || 0);
 
     // Add flatHP from armor affixes
     let armorHpBonus = 0;
@@ -229,13 +229,13 @@ const FantasyStudyQuest = () => {
 
     const conMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.con - 10) / 2)) : 0;
     return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + pendantFlatHP + armorHpBonus + conMod * 5);
-  }, [equippedPendant, equippedArmor]);
+  }, [equippedGrimoire, equippedArmor]);
   
   const getMaxStamina = useCallback(() => {
-    const ringBonus = equippedRing ? equippedRing.stamina : 0;
-    const ringFlatStamina = Math.floor(equippedRing?.affixes?.flatStamina || 0);
+    const ringBonus = equippedTome ? equippedTome.stamina : 0;
+    const ringFlatStamina = Math.floor(equippedTome?.affixes?.flatStamina || 0);
     return Math.floor(GAME_CONSTANTS.MAX_STAMINA + ringBonus + ringFlatStamina);
-  }, [equippedRing]);
+  }, [equippedTome]);
   
   const getBaseAttack = useCallback(() => {
     if (!hero || !hero.class || !hero.class.name) return 10;
@@ -1015,10 +1015,10 @@ const getDateKey = useCallback((date) => {
         if (data.weaponInventory) setWeaponInventory(data.weaponInventory);
         if (data.equippedArmor) setEquippedArmor(data.equippedArmor);
         if (data.armorInventory) setArmorInventory(data.armorInventory);
-        if (data.equippedPendant) setEquippedPendant(data.equippedPendant);
-        if (data.equippedRing) setEquippedRing(data.equippedRing);
-        if (data.pendantInventory) setPendantInventory(data.pendantInventory);
-        if (data.ringInventory) setRingInventory(data.ringInventory);
+        if (data.equippedGrimoire) setEquippedGrimoire(data.equippedGrimoire);
+        if (data.equippedTome) setEquippedTome(data.equippedTome);
+        if (data.grimoireInventory) setGrimoireInventory(data.grimoireInventory);
+        if (data.tomeInventory) setTomeInventory(data.tomeInventory);
         if (data.tasks) setTasks(data.tasks);
         if (data.flashcardDecks) setFlashcardDecks(data.flashcardDecks);
         if (data.graveyard) setGraveyard(data.graveyard);
@@ -1094,11 +1094,11 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
           });
           
           // Initialize accessories
-          if (startingGear.pendant) {
-            setEquippedPendant(startingGear.pendant);
+          if (startingGear.grimoire) {
+            setEquippedGrimoire(startingGear.grimoire);
           }
-          if (startingGear.ring) {
-            setEquippedRing(startingGear.ring);
+          if (startingGear.tome) {
+            setEquippedTome(startingGear.tome);
           }
         }
       }
@@ -1110,7 +1110,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
      const saveData = {
   hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters,
   weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, 
-  equippedPendant, equippedRing, pendantInventory, ringInventory,
+  equippedGrimoire, equippedTome, grimoireInventory, tomeInventory,
   tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
@@ -1123,7 +1123,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedPendant, equippedRing, pendantInventory, ringInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -1794,7 +1794,7 @@ if (tasks.length === 0) {
   // Update market modifiers (called daily or when entering merchant)
   const updateMarketPrices = () => {
     const newModifiers = {};
-    const types = ['weapon', 'armor', 'pendant', 'ring', 'healthPotion', 'staminaPotion', 'cleansePotion', 'weaponOil', 'armorPolish', 'luckyCharm'];
+    const types = ['weapon', 'armor', 'grimoire', 'tome', 'healthPotion', 'staminaPotion', 'cleansePotion', 'weaponOil', 'armorPolish', 'luckyCharm'];
     
     types.forEach(type => {
       // Random fluctuation between 0.7x and 1.3x
@@ -1887,35 +1887,35 @@ if (tasks.length === 0) {
         };
       } else if (typeRoll < 0.85) {
         // Pendant
-        const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+        const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.grimoire;
         const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         const hp = Math.floor(baseHp * multiplier);
-        const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[selectedRarity];
+        const names = GAME_CONSTANTS.ACCESSORY_NAMES.grimoire[selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
         
         item = {
           id: `shop-${Date.now()}-${i}`,
-          type: 'pendant',
+          type: 'grimoire',
           name,
           hp,
           rarity: selectedRarity,
-          affixes: generateAffixes(selectedRarity, 'pendant')
+          affixes: generateAffixes(selectedRarity, 'grimoire')
         };
       } else {
         // Ring
-        const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+        const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.tome;
         const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
         const stamina = Math.floor(baseStamina * multiplier);
-        const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[selectedRarity];
+        const names = GAME_CONSTANTS.ACCESSORY_NAMES.tome[selectedRarity];
         const name = names[Math.floor(Math.random() * names.length)];
 
         item = {
           id: `shop-${Date.now()}-${i}`,
-          type: 'ring',
+          type: 'tome',
           name,
           stamina,
           rarity: selectedRarity,
-          affixes: generateAffixes(selectedRarity, 'ring')
+          affixes: generateAffixes(selectedRarity, 'tome')
         };
       }
       
@@ -1957,10 +1957,10 @@ if (tasks.length === 0) {
         ...prev,
         [slot]: prev[slot].filter(a => a.id !== item.id)
       }));
-    } else if (itemType === 'pendant') {
-      setPendantInventory(prev => prev.filter(p => p.id !== item.id));
-    } else if (itemType === 'ring') {
-      setRingInventory(prev => prev.filter(r => r.id !== item.id));
+    } else if (itemType === 'grimoire') {
+      setGrimoireInventory(prev => prev.filter(p => p.id !== item.id));
+    } else if (itemType === 'tome') {
+      setTomeInventory(prev => prev.filter(r => r.id !== item.id));
     }
     
     const marketBonus = marketModifiers[itemType] > 1.0 ? ' (Market Bonus!)' : '';
@@ -2082,11 +2082,11 @@ if (tasks.length === 0) {
         [item.slot]: sortByRarity([...prev[item.slot], { ...item, id: Date.now() }])
       }));
       addLog(`Purchased: ${item.name} (+${item.defense} Defense) for ${finalPrice}g`);
-    } else if (item.type === 'pendant') {
-      setPendantInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
+    } else if (item.type === 'grimoire') {
+      setGrimoireInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
       addLog(`Purchased: ${item.name} (+${item.hp} Health) for ${finalPrice}g`);
-    } else if (item.type === 'ring') {
-      setRingInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
+    } else if (item.type === 'tome') {
+      setTomeInventory(prev => sortByRarity([...prev, { ...item, id: Date.now() }]));
       addLog(`Purchased: ${item.name} (+${item.stamina} STA) for ${finalPrice}g`);
     }
     
@@ -2394,37 +2394,37 @@ pendingBattleSpawnRef.current = () => {
           const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
           
-          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.grimoire;
           const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const hp = Math.floor(baseHp * multiplier);
           
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.grimoire[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          const affixes = generateAffixes(rarity, 'pendant');
-          const newPendant = { name, hp, rarity, affixes, id: Date.now() };
-          setPendantInventory(prev => sortByRarity([...prev, newPendant]));
+          const affixes = generateAffixes(rarity, 'grimoire');
+          const newGrimoire = { name, hp, rarity, affixes, id: Date.now() };
+          setGrimoireInventory(prev => sortByRarity([...prev, newGrimoire]));
 
           lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
-          addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)`);
+          addLog(`Grimoire found: ${rarityName} ${name} (+${hp} Health)`);
         } else if (lootRoll < 0.90) {
           // 10% Ring with rarity
           const rarity = rollRarityWithPity('normal');
           const multiplier = getRarityMultiplier(rarity);
 
-          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.tome;
           const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const stamina = Math.floor(baseStamina * multiplier);
 
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.tome[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          const affixes = generateAffixes(rarity, 'ring');
-          const newRing = { name, stamina, rarity, affixes, id: Date.now() };
-          setRingInventory(prev => sortByRarity([...prev, newRing]));
+          const affixes = generateAffixes(rarity, 'tome');
+          const newTome = { name, stamina, rarity, affixes, id: Date.now() };
+          setTomeInventory(prev => sortByRarity([...prev, newTome]));
 
           lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
-          addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)`);
+          addLog(`Tome found: ${rarityName} ${name} (+${stamina} STA)`);
         }
         // 10% chance of no loot
         // ~35% chance of fusion crystal from any battle
@@ -2493,37 +2493,37 @@ pendingBattleSpawnRef.current = () => {
           const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
           
-          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.grimoire;
           const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const hp = Math.floor(baseHp * multiplier);
           
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.grimoire[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          const affixes = generateAffixes(rarity, 'pendant');
-          const newPendant = { name, hp, rarity, affixes, id: Date.now() };
-          setPendantInventory(prev => sortByRarity([...prev, newPendant]));
+          const affixes = generateAffixes(rarity, 'grimoire');
+          const newGrimoire = { name, hp, rarity, affixes, id: Date.now() };
+          setGrimoireInventory(prev => sortByRarity([...prev, newGrimoire]));
 
           lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
-          addLog(`Pendant found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+          addLog(`Grimoire found: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         } else {
           // Generate random ring with elite rarity
           const rarity = rollRarityWithPity('elite');
           const multiplier = getRarityMultiplier(rarity);
 
-          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+          const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.tome;
           const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
           const stamina = Math.floor(baseStamina * multiplier);
 
-          const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
+          const names = GAME_CONSTANTS.ACCESSORY_NAMES.tome[rarity];
           const name = names[Math.floor(Math.random() * names.length)];
           const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-          const affixes = generateAffixes(rarity, 'ring');
-          const newRing = { name, stamina, rarity, affixes, id: Date.now() };
-          setRingInventory(prev => sortByRarity([...prev, newRing]));
+          const affixes = generateAffixes(rarity, 'tome');
+          const newTome = { name, stamina, rarity, affixes, id: Date.now() };
+          setTomeInventory(prev => sortByRarity([...prev, newTome]));
 
           lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
-          addLog(`Ring found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
+          addLog(`Tome found: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' - blessed by fortune!' : ''}`);
         }
 
         if (luckyCharmActive) {
@@ -3200,8 +3200,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         critMultiplier += equippedWeapon.affixes.critMultiplier;
       }
     }
-    if (equippedRing?.affixes?.critChance) {
-      critChance += equippedRing.affixes.critChance;
+    if (equippedTome?.affixes?.critChance) {
+      critChance += equippedTome.affixes.critChance;
     }
 
     const critRoll = Math.random() * 100;
@@ -3420,11 +3420,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     goldGain = 10; // Regular enemies
   }
   
-  const pendantXpBonus = 1 + (equippedPendant?.affixes?.xpBonus || 0) / 100;
-  const ringGoldBonus  = 1 + (equippedRing?.affixes?.goldBonus  || 0) / 100;
+  const grimoireXpBonus = 1 + (equippedGrimoire?.affixes?.xpBonus || 0) / 100;
+  const tomeGoldBonus  = 1 + (equippedTome?.affixes?.goldBonus  || 0) / 100;
   const chaMod = Math.max(0, Math.floor(((hero?.abilities?.cha || 10) - 10) / 2));
-  setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier * pendantXpBonus));
-  setGold(e => e + Math.round(goldGain * (1 + chaMod * 0.05) * ringGoldBonus));
+  setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier * grimoireXpBonus));
+  setGold(e => e + Math.round(goldGain * (1 + chaMod * 0.05) * tomeGoldBonus));
   
   // Accumulate wave gold for final display
   if (battleType === 'wave') {
@@ -3584,11 +3584,11 @@ if (battleType === 'elite') {
   }
 
   // Pendant regenHP: restore HP after combat victory
-  if (equippedPendant?.affixes?.regenHP) {
-    const regen = Math.floor(equippedPendant.affixes.regenHP);
+  if (equippedGrimoire?.affixes?.regenHP) {
+    const regen = Math.floor(equippedGrimoire.affixes.regenHP);
     if (regen > 0) {
       setHp(h => Math.min(h + regen, getMaxHp()));
-      addLog(`✨ ${equippedPendant.name} restores ${regen} HP.`);
+      addLog(`✨ ${equippedGrimoire.name} restores ${regen} HP.`);
     }
   }
 
@@ -4123,8 +4123,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
       critChance += GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.sanctifiedCrit;
     }
-    if (equippedRing?.affixes?.critChance) {
-      critChance += equippedRing.affixes.critChance;
+    if (equippedTome?.affixes?.critChance) {
+      critChance += equippedTome.affixes.critChance;
     }
     const isCrit = (Math.random() * 100) < critChance;
     const critMultiplier = isCrit ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
@@ -4413,16 +4413,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
       
-      const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.pendant;
+      const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.grimoire;
       const baseHp = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const hp = Math.floor(baseHp * multiplier);
       
-      const names = GAME_CONSTANTS.ACCESSORY_NAMES.pendant[rarity];
+      const names = GAME_CONSTANTS.ACCESSORY_NAMES.grimoire[rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-      const affixes = generateAffixes(rarity, 'pendant');
-      const newPendant = { name, hp, rarity, affixes, id: Date.now() };
-      setPendantInventory(prev => sortByRarity([...prev, newPendant]));
+      const affixes = generateAffixes(rarity, 'grimoire');
+      const newGrimoire = { name, hp, rarity, affixes, id: Date.now() };
+      setGrimoireInventory(prev => sortByRarity([...prev, newGrimoire]));
 
       lootMessages.push(`${rarityName} ${name} (+${hp} Health)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${hp} Health)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
@@ -4431,16 +4431,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const rarity = rollRarityWithPity('boss');
       const multiplier = getRarityMultiplier(rarity);
 
-      const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.ring;
+      const range = GAME_CONSTANTS.ACCESSORY_STAT_RANGES.tome;
       const baseStamina = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
       const stamina = Math.floor(baseStamina * multiplier);
 
-      const names = GAME_CONSTANTS.ACCESSORY_NAMES.ring[rarity];
+      const names = GAME_CONSTANTS.ACCESSORY_NAMES.tome[rarity];
       const name = names[Math.floor(Math.random() * names.length)];
       const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-      const affixes = generateAffixes(rarity, 'ring');
-      const newRing = { name, stamina, rarity, affixes, id: Date.now() };
-      setRingInventory(prev => sortByRarity([...prev, newRing]));
+      const affixes = generateAffixes(rarity, 'tome');
+      const newTome = { name, stamina, rarity, affixes, id: Date.now() };
+      setTomeInventory(prev => sortByRarity([...prev, newTome]));
 
       lootMessages.push(`${rarityName} ${name} (+${stamina} STA)`);
       addLog(`💎 Looted: ${rarityName} ${name} (+${stamina} STA)${luckyCharmActive ? ' (Lucky Charm!)' : '!'}`);
@@ -4994,8 +4994,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         critMultiplier += equippedWeapon.affixes.critMultiplier;
       }
     }
-    if (equippedRing?.affixes?.critChance) {
-      critChance += equippedRing.affixes.critChance;
+    if (equippedTome?.affixes?.critChance) {
+      critChance += equippedTome.affixes.critChance;
     }
 
     const critRoll = Math.random() * 100;
@@ -5908,10 +5908,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       setWeaponInventory([]);
       setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
       setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
-      setEquippedPendant(null);
-      setPendantInventory([]);
-      setEquippedRing(null);
-      setRingInventory([]);
+      setEquippedGrimoire(null);
+      setGrimoireInventory([]);
+      setEquippedTome(null);
+      setTomeInventory([]);
       
       setStudyStats(prev => ({
         totalMinutesToday: 0,
@@ -6798,10 +6798,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       setWeaponInventory([]);
                       setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
                       setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
-                      setEquippedPendant(null);
-                      setEquippedRing(null);
-                      setPendantInventory([]);
-                      setRingInventory([]);
+                      setEquippedGrimoire(null);
+                      setEquippedTome(null);
+                      setGrimoireInventory([]);
+                      setTomeInventory([]);
                       setTasks([]);
                       setActiveTask(null);
                       setTimer(0);
@@ -6974,7 +6974,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
               heroCardCollapsed={heroCardCollapsed} setHeroCardCollapsed={setHeroCardCollapsed}
               equippedWeapon={equippedWeapon} equippedArmor={equippedArmor}
-              equippedPendant={equippedPendant} equippedRing={equippedRing}
+              equippedGrimoire={equippedGrimoire} equippedTome={equippedTome}
               weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive} luckyCharmActive={luckyCharmActive}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
@@ -7527,14 +7527,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setWeaponInventory([]);
                     setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
                     setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
-                    setEquippedPendant(null);
-                    setEquippedRing(null);
-                    setPendantInventory([]);
-                    setRingInventory([]);
+                    setEquippedGrimoire(null);
+                    setEquippedTome(null);
+                    setGrimoireInventory([]);
+                    setTomeInventory([]);
                     setWaveGoldTotal(0);
 
                     // Reset market
-                    setMarketModifiers({ weapon: 1.0, armor: 1.0, pendant: 1.0, ring: 1.0, healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0, weaponOil: 1.0, armorPolish: 1.0, luckyCharm: 1.0 });
+                    setMarketModifiers({ weapon: 1.0, armor: 1.0, grimoire: 1.0, tome: 1.0, healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0, weaponOil: 1.0, armorPolish: 1.0, luckyCharm: 1.0 });
                     setLastMarketUpdateDay(0);
                     setShopInventory([]);
                     setDaysSinceShop(0);
@@ -7662,12 +7662,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               cleansePots={cleansePots}
               equippedWeapon={equippedWeapon} setEquippedWeapon={setEquippedWeapon}
               equippedArmor={equippedArmor} setEquippedArmor={setEquippedArmor}
-              equippedPendant={equippedPendant} setEquippedPendant={setEquippedPendant}
-              equippedRing={equippedRing} setEquippedRing={setEquippedRing}
+              equippedGrimoire={equippedGrimoire} setEquippedGrimoire={setEquippedGrimoire}
+              equippedTome={equippedTome} setEquippedTome={setEquippedTome}
               weaponInventory={weaponInventory} setWeaponInventory={setWeaponInventory}
               armorInventory={armorInventory} setArmorInventory={setArmorInventory}
-              pendantInventory={pendantInventory} setPendantInventory={setPendantInventory}
-              ringInventory={ringInventory} setRingInventory={setRingInventory}
+              grimoireInventory={grimoireInventory} setGrimoireInventory={setGrimoireInventory}
+              tomeInventory={tomeInventory} setTomeInventory={setTomeInventory}
               luckyCharmActive={luckyCharmActive}
               getRarityColor={getRarityColor} sortByRarity={sortByRarity}
               addLog={addLog} useHealth={useHealth} useCleanse={useCleanse}
@@ -7703,12 +7703,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               luckyCharmActive={luckyCharmActive} setLuckyCharmActive={setLuckyCharmActive}
               equippedWeapon={equippedWeapon} setEquippedWeapon={setEquippedWeapon}
               equippedArmor={equippedArmor} setEquippedArmor={setEquippedArmor}
-              equippedPendant={equippedPendant} setEquippedPendant={setEquippedPendant}
-              equippedRing={equippedRing} setEquippedRing={setEquippedRing}
+              equippedGrimoire={equippedGrimoire} setEquippedGrimoire={setEquippedGrimoire}
+              equippedTome={equippedTome} setEquippedTome={setEquippedTome}
               weaponInventory={weaponInventory} setWeaponInventory={setWeaponInventory}
               armorInventory={armorInventory} setArmorInventory={setArmorInventory}
-              pendantInventory={pendantInventory} setPendantInventory={setPendantInventory}
-              ringInventory={ringInventory} setRingInventory={setRingInventory}
+              grimoireInventory={grimoireInventory} setGrimoireInventory={setGrimoireInventory}
+              tomeInventory={tomeInventory} setTomeInventory={setTomeInventory}
               shopInventory={shopInventory} setShopInventory={setShopInventory}
               merchantTab={merchantTab} setMerchantTab={setMerchantTab}
               marketModifiers={marketModifiers}
