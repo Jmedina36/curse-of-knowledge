@@ -7105,6 +7105,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               gauntletUnlocked={gauntletUnlocked}
               tasks={tasks}
               completedLocationContracts={completedLocationContracts}
+              onOpenBestiary={() => setActiveTab('bestiary')}
               onWildEncounter={({ monster, zone }) => {
                 const lineup = [{ img: monster.img, name: monster.name, isCapt: false, isLeader: false, contractDialogue: null }];
                 banditLineupRef.current = lineup;

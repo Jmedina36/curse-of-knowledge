@@ -521,7 +521,7 @@ const WorldMapTab = ({
   activeContract, setActiveContract,
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
-  completedLocationContracts, onWildEncounter,
+  completedLocationContracts, onWildEncounter, onOpenBestiary,
 }) => {
   const [activeLocation, setActiveLocation] = useState(null);
   const [typeFilter, setTypeFilter] = useState('all');
@@ -740,8 +740,14 @@ const WorldMapTab = ({
               }} />
 
               {/* Night — stars */}
+              <AnimatePresence>
               {!isDayActive && (
-                <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}>
+                <motion.div
+                  key="stars"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  transition={{ duration: 1.5 }}
+                  style={{ position: 'absolute', inset: 0, pointerEvents: 'none', overflow: 'hidden' }}
+                >
                   {[
                     { left: '12%', top: '5%'  }, { left: '28%', top: '3%'  }, { left: '45%', top: '7%'  },
                     { left: '62%', top: '2%'  }, { left: '78%', top: '6%'  }, { left: '88%', top: '3%'  },
@@ -765,8 +771,9 @@ const WorldMapTab = ({
                       }}
                     />
                   ))}
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
 
               {/* Creature activity + spawn timer (day only) */}
               {isDayActive && (
@@ -814,21 +821,28 @@ const WorldMapTab = ({
               )}
 
               {/* Night badge */}
+              <AnimatePresence>
               {!isDayActive && (
-                <div style={{
-                  position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
-                  zIndex: 30, pointerEvents: 'none',
-                  background: 'rgba(5,8,30,0.82)',
-                  border: '1px solid rgba(100,120,220,0.35)',
-                  borderRadius: '4px', padding: '4px 12px',
-                  display: 'flex', alignItems: 'center', gap: '6px',
-                }}>
+                <motion.div
+                  key="night-badge"
+                  initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 1.0 }}
+                  style={{
+                    position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)',
+                    zIndex: 30, pointerEvents: 'none',
+                    background: 'rgba(5,8,30,0.82)',
+                    border: '1px solid rgba(100,120,220,0.35)',
+                    borderRadius: '4px', padding: '4px 12px',
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                  }}
+                >
                   <span style={{ fontSize: '10px' }}>🌙</span>
                   <span style={{ fontSize: '0.52rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>
                     Night — Dawn approaches
                   </span>
-                </div>
+                </motion.div>
               )}
+              </AnimatePresence>
 
               {/* Decorative assets — terrain-matched, occasionally active for wild encounters */}
               {DECORATIONS.map((d, i) => {
@@ -1072,107 +1086,99 @@ const WorldMapTab = ({
                       />
                     )}
 
-                    <img
-                      src={loc.marker}
-                      alt={loc.name}
-                      style={{
-                        width: `${loc.markerSize || 76}px`, height: `${loc.markerSize || 76}px`,
-                        objectFit: 'contain',
-                        filter: unlocked
-                          ? isActive
-                            ? `drop-shadow(0 0 10px ${loc.dangerColor}) brightness(1.1)`
-                            : isContractCompleted
-                              ? isDayActive
-                                ? 'drop-shadow(0 0 7px rgba(74,222,128,0.45)) brightness(1.06)'
-                                : 'drop-shadow(0 0 5px rgba(74,222,128,0.3)) brightness(0.55) saturate(0.5)'
-                              : isDayActive
-                                ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.95))'
-                                : 'drop-shadow(0 2px 6px rgba(0,0,0,0.95)) brightness(0.5) saturate(0.4)'
-                          : 'grayscale(1) brightness(0.3)',
-                        transition: 'filter 0.4s',
-                      }}
-                    />
-
-                    {/* Type indicator dot */}
-                    <div style={{
-                      position: 'absolute', bottom: '-2px', right: '-2px',
-                      width: '8px', height: '8px',
-                      borderRadius: '50%',
-                      background: isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : 'rgba(212,175,55,0.85)',
-                      border: '1px solid rgba(0,0,0,0.6)',
-                      boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : '#D4AF37'}`,
-                    }} />
-
-                    {/* Completed contract badge */}
-                    {isContractCompleted && (
-                      <div style={{
-                        position: 'absolute', top: '-3px', left: '-3px',
-                        width: '14px', height: '14px', borderRadius: '50%',
-                        background: 'rgba(16,185,129,0.9)', border: '1.5px solid rgba(0,0,0,0.6)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '8px', lineHeight: 1, pointerEvents: 'none', zIndex: 5,
-                        boxShadow: '0 0 6px rgba(16,185,129,0.6)',
-                      }}>✓</div>
+                    {unlocked ? (
+                      <>
+                        <img
+                          src={loc.marker}
+                          alt={loc.name}
+                          style={{
+                            width: `${loc.markerSize || 76}px`, height: `${loc.markerSize || 76}px`,
+                            objectFit: 'contain',
+                            filter: isActive
+                              ? `drop-shadow(0 0 10px ${loc.dangerColor}) brightness(1.1)`
+                              : isContractCompleted
+                                ? isDayActive
+                                  ? 'drop-shadow(0 0 7px rgba(74,222,128,0.45)) brightness(1.06)'
+                                  : 'drop-shadow(0 0 5px rgba(74,222,128,0.3)) brightness(0.55) saturate(0.5)'
+                                : isDayActive
+                                  ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.95))'
+                                  : 'drop-shadow(0 2px 6px rgba(0,0,0,0.95)) brightness(0.5) saturate(0.4)',
+                            transition: 'filter 0.4s',
+                          }}
+                        />
+                        {/* Type indicator dot */}
+                        <div style={{
+                          position: 'absolute', bottom: '-2px', right: '-2px',
+                          width: '8px', height: '8px', borderRadius: '50%',
+                          background: isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : 'rgba(212,175,55,0.85)',
+                          border: '1px solid rgba(0,0,0,0.6)',
+                          boxShadow: `0 0 4px ${isHunting ? loc.dangerColor : loc.type === 'landmark' ? 'rgba(180,160,140,0.4)' : '#D4AF37'}`,
+                        }} />
+                        {/* Completed contract badge */}
+                        {isContractCompleted && (
+                          <div style={{
+                            position: 'absolute', top: '-3px', left: '-3px',
+                            width: '14px', height: '14px', borderRadius: '50%',
+                            background: 'rgba(16,185,129,0.9)', border: '1.5px solid rgba(0,0,0,0.6)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '8px', lineHeight: 1, pointerEvents: 'none', zIndex: 5,
+                            boxShadow: '0 0 6px rgba(16,185,129,0.6)',
+                          }}>✓</div>
+                        )}
+                      </>
+                    ) : (
+                      /* Fog of war — locked location */
+                      <motion.div
+                        animate={{ opacity: [0.25, 0.45, 0.25], scale: [0.9, 1.05, 0.9] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          width: '32px', height: '32px', borderRadius: '50%',
+                          background: 'radial-gradient(circle, rgba(120,120,140,0.18) 0%, transparent 72%)',
+                          border: '1px solid rgba(120,120,140,0.12)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
+                      >
+                        <span style={{ fontSize: '11px', opacity: 0.35 }}>?</span>
+                      </motion.div>
                     )}
 
-                    {/* Lock overlay */}
-                    {!unlocked && (
+                    {/* Name label — hidden for locked (fog of war) */}
+                    {unlocked && (
                       <div style={{
-                        position: 'absolute', inset: 0,
-                        display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center',
+                        position: 'absolute',
+                        top: '100%', left: '50%',
+                        transform: 'translateX(-50%)',
+                        marginTop: '3px',
+                        whiteSpace: 'nowrap',
                         pointerEvents: 'none',
+                        zIndex: 20,
                       }}>
                         <div style={{
-                          background: 'rgba(0,0,0,0.72)',
-                          borderRadius: '6px',
-                          padding: '2px 5px',
-                          display: 'flex', flexDirection: 'column',
-                          alignItems: 'center', gap: '1px',
+                          fontSize: '0.5rem', fontWeight: 700,
+                          color: isActive ? loc.dangerColor : 'rgba(235,220,200,0.8)',
+                          textShadow: '0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.9)',
+                          background: hoveredLocation === loc.id ? 'rgba(0,0,0,0.82)' : 'rgba(0,0,0,0.5)',
+                          border: hoveredLocation === loc.id ? `1px solid ${loc.dangerColor}40` : '1px solid transparent',
+                          padding: hoveredLocation === loc.id ? '3px 6px' : '1px 4px',
+                          borderRadius: '3px',
+                          letterSpacing: '0.05em',
+                          transition: 'all 0.15s',
+                          textAlign: 'center',
                         }}>
-                          <span style={{ fontSize: '13px', lineHeight: 1 }}>🔒</span>
-                          <span style={{ fontSize: '6px', color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1 }}>
-                            Lv {loc.unlockLevel}
-                          </span>
+                          {loc.name}
+                          {hoveredLocation === loc.id && (
+                            <div style={{
+                              fontSize: '0.44rem', fontWeight: 400,
+                              color: 'rgba(180,160,130,0.7)',
+                              letterSpacing: '0.08em', marginTop: '2px',
+                              textTransform: 'uppercase',
+                            }}>
+                              {loc.subtitle}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
-
-                    {/* Name label — expands on hover */}
-                    <div style={{
-                      position: 'absolute',
-                      top: '100%', left: '50%',
-                      transform: 'translateX(-50%)',
-                      marginTop: '3px',
-                      whiteSpace: 'nowrap',
-                      pointerEvents: 'none',
-                      zIndex: 20,
-                    }}>
-                      <div style={{
-                        fontSize: '0.5rem', fontWeight: 700,
-                        color: isActive ? loc.dangerColor : 'rgba(235,220,200,0.8)',
-                        textShadow: '0 1px 4px rgba(0,0,0,1), 0 0 8px rgba(0,0,0,0.9)',
-                        background: hoveredLocation === loc.id ? 'rgba(0,0,0,0.82)' : 'rgba(0,0,0,0.5)',
-                        border: hoveredLocation === loc.id ? `1px solid ${loc.dangerColor}40` : '1px solid transparent',
-                        padding: hoveredLocation === loc.id ? '3px 6px' : '1px 4px',
-                        borderRadius: '3px',
-                        letterSpacing: '0.05em',
-                        transition: 'all 0.15s',
-                        textAlign: 'center',
-                      }}>
-                        {loc.name}
-                        {hoveredLocation === loc.id && (
-                          <div style={{
-                            fontSize: '0.44rem', fontWeight: 400,
-                            color: 'rgba(180,160,130,0.7)',
-                            letterSpacing: '0.08em', marginTop: '2px',
-                            textTransform: 'uppercase',
-                          }}>
-                            {loc.subtitle}
-                          </div>
-                        )}
-                      </div>
-                    </div>
                   </motion.div>
                 );
               })}
@@ -1794,6 +1800,22 @@ const WorldMapTab = ({
                       {lastWildCreature.location} · Zone {lastWildCreature.zone}
                     </div>
                     <div style={{ height: '1px', background: 'rgba(180,150,90,0.08)', marginBottom: '10px' }} />
+                    {onOpenBestiary && (
+                      <button
+                        onClick={onOpenBestiary}
+                        style={{
+                          width: '100%', fontSize: '0.5rem', fontWeight: 700,
+                          letterSpacing: '0.1em', textTransform: 'uppercase',
+                          color: 'rgba(168,85,247,0.7)',
+                          background: 'rgba(168,85,247,0.06)',
+                          border: '1px solid rgba(168,85,247,0.2)',
+                          borderRadius: '3px', padding: '5px 8px',
+                          cursor: 'pointer', marginBottom: '8px',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.12)'; e.currentTarget.style.color = 'rgba(168,85,247,0.9)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.06)'; e.currentTarget.style.color = 'rgba(168,85,247,0.7)'; }}
+                      >→ View in Bestiary</button>
+                    )}
                     <p style={{ fontSize: '0.54rem', color: 'rgba(180,165,150,0.25)', lineHeight: 1.6, fontStyle: 'italic' }}>
                       Click any location to view details.
                     </p>
@@ -1813,7 +1835,7 @@ const WorldMapTab = ({
             )}
           </AnimatePresence>
 
-          {/* Map Overview */}
+          {/* Mini-map thumbnail + progress */}
           {(() => {
             const contractLocs = LOCATIONS.filter(l => l.type === 'contract' && !l.isElite && !l.isLegendary);
             const unlockedCount = LOCATIONS.filter(l => isUnlocked(l)).length;
@@ -1829,16 +1851,74 @@ const WorldMapTab = ({
                 <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.35)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '8px' }}>
                   Map Overview
                 </div>
-                {/* Unlocked / total */}
+
+                {/* Thumbnail */}
+                <div style={{
+                  position: 'relative', width: '100%', paddingTop: '135%',
+                  borderRadius: '4px', overflow: 'hidden', marginBottom: '10px',
+                  border: `1px solid ${isDayActive ? 'rgba(212,175,55,0.12)' : 'rgba(80,100,180,0.2)'}`,
+                  transition: 'border-color 1.2s',
+                }}>
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    backgroundImage: 'url(/worldmap/terrain.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center top',
+                    filter: isDayActive ? 'none' : 'brightness(0.38) saturate(0.5) hue-rotate(200deg)',
+                    transition: 'filter 1.2s ease',
+                  }}>
+                    {/* Night tint overlay on mini-map */}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: isDayActive ? 'transparent' : 'rgba(5,8,30,0.4)',
+                      transition: 'background 1.2s ease',
+                      pointerEvents: 'none',
+                    }} />
+                    {/* Location dots */}
+                    {LOCATIONS.map(loc => {
+                      const locUnlocked = isUnlocked(loc);
+                      const lc = LOCATION_CONTRACTS.find(c => c.locationId === loc.id);
+                      const locDone = lc && completedLocationContracts?.includes(lc.id);
+                      const dotColor = !locUnlocked ? 'rgba(80,80,80,0.25)'
+                        : locDone ? 'rgba(74,222,128,0.85)'
+                        : loc.isLegendary ? '#F59E0B'
+                        : loc.isElite ? '#A855F7'
+                        : loc.type === 'hunting' ? loc.dangerColor
+                        : loc.type === 'landmark' ? 'rgba(180,160,140,0.5)'
+                        : '#D4AF37';
+                      return (
+                        <div
+                          key={loc.id}
+                          title={locUnlocked ? loc.name : '???'}
+                          onClick={() => { setActiveLocation(loc.id); setSelectedDeco(null); }}
+                          style={{
+                            position: 'absolute',
+                            left: loc.position.left,
+                            top: loc.position.top,
+                            transform: 'translate(-50%, -50%)',
+                            width: activeLocation === loc.id ? '7px' : '4px',
+                            height: activeLocation === loc.id ? '7px' : '4px',
+                            borderRadius: '50%',
+                            background: dotColor,
+                            boxShadow: locUnlocked ? `0 0 3px ${dotColor}` : 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s',
+                            zIndex: activeLocation === loc.id ? 5 : 1,
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Progress stats */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Locations Unlocked</span>
                   <span style={{ fontSize: '0.58rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)' }}>{unlockedCount}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{LOCATIONS.length}</span></span>
                 </div>
-                {/* Progress bar for unlock */}
                 <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', marginBottom: '8px', overflow: 'hidden' }}>
                   <div style={{ width: `${(unlockedCount / LOCATIONS.length) * 100}%`, height: '100%', background: 'rgba(212,175,55,0.5)', borderRadius: '2px', transition: 'width 0.4s' }} />
                 </div>
-                {/* Contracts completed */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Contracts Done</span>
                   <span style={{ fontSize: '0.58rem', fontWeight: 700, color: completedCount === totalContracts ? 'rgba(74,222,128,0.8)' : 'rgba(212,175,55,0.7)' }}>
