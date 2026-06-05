@@ -890,44 +890,35 @@ const WorldMapTab = ({
                         }}
                       />
                     )}
-                    <img
-                      src={d.src}
-                      alt=""
-                      style={{
-                        width: `${d.size}px`,
-                        height: `${d.size}px`,
-                        objectFit: 'contain',
-                        display: 'block',
-                        filter: hasCreature
-                          ? 'drop-shadow(0 0 8px rgba(220,40,40,0.9)) brightness(1.15)'
-                          : isLocked
-                            ? 'grayscale(1) brightness(0.3)'
+                    {isLocked ? (
+                      /* Fog of war — locked decoration */
+                      <motion.div
+                        animate={{ opacity: [0.2, 0.38, 0.2], scale: [0.88, 1.04, 0.88] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          width: `${d.size}px`, height: `${d.size}px`,
+                          borderRadius: '50%',
+                          background: 'radial-gradient(circle, rgba(100,100,120,0.14) 0%, transparent 70%)',
+                          border: '1px solid rgba(100,100,120,0.1)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
+                      >
+                        <span style={{ fontSize: '10px', opacity: 0.3 }}>?</span>
+                      </motion.div>
+                    ) : (
+                      <img
+                        src={d.src}
+                        alt=""
+                        style={{
+                          width: `${d.size}px`, height: `${d.size}px`,
+                          objectFit: 'contain', display: 'block',
+                          filter: hasCreature
+                            ? 'drop-shadow(0 0 8px rgba(220,40,40,0.9)) brightness(1.15)'
                             : 'drop-shadow(0 2px 4px rgba(0,0,0,0.75))',
-                        opacity: 0.8,
-                        transition: 'filter 0.3s',
-                      }}
-                    />
-                    {/* Lock overlay */}
-                    {isLocked && (
-                      <div style={{
-                        position: 'absolute', inset: 0,
-                        display: 'flex', flexDirection: 'column',
-                        alignItems: 'center', justifyContent: 'center',
-                        pointerEvents: 'none',
-                      }}>
-                        <div style={{
-                          background: 'rgba(0,0,0,0.72)',
-                          borderRadius: '6px',
-                          padding: '2px 5px',
-                          display: 'flex', flexDirection: 'column',
-                          alignItems: 'center', gap: '1px',
-                        }}>
-                          <span style={{ fontSize: '13px', lineHeight: 1 }}>🔒</span>
-                          <span style={{ fontSize: '6px', color: '#9CA3AF', fontWeight: 700, letterSpacing: '0.05em', lineHeight: 1 }}>
-                            {(level ?? 1) < (ZONE_MIN_LEVEL[d.zone] ?? 1) ? `Lv ${ZONE_MIN_LEVEL[d.zone]}` : `Ct ${d.zone - 1}`}
-                          </span>
-                        </div>
-                      </div>
+                          opacity: 0.8,
+                          transition: 'filter 0.3s',
+                        }}
+                      />
                     )}
                     {/* Selected ring */}
                     {selectedDeco === i && !isWild && (
@@ -954,8 +945,8 @@ const WorldMapTab = ({
                         >Finish your contract first</motion.div>
                       )}
                     </AnimatePresence>
-                    {/* Hover name label */}
-                    {hoveredDeco === i && (
+                    {/* Hover name label — hidden for locked (fog of war) */}
+                    {hoveredDeco === i && !isLocked && (
                       <div style={{
                         position: 'absolute', top: '100%', left: '50%',
                         transform: 'translateX(-50%)', marginTop: '3px',
