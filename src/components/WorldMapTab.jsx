@@ -541,6 +541,11 @@ const WorldMapTab = ({
       prevZoneContracts.every(c => completedLocationContracts?.includes(c.id));
   };
 
+  // Clear creatures at night
+  useEffect(() => {
+    if (!isDayActive) setActiveDecos([]);
+  }, [isDayActive]);
+
   // Activate a random unlocked decoration every 2 minutes (max 3 active at once)
   useEffect(() => {
     if (!isDayActive) return;
@@ -572,11 +577,12 @@ const WorldMapTab = ({
   useEffect(() => {
     if (activeContract?.type !== 'task') return;
     const available = LOCATIONS.filter(l =>
-      !l.isElite && !l.isLegendary &&
-      (level ?? 1) >= (l.unlockLevel ?? 1)
+      !l.isElite && !l.isLegendary && isUnlocked(l)
     );
     if (available.length > 0) {
-      setSelectedZone(available[Math.floor(Math.random() * available.length)]);
+      const chosen = available[Math.floor(Math.random() * available.length)];
+      setSelectedZone(chosen);
+      setActiveLocation(chosen.id);
     }
   }, [activeContract?.type === 'task' ? activeContract.task?.id : null]);
 
@@ -719,9 +725,8 @@ const WorldMapTab = ({
                       if (isWild) {
                         const monster = pool[Math.floor(Math.random() * pool.length)];
                         setDecoPopup({ decoIdx: i, monster, zone: d.zone, location: d.name });
-                        setActiveDecos(prev => prev.filter(idx => idx !== i));
                       } else {
-                        setSelectedDeco(i);
+                        setSelectedDeco(prev => prev === i ? null : i);
                         setActiveLocation(null);
                       }
                     }}
@@ -1015,6 +1020,7 @@ const WorldMapTab = ({
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <button
                     onClick={() => {
+                      setActiveDecos(prev => prev.filter(idx => idx !== decoPopup.decoIdx));
                       onWildEncounter({ monster: decoPopup.monster, zone: decoPopup.zone });
                       setDecoPopup(null);
                     }}
@@ -1153,7 +1159,6 @@ const WorldMapTab = ({
                           const pool = WILD_ENCOUNTERS[d.zone] || WILD_ENCOUNTERS[1];
                           const monster = pool[Math.floor(Math.random() * pool.length)];
                           setDecoPopup({ decoIdx: selectedDeco, monster, zone: d.zone, location: d.name });
-                          setActiveDecos(prev => prev.filter(idx => idx !== selectedDeco));
                           setSelectedDeco(null);
                         }}
                         style={{
