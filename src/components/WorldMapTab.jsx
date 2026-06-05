@@ -556,12 +556,15 @@ const WorldMapTab = ({
     return () => { clearTimeout(t); clearInterval(iv); };
   }, [isDayActive, level, completedLocationContracts]);
 
-  // Auto-select a random unlocked hunting ground when a task contract is accepted
+  // Auto-select a random available location when a task contract is accepted
   useEffect(() => {
     if (activeContract?.type !== 'task') return;
-    const unlocked = LOCATIONS.filter(l => l.type === 'hunting' && (level ?? 1) >= (l.unlockLevel ?? 1));
-    if (unlocked.length > 0) {
-      setSelectedZone(unlocked[Math.floor(Math.random() * unlocked.length)]);
+    const available = LOCATIONS.filter(l =>
+      !l.isElite && !l.isLegendary &&
+      (level ?? 1) >= (l.unlockLevel ?? 1)
+    );
+    if (available.length > 0) {
+      setSelectedZone(available[Math.floor(Math.random() * available.length)]);
     }
   }, [activeContract?.type === 'task' ? activeContract.task?.id : null]);
 
