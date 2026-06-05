@@ -50,8 +50,9 @@ export const sounds = {
   // ── Wave battle entrance: evil storm ────────────────────────────────────────
   waveEntrance: () => sfxPlay('mixkit-evil-storm-atmosphere-2404.wav', 0.7),
 
-  // ── Final boss entrance: monster evil voice ──────────────────────────────────
+  // ── Final boss entrance: monster evil voice + soft evil storm ───────────────
   finalBossEntrance: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.9),
+  finalBossStorm:    () => sfxPlay('mixkit-evil-storm-atmosphere-2404.wav', 0.35),
 
   // ── Daughters of Dusk entrance laughs ───────────────────────────────────────
   daughtersLaugh1: () => sfxPlay('mixkit-female-long-laugh-426.wav', 0.8),

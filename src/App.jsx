@@ -3068,6 +3068,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     
     addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
     sounds.finalBossEntrance();
+    sounds.finalBossStorm();
   // Initiative — player D20+DEX vs final boss D20+4
   const _dexMod_fb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
   const _wis_fb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
