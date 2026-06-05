@@ -1463,12 +1463,49 @@ const BattleModal = ({
                       </div>
                     ) : (
                       /* ── Opened chest + loot ── */
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', color: cc.label, textTransform: 'uppercase', fontFamily: 'Cinzel, serif' }}>{rarityLabel} Chest</p>
-                        <img src={victoryChest.img} alt="Chest" style={{ width: 56, height: 56, objectFit: 'contain', opacity: 0.55, filter: `drop-shadow(0 0 6px ${cc.border})` }} />
-                        <div style={{ width: '100%' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                        <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.2em', color: cc.label, textTransform: 'uppercase', fontFamily: 'Cinzel, serif' }}>{rarityLabel} Chest — Opened</p>
+
+                        {/* Chest with open-lid effect */}
+                        <div style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          {/* Light beam erupting upward from open lid */}
+                          <motion.div
+                            initial={{ scaleY: 0, opacity: 0 }}
+                            animate={{ scaleY: 1, opacity: [0, 0.85, 0.55] }}
+                            transition={{ duration: 0.45, ease: 'easeOut' }}
+                            style={{
+                              position: 'absolute', bottom: '60%', left: '50%',
+                              transform: 'translateX(-50%)',
+                              width: 48, height: 70,
+                              background: `radial-gradient(ellipse at bottom, ${cc.label}cc 0%, ${cc.label}44 50%, transparent 100%)`,
+                              transformOrigin: 'bottom center',
+                              pointerEvents: 'none',
+                              borderRadius: '50% 50% 0 0',
+                            }}
+                          />
+                          {/* Sparkle particles */}
+                          {[...Array(6)].map((_, pi) => (
+                            <motion.div key={pi}
+                              initial={{ opacity: 0, x: 0, y: 0, scale: 0 }}
+                              animate={{ opacity: [0, 1, 0], x: (pi % 2 === 0 ? 1 : -1) * (14 + pi * 7), y: -(20 + pi * 12), scale: [0, 1, 0] }}
+                              transition={{ delay: 0.05 + pi * 0.06, duration: 0.6, ease: 'easeOut' }}
+                              style={{ position: 'absolute', bottom: '65%', left: '50%', width: 5, height: 5, borderRadius: '50%', background: cc.label, pointerEvents: 'none' }}
+                            />
+                          ))}
+                          {/* Chest image — brightened, lid-open shake */}
+                          <motion.img
+                            src={victoryChest.img} alt="Chest"
+                            initial={{ rotate: -6, scale: 1.15 }}
+                            animate={{ rotate: 0, scale: 1 }}
+                            transition={{ duration: 0.35, ease: 'easeOut' }}
+                            style={{ width: 88, height: 88, objectFit: 'contain', filter: `brightness(1.5) drop-shadow(0 0 18px ${cc.label}cc) drop-shadow(0 0 8px ${cc.border})` }}
+                          />
+                        </div>
+
+                        {/* Loot list */}
+                        <div style={{ width: '100%', marginTop: '4px' }}>
                           {victoryLoot.map((loot, idx) => (
-                            <motion.div key={idx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.09, duration: 0.25 }}
+                            <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.09, duration: 0.22 }}
                               style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '5px 10px', marginBottom: '5px', borderRadius: '6px', background: 'rgba(0,0,0,0.35)', border: `1px solid ${cc.border}44` }}>
                               <span style={{ fontSize: '12px', color: cc.label }}>◆</span>
                               <p style={{ fontSize: '13px', color: '#F5F5DC', margin: 0 }}>{loot}</p>
