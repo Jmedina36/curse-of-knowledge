@@ -556,6 +556,15 @@ const WorldMapTab = ({
     return () => { clearTimeout(t); clearInterval(iv); };
   }, [isDayActive, level, completedLocationContracts]);
 
+  // Auto-select a random unlocked hunting ground when a task contract is accepted
+  useEffect(() => {
+    if (activeContract?.type !== 'task') return;
+    const unlocked = LOCATIONS.filter(l => l.type === 'hunting' && (level ?? 1) >= (l.unlockLevel ?? 1));
+    if (unlocked.length > 0) {
+      setSelectedZone(unlocked[Math.floor(Math.random() * unlocked.length)]);
+    }
+  }, [activeContract?.type === 'task' ? activeContract.task?.id : null]);
+
   const isZoneContractUnlocked = (loc) => {
     if (loc.type !== 'contract' || !loc.contractZone || loc.contractZone <= 1) return true;
     const prevZoneContracts = LOCATION_CONTRACTS.filter(c => c.zone === loc.contractZone - 1);
