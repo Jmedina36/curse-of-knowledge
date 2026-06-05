@@ -589,6 +589,8 @@ const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
   const [showDodgeButton, setShowDodgeButton] = useState(false);
   const [dodgeReady, setDodgeReady] = useState(false);
   const [phase3TurnCounter, setPhase3TurnCounter] = useState(0);
+  const [finalBossPhase, setFinalBossPhase] = useState(0);
+  const finalBossPhaseRef = useRef(0);
   const [lifeDrainCounter, setLifeDrainCounter] = useState(0);
   
   const [currentAnimation, setCurrentAnimation] = useState(null);
@@ -2996,6 +2998,69 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCanFlee(false);
   };
   
+  const spawnFinalBossPhase = (phase) => {
+    const config = GAME_CONSTANTS.SCALING_CONFIG.boss;
+    const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
+    const completedTasks = tasks.filter(t => t.done).length;
+    const totalTasks = tasks.length;
+    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 1.0;
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+    setEnragedTurns(0);
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setChargeStacks(0);
+    setBattleMenu('main');
+    setBattling(true);
+    setBattleMode(true);
+    if (phase === 2) {
+      const hp = Math.floor(baseHp * 0.55);
+      setBossName('Mira');
+      setBossHp(hp); setBossMax(hp);
+      setBanditEnemyImg('/daughters-of-dusk/leader.png');
+      Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2();
+      setEnemyDialogue('"You spilled bandit blood. Now you face the dark."');
+      addLog('🌑 MIRA, DUSK QUEEN STEPS FORWARD!');
+    } else if (phase === 3) {
+      const hp = Math.floor(baseHp * 0.85);
+      setBossName('Sylvaris, Queen of Ruin');
+      setBossHp(hp); setBossMax(hp);
+      setBanditEnemyImg('/bosses/dark-elf-queen.png');
+      sounds.finalBossEntrance();
+      sounds.finalBossStorm();
+      setEnemyDialogue('"Impressive. Truly. But this ends now."');
+      addLog('⚡ PHASE 2 — SYLVARIS, QUEEN OF RUIN!');
+    } else if (phase === 4) {
+      const hp = Math.floor(baseHp * (1.5 - completionRate * 0.5));
+      setBossName('Malachar, the Eternal Lich');
+      setBossHp(hp); setBossMax(hp);
+      setBanditEnemyImg('/undead-king.png');
+      sounds.finalBossEntrance();
+      sounds.finalBossStorm();
+      setEnemyDialogue('"I have died seventeen times. I will not die tonight."');
+      addLog('💀 PHASE 3 — MALACHAR, THE ETERNAL LICH!');
+    }
+  };
+
+  const advanceFinalBossPhase = () => {
+    const phase = finalBossPhaseRef.current;
+    if (phase === 0 || phase >= 4) return false;
+    sounds.victory();
+    setEnragedTurns(0);
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setChargeStacks(0);
+    const transitions = {
+      1: { log: '⚔️ Cutter falls. "...The order will hear of this."',    dialogue: '"The order will hear of this..."' },
+      2: { log: '🌑 The Dusk Queen falls. The shadows retreat.',          dialogue: '"Sylvaris... they are here..."' },
+      3: { log: '⚡ Sylvaris staggers. A cold silence falls.',            dialogue: '"Malachar... finish... this..."' },
+    };
+    const t = transitions[phase];
+    if (t) { addLog(t.log); setEnemyDialogue(t.dialogue); }
+    finalBossPhaseRef.current = phase + 1;
+    setFinalBossPhase(phase + 1);
+    setTimeout(() => spawnFinalBossPhase(phase + 1), 2500);
+    return true;
+  };
+
   const finalBoss = () => {
     if (!gauntletUnlocked) {
       addLog(`The Gauntlet remains sealed. Reach ${gauntletMilestone} XP to unlock.`);
@@ -3025,11 +3090,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
     sounds.bossEntrance();
-
-    const bossNameGenerated = makeBossName();
-    setBossName(bossNameGenerated);
-    setBossHp(bossHealth);
-    setBossMax(bossHealth);
     setBattleType('final');
     audioManager.play(TRACKS.boss);
     setShowBoss(true);
@@ -3048,28 +3108,24 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setEnragedTurns(0);
     setHasFled(false); // Reset fled status
     
-    // Reset Phase 3 states
-    setInPhase3(false);
-    setInPhase2(false);
-    setInPhase1(true); // Start in Phase 1
-    setPhase1TurnCounter(0);
-    setPhase2TurnCounter(0);
-    setPhase2DamageStacks(0);
-    setHasSpawnedPreviewAdd(false);
-    setShadowAdds([]);
-    setAoeWarning(false);
-    setShowDodgeButton(false);
-    setDodgeReady(false);
-    setPhase3TurnCounter(0);
-    setLifeDrainCounter(0);
-    
-    // Set Gauntlet dialogue
-    const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
-    setEnemyDialogue(bossDialogue.START);
-    
-    addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
-    sounds.finalBossEntrance();
-    sounds.finalBossStorm();
+    // Reset phase states
+    setInPhase3(false); setInPhase2(false); setInPhase1(false);
+    setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0);
+    setHasSpawnedPreviewAdd(false); setShadowAdds([]);
+    setAoeWarning(false); setShowDodgeButton(false); setDodgeReady(false);
+    setPhase3TurnCounter(0); setLifeDrainCounter(0);
+    finalBossPhaseRef.current = 1;
+    setFinalBossPhase(1);
+
+    // Phase 1 — Cutter, Bandit Lord
+    const cutterHp = Math.floor(bossHealth * 0.55);
+    setBossName('Cutter');
+    setBossHp(cutterHp);
+    setBossMax(cutterHp);
+    setBanditEnemyImg('/bandits/leader.png');
+    sounds.banditLaugh();
+    setEnemyDialogue('"The order didn\'t send me. I came because I wanted to."');
+    addLog('⚔️ THE GAUNTLET BEGINS — CUTTER, BANDIT LORD!');
   // Initiative — player D20+DEX vs final boss D20+4
   const _dexMod_fb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
   const _wis_fb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
@@ -3343,60 +3399,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Update dialogue based on HP phase
     const hpPercent = newBossHp / bossMax;
     
-    // Phase 1 - Enrage at 80% HP (Gauntlet only)
-    if (battleType === 'final' && hpPercent <= 0.80 && hpPercent > 0.79 && enragedTurns === 0) {
-      setEnragedTurns(2);
-      addLog(`Boss ENRAGED at 80% HP! (2 turns)`);
-      addLog(`Enemy deals +15% damage but has 25% miss chance!`);
-    }
-    
-    // Phase 2 detection for Gauntlet boss (66% HP)
-    if (battleType === 'final' && !inPhase2 && hpPercent <= 0.66 && hpPercent > 0.33) {
-      setInPhase1(false); // Exit Phase 1
-      setInPhase2(true);
-      setPhase1TurnCounter(0); // Reset Phase 1 counter
-      setPhase2TurnCounter(0);
-      setPhase2DamageStacks(0);
-      addLog(`PHASE 2: THE PRESSURE!`);
-      addLog(`Boss damage increases each turn!`);
-      
-      const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
-      setEnemyDialogue(bossDialogue.PHASE2);
-    }
-    
-    // Phase 2 - Spawn preview add at 50% HP
-    if (battleType === 'final' && inPhase2 && !hasSpawnedPreviewAdd && hpPercent <= 0.50 && hpPercent > 0.49) {
-      const addId = `preview_add_${Date.now()}`;
-      const addHp = 18;
-      setShadowAdds([{ id: addId, hp: addHp, maxHp: addHp }]);
-      setHasSpawnedPreviewAdd(true);
-      addLog(`👤 A Shadow has materialized! (Preview of what's to come...)`);
-    }
-    
-    // Phase 3 detection for Gauntlet boss
-    if (battleType === 'final' && !inPhase3 && hpPercent <= 0.33 && hpPercent > 0) {
-      setInPhase3(true);
-      setInPhase2(false); // Exit Phase 2
-      setPhase2DamageStacks(0); // Reset ramping stacks
-      setPhase3TurnCounter(0);
-      setLifeDrainCounter(0);
-      addLog(`💀 PHASE 3: ABYSS AWAKENING!`);
-      addLog(`🌑 The darkness intensifies... Shadows stir!`);
-      
-      const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE.GAUNTLET;
-      setEnemyDialogue(bossDialogue.PHASE3);
-    }
     
     if (battleType === 'elite' || battleType === 'final') {
       // Boss dialogue (GAUNTLET for final, cycling for elite)
       const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
       
-      // For Gauntlet, only use HP-based dialogue if not in any active phase (phases have cycling dialogue)
-      // For elite bosses, use normal HP-based dialogue
-      const isGauntletInActivePhase = battleType === 'final' && (inPhase1 || inPhase2 || inPhase3);
-      
-      if (bossDialogue && !isGauntletInActivePhase) {
+      if (bossDialogue) {
         if (hpPercent <= 0.25 && hpPercent > 0) {
           setEnemyDialogue(bossDialogue.LOW);
         } else if (hpPercent <= 0.5) {
@@ -3425,12 +3434,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
+      if (advanceFinalBossPhase()) return;
       sounds.victory();
   setTimeout(() => {
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
   }, 100);
-  
+
   setRecklessStacks(0);
   
   // Different XP based on battle type
@@ -4309,11 +4319,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const bossDialogueKey = battleType === 'final' ? 'GAUNTLET' : `DAY_${((currentDay - 1) % 7) + 1}`;
       const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
       
-      // For Gauntlet, only use HP-based dialogue if not in any active phase (phases have cycling dialogue)
-      // For elite bosses, use normal HP-based dialogue
-      const isGauntletInActivePhase = battleType === 'final' && (inPhase1 || inPhase2 || inPhase3);
-      
-      if (bossDialogue && !isGauntletInActivePhase) {
+      if (bossDialogue) {
         if (hpPercent <= 0.25 && hpPercent > 0) {
           setEnemyDialogue(bossDialogue.LOW);
         } else if (hpPercent <= 0.5) {
@@ -4345,13 +4351,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
+      if (advanceFinalBossPhase()) return;
       setTimeout(() => {
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
       }, 100);
-      
+
       setRecklessStacks(0);
-      
+
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
       const goldGain = calculateCombatGold(isFinalBoss ? 'final' : (battleType === 'elite' ? 'elite' : (battleType === 'wave' ? 'wave' : 'normal')));
       setXp(x => x + Math.round(xpGain * dayBonuses.xpMultiplier));
@@ -4887,6 +4894,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     }
 
     if (newBossHp <= 0) {
+      if (advanceFinalBossPhase()) return;
       setTimeout(() => { setCurrentAnimation('battle-shake'); setTimeout(() => setCurrentAnimation(null), 250); }, 100);
       setRecklessStacks(0);
       const xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : GAME_CONSTANTS.XP_REWARDS.miniBoss;
@@ -5090,12 +5098,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
+      if (advanceFinalBossPhase()) return;
       // Victory logic (same as regular attack)
       setTimeout(() => {
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
       }, 100);
-      
+
       setRecklessStacks(0);
       
       let xpGain;
@@ -5468,12 +5477,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setTimeout(() => setBossFlash(false), 200);
     
     if (newBossHp <= 0) {
+      if (advanceFinalBossPhase()) return;
       // Victory - simplified version
       setTimeout(() => {
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
       }, 100);
-      
+
       setRecklessStacks(0);
       
       let xpGain = isFinalBoss ? GAME_CONSTANTS.XP_REWARDS.finalBoss : (battleType === 'elite' ? GAME_CONSTANTS.XP_REWARDS.miniBoss : 10);
