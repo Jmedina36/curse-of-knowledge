@@ -53,6 +53,10 @@ export const sounds = {
   // ── Final boss entrance: monster evil voice ──────────────────────────────────
   finalBossEntrance: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.9),
 
+  // ── Daughters of Dusk entrance laughs ───────────────────────────────────────
+  daughtersLaugh1: () => sfxPlay('mixkit-female-long-laugh-426.wav', 0.8),
+  daughtersLaugh2: () => sfxPlay('mixkit-females-laugh-425.wav', 0.8),
+
   // ── Beg screen opens: shadow acknowledges you ────────────────────────────────
   negotiateOpen: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.75),
 

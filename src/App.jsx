@@ -2762,7 +2762,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 2.0)
       : Math.floor(base * 1.1);
 
-    sounds.enemyEntrance();
+    Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
