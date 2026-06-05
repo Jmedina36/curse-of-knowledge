@@ -471,24 +471,36 @@ const DECORATIONS = [
 
 const WILD_ENCOUNTERS = {
   1: [
-    { name: 'Stray Wolf',    desc: "A mangy predator lurking the outer trails. It has been watching you.",       img: '/bandits/bandit-1.png' },
-    { name: 'Marsh Creeper', desc: "Something slow and patient. It has been following you since the tree line.", img: '/bandits/bandit-2.png' },
+    { name: 'Stray Wolf',      desc: "A mangy predator lurking the outer trails. It has been watching you.",           img: '/creatures/creature1.png'  },
+    { name: 'Marsh Creeper',   desc: "Something slow and patient. It has been following you since the tree line.",     img: '/creatures/creature2.png'  },
+    { name: 'Thorn Imp',       desc: "Small and vicious. It darted out of the brush before you could react.",          img: '/creatures/creature3.png'  },
+    { name: 'Bog Lurker',      desc: "A squat thing from the wetlands. It smells of rot and moves faster than it looks.", img: '/creatures/creature4.png' },
   ],
   2: [
-    { name: 'Road Marauder', desc: "Armed and looking for easy prey. You fit the description.",                  img: '/bandits/bandit-3.png' },
-    { name: 'Feral Tracker', desc: "Hunts by scent through the undergrowth. It found you first.",               img: '/bandits/bandit-4.png' },
+    { name: 'Road Marauder',   desc: "Armed and looking for easy prey. You fit the description.",                      img: '/creatures/creature5.png'  },
+    { name: 'Feral Tracker',   desc: "Hunts by scent through the undergrowth. It found you first.",                   img: '/creatures/creature6.png'  },
+    { name: 'Spine Crawler',   desc: "A multi-limbed thing that clings to trees and drops on travelers.",              img: '/creatures/creature7.png'  },
+    { name: 'Dusk Shade',      desc: "Half-visible in low light. It moves when you look away.",                        img: '/creatures/creature8.png'  },
   ],
   3: [
-    { name: 'Hollow Beast',  desc: "Something twisted and wrong. It doesn't belong to the natural world.",      img: '/bandits/bandit-5.png' },
-    { name: 'Wilds Prowler', desc: "Patient. Dangerous. It has been circling you for some time.",               img: '/bandits/bandit-6.png' },
+    { name: 'Hollow Beast',    desc: "Something twisted and wrong. It doesn't belong to the natural world.",           img: '/creatures/creature9.png'  },
+    { name: 'Wilds Prowler',   desc: "Patient. Dangerous. It has been circling you for some time.",                    img: '/creatures/creature10.png' },
+    { name: 'Ashbound Hyena',  desc: "Burned and broken, yet still hunting. Pain made it relentless.",                img: '/creatures/creature11.png' },
+    { name: 'Rot Fiend',       desc: "A mass of decay held together by something that should not be alive.",           img: '/creatures/creature12.png' },
   ],
   4: [
-    { name: 'Stone Wraith',  desc: "An ancient spirit bound to the crags. Your presence disturbed it.",         img: '/bandits/bandit-7.png' },
-    { name: 'Blightcrawler', desc: "Corrupted and hostile to everything living. It will not stop.",             img: '/bandits/captain-1.png' },
+    { name: 'Stone Wraith',    desc: "An ancient spirit bound to the crags. Your presence disturbed it.",              img: '/creatures/creature13.png' },
+    { name: 'Blightcrawler',   desc: "Corrupted and hostile to everything living. It will not stop.",                  img: '/creatures/creature14.png' },
+    { name: 'Iron Maw',        desc: "Its jaws can shear rock. Flesh offers no resistance.",                          img: '/creatures/creature15.png' },
+    { name: 'Pale Drifter',    desc: "It passes through walls. The only way to stop it is to fight.",                 img: '/creatures/creature16.png' },
+    { name: 'Bonebound Shade', desc: "A spirit wrapped in the remains of what it killed. Still hungry.",              img: '/creatures/creature17.png' },
   ],
   5: [
-    { name: 'Lava Spawn',    desc: "Born from the fractures below. It hunts by heat signature.",                img: '/bandits/captain-2.png' },
-    { name: 'Void Stalker',  desc: "It shouldn't exist here. Yet here it is, and it has noticed you.",         img: '/bandits/captain-3.png' },
+    { name: 'Lava Spawn',      desc: "Born from the fractures below. It hunts by heat signature.",                    img: '/creatures/creature18.png' },
+    { name: 'Void Stalker',    desc: "It shouldn't exist here. Yet here it is, and it has noticed you.",              img: '/creatures/creature19.png' },
+    { name: 'Ember Colossus',  desc: "A living furnace. The ground blackens beneath its steps.",                      img: '/creatures/creature20.png' },
+    { name: 'Ashen Revenant',  desc: "Rose from the cooled lava fields. It remembers nothing but rage.",              img: '/creatures/creature21.png' },
+    { name: 'Magma Fiend',     desc: "Lava flows through its veins. It leaves nothing behind.",                       img: '/creatures/creature22.png' },
   ],
 };
 
