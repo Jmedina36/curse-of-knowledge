@@ -7280,6 +7280,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Full Heal</button>
                   <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
                   <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
+                  <button onClick={() => { setGold(g => g + 500); addLog('Debug: +500 Gold'); }} className="bg-amber-700 hover:bg-amber-600 px-4 py-2 rounded text-xs transition-all border border-amber-500" style={{color: '#F5F5DC'}}>+500 Gold</button>
+                  <button onClick={() => { setFusionCrystals(f => f + 5); addLog('Debug: +5 Fusion Crystals'); }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs transition-all border border-cyan-600" style={{color: '#F5F5DC'}}>+5 Crystals</button>
                   <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
                   <button onClick={() => {
                     const rarity = rollRarity('normal');
@@ -7494,7 +7496,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* Combat */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
                   <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-4 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
                   <button onClick={() => {
                     setBattleType('wave');
@@ -7502,26 +7504,67 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setTotalWaveEnemies(3);
                     setCurrentWaveEnemy(1);
                     spawnRegularEnemy(true, 1, 3);
-                  }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Spawn Wave (3)</button>
+                  }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Wave (3)</button>
                   <button onClick={() => { setBattleType('elite'); audioManager.cut(); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
                   <button onClick={() => {
-                    setBattleType('final');
                     audioManager.play(TRACKS.boss);
-                    const bossHealth = 300;
-                    const bossNameGenerated = makeBossName();
-                    setBossName(bossNameGenerated);
-                    setBossHp(bossHealth);
-                    setBossMax(bossHealth);
-                    setShowBoss(true);
-                    setBattling(true);
-                    setBattleMenu('main');
-                    setBattleMode(true);
-                    setIsFinalBoss(true);
-                    setCanFlee(false);
-                    setVictoryLoot([]);
-    setVictoryChest(null);
-                    addLog(`👹 DEBUG: ${bossNameGenerated} - THE UNDYING!`);
-                  }} className="bg-purple-900 hover:bg-purple-800 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Final Boss</button>
+                    spawnBanditWave(1, []);
+                    addLog('Debug: Bandit Raid started');
+                  }} className="bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-xs transition-all border border-red-700" style={{color: '#F5F5DC'}}>Bandit Raid</button>
+                  <button onClick={() => {
+                    audioManager.play(TRACKS.boss);
+                    spawnDaughtersWave(1, []);
+                    addLog('Debug: Daughters Raid started');
+                  }} className="bg-purple-900 hover:bg-purple-800 px-4 py-2 rounded text-xs transition-all border border-purple-700" style={{color: '#F5F5DC'}}>Daughters Raid</button>
+                </div>
+                {/* Final Boss Phases */}
+                <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Final Boss Phases:</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  {[
+                    { label: 'P1: Cutter', phase: 1, color: 'bg-red-900 border-red-700', setup: () => {
+                      setBattleType('final'); audioManager.play(TRACKS.boss);
+                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
+                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
+                      setChargeStacks(0); setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+                      setEnragedTurns(0); setHasFled(false);
+                      setInPhase3(false); setInPhase2(false); setInPhase1(false);
+                      setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0);
+                      setHasSpawnedPreviewAdd(false); setShadowAdds([]); setAoeWarning(false);
+                      setShowDodgeButton(false); setDodgeReady(false); setPhase3TurnCounter(0); setLifeDrainCounter(0);
+                      finalBossPhaseRef.current = 1; setFinalBossPhase(1);
+                      const hp = 200; setBossName('Cutter'); setBossHp(hp); setBossMax(hp);
+                      setBanditEnemyImg('/bandits/leader.png');
+                      sounds.banditLaugh();
+                      setEnemyDialogue('"You walk into your own grave."');
+                      addLog('🗡️ DEBUG: Phase 1 — Cutter, Bandit Lord');
+                    }},
+                    { label: 'P1b: Mira', phase: 2, color: 'bg-purple-900 border-purple-700', setup: () => {
+                      setBattleType('final'); audioManager.play(TRACKS.boss);
+                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
+                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
+                      finalBossPhaseRef.current = 2; setFinalBossPhase(2);
+                      spawnFinalBossPhase(2);
+                      addLog('Debug: Jumped to Phase 1b — Mira');
+                    }},
+                    { label: 'P2: Sylvaris', phase: 3, color: 'bg-indigo-900 border-indigo-700', setup: () => {
+                      setBattleType('final'); audioManager.play(TRACKS.boss);
+                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
+                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
+                      finalBossPhaseRef.current = 3; setFinalBossPhase(3);
+                      spawnFinalBossPhase(3);
+                      addLog('Debug: Jumped to Phase 2 — Sylvaris');
+                    }},
+                    { label: 'P3: Malachar', phase: 4, color: 'bg-gray-900 border-gray-600', setup: () => {
+                      setBattleType('final'); audioManager.play(TRACKS.boss);
+                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
+                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
+                      finalBossPhaseRef.current = 4; setFinalBossPhase(4);
+                      spawnFinalBossPhase(4);
+                      addLog('Debug: Jumped to Phase 3 — Malachar');
+                    }},
+                  ].map(({ label, color, setup }) => (
+                    <button key={label} onClick={setup} className={`${color} hover:brightness-110 px-3 py-2 rounded text-xs transition-all border`} style={{color: '#F5F5DC'}}>{label}</button>
+                  ))}
                 </div>
               </div>
 
@@ -7566,16 +7609,35 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* Game State Resets */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>GAME STATE</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <button onClick={() => { 
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <button onClick={() => {
                     setEliteBossDefeatedToday(false);
-                    addLog('Debug: Face the Darkness reset - can fight elite boss again today'); 
+                    addLog('Debug: Face the Darkness reset - can fight elite boss again today');
                   }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs transition-all border border-cyan-600" style={{color: '#F5F5DC'}}>Reset Face Darkness</button>
-                  <button onClick={() => { 
+                  <button onClick={() => {
                     setGauntletMilestone(1500);
                     setGauntletUnlocked(false);
-                    addLog('Debug: Gauntlet reset - next unlock at 1500 XP'); 
+                    addLog('Debug: Gauntlet reset - next unlock at 1500 XP');
                   }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Reset Gauntlet</button>
+                  <button onClick={() => {
+                    setGauntletMilestone(0);
+                    setGauntletUnlocked(true);
+                    setTasks(t => t.map(task => ({ ...task, done: true })));
+                    addLog('Debug: Gauntlet force-unlocked, all tasks completed');
+                  }} className="bg-green-900 hover:bg-green-800 px-4 py-2 rounded text-xs transition-all border border-green-700" style={{color: '#F5F5DC'}}>Force Unlock Gauntlet</button>
+                  <button onClick={() => {
+                    setHuntingChallenges({});
+                    addLog('Debug: All challenge cooldowns cleared');
+                  }} className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded text-xs transition-all border border-teal-600" style={{color: '#F5F5DC'}}>Reset Challenges</button>
+                  <button onClick={() => {
+                    setCompletedLocationContracts([]);
+                    setDebugUnlockedZones([]);
+                    addLog('Debug: All location contracts and zone unlocks reset');
+                  }} className="bg-orange-900 hover:bg-orange-800 px-4 py-2 rounded text-xs transition-all border border-orange-700" style={{color: '#F5F5DC'}}>Reset Zone Progress</button>
+                  <button onClick={() => {
+                    setDebugUnlockedZones([1, 2, 3, 4, 5]);
+                    addLog('Debug: All zones force-unlocked');
+                  }} className="bg-yellow-900 hover:bg-yellow-800 px-4 py-2 rounded text-xs transition-all border border-yellow-700" style={{color: '#F5F5DC'}}>Unlock All Zones</button>
                 </div>
               </div>
 
