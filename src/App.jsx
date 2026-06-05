@@ -2588,7 +2588,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
-  isWave ? sounds.waveEntrance() : sounds.enemyEntrance();
+  sounds.enemyEntrance();
 
   // Wild encounter overrides the creature's display name/img with the map popup creature
   const wildOverride = wildCreatureOverrideRef.current;
@@ -2666,7 +2666,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 1.8)
       : base;
 
-    sounds.waveEntrance();
+    sounds.enemyEntrance();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
@@ -2762,7 +2762,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 2.0)
       : Math.floor(base * 1.1);
 
-    sounds.waveEntrance();
+    sounds.enemyEntrance();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
@@ -3067,6 +3067,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setEnemyDialogue(bossDialogue.START);
     
     addLog(`👹 ${bossNameGenerated.toUpperCase()} - THE GAUNTLET!`);
+    sounds.waveEntrance();
   // Initiative — player D20+DEX vs final boss D20+4
   const _dexMod_fb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
   const _wis_fb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
