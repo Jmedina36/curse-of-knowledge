@@ -1,0 +1,382 @@
+import React, { useState } from 'react';
+import { LOCATION_CONTRACTS } from '../data/locationContracts';
+
+const ZONE_LABELS = {
+  1: 'Zone I — The First Roads',
+  2: 'Zone II — The Deepening',
+  3: 'Zone III — Beyond the Threshold',
+  4: 'Zone IV — The Far Reaches',
+  5: 'Zone V — The Edge',
+};
+
+// Deductions that unlock progressively as entries are found
+const DEDUCTIONS = [
+  { requiresId: 'lc_harbor',        text: 'An organization — possibly called "the order" — is operating in the region. Signed only as C. Scope unknown.' },
+  { requiresId: 'lc_holy_tree',     text: 'The order uses multiple factions. Bandits and Daughters of Dusk both bear the same mark. They are not loyal to one group.' },
+  { requiresId: 'lc_canopy',        text: 'They know who I am. They were watching before I found the harbor. They deployed three separate attempts to hold the outpost.' },
+  { requiresId: 'lc_ivy_crossing',  text: 'Movement is being controlled. Specific people are being blocked or allowed through. Something is being contained — or protected.' },
+  { requiresId: 'lc_whisper_forest', text: 'They have relay nodes distributed across the region. The network is wider than I thought. This is infrastructure.' },
+  { requiresId: 'lc_outskirts',     text: 'C is tracking my progress in real time. Gryvara was deployed two days after I cleared the crossing. Every move I make is being answered.' },
+];
+
+export default function JournalTab({ completedLocationContracts = [] }) {
+  const [selectedId, setSelectedId] = useState(null);
+
+  const allEntryContracts = LOCATION_CONTRACTS.filter(lc => lc.journalEntry);
+
+  // Group by zone
+  const byZone = {};
+  allEntryContracts.forEach(lc => {
+    const z = lc.journalEntry.zone;
+    if (!byZone[z]) byZone[z] = [];
+    byZone[z].push(lc);
+  });
+  const zones = Object.keys(byZone).map(Number).sort();
+
+  const isUnlocked = (id) => completedLocationContracts.includes(id);
+  const foundCount = allEntryContracts.filter(lc => isUnlocked(lc.id)).length;
+  const totalCount = allEntryContracts.length;
+
+  const unlockedDeductions = DEDUCTIONS.filter(d => isUnlocked(d.requiresId));
+
+  const selectedContract = allEntryContracts.find(lc => lc.id === selectedId);
+
+  return (
+    <div style={{
+      display: 'flex',
+      height: '100%',
+      fontFamily: 'Georgia, serif',
+      color: 'rgba(235,220,190,0.9)',
+      overflow: 'hidden',
+    }}>
+
+      {/* ── Left panel: entry list ─────────────────────────────────────── */}
+      <div style={{
+        width: '260px',
+        flexShrink: 0,
+        borderRight: '1px solid rgba(212,175,55,0.2)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflowY: 'auto',
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '18px 16px 12px',
+          borderBottom: '1px solid rgba(212,175,55,0.15)',
+        }}>
+          <p style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: '0.62rem',
+            letterSpacing: '0.12em',
+            color: 'rgba(212,175,55,0.55)',
+            textTransform: 'uppercase',
+            margin: '0 0 4px',
+          }}>Field Journal</p>
+          <h2 style={{
+            fontFamily: 'Cinzel, serif',
+            fontSize: '1.1rem',
+            color: 'rgba(212,175,55,0.9)',
+            margin: '0 0 8px',
+            fontWeight: 'normal',
+          }}>The Order</h2>
+          <div style={{
+            fontSize: '0.68rem',
+            color: foundCount === 0 ? 'rgba(160,140,110,0.45)' : 'rgba(160,140,110,0.7)',
+            fontStyle: 'italic',
+          }}>
+            {foundCount === 0
+              ? 'No entries yet.'
+              : `${foundCount} of ${totalCount} entries recorded`}
+          </div>
+        </div>
+
+        {/* Zone sections */}
+        {zones.map(zone => {
+          const contracts = byZone[zone];
+          const anyUnlocked = contracts.some(lc => isUnlocked(lc.id));
+          return (
+            <div key={zone}>
+              <div style={{
+                padding: '10px 16px 6px',
+                fontSize: '0.6rem',
+                fontFamily: 'Cinzel, serif',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                color: anyUnlocked ? 'rgba(212,175,55,0.45)' : 'rgba(120,110,90,0.35)',
+              }}>
+                {ZONE_LABELS[zone] || `Zone ${zone}`}
+              </div>
+              {contracts.map(lc => {
+                const unlocked = isUnlocked(lc.id);
+                const isSelected = selectedId === lc.id;
+                return (
+                  <button
+                    key={lc.id}
+                    onClick={() => unlocked && setSelectedId(isSelected ? null : lc.id)}
+                    style={{
+                      display: 'block',
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '9px 16px',
+                      background: isSelected
+                        ? 'rgba(212,175,55,0.12)'
+                        : 'transparent',
+                      border: 'none',
+                      borderLeft: isSelected
+                        ? '2px solid rgba(212,175,55,0.6)'
+                        : '2px solid transparent',
+                      cursor: unlocked ? 'pointer' : 'default',
+                      transition: 'background 0.15s',
+                    }}
+                    onMouseEnter={e => { if (unlocked && !isSelected) e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; }}
+                    onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    {unlocked ? (
+                      <>
+                        <div style={{
+                          fontSize: '0.75rem',
+                          color: isSelected ? 'rgba(235,220,190,0.95)' : 'rgba(200,185,155,0.85)',
+                          lineHeight: 1.35,
+                          marginBottom: '2px',
+                        }}>
+                          {lc.journalEntry.title}
+                        </div>
+                        <div style={{
+                          fontSize: '0.62rem',
+                          color: 'rgba(140,125,95,0.7)',
+                          fontStyle: 'italic',
+                        }}>
+                          {lc.journalEntry.location}
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{
+                        fontSize: '0.72rem',
+                        color: 'rgba(100,90,70,0.4)',
+                        fontStyle: 'italic',
+                        letterSpacing: '0.05em',
+                      }}>
+                        — unknown —
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          );
+        })}
+
+        {/* What I Know section */}
+        {unlockedDeductions.length > 0 && (
+          <div style={{
+            marginTop: 'auto',
+            borderTop: '1px solid rgba(212,175,55,0.15)',
+            padding: '14px 16px',
+          }}>
+            <button
+              onClick={() => setSelectedId(selectedId === '__deductions__' ? null : '__deductions__')}
+              style={{
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                background: selectedId === '__deductions__' ? 'rgba(212,175,55,0.1)' : 'transparent',
+                border: 'none',
+                borderLeft: selectedId === '__deductions__' ? '2px solid rgba(212,175,55,0.5)' : '2px solid transparent',
+                padding: '6px 0',
+                cursor: 'pointer',
+              }}
+            >
+              <div style={{
+                fontFamily: 'Cinzel, serif',
+                fontSize: '0.65rem',
+                letterSpacing: '0.1em',
+                color: 'rgba(212,175,55,0.6)',
+                textTransform: 'uppercase',
+              }}>
+                What I Know
+              </div>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* ── Right panel: entry detail ──────────────────────────────────── */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: '32px 40px',
+      }}>
+        {/* Empty state */}
+        {!selectedId && foundCount === 0 && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            gap: '12px',
+            opacity: 0.4,
+          }}>
+            <div style={{ fontSize: '2.5rem' }}>📖</div>
+            <p style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.85rem',
+              color: 'rgba(212,175,55,0.7)',
+              textAlign: 'center',
+              letterSpacing: '0.05em',
+            }}>Nothing written yet.</p>
+            <p style={{
+              fontSize: '0.72rem',
+              color: 'rgba(180,165,135,0.6)',
+              fontStyle: 'italic',
+              textAlign: 'center',
+              maxWidth: '260px',
+              lineHeight: 1.6,
+            }}>
+              Complete story contracts to begin uncovering what moves behind the sigil.
+            </p>
+          </div>
+        )}
+
+        {/* Select prompt */}
+        {!selectedId && foundCount > 0 && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            gap: '10px',
+            opacity: 0.45,
+          }}>
+            <p style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.8rem',
+              color: 'rgba(212,175,55,0.7)',
+              letterSpacing: '0.06em',
+            }}>Select an entry.</p>
+          </div>
+        )}
+
+        {/* What I Know panel */}
+        {selectedId === '__deductions__' && (
+          <div style={{ maxWidth: '620px' }}>
+            <div style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.6rem',
+              letterSpacing: '0.14em',
+              color: 'rgba(212,175,55,0.45)',
+              textTransform: 'uppercase',
+              marginBottom: '6px',
+            }}>
+              Running Assessment
+            </div>
+            <h2 style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '1.4rem',
+              color: 'rgba(212,175,55,0.9)',
+              fontWeight: 'normal',
+              margin: '0 0 28px',
+              borderBottom: '1px solid rgba(212,175,55,0.2)',
+              paddingBottom: '14px',
+            }}>
+              What I Know
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {unlockedDeductions.map((d, i) => (
+                <div key={i} style={{
+                  display: 'flex',
+                  gap: '14px',
+                  alignItems: 'flex-start',
+                }}>
+                  <div style={{
+                    flexShrink: 0,
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    border: '1px solid rgba(212,175,55,0.35)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.6rem',
+                    color: 'rgba(212,175,55,0.55)',
+                    fontFamily: 'Cinzel, serif',
+                    marginTop: '1px',
+                  }}>
+                    {i + 1}
+                  </div>
+                  <p style={{
+                    fontSize: '0.82rem',
+                    lineHeight: 1.75,
+                    color: 'rgba(210,195,165,0.85)',
+                    margin: 0,
+                  }}>
+                    {d.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Journal entry */}
+        {selectedId && selectedId !== '__deductions__' && selectedContract && isUnlocked(selectedContract.id) && (
+          <div style={{ maxWidth: '620px' }}>
+            {/* Zone label */}
+            <div style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '0.6rem',
+              letterSpacing: '0.14em',
+              color: 'rgba(212,175,55,0.4)',
+              textTransform: 'uppercase',
+              marginBottom: '6px',
+            }}>
+              {ZONE_LABELS[selectedContract.journalEntry.zone] || `Zone ${selectedContract.journalEntry.zone}`} · {selectedContract.journalEntry.location}
+            </div>
+
+            {/* Title */}
+            <h2 style={{
+              fontFamily: 'Cinzel, serif',
+              fontSize: '1.4rem',
+              color: 'rgba(235,220,190,0.95)',
+              fontWeight: 'normal',
+              margin: '0 0 24px',
+              borderBottom: '1px solid rgba(212,175,55,0.2)',
+              paddingBottom: '14px',
+            }}>
+              {selectedContract.journalEntry.title}
+            </h2>
+
+            {/* Body text */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {selectedContract.journalEntry.text.split('\n\n').map((para, i) => (
+                <p key={i} style={{
+                  fontSize: '0.86rem',
+                  lineHeight: 1.85,
+                  color: 'rgba(215,200,170,0.88)',
+                  margin: 0,
+                  fontStyle: 'italic',
+                }}>
+                  {para}
+                </p>
+              ))}
+            </div>
+
+            {/* Divider + contract name */}
+            <div style={{
+              marginTop: '32px',
+              paddingTop: '16px',
+              borderTop: '1px solid rgba(212,175,55,0.12)',
+              fontSize: '0.65rem',
+              color: 'rgba(140,125,95,0.5)',
+              fontFamily: 'Cinzel, serif',
+              letterSpacing: '0.08em',
+            }}>
+              Recorded after: {selectedContract.name}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

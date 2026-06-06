@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings, Map } from 'lucide-react';
+import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings, Map, ScrollText } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
@@ -14,6 +14,7 @@ import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
 import ForgeTab from './components/ForgeTab';
 import BestiaryTab from './components/BestiaryTab';
+import JournalTab from './components/JournalTab';
 import InventoryModal from './components/InventoryModal';
 import CraftingModal from './components/CraftingModal';
 import CustomizeModal from './components/CustomizeModal';
@@ -7142,6 +7143,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'contracts', icon:Calendar, label:'Contracts'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'study', icon:Hammer, label:'Forge'},
+                {id:'journal', icon:ScrollText, label:'Journal'},
                 {id:'bestiary', icon:Shield, label:'Bestiary'},
                 {id:'map', icon:Map, label:'Map'},
                 {id:'debug', icon:Settings, label:'Debug'},
@@ -7284,6 +7286,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               trackWebsiteClick={trackWebsiteClick}
               generateQuiz={generateQuiz} startMatchGame={startMatchGame}
               addLog={addLog}
+            />
+          )}
+          {activeTab === 'journal' && (
+            <JournalTab
+              completedLocationContracts={completedLocationContracts}
             />
           )}
           {activeTab === 'bestiary' && (

@@ -12,14 +12,8 @@ export const LOCATION_CONTRACTS = [
     desc: 'The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water. Find out what happened and drive it out.',
     zone: 2,
     encounter: {
-      enemyType: 'bandit',
+      enemyType: 'wave',
       waveSize: 3,
-      enemyNames: ['Spring Defiler', 'Venom Bearer', 'Foul Keeper'],
-      dialogue: [
-        "The warden won't be coming back.",
-        "The spring belongs to us now.",
-        "The water runs dark for a reason.",
-      ],
     },
     rewards: [
       { type: 'cleansePots', amount: 2  },
@@ -36,6 +30,12 @@ export const LOCATION_CONTRACTS = [
     storyContract: true,
     desc: "Ships have been rotting at the docks for weeks. The crew didn't abandon them — they were taken. Locals say armed men arrived quietly and sealed the harbor. No one has left since.",
     storyNote: "Among the bodies you find orders on folded parchment, sealed in red wax — a six-pointed sigil you don't recognize. The text is brief: 'Secure the harbor. Nothing moves without clearance. Await the signal. — C.' The ink is fresh. Whoever C is, they planned this.",
+    journalEntry: {
+      title: 'The Parchment at the Harbor',
+      location: 'Ghost Harbor',
+      zone: 1,
+      text: "Dray is dead. Found orders on him — folded parchment, red wax seal. A six-pointed sigil I've never seen. The message was short: secure the harbor, let nothing move, wait for the signal. Signed only with a C.\n\nThis wasn't a shakedown. Someone organized this. The harbor was a piece of something larger. I don't know what yet.",
+    },
     zone: 1,
     encounter: {
       enemyType: 'bandit',
@@ -60,6 +60,12 @@ export const LOCATION_CONTRACTS = [
     storyContract: true,
     desc: "The sacred tree is dying from the roots up. Witnesses report robed women circling it at night, chanting over a carved ritual circle. The grove keeper hasn't been seen in days.",
     storyNote: "The ritual circle still smolders after the Daughters fall. At its heart, carved into the oldest root, is a six-pointed sigil — the same mark from the harbor. Different faction. Same order. Whatever they serve, it moves through more than one hand.",
+    journalEntry: {
+      title: 'The Same Mark',
+      location: 'The Sacred Grove',
+      zone: 1,
+      text: "The sigil again. Carved into the root of the sacred tree, inside a ritual circle the Daughters were maintaining. The grove keeper is dead. Briar wouldn't say anything before the end.\n\nBandits at the harbor. Daughters of Dusk at the grove. Two factions. One mark. Whatever this order is, it doesn't care about allegiances. It uses who it needs.",
+    },
     zone: 1,
     encounter: {
       enemyType: 'daughters',
@@ -82,6 +88,12 @@ export const LOCATION_CONTRACTS = [
     name: "The Warlord's Mark",
     contractTier: 'blood',
     desc: "The outpost wasn't just raided — it was claimed. A warbanner flies at the peak bearing a symbol none of the scouts recognized. An orc warlord has fortified the position in the name of an order no one has heard of. Drive him out before he signals reinforcements.",
+    journalEntry: {
+      title: 'The Third Blade',
+      location: 'Canopy Outpost',
+      zone: 1,
+      text: "He said I was the third blade sent against him. Meant it as a taunt. It wasn't.\n\nThree separate attempts to take this outpost. That means the order has been watching me since the harbor — maybe before. They sent two others first. I don't know if they were testing me or just underestimating me.\n\nThe banner bore the same sigil. Whatever C is building, this outpost was part of it. I've taken it back. I don't think that ends anything.",
+    },
     zone: 1,
     requiredContracts: ['lc_harbor', 'lc_holy_tree'],
     encounter: {
@@ -107,6 +119,12 @@ export const LOCATION_CONTRACTS = [
     storyContract: true,
     desc: "The road through Ivy Crossing has been sealed for two weeks. Merchants report armed men turning back specific travelers — not collecting coin, consulting a list. The vines have been cultivated as cover. Someone is controlling who comes and goes.",
     storyNote: "In the toll post you find a ledger — every person turned back was named. Not random shakedowns. Targeted. The ledger is stamped with a six-pointed sigil. The same mark. A different road. The same hand.",
+    journalEntry: {
+      title: 'The Ledger',
+      location: 'Ivy Crossing',
+      zone: 2,
+      text: "Finn claimed he was just following orders. He wasn't wrong — there was a ledger in the toll post. Every name in it was specific. Merchants, travelers, a healer. Not random. Targeted.\n\nThe ledger was stamped with the six-pointed sigil.\n\nThey're controlling movement. Who gets through, who gets turned back. I don't know what they're containing — or what they're protecting.",
+    },
     zone: 2,
     encounter: {
       enemyType: 'bandit',
@@ -131,6 +149,12 @@ export const LOCATION_CONTRACTS = [
     storyContract: true,
     desc: "The Daughters of Dusk have moved deeper into Whisper Forest and stopped hunting outward. Witnesses say they've been there for weeks — chanting, building something. No one who went to look has come back. The forest feels wrong at the edges.",
     storyNote: "The ritual site is still active when the Daughter falls. At its center: a summoning circle bearing the six-pointed sigil — but inverted. Not calling something in. Sending a signal out. The order is using this forest as a relay. Whatever they're building, it spans more ground than you thought.",
+    journalEntry: {
+      title: 'The Relay',
+      location: 'Whisper Forest',
+      zone: 2,
+      text: "The ritual circle was still burning when Vayne fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Vayne said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the crossing, now this. Whatever network they're building, it covers more ground than I thought.",
+    },
     zone: 2,
     encounter: {
       enemyType: 'daughters',
@@ -155,6 +179,12 @@ export const LOCATION_CONTRACTS = [
     zone: 2,
     requiredContracts: ['lc_ivy_crossing', 'lc_whisper_forest'],
     desc: "A warband has fortified the Outskirts under a banner bearing the six-pointed sigil. Their commander arrived two days after the crossing and the forest went quiet. She wasn't already here. She was sent.",
+    journalEntry: {
+      title: 'Sent',
+      location: 'The Outskirts',
+      zone: 2,
+      text: "Gryvara said my employer sends regards. Those were her last words.\n\nShe knew who I was. She arrived two days after I cleared the crossing — that's not coincidence. Someone told her I was coming. Someone is watching every move I make and deploying answers.\n\nI've been cutting threads. C knows. And C is not done.",
+    },
     encounter: {
       enemyType: 'elite',
       eliteId: 'e4',
