@@ -48,36 +48,43 @@ const NARRATION_PAGES = [
 // ─── Bandit faction data ────────────────────────────────────────────────────
 const BANDIT_POOL = {
   grunts: [
-    { img: '/bandits/bandit-1.png', names: ['Retch', 'Grim', 'Scar', 'Bile', 'Fenn'] },
-    { img: '/bandits/bandit-2.png', names: ['Dirk', 'Skit', 'Gash', 'Vane', 'Dross'] },
-    { img: '/bandits/bandit-3.png', names: ['Rust', 'Tack', 'Welt', 'Cobb', 'Spit'] },
-    { img: '/bandits/bandit-4.png', names: ['Grub', 'Slug', 'Muck', 'Pell', 'Gouge'] },
-    { img: '/bandits/bandit-5.png', names: ['Notch', 'Crux', 'Bane', 'Hack', 'Scrag'] },
-    { img: '/bandits/bandit-6.png', names: ['Dagger', 'Fang', 'Grit', 'Smash', 'Blot'] },
-    { img: '/bandits/bandit-7.png', names: ['Cinder', 'Ash', 'Ember', 'Char', 'Scorch'] },
+    { img: '/bandits/bandit-1.png', name: 'Rook'  },
+    { img: '/bandits/bandit-2.png', name: 'Slag'  },
+    { img: '/bandits/bandit-3.png', name: 'Finn'  },
+    { img: '/bandits/bandit-4.png', name: 'Gorse' },
+    { img: '/bandits/bandit-5.png', name: 'Mace'  },
+    { img: '/bandits/bandit-6.png', name: 'Dray'  },
+    { img: '/bandits/bandit-7.png', name: 'Vetch' },
   ],
   captains: [
-    { img: '/bandits/captain-1.png', name: 'Rook',  title: 'Bandit Captain' },
-    { img: '/bandits/captain-2.png', name: 'Vex',   title: 'Bandit Captain' },
-    { img: '/bandits/captain-3.png', name: 'Thorn', title: 'Bandit Captain' },
+    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain' },
+    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain' },
+    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain' },
   ],
   leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord' },
 };
 
-const buildBanditLineup = (waveNumber, captainsDefeated) => {
+const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day = 1) => {
   const lineup = [];
-  const gruntCount = waveNumber <= 2 ? 2 : 3;
-  const usedIdxs = new Set();
-  for (let i = 0; i < gruntCount; i++) {
-    let gIdx;
-    do { gIdx = Math.floor(Math.random() * BANDIT_POOL.grunts.length); }
-    while (usedIdxs.has(gIdx));
-    usedIdxs.add(gIdx);
-    const g = BANDIT_POOL.grunts[gIdx];
-    lineup.push({ img: g.img, name: g.names[Math.floor(Math.random() * g.names.length)], isCapt: false, isLeader: false });
+  const waveSize = 3;
+  const availableGrunts = BANDIT_POOL.grunts.filter(g => !defeatedImgs.includes(g.img));
+
+  // 1 named grunt if alive, rest are creatures
+  if (availableGrunts.length > 0) {
+    const g = availableGrunts[Math.floor(Math.random() * availableGrunts.length)];
+    lineup.push({ img: g.img, name: g.name, isCapt: false, isLeader: false });
   }
+  const creatureSlots = waveSize - lineup.length;
+  for (let i = 0; i < creatureSlots; i++) {
+    const c = pickCreatureForDay(day);
+    lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
+  }
+  // Shuffle so named member isn't always first
+  lineup.sort(() => Math.random() - 0.5);
+
+  // Captain at wave 5+ (if alive)
   if (waveNumber >= 5) {
-    const available = BANDIT_POOL.captains.filter((_, i) => !captainsDefeated.includes(i));
+    const available = BANDIT_POOL.captains.filter((c, i) => !captainsDefeated.includes(i) && !defeatedImgs.includes(c.img));
     const pick = available[Math.floor(Math.random() * available.length)];
     if (pick) lineup.push({ ...pick, isCapt: true, isLeader: false });
   }
@@ -87,11 +94,11 @@ const buildBanditLineup = (waveNumber, captainsDefeated) => {
 // ─── Daughters of Dusk faction data ─────────────────────────────────────────
 const DAUGHTERS_POOL = {
   members: [
-    { img: '/daughters-of-dusk/member-1.png', names: ['Vael', 'Nyx', 'Shade', 'Mourne', 'Eclipsa'] },
-    { img: '/daughters-of-dusk/member-2.png', names: ['Zira', 'Lune', 'Omen', 'Vex', 'Silka'] },
-    { img: '/daughters-of-dusk/member-3.png', names: ['Frost', 'Wraith', 'Ashen', 'Grim', 'Hex'] },
-    { img: '/daughters-of-dusk/member-4.png', names: ['Sable', 'Briar', 'Dusk', 'Thorn', 'Mist'] },
-    { img: '/daughters-of-dusk/member-5.png', names: ['Cipher', 'Ravel', 'Knell', 'Pyre', 'Lace'] },
+    { img: '/daughters-of-dusk/member-1.png', name: 'Vael'  },
+    { img: '/daughters-of-dusk/member-2.png', name: 'Zira'  },
+    { img: '/daughters-of-dusk/member-3.png', name: 'Ash'   },
+    { img: '/daughters-of-dusk/member-4.png', name: 'Briar' },
+    { img: '/daughters-of-dusk/member-5.png', name: 'Knell' },
   ],
   captains: [
     { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain' },
@@ -101,20 +108,26 @@ const DAUGHTERS_POOL = {
   leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen' },
 };
 
-const buildDaughtersLineup = (waveNumber, captainsDefeated) => {
+const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day = 1) => {
   const lineup = [];
-  const memberCount = waveNumber <= 2 ? 2 : 3;
-  const usedIdxs = new Set();
-  for (let i = 0; i < memberCount; i++) {
-    let gIdx;
-    do { gIdx = Math.floor(Math.random() * DAUGHTERS_POOL.members.length); }
-    while (usedIdxs.has(gIdx));
-    usedIdxs.add(gIdx);
-    const m = DAUGHTERS_POOL.members[gIdx];
-    lineup.push({ img: m.img, name: m.names[Math.floor(Math.random() * m.names.length)], isCapt: false, isLeader: false });
+  const waveSize = 3;
+  const availableMembers = DAUGHTERS_POOL.members.filter(m => !defeatedImgs.includes(m.img));
+
+  // 1 named member if alive, rest are creatures
+  if (availableMembers.length > 0) {
+    const m = availableMembers[Math.floor(Math.random() * availableMembers.length)];
+    lineup.push({ img: m.img, name: m.name, isCapt: false, isLeader: false });
   }
+  const creatureSlots = waveSize - lineup.length;
+  for (let i = 0; i < creatureSlots; i++) {
+    const c = pickCreatureForDay(day);
+    lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
+  }
+  lineup.sort(() => Math.random() - 0.5);
+
+  // Captain at wave 5+ (if alive)
   if (waveNumber >= 5) {
-    const available = DAUGHTERS_POOL.captains.filter((_, i) => !captainsDefeated.includes(i));
+    const available = DAUGHTERS_POOL.captains.filter((c, i) => !captainsDefeated.includes(i) && !defeatedImgs.includes(c.img));
     const pick = available[Math.floor(Math.random() * available.length)];
     if (pick) lineup.push({ ...pick, isCapt: true, isLeader: false });
   }
@@ -2738,7 +2751,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
 
   const spawnBanditWave = (waveNum, captainsDefeated) => {
-    const lineup = buildBanditLineup(waveNum, captainsDefeated);
+    const lineup = buildBanditLineup(waveNum, captainsDefeated, defeatedFactionMembers, currentDay);
     banditLineupRef.current = lineup;
     banditLineupIdxRef.current = 0;
     setBanditWaveNumber(waveNum);
@@ -2834,7 +2847,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
 
   const spawnDaughtersWave = (waveNum, captainsDefeated) => {
-    const lineup = buildDaughtersLineup(waveNum, captainsDefeated);
+    const lineup = buildDaughtersLineup(waveNum, captainsDefeated, defeatedFactionMembers, currentDay);
     daughtersLineupRef.current = lineup;
     daughtersLineupIdxRef.current = 0;
     setDaughtersWaveNumber(waveNum);
@@ -7275,7 +7288,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       const g = BANDIT_POOL.grunts[gIdx];
                       const name = enemyNames
                         ? enemyNames[i % enemyNames.length]
-                        : g.names[Math.floor(Math.random() * g.names.length)];
+                        : g.name;
                       const line = dialogue
                         ? dialogue[Math.min(i, dialogue.length - 1)]
                         : null;
@@ -7294,7 +7307,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       while (usedIdxs.has(mIdx) && usedIdxs.size < DAUGHTERS_POOL.members.length);
                       usedIdxs.add(mIdx);
                       const m = DAUGHTERS_POOL.members[mIdx];
-                      const name = enemyNames ? enemyNames[i % enemyNames.length] : m.names[Math.floor(Math.random() * m.names.length)];
+                      const name = enemyNames ? enemyNames[i % enemyNames.length] : m.name;
                       const line = dialogue ? dialogue[Math.min(i, dialogue.length - 1)] : null;
                       lineup.push({ img: m.img, name, isCapt: false, isLeader: false, contractDialogue: line });
                     }
