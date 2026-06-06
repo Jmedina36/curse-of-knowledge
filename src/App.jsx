@@ -7269,6 +7269,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     banditLineupRef.current = lineup;
                     banditLineupIdxRef.current = 0;
                     setTimeout(() => spawnBanditEnemy(lineup[0], 0, lineup.length), 1000);
+                  } else if (enemyType === 'daughters') {
+                    const { enemyNames, dialogue } = lc.encounter;
+                    const lineup = [];
+                    const usedIdxs = new Set();
+                    for (let i = 0; i < waveSize; i++) {
+                      let mIdx;
+                      do { mIdx = Math.floor(Math.random() * DAUGHTERS_POOL.members.length); }
+                      while (usedIdxs.has(mIdx) && usedIdxs.size < DAUGHTERS_POOL.members.length);
+                      usedIdxs.add(mIdx);
+                      const m = DAUGHTERS_POOL.members[mIdx];
+                      const name = enemyNames ? enemyNames[i % enemyNames.length] : m.names[Math.floor(Math.random() * m.names.length)];
+                      const line = dialogue ? dialogue[Math.min(i, dialogue.length - 1)] : null;
+                      lineup.push({ img: m.img, name, isCapt: false, isLeader: false, contractDialogue: line });
+                    }
+                    daughtersLineupRef.current = lineup;
+                    daughtersLineupIdxRef.current = 0;
+                    setTimeout(() => spawnDaughtersEnemy(lineup[0], 0, lineup.length), 1000);
                   } else if (enemyType === 'elite') {
                     const { eliteId, dialogue: eliteDialogue } = lc.encounter;
                     setTimeout(() => spawnSpecificElite(eliteId, eliteDialogue), 1000);

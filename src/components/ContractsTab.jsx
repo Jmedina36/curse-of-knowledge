@@ -384,145 +384,188 @@ const ContractsTab = ({
               </>
             )}
 
-            {/* ── ZONE 1 LOCATION CONTRACTS ── */}
-            {isDayActive && locationContracts?.length > 0 && (
-              <>
-                <TierDivider tier="silver" label="Field Contracts" />
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
-                  {locationContracts.filter(lc => {
-                    if (!lc.requiredContracts?.length) return true;
-                    return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
-                  }).map(lc => {
-                    const isCompleted = completedLocationContracts?.includes(lc.id);
-                    const isPending = pendingLocationRewards?.includes(lc.id);
-                    const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
-                    return (
-                      <div key={lc.id} style={{
-                        position: 'relative',
-                        background: isCompleted
-                          ? 'linear-gradient(160deg,rgba(42,42,48,0.52),rgba(35,35,42,0.52))'
-                          : isPending
-                            ? 'linear-gradient(160deg,rgba(40,55,20,0.6),rgba(30,45,15,0.6))'
+            {/* ── LOCATION CONTRACTS ── */}
+            {isDayActive && locationContracts?.length > 0 && (() => {
+              const visible = locationContracts.filter(lc => {
+                if (!lc.requiredContracts?.length) return true;
+                return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
+              });
+              const storyContracts = visible.filter(lc => lc.storyContract);
+              const fieldContracts = visible.filter(lc => !lc.storyContract);
+
+              const renderCard = (lc) => {
+                const isCompleted = completedLocationContracts?.includes(lc.id);
+                const isPending = pendingLocationRewards?.includes(lc.id);
+                const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
+                const tier = lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
+                const tierLabel = lc.contractTier === 'gold' ? 'Gold' : lc.contractTier === 'blood' ? 'Blood' : 'Silver';
+                return (
+                  <div key={lc.id} style={{
+                    position: 'relative',
+                    background: isCompleted
+                      ? 'linear-gradient(160deg,rgba(42,42,48,0.52),rgba(35,35,42,0.52))'
+                      : isPending
+                        ? 'linear-gradient(160deg,rgba(40,55,20,0.6),rgba(30,45,15,0.6))'
+                        : lc.contractTier === 'gold'
+                          ? 'linear-gradient(160deg,rgba(45,35,5,0.7),rgba(32,24,4,0.7))'
+                          : lc.contractTier === 'blood'
+                            ? 'linear-gradient(160deg,rgba(50,10,10,0.7),rgba(35,5,5,0.7))'
                             : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
-                        border: isCompleted
-                          ? '1px solid rgba(80,100,60,0.45)'
-                          : isPending
-                            ? '1px solid rgba(100,180,60,0.5)'
-                            : `1px solid ${TIER.silver.border}`,
-                        boxShadow: isPending ? '0 0 16px rgba(100,200,60,0.2)' : `0 2px 8px ${TIER.silver.glow.replace('0.4','0.08')}`,
-                        borderRadius: '4px',
-                        padding: '14px 14px 12px',
-                        opacity: isCompleted ? 0.65 : 1,
+                    border: isCompleted
+                      ? '1px solid rgba(80,100,60,0.45)'
+                      : isPending
+                        ? '1px solid rgba(100,180,60,0.5)'
+                        : `1px solid ${tier.border}`,
+                    boxShadow: isPending
+                      ? '0 0 16px rgba(100,200,60,0.2)'
+                      : isCompleted ? 'none'
+                        : `0 2px 12px ${tier.glow.replace('0.5','0.1').replace('0.4','0.1')}`,
+                    borderRadius: '4px',
+                    padding: '14px 14px 12px',
+                    opacity: isCompleted ? 0.65 : 1,
+                  }}>
+                    {/* Push-pin */}
+                    <div style={{
+                      position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
+                      width: '12px', height: '12px', borderRadius: '50%',
+                      background: isCompleted ? 'rgba(80,120,60,0.8)' : tier.color,
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      boxShadow: `0 1px 5px rgba(0,0,0,0.6)`,
+                    }} />
+
+                    {/* Tier + location badge */}
+                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <span style={{
+                        fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.22em',
+                        textTransform: 'uppercase', padding: '2px 8px', borderRadius: '2px',
+                        background: isCompleted ? 'rgba(60,90,40,0.3)' : 'rgba(0,0,0,0.25)',
+                        border: isCompleted ? '1px solid rgba(80,120,60,0.4)' : `1px solid ${tier.border}`,
+                        color: isCompleted ? 'rgba(150,220,110,0.95)' : tier.color,
                       }}>
-                        {/* Push-pin */}
-                        <div style={{
-                          position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
-                          width: '12px', height: '12px', borderRadius: '50%',
-                          background: isCompleted ? 'rgba(80,120,60,0.8)' : TIER.silver.color,
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          boxShadow: `0 1px 5px rgba(0,0,0,0.6)`,
-                        }} />
+                        {isCompleted ? 'Sealed' : tierLabel}
+                      </span>
+                      <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.7rem', color: 'rgba(180,160,120,0.6)' }}>
+                        {lc.locationName}
+                      </span>
+                    </div>
 
-                        {/* Tier + location badge */}
-                        <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <span style={{
-                            fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.22em',
-                            textTransform: 'uppercase', padding: '2px 8px', borderRadius: '2px',
-                            background: isCompleted ? 'rgba(60,90,40,0.3)' : 'rgba(35,35,42,0.5)',
-                            border: isCompleted ? '1px solid rgba(80,120,60,0.4)' : `1px solid ${TIER.silver.border}`,
-                            color: isCompleted ? 'rgba(150,220,110,0.95)' : TIER.silver.color,
-                          }}>
-                            {isCompleted ? 'Sealed' : 'Silver'}
-                          </span>
-                          <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.7rem', color: 'rgba(180,160,120,0.6)' }}>
-                            {lc.locationName}
-                          </span>
-                        </div>
+                    {/* Contract title */}
+                    <p style={{
+                      fontFamily: 'Cinzel,serif', fontSize: '1.0rem', fontWeight: 600,
+                      letterSpacing: '0.04em', lineHeight: 1.4,
+                      color: isCompleted ? 'rgba(180,175,150,0.65)' : '#F5F0E0',
+                      textDecoration: isCompleted ? 'line-through' : 'none',
+                      marginBottom: '6px',
+                    }}>{lc.name}</p>
 
-                        {/* Contract title */}
-                        <p style={{
-                          fontFamily: 'Cinzel,serif', fontSize: '1.0rem', fontWeight: 600,
-                          letterSpacing: '0.04em', lineHeight: 1.4,
-                          color: isCompleted ? 'rgba(180,175,150,0.65)' : '#F5F0E0',
-                          textDecoration: isCompleted ? 'line-through' : 'none',
-                          marginBottom: '6px',
-                        }}>{lc.name}</p>
+                    {/* Description */}
+                    <p style={{
+                      fontSize: '0.72rem', color: 'rgba(180,165,140,0.6)',
+                      lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic',
+                    }}>{lc.desc}</p>
 
-                        {/* Description */}
-                        <p style={{
-                          fontSize: '0.72rem', color: 'rgba(180,165,140,0.6)',
-                          lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic',
-                        }}>{lc.desc}</p>
-
-                        {/* Rewards */}
-                        {!isCompleted && (
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
-                            {lc.rewards.map((r, i) => (
-                              <span key={i} style={{
-                                fontFamily: 'Cinzel,serif', fontSize: '0.7rem',
-                                color: REWARD_COLORS[r.type] || 'rgba(200,200,200,0.8)',
-                                background: 'rgba(0,0,0,0.2)',
-                                border: `1px solid ${(REWARD_COLORS[r.type] || 'rgba(200,200,200,0.3)')}44`,
-                                borderRadius: '2px', padding: '1px 6px',
-                              }}>+{r.amount} {REWARD_LABELS[r.type]}</span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Action */}
-                        {!isCompleted && (
-                          isPending ? (
-                            <button
-                              onClick={() => { sounds.click(); onCollectLocationReward(lc.id); }}
-                              style={{
-                                width: '100%',
-                                fontFamily: 'Cinzel,serif', fontSize: '0.82rem', letterSpacing: '0.15em',
-                                padding: '6px 12px', borderRadius: '2px',
-                                background: 'rgba(30,80,15,0.7)',
-                                border: '1px solid rgba(100,200,60,0.6)',
-                                color: 'rgba(150,240,100,0.95)',
-                                cursor: 'pointer', transition: 'all 0.2s',
-                                boxShadow: '0 0 10px rgba(100,200,60,0.25)',
-                                animation: 'intro-hint-pulse 2s ease-in-out infinite',
-                              }}
-                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40,110,20,0.85)'; }}
-                              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(30,80,15,0.7)'; }}
-                            >Complete — Collect Rewards</button>
-                          ) : isActive ? (
-                            <div style={{
-                              fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em',
-                              padding: '5px 10px', borderRadius: '2px', textAlign: 'center',
-                              background: 'rgba(80,55,0,0.5)', border: '1px solid rgba(212,175,55,0.4)',
-                              color: 'rgba(212,175,55,0.9)',
-                            }}>On Map</div>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                sounds.click();
-                                setActiveContract({ type: 'location', contract: lc });
-                                setActiveTab('map');
-                              }}
-                              disabled={!!activeContract}
-                              style={{
-                                width: '100%',
-                                fontFamily: 'Cinzel,serif', fontSize: '0.82rem', letterSpacing: '0.15em',
-                                padding: '5px 12px', borderRadius: '2px',
-                                background: activeContract ? 'rgba(30,20,5,0.4)' : 'rgba(80,55,10,0.6)',
-                                border: `1px solid ${activeContract ? 'rgba(180,140,40,0.18)' : 'rgba(180,140,40,0.5)'}`,
-                                color: activeContract ? 'rgba(180,150,80,0.3)' : 'rgba(212,175,55,0.95)',
-                                cursor: activeContract ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
-                              }}
-                              onMouseEnter={e => { if (!activeContract) e.currentTarget.style.background = 'rgba(100,70,15,0.8)'; }}
-                              onMouseLeave={e => { if (!activeContract) e.currentTarget.style.background = 'rgba(80,55,10,0.6)'; }}
-                            >Accept</button>
-                          )
-                        )}
+                    {/* Story note — revealed after completion */}
+                    {lc.storyNote && isCompleted && (
+                      <div style={{
+                        marginBottom: '10px', padding: '8px 10px', borderRadius: '3px',
+                        background: 'rgba(20,15,0,0.5)',
+                        border: '1px solid rgba(212,175,55,0.2)',
+                        borderLeft: '2px solid rgba(212,175,55,0.5)',
+                      }}>
+                        <p style={{ fontSize: '0.68rem', color: 'rgba(212,175,55,0.75)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
+                          📜 {lc.storyNote}
+                        </p>
                       </div>
-                    );
-                  })}
-                </div>
-              </>
-            )}
+                    )}
+
+                    {/* Rewards */}
+                    {!isCompleted && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                        {lc.rewards.map((r, i) => (
+                          <span key={i} style={{
+                            fontFamily: 'Cinzel,serif', fontSize: '0.7rem',
+                            color: REWARD_COLORS[r.type] || 'rgba(200,200,200,0.8)',
+                            background: 'rgba(0,0,0,0.2)',
+                            border: `1px solid ${(REWARD_COLORS[r.type] || 'rgba(200,200,200,0.3)')}44`,
+                            borderRadius: '2px', padding: '1px 6px',
+                          }}>+{r.amount} {REWARD_LABELS[r.type]}</span>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Action */}
+                    {!isCompleted && (
+                      isPending ? (
+                        <button
+                          onClick={() => { sounds.click(); onCollectLocationReward(lc.id); }}
+                          style={{
+                            width: '100%',
+                            fontFamily: 'Cinzel,serif', fontSize: '0.82rem', letterSpacing: '0.15em',
+                            padding: '6px 12px', borderRadius: '2px',
+                            background: 'rgba(30,80,15,0.7)',
+                            border: '1px solid rgba(100,200,60,0.6)',
+                            color: 'rgba(150,240,100,0.95)',
+                            cursor: 'pointer', transition: 'all 0.2s',
+                            boxShadow: '0 0 10px rgba(100,200,60,0.25)',
+                            animation: 'intro-hint-pulse 2s ease-in-out infinite',
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(40,110,20,0.85)'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(30,80,15,0.7)'; }}
+                        >Complete — Collect Rewards</button>
+                      ) : isActive ? (
+                        <div style={{
+                          fontFamily: 'Cinzel,serif', fontSize: '0.75rem', letterSpacing: '0.1em',
+                          padding: '5px 10px', borderRadius: '2px', textAlign: 'center',
+                          background: 'rgba(80,55,0,0.5)', border: '1px solid rgba(212,175,55,0.4)',
+                          color: 'rgba(212,175,55,0.9)',
+                        }}>On Map</div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            sounds.click();
+                            setActiveContract({ type: 'location', contract: lc });
+                            setActiveTab('map');
+                          }}
+                          disabled={!!activeContract}
+                          style={{
+                            width: '100%',
+                            fontFamily: 'Cinzel,serif', fontSize: '0.82rem', letterSpacing: '0.15em',
+                            padding: '5px 12px', borderRadius: '2px',
+                            background: activeContract ? 'rgba(30,20,5,0.4)' : `rgba(0,0,0,0.3)`,
+                            border: `1px solid ${activeContract ? tier.border.replace('0.5','0.15').replace('0.4','0.15') : tier.border}`,
+                            color: activeContract ? `${tier.color}44` : tier.color,
+                            cursor: activeContract ? 'not-allowed' : 'pointer', transition: 'all 0.2s',
+                          }}
+                          onMouseEnter={e => { if (!activeContract) e.currentTarget.style.background = 'rgba(0,0,0,0.5)'; }}
+                          onMouseLeave={e => { if (!activeContract) e.currentTarget.style.background = 'rgba(0,0,0,0.3)'; }}
+                        >Accept</button>
+                      )
+                    )}
+                  </div>
+                );
+              };
+
+              return (
+                <>
+                  {storyContracts.length > 0 && (
+                    <>
+                      <TierDivider tier="gold" label="Story Contracts" />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {storyContracts.map(renderCard)}
+                      </div>
+                    </>
+                  )}
+                  {fieldContracts.length > 0 && (
+                    <>
+                      <TierDivider tier="silver" label="Field Contracts" />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {fieldContracts.map(renderCard)}
+                      </div>
+                    </>
+                  )}
+                </>
+              );
+            })()}
 
             {/* ── GOLD CONTRACTS ── */}
             {isDayActive && (
