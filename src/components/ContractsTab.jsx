@@ -389,7 +389,10 @@ const ContractsTab = ({
               <>
                 <TierDivider tier="silver" label="Field Contracts" />
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
-                  {locationContracts.map(lc => {
+                  {locationContracts.filter(lc => {
+                    if (!lc.requiredContracts?.length) return true;
+                    return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
+                  }).map(lc => {
                     const isCompleted = completedLocationContracts?.includes(lc.id);
                     const isPending = pendingLocationRewards?.includes(lc.id);
                     const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;

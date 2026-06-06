@@ -81,7 +81,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'blood',
     desc: "The outpost wasn't just raided — it was claimed. A warbanner flies at the peak bearing a symbol none of the scouts recognized. An orc warlord has fortified the position in the name of an order no one has heard of. Drive him out before he signals reinforcements.",
     zone: 1,
-    requiresZone1Complete: true,
+    requiredContracts: ['lc_harbor', 'lc_holy_tree'],
     encounter: {
       enemyType: 'elite',
       eliteId: 'e5',
