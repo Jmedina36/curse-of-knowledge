@@ -214,7 +214,7 @@ export const LOCATION_CONTRACTS = [
       enemyType: 'cursed',
       members: [
         { img: '/cursed/young-paladin.png', name: 'Aldric', hp: 90, dialogue: "I can't stop. I can't remember how." },
-        { img: '/cursed/young-princess.png', name: 'Sela', hp: 75, dialogue: "Is someone finally here? Or is this another dream?" },
+        { img: '/cursed/young-princess.png', name: 'Sela', hp: 75, gender: 'f', dialogue: "Is someone finally here? Or is this another dream?" },
       ],
     },
     rewards: [
@@ -235,8 +235,8 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'cursed',
       members: [
-        { img: '/cursed/elven-girl.png', name: 'Lysse', hp: 150, dialogue: "The source is close. I know it. I've always known it." },
-        { img: '/cursed/mongolian-princess.png', name: 'Kira', hp: 135, dialogue: "I was supposed to keep her safe. I'm still trying." },
+        { img: '/cursed/elven-girl.png', name: 'Lysse', hp: 150, gender: 'f', dialogue: "The source is close. I know it. I've always known it." },
+        { img: '/cursed/mongolian-princess.png', name: 'Kira', hp: 135, gender: 'f', dialogue: "I was supposed to keep her safe. I'm still trying." },
       ],
     },
     rewards: [
@@ -279,8 +279,8 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'cursed',
       members: [
-        { img: '/cursed/warrior-lady.png', name: 'Bryn', hp: 245, dialogue: "Hold the line. We hold the line." },
-        { img: '/cursed/viking-woman.png', name: 'Solveig', hp: 225, dialogue: "Forward. Always forward. That's all there is." },
+        { img: '/cursed/warrior-lady.png', name: 'Bryn', hp: 245, gender: 'f', dialogue: "Hold the line. We hold the line." },
+        { img: '/cursed/viking-woman.png', name: 'Solveig', hp: 225, gender: 'f', dialogue: "Forward. Always forward. That's all there is." },
       ],
     },
     rewards: [
@@ -301,7 +301,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'cursed',
       members: [
-        { img: '/cursed/young-lady.png', name: 'Maren', hp: 260, dialogue: "I saw something. I had to come back. I had to see if it was real." },
+        { img: '/cursed/young-lady.png', name: 'Maren', hp: 260, gender: 'f', dialogue: "I saw something. I had to come back. I had to see if it was real." },
         { img: '/cursed/young-korean-prince.png', name: 'Sun Wen', hp: 235, dialogue: "I followed her here. I don't regret it. I don't think." },
       ],
     },
@@ -323,7 +323,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'cursed',
       members: [
-        { img: '/cursed/viking-warrior.png', name: 'Jarl Sigrun', hp: 360, dialogue: "Not their fight. Never was. But this one is mine." },
+        { img: '/cursed/viking-warrior.png', name: 'Jarl Sigrun', hp: 360, gender: 'f', dialogue: "Not their fight. Never was. But this one is mine." },
         { img: '/cursed/viking-noble-man.png', name: 'Lord Halvard', hp: 330, dialogue: "I understand the curse completely now. That doesn't help." },
       ],
     },
@@ -345,7 +345,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'cursed',
       members: [
-        { img: '/cursed/warrior-queen.png', name: 'Queen Sera', hp: 490, dialogue: "My kingdom is ash. My name is ash. I have nothing left to lose." },
+        { img: '/cursed/warrior-queen.png', name: 'Queen Sera', hp: 490, gender: 'f', dialogue: "My kingdom is ash. My name is ash. I have nothing left to lose." },
         { img: '/cursed/old-noble-man.png', name: 'Edric', hp: 450, dialogue: "I was wrong about one thing. Knowing it doesn't make it smaller." },
       ],
     },
