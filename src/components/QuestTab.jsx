@@ -89,6 +89,8 @@ const QuestTab = ({
   fusionCrystals,
   onReleaseMonster,
   guildRank,
+  onOpenBestiary,
+  onOpenForge,
 }) => {
   return (
             <div className="space-y-4">
@@ -252,6 +254,7 @@ const QuestTab = ({
               const dwarf = DWARF_NPCS[(currentDay ?? 1) % DWARF_NPCS.length];
               const elf   = ELF_NPCS[(currentDay ?? 1) % ELF_NPCS.length];
               return (
+            <>
             <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px'}}>
 
               {/* Armory */}
@@ -315,6 +318,72 @@ const QuestTab = ({
               </button>
 
             </div>
+
+            {/* Row 2 — Kael · Rylan · TBD */}
+            <div className="max-w-2xl mx-auto" style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:'10px',marginTop:'10px'}}>
+
+              {/* Bestiary — Kael */}
+              <button
+                onClick={() => { sounds.click(); onOpenBestiary && onOpenBestiary(); }}
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(160deg,#0f0820,#1a0f35,#090514)',
+                  border:'1px solid rgba(139,92,246,0.5)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(167,139,250,0.06)',
+                  transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(100,60,200,0.4), inset 0 1px 0 rgba(167,139,250,0.06)';e.currentTarget.style.borderColor='rgba(167,139,250,0.75)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(167,139,250,0.06)';e.currentTarget.style.borderColor='rgba(139,92,246,0.5)';}}
+              >
+                <img src="/npcs/female-warrior.png" alt="Kael" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(139,92,246,0.6)',boxShadow:'0 0 12px rgba(139,92,246,0.3)'}}/>
+                <div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(167,139,250,0.8)',marginBottom:'3px'}}>Kael</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(196,181,253,1)',marginBottom:'4px'}}>The Bestiary</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(139,92,246,0.4)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(167,139,250,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Creatures · Factions</p>
+                </div>
+              </button>
+
+              {/* Forge — Rylan */}
+              <button
+                onClick={() => { sounds.click(); onOpenForge && onOpenForge(); }}
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                  background:'linear-gradient(160deg,#060e1a,#0c1a2e,#030810)',
+                  border:'1px solid rgba(56,130,210,0.5)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(96,165,250,0.06)',
+                  transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(30,90,180,0.4), inset 0 1px 0 rgba(96,165,250,0.06)';e.currentTarget.style.borderColor='rgba(96,165,250,0.75)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(96,165,250,0.06)';e.currentTarget.style.borderColor='rgba(56,130,210,0.5)';}}
+              >
+                <img src="/npcs/warrior.png" alt="Rylan" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(56,130,210,0.6)',boxShadow:'0 0 12px rgba(56,130,210,0.3)'}}/>
+                <div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(96,165,250,0.8)',marginBottom:'3px'}}>Rylan</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(147,197,253,1)',marginBottom:'4px'}}>The Forge</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(56,130,210,0.4)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(96,165,250,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Study · Flashcards</p>
+                </div>
+              </button>
+
+              {/* TBD slot */}
+              <button
+                disabled
+                style={{padding:'16px 10px 14px',borderRadius:'10px',textAlign:'center',
+                  background:'linear-gradient(160deg,#0d0d0d,#141414,#0a0a0a)',
+                  border:'1px solid rgba(80,80,80,0.25)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
+                  opacity:0.35,display:'flex',flexDirection:'column',alignItems:'center',gap:'8px',cursor:'default'}}
+              >
+                <div style={{width:'96px',height:'96px',borderRadius:'50%',border:'2px solid rgba(80,80,80,0.3)',background:'rgba(40,40,40,0.4)',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                  <span style={{fontSize:'2rem',opacity:0.3}}>?</span>
+                </div>
+                <div>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(120,120,120,0.5)',marginBottom:'3px'}}>Unknown</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(140,140,140,0.4)',marginBottom:'4px'}}>Coming Soon</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(80,80,80,0.2)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(100,100,100,0.4)',textTransform:'uppercase',lineHeight:1.4}}>· · ·</p>
+                </div>
+              </button>
+
+            </div>
+            </>
               );
             })()}
 

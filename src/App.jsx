@@ -7144,8 +7144,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'map', icon:Map, label:'Map'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'journal', icon:ScrollText, label:'Journal'},
-                {id:'bestiary', icon:Shield, label:'Bestiary'},
-                {id:'study', icon:Hammer, label:'Forge'},
+
                 {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
                 <button 
@@ -7212,6 +7211,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               capturedMonsters={capturedMonsters} fusionCrystals={fusionCrystals}
               onReleaseMonster={releaseMonster}
               guildRank={guildRank}
+              onOpenBestiary={() => setActiveTab('bestiary')}
+              onOpenForge={() => setActiveTab('study')}
             />
           )}
 
