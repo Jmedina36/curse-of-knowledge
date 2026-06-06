@@ -1434,14 +1434,14 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
     } else if (hasStarted) {
       audioManager.play(TRACKS.midnightTale);
     }
-  }, [battling, battleType, isFinalBoss, hasStarted]);
+  }, [battling, battleType, isFinalBoss]);
 
-  // Play Ancient Winds for returning users once intro is dismissed
+  // Play guild music once title screen is dismissed
   useEffect(() => {
     if (introPhase === 'done' && hasStarted && !battling) {
       audioManager.play(TRACKS.midnightTale);
     }
-  }, [introPhase]);
+  }, [introPhase, battling]);
   
   // Refresh shop inventory on merchant open if it's a refresh day
   useEffect(() => {
