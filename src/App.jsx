@@ -7,7 +7,7 @@ import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings, Map } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
-import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats } from './creatures';
+import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
@@ -2925,6 +2925,64 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   }), 3200);
   };
   
+  const spawnSpecificElite = (creatureId, dialogue) => {
+    const creature = CREATURE_INDEX.find(c => c.id === creatureId);
+    if (!creature) return;
+    const completedTasks = tasks.filter(t => t.done).length;
+    const totalTasks = tasks.length;
+    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
+    const config = GAME_CONSTANTS.SCALING_CONFIG.elite;
+    const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
+    const bossNumber = miniBossCount + 1;
+    const scaledHp = Math.floor(baseHp * (1 + bossNumber * 0.2) * (creature.hpMod || 1));
+    const bossHealth = Math.floor(scaledHp * (2 - completionRate));
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+    sounds.bossEntrance();
+    setBattleType('elite');
+    audioManager.cut();
+    audioManager.play(TRACKS.darkling);
+    setBossName(creature.name);
+    setBanditEnemyImg(creature.img);
+    setBossHp(bossHealth);
+    setBossMax(bossHealth);
+    setShowBoss(true);
+    setBattling(true);
+    setBattleMenu('main');
+    setBattleMode(true);
+    setIsFinalBoss(false);
+    setCanFlee(false);
+    setMiniBossCount(bossNumber);
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setVictoryLoot([]);
+    setVictoryChest(null);
+    setChargeStacks(0);
+    setEnragedTurns(0);
+    setHasFled(false);
+    if (dialogue) setEnemyDialogue(dialogue);
+    addLog(`⚔️ ${creature.name} blocks your path!`);
+    const _dexMod_se = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+    const _wis_se = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+    const _rawAtk_se = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const _pRoll_se = Math.ceil(Math.random() * 20);
+    const _pTotal_se = _pRoll_se + _dexMod_se;
+    const _eRoll_se = Math.ceil(Math.random() * 20);
+    const _eTotal_se = _eRoll_se + 2;
+    const _seFirst = _pTotal_se >= _eTotal_se;
+    const _margin_se = Math.abs(_pTotal_se - _eTotal_se);
+    const _decisive_se = _margin_se >= 5;
+    const _openDmg_se = _seFirst ? 0 : Math.max(3, Math.floor(_rawAtk_se * (_decisive_se ? 0.65 : 0.40) * (1 - _wis_se * 0.02)));
+    const _stunned_se = !_seFirst && _decisive_se;
+    setTimeout(() => setInitiativeRoll({
+      playerRoll: _pRoll_se, playerMod: _dexMod_se, playerTotal: _pTotal_se,
+      enemyRoll: _eRoll_se, enemyMod: 2, enemyTotal: _eTotal_se,
+      playerFirst: _seFirst, decisive: _decisive_se, margin: _margin_se,
+      openingDamage: _openDmg_se, stunned: _stunned_se,
+      openingLog: _seFirst ? '' : `${creature.name} strikes first for ${_openDmg_se} damage.${_stunned_se ? ' You are stunned.' : ''}`,
+    }), 3200);
+  };
+
   const useHealth = () => {
   if (curseLevel === 3) {
     addLog('Condemned - Cannot use Health Potions!');
@@ -7211,6 +7269,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     banditLineupRef.current = lineup;
                     banditLineupIdxRef.current = 0;
                     setTimeout(() => spawnBanditEnemy(lineup[0], 0, lineup.length), 1000);
+                  } else if (enemyType === 'elite') {
+                    const { eliteId, dialogue: eliteDialogue } = lc.encounter;
+                    setTimeout(() => spawnSpecificElite(eliteId, eliteDialogue), 1000);
                   } else {
                     contractEncounterRef.current = { tierWeights };
                     setWaveCount(waveSize);
