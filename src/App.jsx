@@ -2890,8 +2890,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleType('wave');
     setCurrentWaveEnemy(idx + 1);
     setTotalWaveEnemies(total);
-    if (idx === 0) setWaveGoldTotal(0);
-    audioManager.play(TRACKS.malicious);
+    if (idx === 0) { setWaveGoldTotal(0); audioManager.play(TRACKS.grimIdol); }
     addLog(`The Cursed ${enemy.name} stirs... (${idx + 1}/${total})`);
     setEnemyDialogue(enemy.dialogue || '...');
     const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;

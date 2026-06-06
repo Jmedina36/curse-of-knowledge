@@ -22,6 +22,7 @@ export const TRACKS = {
   mira:              '/sounds/music/Eternal Terminal.mp3',
   sylvaris:          '/sounds/music/Burnt Spirit.mp3',
   malachar:          '/sounds/music/Wretched Destroyer.mp3',
+  grimIdol:          '/sounds/music/Grim Idol.mp3',
 };
 
 const FADE_IN_MS  = 1400;
