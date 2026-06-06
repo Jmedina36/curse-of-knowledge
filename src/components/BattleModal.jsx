@@ -5,6 +5,43 @@ import { getCreatureQuality } from '../creatures';
 import { audioManager } from '../audioManager';
 import { sounds } from '../sounds';
 
+// ─── Loot item image resolver ─────────────────────────────────────────────────
+function getLootImage(label) {
+  const RARITY_RANK = { Common: 1, Uncommon: 2, Rare: 3, Epic: 4, Legendary: 5 };
+  const rank = Object.entries(RARITY_RANK).reduce((found, [name, r]) => label.startsWith(name + ' ') ? r : found, 1);
+  const lower = label.toLowerCase();
+
+  if (label.includes('Attack')) {
+    if (lower.includes('dagger') || lower.includes('knife') || lower.includes('stiletto') || lower.includes('dirk') || lower.includes('shiv') || lower.includes('fang'))
+      return rank <= 1 ? '/weapons/dagger1.png' : '/weapons/dagger2.png';
+    if (lower.includes('bow') || lower.includes('recurve') || lower.includes('shooter'))
+      return '/weapons/bow1.png';
+    if (lower.includes('staff') || lower.includes('rod') || lower.includes('cane') || lower.includes('scepter') || lower.includes('focus') || lower.includes('wand'))
+      return '/weapons/staff.png';
+    if (lower.includes('axe') || lower.includes('hatchet') || lower.includes('cleaver') || lower.includes('mace') || lower.includes('hammer'))
+      return '/weapons/mace1.png';
+    return rank <= 2 ? '/weapons/sword1.png' : rank <= 3 ? '/weapons/sword2.png' : '/weapons/sword3.png';
+  }
+
+  if (label.includes('Defense')) {
+    if (lower.includes('helm') || lower.includes('cap') || lower.includes('hood') || lower.includes('coif') || lower.includes('visor') || lower.includes('hat') || lower.includes('crown'))
+      return `/armor/helmet${rank}.png`;
+    if (lower.includes('glove') || lower.includes('gauntlet') || lower.includes('mitt') || lower.includes('handguard') || lower.includes('wrap') || lower.includes('grip'))
+      return `/armor/gloves${rank}.png`;
+    if (lower.includes('boot') || lower.includes('shoe') || lower.includes('greave') || lower.includes('footwrap') || lower.includes('sabaton') || lower.includes('sandal') || lower.includes('footwear'))
+      return `/armor/boots${rank}.png`;
+    return `/armor/chest${rank}.png`;
+  }
+
+  if (label.includes('Health') && label.includes('(+'))
+    return `/items/MAGIC-BOOK-${rank}.png`;
+
+  if (label.includes('STA') && label.includes('(+'))
+    return `/items/MAGIC-BOOK-${rank}.png`;
+
+  return null;
+}
+
 // ─── Enemy move pools by battle type ─────────────────────────────────────────
 const ENEMY_MOVES = {
   regular: [
@@ -1543,13 +1580,19 @@ const BattleModal = ({
 
                         {/* Loot list */}
                         <div style={{ width: '100%', marginTop: '4px' }}>
-                          {chestLoot.map((loot, idx) => (
-                            <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.09, duration: 0.22 }}
-                              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '5px 10px', marginBottom: '5px', borderRadius: '6px', background: 'rgba(0,0,0,0.35)', border: `1px solid ${cc.border}44` }}>
-                              <span style={{ fontSize: '12px', color: cc.label }}>◆</span>
-                              <p style={{ fontSize: '13px', color: '#F5F5DC', margin: 0 }}>{loot}</p>
-                            </motion.div>
-                          ))}
+                          {chestLoot.map((loot, idx) => {
+                            const itemImg = getLootImage(loot);
+                            return (
+                              <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.09, duration: 0.22 }}
+                                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '6px 10px', marginBottom: '5px', borderRadius: '6px', background: 'rgba(0,0,0,0.35)', border: `1px solid ${cc.border}44` }}>
+                                {itemImg
+                                  ? <img src={itemImg} alt="" style={{ width: 36, height: 36, objectFit: 'contain', flexShrink: 0, filter: `drop-shadow(0 0 4px ${cc.label}88)` }} />
+                                  : <span style={{ fontSize: '12px', color: cc.label, flexShrink: 0 }}>◆</span>
+                                }
+                                <p style={{ fontSize: '13px', color: '#F5F5DC', margin: 0 }}>{loot}</p>
+                              </motion.div>
+                            );
+                          })}
                         </div>
                       </div>
                     )}
