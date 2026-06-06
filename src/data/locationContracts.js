@@ -39,12 +39,10 @@ export const LOCATION_CONTRACTS = [
     zone: 1,
     encounter: {
       enemyType: 'bandit',
-      waveSize: 3,
-      enemyNames: ['Dock Enforcer', 'Tide Watcher', "Quartermaster's Dog"],
+      waveSize: 1,
+      enemyNames: ['Dray'],
       dialogue: [
-        "You shouldn't have come looking.",
-        "We have our orders. You're not part of them.",
-        "The crew's gone. You'll join them.",
+        "You shouldn't have come looking. I handle problems quietly. You've made that difficult.",
       ],
     },
     rewards: [
@@ -65,12 +63,10 @@ export const LOCATION_CONTRACTS = [
     zone: 1,
     encounter: {
       enemyType: 'daughters',
-      waveSize: 3,
-      enemyNames: ['Grove Ritualist', 'Dusk Acolyte', 'Blood Tender'],
+      waveSize: 1,
+      enemyNames: ['Briar'],
       dialogue: [
-        "The tree belongs to the darkness now.",
-        "Your blood will feed the rite.",
-        "The convergence cannot be stopped.",
+        "I've been watching you since the road. I wondered when you'd finally arrive.",
       ],
     },
     rewards: [

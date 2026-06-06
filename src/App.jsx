@@ -7277,40 +7277,33 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   addLog(`Contract battle: "${lc.name}" — ${waveSize} enemies stand between you and your reward.`);
                   if (enemyType === 'bandit') {
                     const { enemyNames, dialogue } = lc.encounter;
-                    // Build a grunt lineup, using contract-specific names/dialogue if defined
                     const lineup = [];
-                    const usedIdxs = new Set();
-                    for (let i = 0; i < waveSize; i++) {
-                      let gIdx;
-                      do { gIdx = Math.floor(Math.random() * BANDIT_POOL.grunts.length); }
-                      while (usedIdxs.has(gIdx) && usedIdxs.size < BANDIT_POOL.grunts.length);
-                      usedIdxs.add(gIdx);
-                      const g = BANDIT_POOL.grunts[gIdx];
-                      const name = enemyNames
-                        ? enemyNames[i % enemyNames.length]
-                        : g.name;
-                      const line = dialogue
-                        ? dialogue[Math.min(i, dialogue.length - 1)]
-                        : null;
-                      lineup.push({ img: g.img, name, isCapt: false, isLeader: false, contractDialogue: line });
+                    // Named member first
+                    const namedName = enemyNames?.[0];
+                    const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName) || BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
+                    lineup.push({ img: namedGrunt.img, name: namedGrunt.name, isCapt: false, isLeader: false, contractDialogue: dialogue?.[0] || null });
+                    // Fill rest with creatures
+                    for (let i = lineup.length; i < 3; i++) {
+                      const c = pickCreatureForDay(currentDay);
+                      lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
                     }
+                    lineup.sort(() => Math.random() - 0.5);
                     banditLineupRef.current = lineup;
                     banditLineupIdxRef.current = 0;
                     setTimeout(() => spawnBanditEnemy(lineup[0], 0, lineup.length), 1000);
                   } else if (enemyType === 'daughters') {
                     const { enemyNames, dialogue } = lc.encounter;
                     const lineup = [];
-                    const usedIdxs = new Set();
-                    for (let i = 0; i < waveSize; i++) {
-                      let mIdx;
-                      do { mIdx = Math.floor(Math.random() * DAUGHTERS_POOL.members.length); }
-                      while (usedIdxs.has(mIdx) && usedIdxs.size < DAUGHTERS_POOL.members.length);
-                      usedIdxs.add(mIdx);
-                      const m = DAUGHTERS_POOL.members[mIdx];
-                      const name = enemyNames ? enemyNames[i % enemyNames.length] : m.name;
-                      const line = dialogue ? dialogue[Math.min(i, dialogue.length - 1)] : null;
-                      lineup.push({ img: m.img, name, isCapt: false, isLeader: false, contractDialogue: line });
+                    // Named member first
+                    const namedName = enemyNames?.[0];
+                    const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName) || DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
+                    lineup.push({ img: namedMember.img, name: namedMember.name, isCapt: false, isLeader: false, contractDialogue: dialogue?.[0] || null });
+                    // Fill rest with creatures
+                    for (let i = lineup.length; i < 3; i++) {
+                      const c = pickCreatureForDay(currentDay);
+                      lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
                     }
+                    lineup.sort(() => Math.random() - 0.5);
                     daughtersLineupRef.current = lineup;
                     daughtersLineupIdxRef.current = 0;
                     setTimeout(() => spawnDaughtersEnemy(lineup[0], 0, lineup.length), 1000);
