@@ -267,7 +267,7 @@ const THE_CURSED = [
 const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMembers = [], restedCursed = [], addLog }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [openStats, setOpenStats] = useState({});
-  const [activeTab, setActiveTab] = useState('stable');
+  const [activeTab, setActiveTab] = useState('index');
   const [fusionSlots, setFusionSlots] = useState([null, null]); // IDs of selected monsters
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -371,7 +371,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
       >
         {/* Tab bar */}
         <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
-          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }, { key: 'factions', label: 'Factions' }, { key: 'cursed', label: 'The Cursed' }, { key: 'fusion', label: '⚗ Fusion' }].map(t => (
+          {[{ key: 'index', label: 'Creature Index' }, { key: 'factions', label: 'Factions' }, { key: 'cursed', label: 'The Cursed' }].map(t => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
@@ -388,7 +388,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
         </div>
 
         {/* Fixed sub-header: stable capacity bar (Stable tab only) */}
-        {activeTab === 'stable' && (
+        {false && activeTab === 'stable' && (
         <div style={{ flexShrink: 0, padding: '16px 24px 0' }}>
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
@@ -766,7 +766,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
           })()}
 
           {/* ── FUSION TAB ── */}
-          {activeTab === 'fusion' && (() => {
+          {false && activeTab === 'fusion' && (() => {
             const slotA = capturedMonsters.find(m => m.id === fusionSlots[0]) || null;
             const slotB = capturedMonsters.find(m => m.id === fusionSlots[1]) || null;
             const result = getFusionResult(slotA, slotB);
@@ -989,7 +989,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
           })()}
 
           {/* ── STABLE TAB ── */}
-          {activeTab === 'stable' && capturedMonsters.length === 0 ? (
+          {false && activeTab === 'stable' && capturedMonsters.length === 0 ? (
             <div className="text-center py-16 rounded-lg border-2" style={{
               background: 'rgba(0,0,0,0.3)',
               borderColor: 'rgba(212,175,55,0.2)',
@@ -998,7 +998,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
               <p className="text-lg mb-2" style={{ color: '#C0C0C0' }}>The stable is empty.</p>
               <p className="text-sm" style={{ color: '#9CA3AF' }}>Defeat bosses in battle and choose to capture them.</p>
             </div>
-          ) : activeTab === 'stable' ? (
+          ) : false && activeTab === 'stable' ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
               {capturedMonsters.map(monster => (
                 <div key={monster.id} style={{

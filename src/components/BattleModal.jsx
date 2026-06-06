@@ -1224,7 +1224,7 @@ const BattleModal = ({
                         </button>
                       )}
 
-                      {canCapture && (
+                      {false && canCapture && (
                         <button
                           onClick={() => {
                             sounds.click();
