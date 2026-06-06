@@ -118,6 +118,7 @@ export const LOCATION_CONTRACTS = [
     name: 'The Quiet Toll',
     contractTier: 'gold',
     storyContract: true,
+    requiredContracts: ['mc_lysse_kira'],
     desc: "The road through Ivy Crossing has been sealed for two weeks. Merchants report armed men turning back specific travelers — not collecting coin, consulting a list. The vines have been cultivated as cover. Someone is controlling who comes and goes.",
     storyNote: "In the toll post you find a ledger — every person turned back was named. Not random shakedowns. Targeted. The ledger is stamped with a six-pointed sigil. The same mark. A different road. The same hand.",
     journalEntry: {
@@ -148,7 +149,7 @@ export const LOCATION_CONTRACTS = [
     name: 'The Deep Working',
     contractTier: 'gold',
     storyContract: true,
-    requiredContracts: ['lc_ivy_crossing'],
+    requiredContracts: ['lc_wellspring'],
     desc: "The Daughters of Dusk have moved deeper into Whisper Forest and stopped hunting outward. Witnesses say they've been there for weeks — chanting, building something. No one who went to look has come back. The forest feels wrong at the edges.",
     storyNote: "The ritual site is still active when the Daughter falls. At its center: a summoning circle bearing the six-pointed sigil — but inverted. Not calling something in. Sending a signal out. The order is using this forest as a relay. Whatever they're building, it spans more ground than you thought.",
     journalEntry: {
@@ -179,7 +180,7 @@ export const LOCATION_CONTRACTS = [
     name: "Ironblood's Answer",
     contractTier: 'blood',
     zone: 2,
-    requiredContracts: ['lc_ivy_crossing', 'lc_whisper_forest'],
+    requiredContracts: ['mc_conn_dar'],
     desc: "A warband has fortified the Outskirts under a banner bearing the six-pointed sigil. Their commander arrived two days after the crossing and the forest went quiet. She wasn't already here. She was sent.",
     journalEntry: {
       title: 'Sent',
@@ -233,6 +234,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'gold',
     mercyContract: true,
     zone: 2,
+    requiredContracts: ['lc_whisper_forest'],
     desc: "An elven pathfinder and her escort never made it back from the flats. Locals say they still wander the wasteland at the edge of the road — circling the same stretch of ground they walked before the curse took them.",
     encounter: {
       enemyType: 'cursed',
@@ -255,6 +257,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'gold',
     mercyContract: true,
     zone: 2,
+    requiredContracts: ['lc_ivy_crossing'],
     desc: "Two sell-swords — a mercenary sergeant and the opportunist who followed his company — haven't left the harbor ruins in months. One took the contract for money. One didn't take it at all. Now they're both stuck.",
     encounter: {
       enemyType: 'cursed',
