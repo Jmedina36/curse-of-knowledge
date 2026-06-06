@@ -691,7 +691,10 @@ const BattleModal = ({
               className="uppercase text-sm font-bold mb-8"
               style={{ color: 'rgba(200,200,200,0.5)', fontFamily: 'Cinzel, serif' }}
             >
-              {isFinalBoss ? 'The curse awakens' : battleType === 'elite' ? 'A dark presence stirs' : battleType === 'wave' ? 'They come for you' : 'An enemy appears'}
+              {isFinalBoss ? 'The curse awakens' : battleType === 'elite' ? 'A dark presence stirs' : raidFaction === 'bandit' ? 'Steel and blood close in'
+              : raidFaction === 'daughters' ? 'Shadow and silence descend'
+              : raidFaction === 'cursed' ? 'Something stirs in the dark'
+              : battleType === 'wave' ? 'They come for you' : 'An enemy appears'}
             </motion.p>
 
             {/* Horizontal crack that widens before the name slams in */}
@@ -704,9 +707,15 @@ const BattleModal = ({
                 height: '2px',
                 background: isFinalBoss ? 'linear-gradient(to right, transparent, rgba(160,40,200,0.9), transparent)'
                   : battleType === 'elite' ? 'linear-gradient(to right, transparent, rgba(220,120,0,0.9), transparent)'
+                  : raidFaction === 'bandit' ? 'linear-gradient(to right, transparent, rgba(200,40,40,0.9), transparent)'
+                  : raidFaction === 'daughters' ? 'linear-gradient(to right, transparent, rgba(160,60,210,0.9), transparent)'
+                  : raidFaction === 'cursed' ? 'linear-gradient(to right, transparent, rgba(90,80,180,0.9), transparent)'
                   : battleType === 'wave'  ? 'linear-gradient(to right, transparent, rgba(30,120,220,0.9), transparent)'
                   : 'linear-gradient(to right, transparent, rgba(220,30,30,0.9), transparent)',
-                boxShadow: isFinalBoss ? '0 0 20px rgba(160,40,200,0.8)' : battleType === 'elite' ? '0 0 20px rgba(220,120,0,0.8)' : battleType === 'wave' ? '0 0 20px rgba(30,120,220,0.8)' : '0 0 20px rgba(220,30,30,0.8)',
+                boxShadow: isFinalBoss ? '0 0 20px rgba(160,40,200,0.8)' : battleType === 'elite' ? '0 0 20px rgba(220,120,0,0.8)' : raidFaction === 'bandit' ? '0 0 20px rgba(200,40,40,0.8)'
+                : raidFaction === 'daughters' ? '0 0 20px rgba(160,60,210,0.8)'
+                : raidFaction === 'cursed' ? '0 0 20px rgba(90,80,180,0.8)'
+                : battleType === 'wave' ? '0 0 20px rgba(30,120,220,0.8)' : '0 0 20px rgba(220,30,30,0.8)',
               }}
             />
 
@@ -718,20 +727,29 @@ const BattleModal = ({
               className="uppercase font-black text-center"
               style={{
                 fontFamily: 'Cinzel, serif',
-                fontSize: 'clamp(3rem, 10vw, 7rem)',
+                fontSize: raidFaction === 'daughters' ? 'clamp(1.8rem, 6vw, 4.5rem)' : raidFaction === 'cursed' ? 'clamp(2.5rem, 8vw, 6rem)' : 'clamp(3rem, 10vw, 7rem)',
                 letterSpacing: '0.1em',
                 lineHeight: 1,
-                color: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : battleType === 'wave' ? '#60A5FA' : '#FFFFFF',
+                color: isFinalBoss ? '#D4AF37' : battleType === 'elite' ? '#FB923C' : raidFaction === 'bandit' ? '#FF8080'
+                : raidFaction === 'daughters' ? '#D19EFF'
+                : raidFaction === 'cursed' ? '#A5B4FC'
+                : battleType === 'wave' ? '#60A5FA' : '#FFFFFF',
                 textShadow: isFinalBoss
                   ? '0 0 60px rgba(212,175,55,1), 0 0 120px rgba(212,175,55,0.5)'
                   : battleType === 'elite'
                   ? '0 0 60px rgba(251,146,60,1), 0 0 120px rgba(220,80,0,0.5)'
+                  : raidFaction === 'bandit'
+                  ? '0 0 60px rgba(255,80,80,1), 0 0 120px rgba(180,0,0,0.5)'
+                  : raidFaction === 'daughters'
+                  ? '0 0 60px rgba(210,100,255,1), 0 0 120px rgba(130,0,200,0.5)'
+                  : raidFaction === 'cursed'
+                  ? '0 0 60px rgba(140,130,255,1), 0 0 120px rgba(60,50,160,0.5)'
                   : battleType === 'wave'
                   ? '0 0 60px rgba(96,165,250,1), 0 0 120px rgba(30,100,220,0.5)'
                   : '0 0 60px rgba(255,60,60,1), 0 0 120px rgba(200,0,0,0.5)',
               }}
             >
-              {battleType === 'wave' ? 'WAVE ASSAULT' : battleType === 'elite' ? getEliteName(bossName) : bossName}
+              {raidFaction === 'bandit' ? 'BANDIT RAID' : raidFaction === 'daughters' ? 'DAUGHTERS OF DUSK' : raidFaction === 'cursed' ? 'THE CURSED' : battleType === 'wave' ? 'WAVE ASSAULT' : battleType === 'elite' ? getEliteName(bossName) : bossName}
             </motion.h1>
 
             {/* Battle type subtitle */}
@@ -742,7 +760,7 @@ const BattleModal = ({
               className="uppercase text-sm font-bold mt-4 tracking-[0.4em]"
               style={{ color: 'rgba(245,245,220,0.5)', fontFamily: 'Cinzel, serif' }}
             >
-              {isFinalBoss ? '— Final Confrontation —' : battleType === 'elite' ? '— Elite Trial —' : battleType === 'wave' ? `— ${bossName} —` : '— Battle —'}
+              {isFinalBoss ? '— Final Confrontation —' : battleType === 'elite' ? '— Elite Trial —' : raidFaction === 'bandit' ? `— ${bossName} —` : raidFaction === 'daughters' ? `— ${bossName} —` : raidFaction === 'cursed' ? `— ${bossName} —` : battleType === 'wave' ? `— ${bossName} —` : '— Battle —'}
             </motion.p>
 
             {/* Bottom flash — pulses once then fades */}
@@ -754,6 +772,9 @@ const BattleModal = ({
               style={{
                 background: isFinalBoss ? 'radial-gradient(ellipse at 50% 50%, rgba(160,40,200,0.4) 0%, transparent 70%)'
                   : battleType === 'elite' ? 'radial-gradient(ellipse at 50% 50%, rgba(220,120,0,0.4) 0%, transparent 70%)'
+                  : raidFaction === 'bandit' ? 'radial-gradient(ellipse at 50% 50%, rgba(200,40,40,0.4) 0%, transparent 70%)'
+                  : raidFaction === 'daughters' ? 'radial-gradient(ellipse at 50% 50%, rgba(160,60,210,0.4) 0%, transparent 70%)'
+                  : raidFaction === 'cursed' ? 'radial-gradient(ellipse at 50% 50%, rgba(90,80,180,0.4) 0%, transparent 70%)'
                   : battleType === 'wave'  ? 'radial-gradient(ellipse at 50% 50%, rgba(30,120,220,0.4) 0%, transparent 70%)'
                   : 'radial-gradient(ellipse at 50% 50%, rgba(220,30,30,0.4) 0%, transparent 70%)',
               }}
