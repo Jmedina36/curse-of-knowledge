@@ -7605,6 +7605,154 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 </div>
               </div>
 
+                            {/* ── BANDITS — INDIVIDUALS ── */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>BANDITS — INDIVIDUALS</h4>
+                <div className="rounded-lg p-3 mb-2 border" style={{background: 'rgba(139,0,0,0.12)', borderColor: 'rgba(180,50,50,0.35)'}}>
+                  <p className="text-xs mb-2" style={{color: 'rgba(200,120,120,0.8)'}}>Grunts</p>
+                  <div className="grid grid-cols-4 md:grid-cols-7 gap-2">
+                    {BANDIT_POOL.grunts.map(grunt => (
+                      <button key={grunt.name} onClick={() => {
+                        const enemy = { ...grunt, isCapt: false, isLeader: false };
+                        banditLineupRef.current = [enemy];
+                        banditLineupIdxRef.current = 0;
+                        setIsBanditWave(true); setBanditWaveNumber(1); setBanditCaptainsDefeated([]);
+                        audioManager.play(TRACKS.malicious);
+                        spawnBanditEnemy(enemy, 0, 1);
+                        addLog('Debug: Bandit grunt ' + grunt.name);
+                      }} className="bg-red-900 hover:bg-red-800 px-2 py-2 rounded text-xs border border-red-800 transition-all" style={{color: '#F5F5DC'}}>{grunt.name}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-lg p-3 border" style={{background: 'rgba(139,0,0,0.18)', borderColor: 'rgba(200,60,60,0.4)'}}>
+                  <p className="text-xs mb-2" style={{color: 'rgba(240,160,100,0.9)'}}>Captains &amp; Lord</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {BANDIT_POOL.captains.map(capt => (
+                      <button key={capt.name} onClick={() => {
+                        const enemy = { ...capt, isCapt: true, isLeader: false };
+                        banditLineupRef.current = [enemy];
+                        banditLineupIdxRef.current = 0;
+                        setIsBanditWave(true); setBanditWaveNumber(1); setBanditCaptainsDefeated([]);
+                        audioManager.play(TRACKS.malicious);
+                        spawnBanditEnemy(enemy, 0, 1);
+                        addLog('Debug: Bandit captain ' + capt.name);
+                      }} className="bg-red-800 hover:bg-red-700 px-2 py-2 rounded text-xs border border-red-600 transition-all" style={{color: '#FFD700'}}>{capt.name}<br/><span style={{fontSize:'0.55rem', opacity:0.65}}>{capt.title}</span></button>
+                    ))}
+                    <button onClick={() => {
+                      const leader = { ...BANDIT_POOL.leader, isCapt: false, isLeader: true };
+                      banditLineupRef.current = [leader];
+                      banditLineupIdxRef.current = 0;
+                      setIsBanditWave(true); setBanditWaveNumber(1); setBanditCaptainsDefeated(['captain-1','captain-2','captain-3']);
+                      audioManager.play(TRACKS.malicious);
+                      spawnBanditEnemy(leader, 0, 1);
+                      addLog('Debug: Bandit Lord Cutter');
+                    }} className="bg-red-700 hover:bg-red-600 px-2 py-2 rounded text-xs border-2 border-red-400 transition-all font-bold" style={{color: '#FFD700'}}>Cutter<br/><span style={{fontSize:'0.55rem', fontWeight:'normal'}}>Bandit Lord</span></button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── DAUGHTERS — INDIVIDUALS ── */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DAUGHTERS OF DUSK — INDIVIDUALS</h4>
+                <div className="rounded-lg p-3 mb-2 border" style={{background: 'rgba(80,0,120,0.12)', borderColor: 'rgba(150,60,200,0.35)'}}>
+                  <p className="text-xs mb-2" style={{color: 'rgba(200,150,255,0.8)'}}>Members</p>
+                  <div className="grid grid-cols-5 gap-2">
+                    {DAUGHTERS_POOL.members.map(member => (
+                      <button key={member.name} onClick={() => {
+                        const enemy = { ...member, isCapt: false, isLeader: false };
+                        daughtersLineupRef.current = [enemy];
+                        daughtersLineupIdxRef.current = 0;
+                        setIsDaughtersWave(true); setDaughtersWaveNumber(1); setDaughtersCaptainsDefeated([]);
+                        audioManager.play(TRACKS.malicious);
+                        spawnDaughtersEnemy(enemy, 0, 1);
+                        addLog('Debug: Daughters member ' + member.name);
+                      }} className="bg-purple-900 hover:bg-purple-800 px-2 py-2 rounded text-xs border border-purple-800 transition-all" style={{color: '#F5F5DC'}}>{member.name}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-lg p-3 border" style={{background: 'rgba(80,0,120,0.18)', borderColor: 'rgba(180,80,240,0.4)'}}>
+                  <p className="text-xs mb-2" style={{color: 'rgba(220,170,255,0.9)'}}>Captains &amp; Queen</p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    {DAUGHTERS_POOL.captains.map(capt => (
+                      <button key={capt.name} onClick={() => {
+                        const enemy = { ...capt, isCapt: true, isLeader: false };
+                        daughtersLineupRef.current = [enemy];
+                        daughtersLineupIdxRef.current = 0;
+                        setIsDaughtersWave(true); setDaughtersWaveNumber(1); setDaughtersCaptainsDefeated([]);
+                        audioManager.play(TRACKS.malicious);
+                        spawnDaughtersEnemy(enemy, 0, 1);
+                        addLog('Debug: Daughters captain ' + capt.name);
+                      }} className="bg-purple-800 hover:bg-purple-700 px-2 py-2 rounded text-xs border border-purple-600 transition-all" style={{color: '#FFD700'}}>{capt.name}<br/><span style={{fontSize:'0.55rem', opacity:0.65}}>{capt.title}</span></button>
+                    ))}
+                    <button onClick={() => {
+                      const leader = { ...DAUGHTERS_POOL.leader, isCapt: false, isLeader: true };
+                      daughtersLineupRef.current = [leader];
+                      daughtersLineupIdxRef.current = 0;
+                      setIsDaughtersWave(true); setDaughtersWaveNumber(1); setDaughtersCaptainsDefeated(['captain-1','captain-2','captain-3']);
+                      audioManager.play(TRACKS.malicious);
+                      spawnDaughtersEnemy(leader, 0, 1);
+                      addLog('Debug: Dusk Queen Mira');
+                    }} className="bg-purple-700 hover:bg-purple-600 px-2 py-2 rounded text-xs border-2 border-purple-400 transition-all font-bold" style={{color: '#FFD700'}}>Mira<br/><span style={{fontSize:'0.55rem', fontWeight:'normal'}}>Dusk Queen</span></button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── LOST SOULS — INDIVIDUALS ── */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LOST SOULS — INDIVIDUALS</h4>
+                <p className="text-xs text-center mb-3" style={{color: 'rgba(160,145,110,0.55)', fontStyle: 'italic'}}>Each soul spawns as a solo mercy battle with Grim Idol music.</p>
+                {[
+                  { group: 'Zone I', souls: [
+                    { img: '/cursed/young-paladin.png',       name: 'Aldric',       hp: 90,  dialogue: "I can't stop. I can't remember how." },
+                    { img: '/cursed/young-princess.png',      name: 'Sela',         hp: 75,  dialogue: "Is someone finally here? Or is this another dream?" },
+                  ]},
+                  { group: 'Zone II', souls: [
+                    { img: '/cursed/elven-girl.png',          name: 'Lysse',        hp: 150, dialogue: "The source is close. I know it." },
+                    { img: '/cursed/mongolian-princess.png',  name: 'Kira',         hp: 135, dialogue: "I was supposed to keep her safe. I'm still trying." },
+                    { img: '/cursed/mercenary.png',           name: 'Conn',         hp: 165, dialogue: "Still getting paid for this, far as I'm concerned." },
+                    { img: '/cursed/robber.png',              name: 'Dar',          hp: 140, dialogue: "I don't even know why I'm still here." },
+                  ]},
+                  { group: 'Zone III', souls: [
+                    { img: '/cursed/warrior-lady.png',        name: 'Bryn',         hp: 245, dialogue: "Hold the line. We hold the line." },
+                    { img: '/cursed/viking-woman.png',        name: 'Solveig',      hp: 225, dialogue: "Forward. Always forward." },
+                    { img: '/cursed/young-lady.png',          name: 'Maren',        hp: 260, dialogue: "I saw something. I had to come back." },
+                    { img: '/cursed/young-korean-prince.png', name: 'Sun Wen',      hp: 235, dialogue: "I followed her here. I don't regret it." },
+                  ]},
+                  { group: 'Zone IV', souls: [
+                    { img: '/cursed/viking-warrior.png',      name: 'Jarl Sigrun',  hp: 360, dialogue: "Not their fight. Never was. But this one is mine." },
+                    { img: '/cursed/viking-noble-man.png',    name: 'Lord Halvard', hp: 330, dialogue: "I understand the curse completely now." },
+                  ]},
+                  { group: 'Zone V', souls: [
+                    { img: '/cursed/warrior-queen.png',       name: 'Queen Sera',   hp: 490, dialogue: "My kingdom is ash. I have nothing left to lose." },
+                    { img: '/cursed/old-noble-man.png',       name: 'Edric',        hp: 450, dialogue: "I was wrong about one thing. Knowing it doesn't make it smaller." },
+                    { img: '/cursed/gladiator.png',           name: 'Brek',         hp: 620, dialogue: "Sixty-two. I've been counting. Come on then." },
+                  ]},
+                ].map(({ group, souls }) => (
+                  <div key={group} className="mb-3">
+                    <p className="text-xs mb-2" style={{color: 'rgba(180,165,130,0.65)', letterSpacing: '0.08em'}}>{group}</p>
+                    <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                      {souls.map(soul => (
+                        <button key={soul.name} onClick={() => {
+                          cursedLineupRef.current = [soul];
+                          spawnCursedEnemy(soul, 0, 1);
+                          addLog('Debug: Lost Soul ' + soul.name + ' (' + soul.hp + ' HP)');
+                        }} style={{
+                          background: 'rgba(40,30,60,0.5)', borderColor: 'rgba(120,100,180,0.4)',
+                          border: '1px solid', borderRadius: '6px', padding: '8px 6px', cursor: 'pointer',
+                          color: '#C8B8E8', fontSize: '0.72rem', textAlign: 'center', transition: 'filter 0.15s',
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.3)'}
+                        onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
+                        >
+                          <div style={{fontWeight: 'bold'}}>{soul.name}</div>
+                          <div style={{fontSize: '0.55rem', opacity: 0.55, marginTop: '2px'}}>{soul.hp} HP</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               {/* ── COMBAT — THE ORDER ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT — THE ORDER</h4>
