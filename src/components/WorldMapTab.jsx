@@ -530,7 +530,7 @@ const WorldMapTab = ({
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
   completedLocationContracts, debugUnlockedZones, huntingChallenges,
-  onWildEncounter, onOpenBestiary, onOpenContracts, onDebugToggleZone, onHuntingChallenge,
+  onWildEncounter, onOpenBestiary, onDebugToggleZone, onHuntingChallenge,
 }) => {
   const CHALLENGE_COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
   const getChallengeRemaining = (locationId) => {
@@ -687,26 +687,6 @@ const WorldMapTab = ({
             );
           })()}
         </div>
-        {/* Contract Board button */}
-        {onOpenContracts && (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-            <button
-              onClick={onOpenContracts}
-              style={{
-                fontSize: '0.52rem', fontWeight: 700, letterSpacing: '0.14em',
-                textTransform: 'uppercase', padding: '5px 18px', borderRadius: '4px',
-                cursor: 'pointer',
-                background: 'rgba(212,175,55,0.1)',
-                border: '1px solid rgba(212,175,55,0.35)',
-                color: 'rgba(212,175,55,0.8)',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.18)'; e.currentTarget.style.color = '#D4AF37'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.6)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.1)'; e.currentTarget.style.color = 'rgba(212,175,55,0.8)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.35)'; }}
-            >◈ Contract Board</button>
-          </div>
-        )}
-
         {/* Type filter */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginTop: '8px' }}>
           {['all', 'hunting', 'contract', 'landmark'].map(f => (
