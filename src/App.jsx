@@ -2563,14 +2563,7 @@ pendingBattleSpawnRef.current = () => {
       }
     }
     
-    // Add gold gain to loot display
-    const displayGold = battleType === 'wave' ? waveGoldTotal : goldGain;
-    lootMessages.unshift(`+${displayGold} Gold`);
-    
-    setVictoryLoot(lootMessages);
-    setVictoryFlash(true);
-    setTimeout(() => setVictoryFlash(false), 400);
-    // Determine chest rarity from best loot found
+    // Determine chest rarity from best item found (before gold is added)
     const _rarityOrder = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
     const _rarityRank = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
     let chestRarity = 'common';
@@ -2582,6 +2575,18 @@ pendingBattleSpawnRef.current = () => {
     if (isFinalBoss) chestRarity = 'legendary';
     else if (battleType === 'elite' && _rarityRank[chestRarity] < 3) chestRarity = 'rare';
     else if (battleType === 'wave'  && _rarityRank[chestRarity] < 2) chestRarity = 'uncommon';
+
+    // Gold bonus scales with chest rarity
+    const _goldBonus = { common: 0, uncommon: 10, rare: 25, epic: 60, legendary: 150 };
+    const rarityBonus = _goldBonus[chestRarity] || 0;
+    if (rarityBonus > 0) setGold(g => g + rarityBonus);
+
+    const displayGold = (battleType === 'wave' ? waveGoldTotal : goldGain) + rarityBonus;
+    lootMessages.unshift(`+${displayGold} Gold`);
+
+    setVictoryLoot(lootMessages);
+    setVictoryFlash(true);
+    setTimeout(() => setVictoryFlash(false), 400);
     setVictoryChest({ rarity: chestRarity, img: `/items/CHEST-${_rarityRank[chestRarity]}.png` });
   }, [luckyCharmActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
 

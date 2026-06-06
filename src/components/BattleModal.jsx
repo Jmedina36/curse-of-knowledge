@@ -1498,17 +1498,8 @@ const BattleModal = ({
                 </div>
               )}
 
-              {!hasFled && (() => {
-                const goldEntry = victoryLoot.find(l => /^\+\d+ Gold$/.test(l));
-                return goldEntry ? (
-                  <p style={{ fontSize: '1rem', color: '#F6C94E', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', margin: '0 0 12px' }}>
-                    {goldEntry}
-                  </p>
-                ) : null;
-              })()}
-
               {!hasFled && victoryChest && (() => {
-                const chestLoot = victoryLoot.filter(l => !/^\+\d+ Gold$/.test(l));
+                const chestLoot = victoryLoot;
                 const CHEST_COLORS = {
                   common:    { border: 'rgba(180,180,180,0.5)', glow: 'rgba(200,200,200,0.3)', label: '#C0C0C0', bg: 'rgba(40,40,40,0.6)'    },
                   uncommon:  { border: 'rgba(56,161,105,0.6)',  glow: 'rgba(56,161,105,0.35)', label: '#68D391', bg: 'rgba(10,30,15,0.6)'    },
