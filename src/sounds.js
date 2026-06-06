@@ -54,15 +54,18 @@ export const sounds = {
   finalBossEntrance: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.9),
   finalBossStorm:    () => sfxPlay('mixkit-evil-storm-atmosphere-2404.wav', 0.35),
 
-  // ── Daughters of Dusk entrance laughs ───────────────────────────────────────
+  // 25002500 Daughters of Dusk entrance laughs 2500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500250025002500
   daughtersLaugh1: () => sfxPlay('mixkit-female-long-laugh-426.wav', 0.8),
   daughtersLaugh2: () => sfxPlay('mixkit-females-laugh-425.wav', 0.8),
+  daughtersLaugh3: () => sfxPlay('dragon-studio-evil-girl-laughing-401720.mp3', 0.8),
 
   // ── Beg screen opens: shadow acknowledges you ────────────────────────────────
   negotiateOpen: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.75),
 
   // ── Bandit laugh ─────────────────────────────────────────────────────────────
   banditLaugh:    () => sfxPlay('freesound_community-evil-laugh-89423.mp3', 0.8),
+  banditLaugh2:   () => sfxPlay('freesound_community-evil-laugh-47891.mp3', 0.8),
+  banditLaugh3:   () => sfxPlay('freesound_community-muahaha-evil-laughter-83217.mp3', 0.8),
   demonicLaugh:   () => sfxPlay('freesound_community-evil-demonic-laugh-6925.mp3', 0.9),
   possessedLaugh: () => sfxPlay('freesound_community-possessed-laugh-94851.mp3', 0.9),
 
