@@ -34,7 +34,7 @@ export const LOCATION_CONTRACTS = [
       title: 'The Parchment at the Harbor',
       location: 'Ghost Harbor',
       zone: 1,
-      text: "Dray is dead. Found orders on him — folded parchment, red wax seal. A six-pointed sigil I've never seen. The message was short: secure the harbor, let nothing move, wait for the signal. Signed only with a C.\n\nThis wasn't a shakedown. Someone organized this. The harbor was a piece of something larger. I don't know what yet.",
+      text: `Dray is dead. Found orders on him — folded parchment, red wax seal. A six-pointed sigil I've never seen. The message was short: secure the harbor, let nothing move, wait for the signal. Signed only with a C.\n\nThis wasn't a shakedown. Someone organized this. The harbor was a piece of something larger. I don't know what yet.`,
     },
     zone: 1,
     encounter: {
@@ -64,7 +64,7 @@ export const LOCATION_CONTRACTS = [
       title: 'The Same Mark',
       location: 'The Sacred Grove',
       zone: 1,
-      text: "The sigil again. Carved into the root of the sacred tree, inside a ritual circle the Daughters were maintaining. The grove keeper is dead. Briar wouldn't say anything before the end.\n\nBandits at the harbor. Daughters of Dusk at the grove. Two factions. One mark. Whatever this order is, it doesn't care about allegiances. It uses who it needs.",
+      text: `The sigil again. Carved into the root of the sacred tree, inside a ritual circle the Daughters were maintaining. The grove keeper is dead. Briar wouldn't say anything before the end.\n\nBandits at the harbor. Daughters of Dusk at the grove. Two factions. One mark. Whatever this order is, it doesn't care about allegiances. It uses who it needs.`,
     },
     zone: 1,
     encounter: {
@@ -92,7 +92,7 @@ export const LOCATION_CONTRACTS = [
       title: 'The Third Blade',
       location: 'Canopy Outpost',
       zone: 1,
-      text: "He said I was the third blade sent against him. Meant it as a taunt. It wasn't.\n\nThree separate attempts to take this outpost. That means the order has been watching me since the harbor — maybe before. They sent two others first. I don't know if they were testing me or just underestimating me.\n\nThe banner bore the same sigil. Whatever C is building, this outpost was part of it. I've taken it back. I don't think that ends anything.",
+      text: `He said I was the third blade sent against him. Meant it as a taunt. It wasn't.\n\nThree separate attempts to take this outpost. That means the order has been watching me since the harbor — maybe before. They sent two others first. I don't know if they were testing me or just underestimating me.\n\nThe banner bore the same sigil. Whatever C is building, this outpost was part of it. I've taken it back. I don't think that ends anything.`,
     },
     zone: 1,
     requiredContracts: ['lc_harbor', 'lc_holy_tree'],
@@ -123,7 +123,7 @@ export const LOCATION_CONTRACTS = [
       title: 'The Ledger',
       location: 'Ivy Crossing',
       zone: 2,
-      text: "Finn claimed he was just following orders. He wasn't wrong — there was a ledger in the toll post. Every name in it was specific. Merchants, travelers, a healer. Not random. Targeted.\n\nThe ledger was stamped with the six-pointed sigil.\n\nThey're controlling movement. Who gets through, who gets turned back. I don't know what they're containing — or what they're protecting.",
+      text: `Finn claimed he was just following orders. He wasn't wrong — there was a ledger in the toll post. Every name in it was specific. Merchants, travelers, a healer. Not random. Targeted.\n\nThe ledger was stamped with the six-pointed sigil.\n\nThey're controlling movement. Who gets through, who gets turned back. I don't know what they're containing — or what they're protecting.`,
     },
     zone: 2,
     encounter: {
@@ -153,7 +153,7 @@ export const LOCATION_CONTRACTS = [
       title: 'The Relay',
       location: 'Whisper Forest',
       zone: 2,
-      text: "The ritual circle was still burning when Vayne fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Vayne said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the crossing, now this. Whatever network they're building, it covers more ground than I thought.",
+      text: `The ritual circle was still burning when Vayne fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Vayne said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the crossing, now this. Whatever network they're building, it covers more ground than I thought.`,
     },
     zone: 2,
     encounter: {
@@ -183,7 +183,7 @@ export const LOCATION_CONTRACTS = [
       title: 'Sent',
       location: 'The Outskirts',
       zone: 2,
-      text: "Gryvara said my employer sends regards. Those were her last words.\n\nShe knew who I was. She arrived two days after I cleared the crossing — that's not coincidence. Someone told her I was coming. Someone is watching every move I make and deploying answers.\n\nI've been cutting threads. C knows. And C is not done.",
+      text: `Gryvara said my employer sends regards. Those were her last words.\n\nShe knew who I was. She arrived two days after I cleared the crossing — that's not coincidence. Someone told her I was coming. Someone is watching every move I make and deploying answers.\n\nI've been cutting threads. C knows. And C is not done.`,
     },
     encounter: {
       enemyType: 'elite',
@@ -375,6 +375,107 @@ export const LOCATION_CONTRACTS = [
       { type: 'gold',         amount: 140 },
       { type: 'fusionCrystals', amount: 2 },
       { type: 'healthPots',   amount: 2   },
+    ],
+  },
+
+  // ── The Order — Mythril Contracts ─────────────────────────────────────────────
+  {
+    id: 'order_cutter',
+    locationId: 'ironhold',
+    locationName: 'The Ironhold',
+    name: 'The Bandit Lord',
+    contractTier: 'mythril',
+    zone: 4,
+    encounter: { enemyType: 'antagonist', antagonistId: 'cutter' },
+    journalEntry: {
+      title: 'Cutter',
+      location: 'The Ironhold',
+      zone: 4,
+      text: `He was waiting. No ambush, no speech. Just standing in the middle of the room like a man who had done this before.
+
+Cutter was the first piece C placed. The harbor, the ledger, the banner at the canopy — all of it ran through him. He didn't ask questions. He built what he was told to build and held what he was told to hold.
+
+He's done now.`,
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 3  },
+      { type: 'gold',           amount: 100 },
+      { type: 'xp',             amount: 300 },
+    ],
+  },
+  {
+    id: 'order_mira',
+    locationId: 'dusk_sanctum',
+    locationName: 'The Dusk Sanctum',
+    name: 'The Dusk Queen',
+    contractTier: 'mythril',
+    zone: 4,
+    requiredContracts: ['order_cutter'],
+    encounter: { enemyType: 'antagonist', antagonistId: 'mira' },
+    journalEntry: {
+      title: 'Mira',
+      location: 'The Dusk Sanctum',
+      zone: 4,
+      text: `She knew everything before I walked in. The harbor. The crossing. Every name I've put down. She catalogued it like she was proud of me.
+
+Mira built the ritual network — the relay in Whisper Forest, the circle at the grove. She wasn't following the order's instructions. She was extending them. She believed in whatever C is building.
+
+Two leaders down. Whatever is above them hasn't moved yet.`,
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 3  },
+      { type: 'gold',           amount: 100 },
+      { type: 'xp',             amount: 300 },
+    ],
+  },
+  {
+    id: 'order_sylvaris',
+    locationId: 'sunken_throne',
+    locationName: 'The Sunken Throne',
+    name: 'Queen of Ruin',
+    contractTier: 'mythril',
+    zone: 5,
+    requiredContracts: ['order_mira'],
+    encounter: { enemyType: 'antagonist', antagonistId: 'sylvaris' },
+    journalEntry: {
+      title: 'Sylvaris',
+      location: 'The Sunken Throne',
+      zone: 5,
+      text: `She wasn't angry. That's what I remember. Just quiet, and then not quiet.
+
+Sylvaris wasn't recruited by the order — she founded part of it. Whatever C is, Sylvaris was there at the beginning. She told me that before we started. I think she wanted me to understand the scale of what I was undoing.
+
+One left.`,
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 5  },
+      { type: 'gold',           amount: 150 },
+      { type: 'xp',             amount: 500 },
+    ],
+  },
+  {
+    id: 'order_malachar',
+    locationId: 'lich_vault',
+    locationName: 'The Lich Vault',
+    name: 'The Eternal Lich',
+    contractTier: 'mythril',
+    zone: 5,
+    requiredContracts: ['order_sylvaris'],
+    encounter: { enemyType: 'antagonist', antagonistId: 'malachar' },
+    journalEntry: {
+      title: 'Malachar',
+      location: 'The Lich Vault',
+      zone: 5,
+      text: `He said he had died seventeen times. He was counting on eighteen.
+
+Malachar is C. Or C answers to Malachar. I'm still not sure which. He built the order over decades, placing each piece across the region like a man who had all the time in the world — because he did.
+
+It's done. Whatever the order was building, it ends here. I don't know if that's true. But he's gone. And for now, that's enough.`,
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 8  },
+      { type: 'gold',           amount: 200 },
+      { type: 'xp',             amount: 800 },
     ],
   },
 ];

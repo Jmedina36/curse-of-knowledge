@@ -401,17 +401,18 @@ const ContractsTab = ({
                 if (!lc.requiredContracts?.length) return true;
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
-              const fieldContracts  = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier !== 'blood');
-              const storyContracts  = visible.filter(lc => lc.storyContract);
-              const mercyContracts  = visible.filter(lc => lc.mercyContract);
-              const bloodContracts  = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier === 'blood');
+              const fieldContracts   = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier !== 'blood' && lc.contractTier !== 'mythril');
+              const storyContracts   = visible.filter(lc => lc.storyContract);
+              const mercyContracts   = visible.filter(lc => lc.mercyContract);
+              const bloodContracts   = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier === 'blood');
+              const mythrilContracts = visible.filter(lc => lc.contractTier === 'mythril');
 
               const renderCard = (lc) => {
                 const isCompleted = completedLocationContracts?.includes(lc.id);
                 const isPending = pendingLocationRewards?.includes(lc.id);
                 const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
-                const tier = lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
-                const tierLabel = lc.contractTier === 'gold' ? (lc.mercyContract ? 'Mercy' : 'Gold') : lc.contractTier === 'blood' ? 'Blood' : 'Silver';
+                const tier = lc.contractTier === 'mythril' ? TIER.mythril : lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
+                const tierLabel = lc.contractTier === 'mythril' ? 'Mythril' : lc.contractTier === 'gold' ? (lc.mercyContract ? 'Mercy' : 'Gold') : lc.contractTier === 'blood' ? 'Blood' : 'Silver';
                 return (
                   <div key={lc.id} style={{
                     position: 'relative',
@@ -595,6 +596,14 @@ const ContractsTab = ({
                       </div>
                     </>
                   )}
+                  {mythrilContracts.length > 0 && (
+                    <>
+                      <TierDivider tier="mythril" label="The Order" />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {mythrilContracts.map(renderCard)}
+                      </div>
+                    </>
+                  )}
                 </>
               );
             })()}
@@ -700,90 +709,6 @@ const ContractsTab = ({
               );
             })()}
 
-            {/* ── MYTHRIL CONTRACT ── */}
-            {(() => {
-              const allDone = tasks.length > 0 && tasks.filter(t => t.done).length >= tasks.length;
-              const isDisabled = !gauntletUnlocked || tasks.length === 0 || !allDone;
-              return (
-                <>
-                  <TierDivider tier="mythril" label="Mythril Contract" />
-                  <div style={{
-                    borderRadius: '10px',
-                    border: `1px solid ${gauntletUnlocked && allDone ? TIER.mythril.border : 'rgba(125,249,255,0.1)'}`,
-                    background: 'linear-gradient(160deg, rgba(4,40,48,0.58) 0%, rgba(2,28,34,0.58) 100%)',
-                    boxShadow: gauntletUnlocked && allDone
-                      ? `0 0 36px ${TIER.mythril.glow.replace('0.45','0.1')}, 0 0 80px rgba(125,249,255,0.04)`
-                      : 'none',
-                    overflow: 'hidden',
-                    opacity: !isDayActive ? 0.4 : 1,
-                  }}>
-                    <div style={{ padding: '16px 20px 12px', borderBottom: 'rgba(125,249,255,0.04) solid 1px' }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.4em', color: TIER.mythril.color, textTransform:'uppercase', opacity: gauntletUnlocked ? 0.9 : 0.55 }}>
-                          Mythril Contract
-                        </span>
-                        {!gauntletUnlocked && (
-                          <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.2em', color:'rgba(125,249,255,0.65)', textTransform:'uppercase' }}>
-                            {gauntletMilestone - xp} XP to unseal
-                          </span>
-                        )}
-                      </div>
-                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.2rem', fontWeight:800, letterSpacing:'0.1em', margin:'0 0 4px',
-                        color: gauntletUnlocked && allDone ? TIER.mythril.color : 'rgba(125,249,255,0.55)',
-                        textShadow: gauntletUnlocked && allDone ? `0 0 18px ${TIER.mythril.glow}` : 'none',
-                      }}>
-                        The Black Contract
-                      </p>
-                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(125,249,255,0.65)', margin:0 }}>
-                        {!gauntletUnlocked
-                          ? 'This contract is sealed. Earn enough renown to break the lock.'
-                          : !allDone
-                            ? 'All daily contracts must be fulfilled before the Gauntlet opens.'
-                            : 'The Gauntlet awaits. There is no return.'}
-                      </p>
-                    </div>
-                    <div style={{ padding: '14px 20px 16px' }}>
-                      {/* Rune-like lock dots */}
-                      {!gauntletUnlocked && (
-                        <div style={{ display:'flex', justifyContent:'center', gap:'8px', marginBottom:'12px' }}>
-                          {[0,1,2,3,4].map(i => (
-                            <div key={i} style={{
-                              width:6, height:6, borderRadius:'50%',
-                              background:'rgba(125,249,255,0.08)',
-                              border:'1px solid rgba(125,249,255,0.15)',
-                            }} />
-                          ))}
-                        </div>
-                      )}
-                      <button
-                        onClick={() => {
-                          sounds.click();
-                          setActiveContract({ type: 'final' });
-                          setActiveTab('map');
-                        }}
-                        disabled={isDisabled}
-                        style={{
-                          width:'100%', padding:'10px', borderRadius:'6px',
-                          fontFamily:'Cinzel,serif', fontSize:'0.8rem', fontWeight:700,
-                          letterSpacing:'0.22em', textTransform:'uppercase',
-                          background: isDisabled ? 'rgba(0,10,12,0.6)' : activeContract?.type === 'final' ? TIER.mythril.color : 'rgba(0,25,30,0.9)',
-                          border: `1px solid ${isDisabled ? 'rgba(125,249,255,0.08)' : TIER.mythril.border}`,
-                          color: isDisabled ? 'rgba(125,249,255,0.2)' : activeContract?.type === 'final' ? '#000' : TIER.mythril.color,
-                          cursor: isDisabled ? 'not-allowed' : 'pointer',
-                          transition:'all 0.2s',
-                          boxShadow: !isDisabled ? `0 0 18px ${TIER.mythril.glow}` : 'none',
-                          animation: !isDisabled && activeContract?.type !== 'final' ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
-                        }}
-                        onMouseEnter={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=`0 0 28px ${TIER.mythril.glow}`; } }}
-                        onMouseLeave={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=`0 0 18px ${TIER.mythril.glow}`; } }}
-                      >
-                        {!gauntletUnlocked ? 'Sealed' : !allDone ? 'Fulfill all contracts first' : activeContract?.type === 'final' ? '✦ Active — Go to Skull Cavern' : 'Accept the Black Contract'}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
 
           </div>
 

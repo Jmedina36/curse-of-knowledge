@@ -2999,6 +2999,69 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   }), 3200);
   };
   
+  const ANTAGONISTS = {
+    cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditLaugh(),      dialogue: '"The order didn\'t send me. I came because I wanted to."' },
+    mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersLaugh1(),  dialogue: '"You spilled bandit blood. Now you face the dark."' },
+    sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.possessedLaugh(),   dialogue: '"Impressive. Truly. But this ends now."' },
+    malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),     dialogue: '"I have died seventeen times. I will not die tonight."' },
+  };
+
+  const spawnAntagonist = (antagonistId) => {
+    const a = ANTAGONISTS[antagonistId];
+    if (!a) return;
+    const completedTasks = tasks.filter(t => t.done).length;
+    const totalTasks = tasks.length;
+    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
+    const config = GAME_CONSTANTS.SCALING_CONFIG.elite;
+    const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
+    const bossHealth = Math.floor(baseHp * a.hpMult * (2 - completionRate));
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+    sounds.bossEntrance();
+    a.sfx();
+    audioManager.cut();
+    audioManager.play(a.music);
+    setBattleType('elite');
+    setBossName(a.name);
+    setBanditEnemyImg(a.img);
+    setBossHp(bossHealth);
+    setBossMax(bossHealth);
+    setShowBoss(true);
+    setBattling(true);
+    setBattleMenu('main');
+    setBattleMode(true);
+    setIsFinalBoss(false);
+    setCanFlee(false);
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setVictoryLoot([]);
+    setVictoryChest(null);
+    setChargeStacks(0);
+    setEnragedTurns(0);
+    setHasFled(false);
+    setEnemyDialogue(a.dialogue);
+    addLog(`⚔️ ${a.name} stands before you!`);
+    const _dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+    const _wis = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+    const _rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const _pRoll = Math.ceil(Math.random() * 20);
+    const _pTotal = _pRoll + _dexMod;
+    const _eRoll = Math.ceil(Math.random() * 20);
+    const _eTotal = _eRoll + 4;
+    const _first = _pTotal >= _eTotal;
+    const _margin = Math.abs(_pTotal - _eTotal);
+    const _decisive = _margin >= 5;
+    const _openDmg = _first ? 0 : Math.max(3, Math.floor(_rawAtk * (_decisive ? 0.65 : 0.40) * (1 - _wis * 0.02)));
+    const _stunned = !_first && _decisive;
+    if (!_first) {
+      setHp(prev => Math.max(0, prev - _openDmg));
+      addLog(`Initiative: ${a.name} acts first — ${_decisive ? 'decisive' : 'narrow'} edge. ${_openDmg} damage.`);
+      if (_stunned) { setPlayerDebuffs(prev => ({ ...prev, stunned: true })); addLog('You are stunned for 1 turn!'); }
+    } else {
+      addLog(`Initiative: You act first (${_pTotal} vs ${_eTotal}).`);
+    }
+  };
+
   const spawnSpecificElite = (creatureId, dialogue) => {
     const creature = CREATURE_INDEX.find(c => c.id === creatureId);
     if (!creature) return;
@@ -7412,6 +7475,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     cursedLineupRef.current = members;
                     cursedLineupIdxRef.current = 0;
                     setTimeout(() => spawnCursedEnemy(members[0], 0, members.length), 1000);
+                  } else if (enemyType === 'antagonist') {
+                    const { antagonistId } = lc.encounter;
+                    setTimeout(() => spawnAntagonist(antagonistId), 1000);
                   } else {
                     contractEncounterRef.current = { tierWeights };
                     setWaveCount(waveSize);
