@@ -2570,17 +2570,6 @@ pendingBattleSpawnRef.current = () => {
     setVictoryLoot(lootMessages);
     setVictoryFlash(true);
     setTimeout(() => setVictoryFlash(false), 400);
-    // Loot fanfare for rare+ gear
-    for (const _fr of ['legendary', 'epic', 'rare']) {
-      const _ft = GAME_CONSTANTS.RARITY_TIERS[_fr].name;
-      const _fm = lootMessages.find(m => m.startsWith(_ft));
-      if (_fm) {
-        const _fi = _fm.slice(_ft.length + 1).split(' (+')[0];
-        setLootFanfare({ rarity: _fr, name: _fi, rarityName: _ft });
-        setTimeout(() => setLootFanfare(null), _fr === 'legendary' ? 2800 : _fr === 'epic' ? 2400 : 2000);
-        break;
-      }
-    }
     // Determine chest rarity from best loot found
     const _rarityOrder = ['legendary', 'epic', 'rare', 'uncommon', 'common'];
     const _rarityRank = { common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5 };
@@ -2595,6 +2584,19 @@ pendingBattleSpawnRef.current = () => {
     else if (battleType === 'wave'  && _rarityRank[chestRarity] < 2) chestRarity = 'uncommon';
     setVictoryChest({ rarity: chestRarity, img: `/items/CHEST-${_rarityRank[chestRarity]}.png` });
   }, [luckyCharmActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
+
+  const handleChestOpen = useCallback((loot) => {
+    for (const fr of ['legendary', 'epic', 'rare']) {
+      const ft = GAME_CONSTANTS.RARITY_TIERS[fr].name;
+      const fm = loot.find(m => m.startsWith(ft));
+      if (fm) {
+        const fi = fm.slice(ft.length + 1).split(' (+')[0];
+        setLootFanfare({ rarity: fr, name: fi, rarityName: ft });
+        setTimeout(() => setLootFanfare(null), fr === 'legendary' ? 2800 : fr === 'epic' ? 2400 : 2000);
+        break;
+      }
+    }
+  }, []);
 
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
@@ -8229,7 +8231,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               crusaderJudgmentCooldown={crusaderJudgmentCooldown}
               crusaderSmiteCooldown={crusaderSmiteCooldown}
               crusaderBastionOfFaithCooldown={crusaderBastionOfFaithCooldown}
-              victoryLoot={victoryLoot} victoryChest={victoryChest} log={log}
+              victoryLoot={victoryLoot} victoryChest={victoryChest} onChestOpen={handleChestOpen} log={log}
               attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack} chargedStrike={chargedStrike}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}

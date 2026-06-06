@@ -152,6 +152,7 @@ const BattleModal = ({
   // Victory
   victoryLoot,
   victoryChest,
+  onChestOpen,
   // Battle log
   log,
   setEnemyDialogue,
@@ -1460,7 +1461,17 @@ const BattleModal = ({
                 </div>
               )}
 
+              {!hasFled && (() => {
+                const goldEntry = victoryLoot.find(l => /^\+\d+ Gold$/.test(l));
+                return goldEntry ? (
+                  <p style={{ fontSize: '1rem', color: '#F6C94E', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', margin: '0 0 12px' }}>
+                    {goldEntry}
+                  </p>
+                ) : null;
+              })()}
+
               {!hasFled && victoryChest && (() => {
+                const chestLoot = victoryLoot.filter(l => !/^\+\d+ Gold$/.test(l));
                 const CHEST_COLORS = {
                   common:    { border: 'rgba(180,180,180,0.5)', glow: 'rgba(200,200,200,0.3)', label: '#C0C0C0', bg: 'rgba(40,40,40,0.6)'    },
                   uncommon:  { border: 'rgba(56,161,105,0.6)',  glow: 'rgba(56,161,105,0.35)', label: '#68D391', bg: 'rgba(10,30,15,0.6)'    },
@@ -1481,10 +1492,10 @@ const BattleModal = ({
                           animate={{ y: [0, -6, 0] }}
                           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
                           style={{ width: 96, height: 96, objectFit: 'contain', filter: `drop-shadow(0 0 14px ${cc.glow}) drop-shadow(0 0 6px ${cc.border})`, cursor: 'pointer' }}
-                          onClick={() => setChestOpened(true)}
+                          onClick={() => { setChestOpened(true); onChestOpen?.(chestLoot); }}
                         />
                         <motion.button
-                          onClick={() => setChestOpened(true)}
+                          onClick={() => { setChestOpened(true); onChestOpen?.(chestLoot); }}
                           whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}
                           style={{ padding: '8px 24px', borderRadius: '8px', fontSize: '12px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', fontFamily: 'Cinzel, serif', cursor: 'pointer', color: cc.label, background: 'rgba(0,0,0,0.45)', border: `1px solid ${cc.border}`, boxShadow: `0 0 10px ${cc.glow}` }}
                         >Open</motion.button>
@@ -1532,7 +1543,7 @@ const BattleModal = ({
 
                         {/* Loot list */}
                         <div style={{ width: '100%', marginTop: '4px' }}>
-                          {victoryLoot.map((loot, idx) => (
+                          {chestLoot.map((loot, idx) => (
                             <motion.div key={idx} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + idx * 0.09, duration: 0.22 }}
                               style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '5px 10px', marginBottom: '5px', borderRadius: '6px', background: 'rgba(0,0,0,0.35)', border: `1px solid ${cc.border}44` }}>
                               <span style={{ fontSize: '12px', color: cc.label }}>◆</span>
