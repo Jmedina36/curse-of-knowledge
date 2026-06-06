@@ -349,17 +349,33 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
                         color: faction.color,
                       }}>{rankLabel}</div>
 
-                      {/* Portrait */}
-                      <img
-                        src={entry.img} alt={entry.name}
-                        style={{
-                          width: 90, height: 90, objectFit: 'contain',
-                          margin: '14px auto 12px', display: 'block',
-                          filter: defeated
-                            ? 'grayscale(1) brightness(0.5)'
-                            : `drop-shadow(0 0 10px ${faction.color}66)`,
-                        }}
-                      />
+                      {/* Portrait + SLAIN stamp */}
+                      <div style={{ position: 'relative', width: 90, margin: '14px auto 12px', display: 'block' }}>
+                        <img
+                          src={entry.img} alt={entry.name}
+                          style={{
+                            width: 90, height: 90, objectFit: 'contain', display: 'block',
+                            filter: defeated
+                              ? 'grayscale(1) brightness(0.45)'
+                              : `drop-shadow(0 0 10px ${faction.color}66)`,
+                          }}
+                        />
+                        {defeated && (
+                          <div style={{
+                            position: 'absolute', top: '50%', left: '50%',
+                            transform: 'translate(-50%, -50%) rotate(-18deg)',
+                            fontFamily: 'Cinzel, serif', fontWeight: 900,
+                            fontSize: '1.35rem', letterSpacing: '0.18em',
+                            color: 'rgba(200, 30, 30, 0.92)',
+                            border: '3px solid rgba(200, 30, 30, 0.85)',
+                            padding: '2px 8px', borderRadius: '3px',
+                            textShadow: '0 0 8px rgba(200,30,30,0.6)',
+                            boxShadow: '0 0 10px rgba(200,30,30,0.3), inset 0 0 6px rgba(0,0,0,0.4)',
+                            background: 'rgba(0,0,0,0.35)',
+                            whiteSpace: 'nowrap', pointerEvents: 'none',
+                          }}>SLAIN</div>
+                        )}
+                      </div>
 
                       {/* Name */}
                       <p style={{
