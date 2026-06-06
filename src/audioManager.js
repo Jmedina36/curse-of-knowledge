@@ -11,13 +11,17 @@
 //   ambient.mp3   — Kevin MacLeod "Mystical Theme" (quiet menu/idle loop)
 
 export const TRACKS = {
-  nightVigil:   '/sounds/music/Night Vigil.mp3',
-  ancientWinds: '/sounds/music/Ancient Winds.mp3',
-  midnightTale: '/sounds/music/Midnight Tale.mp3',
-  unholyKnight: '/sounds/music/Unholy Knight.mp3',
-  darkling:     '/sounds/music/Darkling.mp3',
-  malicious:    '/sounds/music/Malicious.mp3',
-  boss:       '/sounds/music/Obliteration.mp3',
+  nightVigil:        '/sounds/music/Night Vigil.mp3',
+  ancientWinds:      '/sounds/music/Ancient Winds.mp3',
+  midnightTale:      '/sounds/music/Midnight Tale.mp3',
+  unholyKnight:      '/sounds/music/Unholy Knight.mp3',
+  darkling:          '/sounds/music/Darkling.mp3',
+  malicious:         '/sounds/music/Malicious.mp3',
+  boss:              '/sounds/music/Obliteration.mp3',
+  cutter:            '/sounds/music/Obliteration.mp3',
+  mira:              '/sounds/music/Eternal Terminal.mp3',
+  sylvaris:          '/sounds/music/Burnt Spirit.mp3',
+  malachar:          '/sounds/music/Wretched Destroyer.mp3',
 };
 
 const FADE_IN_MS  = 1400;

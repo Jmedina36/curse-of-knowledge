@@ -3151,6 +3151,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setBossHp(hp); setBossMax(hp);
       setBanditEnemyImg('/daughters-of-dusk/leader.png');
       Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2();
+      audioManager.play(TRACKS.mira);
       setEnemyDialogue('"You spilled bandit blood. Now you face the dark."');
       addLog('🌑 MIRA, DUSK QUEEN STEPS FORWARD!');
     } else if (phase === 3) {
@@ -3160,6 +3161,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setBanditEnemyImg('/bosses/dark-elf-queen.png');
       sounds.finalBossEntrance();
       sounds.finalBossStorm();
+      audioManager.play(TRACKS.sylvaris);
       setEnemyDialogue('"Impressive. Truly. But this ends now."');
       addLog('⚡ PHASE 2 — SYLVARIS, QUEEN OF RUIN!');
     } else if (phase === 4) {
@@ -3169,6 +3171,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setBanditEnemyImg('/undead-king.png');
       sounds.finalBossEntrance();
       sounds.finalBossStorm();
+      audioManager.play(TRACKS.malachar);
       setEnemyDialogue('"I have died seventeen times. I will not die tonight."');
       addLog('💀 PHASE 3 — MALACHAR, THE ETERNAL LICH!');
     }
@@ -3226,7 +3229,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setTimeout(() => setCurrentAnimation(null), 500);
     sounds.bossEntrance();
     setBattleType('final');
-    audioManager.play(TRACKS.boss);
+    audioManager.play(TRACKS.cutter);
     setShowBoss(true);
     setBattling(true);
     setBattleMenu('main'); // Reset to main menu
