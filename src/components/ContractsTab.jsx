@@ -10,6 +10,7 @@ const TIER = {
   gold:     { label: 'Gold',     color: '#D4AF37', glow: 'rgba(212,175,55,0.5)',  border: 'rgba(212,175,55,0.5)',  bg: 'rgba(40,30,0,0.6)'   },
   platinum: { label: 'Platinum', color: '#E8E8E8', glow: 'rgba(232,232,232,0.35)',border: 'rgba(220,220,220,0.4)', bg: 'rgba(20,20,28,0.7)'  },
   mythril:  { label: 'Mythril',  color: '#7DF9FF', glow: 'rgba(125,249,255,0.45)',border: 'rgba(125,249,255,0.4)', bg: 'rgba(0,18,22,0.85)'  },
+  mercy:    { label: 'Mercy',    color: '#B0A0D8', glow: 'rgba(160,140,210,0.4)', border: 'rgba(160,140,210,0.38)',bg: 'rgba(18,14,28,0.65)' },
 };
 
 const TierDivider = ({ tier, label }) => (
@@ -391,14 +392,15 @@ const ContractsTab = ({
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
               const storyContracts = visible.filter(lc => lc.storyContract);
-              const fieldContracts = visible.filter(lc => !lc.storyContract);
+              const mercyContracts = visible.filter(lc => lc.contractTier === 'mercy');
+              const fieldContracts = visible.filter(lc => !lc.storyContract && lc.contractTier !== 'mercy');
 
               const renderCard = (lc) => {
                 const isCompleted = completedLocationContracts?.includes(lc.id);
                 const isPending = pendingLocationRewards?.includes(lc.id);
                 const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
-                const tier = lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
-                const tierLabel = lc.contractTier === 'gold' ? 'Gold' : lc.contractTier === 'blood' ? 'Blood' : 'Silver';
+                const tier = lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : lc.contractTier === 'mercy' ? TIER.mercy : TIER.silver;
+                const tierLabel = lc.contractTier === 'gold' ? 'Gold' : lc.contractTier === 'blood' ? 'Blood' : lc.contractTier === 'mercy' ? 'Mercy' : 'Silver';
                 return (
                   <div key={lc.id} style={{
                     position: 'relative',
@@ -410,7 +412,9 @@ const ContractsTab = ({
                           ? 'linear-gradient(160deg,rgba(45,35,5,0.7),rgba(32,24,4,0.7))'
                           : lc.contractTier === 'blood'
                             ? 'linear-gradient(160deg,rgba(50,10,10,0.7),rgba(35,5,5,0.7))'
-                            : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
+                            : lc.contractTier === 'mercy'
+                              ? 'linear-gradient(160deg,rgba(28,20,42,0.72),rgba(18,14,30,0.72))'
+                              : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
                     border: isCompleted
                       ? '1px solid rgba(80,100,60,0.45)'
                       : isPending
@@ -560,6 +564,17 @@ const ContractsTab = ({
                       <TierDivider tier="silver" label="Field Contracts" />
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
                         {fieldContracts.map(renderCard)}
+                      </div>
+                    </>
+                  )}
+                  {mercyContracts.length > 0 && (
+                    <>
+                      <TierDivider tier="mercy" label="Mercy Contracts — The Cursed" />
+                      <p style={{ textAlign: 'center', fontSize: '0.68rem', color: 'rgba(180,160,210,0.4)', fontStyle: 'italic', marginBottom: '12px' }}>
+                        Fallen heroes who cannot rest. Find them. End it.
+                      </p>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {mercyContracts.map(renderCard)}
                       </div>
                     </>
                   )}

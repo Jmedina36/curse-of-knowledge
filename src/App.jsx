@@ -548,6 +548,9 @@ const daughtersLineupRef = useRef([]);
 const daughtersLineupIdxRef = useRef(0);
 const [daughtersCaptainsDefeated, setDaughtersCaptainsDefeated] = useState([]);
 const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
+const [isCursedWave, setIsCursedWave] = useState(false);
+const cursedLineupRef = useRef([]);
+const cursedLineupIdxRef = useRef(0);
   const [battling, setBattling] = useState(false);
   const [battleMenu, setBattleMenu] = useState('main'); // 'main', 'fight', 'items'
   const [isFinalBoss, setIsFinalBoss] = useState(false);
@@ -2858,6 +2861,59 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     spawnDaughtersEnemy(lineup[0], 0, lineup.length);
   };
 
+  const spawnCursedEnemy = (enemy, idx, total) => {
+    const hp = enemy.hp || 100;
+    sounds.enemyEntrance();
+    setCurrentAnimation('screen-shake');
+    setTimeout(() => setCurrentAnimation(null), 500);
+    setBossName(enemy.name);
+    setBossHp(hp);
+    setBossMax(hp);
+    setBanditEnemyImg(enemy.img);
+    setShowBoss(true);
+    setBattling(true);
+    setBattleMenu('main');
+    setBattleMode(true);
+    setIsFinalBoss(false);
+    setCanFlee(true);
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    setVictoryLoot([]);
+    setVictoryChest(null);
+    setChargeStacks(0);
+    setRecklessStacks(0);
+    setEnragedTurns(0);
+    setHasFled(false);
+    setIsCursedWave(true);
+    cursedLineupIdxRef.current = idx;
+    setBattleType('wave');
+    setCurrentWaveEnemy(idx + 1);
+    setTotalWaveEnemies(total);
+    if (idx === 0) setWaveGoldTotal(0);
+    audioManager.play(TRACKS.malicious);
+    addLog(`The Cursed ${enemy.name} stirs... (${idx + 1}/${total})`);
+    setEnemyDialogue(enemy.dialogue || '...');
+    const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
+    const wisMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+    const rawAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
+    const pRoll = Math.ceil(Math.random() * 20);
+    const pTotal = pRoll + dexMod;
+    const eRoll = Math.ceil(Math.random() * 20);
+    const eTotal = eRoll + 0;
+    const playerFirst = pTotal >= eTotal;
+    const margin = Math.abs(pTotal - eTotal);
+    const decisive = margin >= 5;
+    const openDmg = playerFirst ? 0 : Math.max(3, Math.floor(rawAtk * (decisive ? 0.65 : 0.40) * (1 - wisMod * 0.02)));
+    const stunned = !playerFirst && decisive;
+    setTimeout(() => setInitiativeRoll({
+      playerRoll: pRoll, playerMod: dexMod, playerTotal: pTotal,
+      enemyRoll: eRoll, enemyMod: 0, enemyTotal: eTotal,
+      playerFirst, decisive, margin,
+      openingDamage: openDmg, stunned,
+      openingLog: playerFirst ? '' : `Enemy strikes first for ${openDmg} damage.${stunned ? ' You are stunned.' : ''}`,
+    }), 3200);
+  };
+
   const handleDaughtersBeg = () => {
     addLog('🏳️ You plead for mercy. The Daughters melt back into the shadows... and regroup.');
     setIsDaughtersWave(false);
@@ -3669,6 +3725,30 @@ if (battleType === 'elite') {
     }
 
     setIsDaughtersWave(false);
+    setBattling(false);
+    setBattleMode(false);
+    generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
+    return;
+  }
+
+  // Check if Cursed mercy contract wave continues
+  if (isCursedWave) {
+    const nextIdx = cursedLineupIdxRef.current + 1;
+    const lineup = cursedLineupRef.current;
+    if (nextIdx < lineup.length) {
+      addLog(`They cannot stop. Neither can you.`);
+      setTimeout(() => spawnCursedEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+      return;
+    }
+    // All members defeated — mark them all at rest
+    const allImgs = lineup.map(m => m.img);
+    setRestedCursed(prev => {
+      const updated = [...prev];
+      allImgs.forEach(img => { if (!updated.includes(img)) updated.push(img); });
+      return updated;
+    });
+    addLog(`They are finally at rest.`);
+    setIsCursedWave(false);
     setBattling(false);
     setBattleMode(false);
     generateVictoryLoot(battleType, isFinalBoss, goldGain, waveGoldTotal + goldGain);
@@ -7314,6 +7394,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   } else if (enemyType === 'elite') {
                     const { eliteId, dialogue: eliteDialogue } = lc.encounter;
                     setTimeout(() => spawnSpecificElite(eliteId, eliteDialogue), 1000);
+                  } else if (enemyType === 'cursed') {
+                    const { members } = lc.encounter;
+                    cursedLineupRef.current = members;
+                    cursedLineupIdxRef.current = 0;
+                    setTimeout(() => spawnCursedEnemy(members[0], 0, members.length), 1000);
                   } else {
                     contractEncounterRef.current = { tierWeights };
                     setWaveCount(waveSize);
@@ -8091,8 +8176,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               getRarityColor={getRarityColor}
               fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
               onCapture={captureMonster}
-              isBanditWave={isBanditWave || isDaughtersWave} banditEnemyImg={banditEnemyImg}
-              raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : null}
+              isBanditWave={isBanditWave || isDaughtersWave || isCursedWave} banditEnemyImg={banditEnemyImg}
+              raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : isCursedWave ? 'cursed' : null}
               playerStunned={playerStunned} setPlayerStunned={setPlayerStunned}
               currentBattleCreature={currentBattleCreature}
             />

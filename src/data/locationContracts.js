@@ -96,6 +96,178 @@ export const LOCATION_CONTRACTS = [
       { type: 'xp',             amount: 120 },
     ],
   },
+
+  // ── Mercy Contracts — The Cursed ──────────────────────────────────────────────
+  // Fallen heroes who cannot leave until someone puts them to rest.
+  // Completing one marks those members as restedCursed in the Bestiary.
+  {
+    id: 'mc_aldric_sela',
+    locationId: 'wardens_stone',
+    locationName: "The Warden's Stone",
+    name: 'Mercy for the Oath',
+    contractTier: 'mercy',
+    zone: 1,
+    desc: "Two of the cursed still linger at the Warden's Stone — a young knight who swore an oath he couldn't keep, and the girl who followed him into the dark. Neither can leave. Neither can rest. Someone has to end it.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/young-paladin.png', name: 'Aldric', hp: 90, dialogue: "I can't stop. I can't remember how." },
+        { img: '/cursed/young-princess.png', name: 'Sela', hp: 75, dialogue: "Is someone finally here? Or is this another dream?" },
+      ],
+    },
+    rewards: [
+      { type: 'xp',          amount: 65  },
+      { type: 'gold',        amount: 25  },
+      { type: 'healthPots',  amount: 1   },
+    ],
+  },
+  {
+    id: 'mc_lysse_kira',
+    locationId: 'cactus_flats',
+    locationName: 'The Cactus Flats',
+    name: 'Lost on the Road',
+    contractTier: 'mercy',
+    zone: 2,
+    desc: "An elven pathfinder and her escort never made it back from the flats. Locals say they still wander the wasteland at the edge of the road — circling the same stretch of ground they walked before the curse took them.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/elven-girl.png', name: 'Lysse', hp: 150, dialogue: "The source is close. I know it. I've always known it." },
+        { img: '/cursed/mongolian-princess.png', name: 'Kira', hp: 135, dialogue: "I was supposed to keep her safe. I'm still trying." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',          amount: 110 },
+      { type: 'gold',        amount: 40  },
+      { type: 'healthPots',  amount: 1   },
+    ],
+  },
+  {
+    id: 'mc_conn_dar',
+    locationId: 'ghost_fleet',
+    locationName: 'The Ghost Fleet',
+    name: 'No Refunds',
+    contractTier: 'mercy',
+    zone: 2,
+    desc: "Two sell-swords — a mercenary sergeant and the opportunist who followed his company — haven't left the harbor ruins in months. One took the contract for money. One didn't take it at all. Now they're both stuck.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/mercenary.png', name: 'Conn', hp: 165, dialogue: "Still getting paid for this, far as I'm concerned." },
+        { img: '/cursed/robber.png', name: 'Dar', hp: 140, dialogue: "I don't even know why I'm still here. I never know." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',          amount: 110 },
+      { type: 'gold',        amount: 45  },
+      { type: 'staminaPots', amount: 1   },
+    ],
+  },
+  {
+    id: 'mc_bryn_solveig',
+    locationId: 'old_tree',
+    locationName: 'The Hollow',
+    name: 'The Shield Does Not Break',
+    contractTier: 'mercy',
+    zone: 3,
+    desc: "Two veteran fighters were last seen near The Hollow — a shield-captain from the Northern Reach and the skjaldmær who rode beside her. Both still standing. Neither aware the war they're fighting is already over.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/warrior-lady.png', name: 'Bryn', hp: 245, dialogue: "Hold the line. We hold the line." },
+        { img: '/cursed/viking-woman.png', name: 'Solveig', hp: 225, dialogue: "Forward. Always forward. That's all there is." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',          amount: 180 },
+      { type: 'gold',        amount: 65  },
+      { type: 'healthPots',  amount: 2   },
+    ],
+  },
+  {
+    id: 'mc_maren_sunwen',
+    locationId: 'old_nexus',
+    locationName: 'The Old Nexus',
+    name: 'Second Crossing',
+    contractTier: 'mercy',
+    zone: 3,
+    desc: "A survivor of the second expedition who walked back in, and the foreign prince who found her on the road. They reached the Old Nexus and stopped. Whatever they found here, they couldn't leave it.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/young-lady.png', name: 'Maren', hp: 260, dialogue: "I saw something. I had to come back. I had to see if it was real." },
+        { img: '/cursed/young-korean-prince.png', name: 'Sun Wen', hp: 235, dialogue: "I followed her here. I don't regret it. I don't think." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',          amount: 180 },
+      { type: 'gold',        amount: 65  },
+      { type: 'staminaPots', amount: 2   },
+    ],
+  },
+  {
+    id: 'mc_sigrun_halvard',
+    locationId: 'precipice',
+    locationName: 'The Precipice',
+    name: 'The Last Crossing',
+    contractTier: 'mercy',
+    zone: 4,
+    desc: "A jarl who sent his men home and a steward who stopped managing and started walking — both found at the edge of the mapped world. They made it further than anyone expected. They can't make the last step alone.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/viking-warrior.png', name: 'Jarl Sigrun', hp: 360, dialogue: "Not their fight. Never was. But this one is mine." },
+        { img: '/cursed/viking-noble-man.png', name: 'Lord Halvard', hp: 330, dialogue: "I understand the curse completely now. That doesn't help." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',           amount: 280 },
+      { type: 'gold',         amount: 90  },
+      { type: 'fusionCrystals', amount: 1 },
+    ],
+  },
+  {
+    id: 'mc_sera_edric',
+    locationId: 'crystal_lava',
+    locationName: 'The Melt',
+    name: 'The Last Mandate',
+    contractTier: 'mercy',
+    zone: 5,
+    desc: "A queen who abdicated her throne to face the curse herself, and the lorekeeper who spent forty years studying it — both trapped at The Melt. She crossed it once. He mapped it twice. Neither could cross it a final time.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/warrior-queen.png', name: 'Queen Sera', hp: 490, dialogue: "My kingdom is ash. My name is ash. I have nothing left to lose." },
+        { img: '/cursed/old-noble-man.png', name: 'Edric', hp: 450, dialogue: "I was wrong about one thing. Knowing it doesn't make it smaller." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',           amount: 380 },
+      { type: 'gold',         amount: 120 },
+      { type: 'fusionCrystals', amount: 2 },
+    ],
+  },
+  {
+    id: 'mc_brek',
+    locationId: 'skull_cave',
+    locationName: 'Skull Cavern',
+    name: 'The Last Man Standing',
+    contractTier: 'mercy',
+    zone: 5,
+    desc: "Three expeditions in. Still standing. The Cursed who was never defeated in life has never been defeated in death either. He is the last one. He doesn't know how to stop.",
+    encounter: {
+      enemyType: 'cursed',
+      members: [
+        { img: '/cursed/gladiator.png', name: 'Brek', hp: 620, dialogue: "Sixty-two. I've been counting. Come on then." },
+      ],
+    },
+    rewards: [
+      { type: 'xp',           amount: 420 },
+      { type: 'gold',         amount: 140 },
+      { type: 'fusionCrystals', amount: 2 },
+      { type: 'healthPots',   amount: 2   },
+    ],
+  },
 ];
 
 export const REWARD_LABELS = {

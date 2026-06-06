@@ -463,6 +463,7 @@ const BattleModal = ({
     ? (inPhase3 ? 'PHASE 3 — ABYSS AWAKENING' : inPhase2 ? 'PHASE 2 — THE PRESSURE' : 'THE UNDYING LEGEND')
     : raidFaction === 'daughters' ? `DAUGHTERS OF DUSK · ${currentWaveEnemy}/${totalWaveEnemies}`
     : raidFaction === 'bandit' ? `BANDIT RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
+    : raidFaction === 'cursed' ? `THE CURSED · ${currentWaveEnemy}/${totalWaveEnemies}`
     : isBanditWave ? `RAID · ${currentWaveEnemy}/${totalWaveEnemies}`
     : battleType === 'elite' ? 'TORMENTED CHAMPION'
     : battleType === 'wave' ? `WAVE ASSAULT · Enemy ${currentWaveEnemy}/${totalWaveEnemies}`
