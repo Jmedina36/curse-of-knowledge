@@ -391,9 +391,10 @@ const ContractsTab = ({
                 if (!lc.requiredContracts?.length) return true;
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
-              const storyContracts = visible.filter(lc => lc.storyContract);
-              const mercyContracts = visible.filter(lc => lc.mercyContract);
-              const fieldContracts = visible.filter(lc => !lc.storyContract && !lc.mercyContract);
+              const fieldContracts  = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier !== 'blood');
+              const storyContracts  = visible.filter(lc => lc.storyContract);
+              const mercyContracts  = visible.filter(lc => lc.mercyContract);
+              const bloodContracts  = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier === 'blood');
 
               const renderCard = (lc) => {
                 const isCompleted = completedLocationContracts?.includes(lc.id);
@@ -549,14 +550,6 @@ const ContractsTab = ({
 
               return (
                 <>
-                  {storyContracts.length > 0 && (
-                    <>
-                      <TierDivider tier="gold" label="Story Contracts" />
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
-                        {storyContracts.map(renderCard)}
-                      </div>
-                    </>
-                  )}
                   {fieldContracts.length > 0 && (
                     <>
                       <TierDivider tier="silver" label="Field Contracts" />
@@ -565,14 +558,30 @@ const ContractsTab = ({
                       </div>
                     </>
                   )}
+                  {storyContracts.length > 0 && (
+                    <>
+                      <TierDivider tier="gold" label="Story Contracts" />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {storyContracts.map(renderCard)}
+                      </div>
+                    </>
+                  )}
                   {mercyContracts.length > 0 && (
                     <>
-                      <TierDivider tier="mercy" label="Mercy Contracts — The Cursed" />
-                      <p style={{ textAlign: 'center', fontSize: '0.68rem', color: 'rgba(180,160,210,0.4)', fontStyle: 'italic', marginBottom: '12px' }}>
+                      <TierDivider tier="gold" label="Mercy Contracts — The Cursed" />
+                      <p style={{ textAlign: 'center', fontSize: '0.68rem', color: 'rgba(212,175,55,0.35)', fontStyle: 'italic', marginBottom: '12px' }}>
                         Fallen heroes who cannot rest. Find them. End it.
                       </p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
                         {mercyContracts.map(renderCard)}
+                      </div>
+                    </>
+                  )}
+                  {bloodContracts.length > 0 && (
+                    <>
+                      <TierDivider tier="platinum" label="Blood Contracts" />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {bloodContracts.map(renderCard)}
                       </div>
                     </>
                   )}
