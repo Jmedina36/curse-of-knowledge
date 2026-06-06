@@ -6289,7 +6289,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   return (
   <div className={`min-h-screen text-white relative overflow-hidden ${currentAnimation || ''} ${
     curseLevel === 3 ? 'border-8 border-red-600 animate-pulse' : ''
-  }`} style={{ fontFamily: "'Cinzel', serif", background: 'linear-gradient(to bottom, #0F0D0A, #1A1612)' }}>
+  }`} style={{ fontFamily: "'Cinzel', serif", background: 'linear-gradient(to bottom, #0A0907, #111009)' }}>
       <style>{globalStyles}</style>
       
       {/* Auto-save indicator */}
@@ -7109,7 +7109,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
 
 
-      <div className="absolute inset-0 bg-gradient-to-b from-red-950 via-black to-purple-950 opacity-60"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-stone-950 via-neutral-950 to-stone-900 opacity-70"></div>
       <div className="absolute inset-0 bg-gradient-radial from-transparent via-black to-black opacity-80"></div>
       <div className="absolute inset-0" style={{
         backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(89, 69, 52, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(75, 60, 45, 0.08) 0%, transparent 50%)',
@@ -7135,7 +7135,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           marginLeft: 'calc(-50vw + 50%)',
           marginRight: 'calc(-50vw + 50%)',
           borderColor: 'rgba(212, 175, 55, 0.2)',
-          background: 'linear-gradient(to bottom, rgba(40, 10, 10, 0.4), rgba(30, 0, 0, 0.4))',
+          background: 'linear-gradient(to bottom, rgba(28, 22, 14, 0.6), rgba(18, 14, 9, 0.6))',
           boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.3)'
         }}>
           {[
