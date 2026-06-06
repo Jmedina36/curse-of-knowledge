@@ -281,6 +281,95 @@ export const LOCATION_CONTRACTS = [
       { type: 'staminaPots', amount: 1   },
     ],
   },
+  // ── Zone 3 Story Contracts ────────────────────────────────────────────────────
+  {
+    id: 'lc_ashfield',
+    locationId: 'ashfield',
+    locationName: 'The Ashfield',
+    name: 'What Was Here',
+    contractTier: 'gold',
+    storyContract: true,
+    zone: 3,
+    desc: "A trading post at the edge of the ash fields has been silent for weeks. No distress call — just silence. When scouts got close enough, the buildings were standing and empty. Everything left in place. No one walked away.",
+    storyNote: "The buildings weren't abandoned — they were emptied. In the main hall you find a manifest: names, numbers, a destination. Every resident listed. At the bottom, a note in different handwriting: 'Clearance complete. Site ready for transit. Awaiting final authorization — C.' They didn't destroy this place. They cleared it. For something.",
+    journalEntry: {
+      title: 'Cleared',
+      location: 'The Ashfield',
+      zone: 3,
+      text: `Not a raid. Not a massacre. An organized removal.\n\nThere was a manifest in the hall — every resident, every name. Destination not listed. Just 'relocated per directive.' The sigil was on the stamp. C's note at the bottom said the site was cleared and ready for transit.\n\nThey moved everyone out. I don't know if the people are alive. I don't know what transit means. But whatever this site is being prepared for, it hasn't happened yet.`,
+    },
+    encounter: {
+      enemyType: 'bandit',
+      waveSize: 2,
+      dialogue: [
+        "We're just holding the site. Orders. I don't ask what it's for.",
+      ],
+    },
+    rewards: [
+      { type: 'gold',        amount: 60 },
+      { type: 'healthPots',  amount: 2  },
+      { type: 'xp',          amount: 130 },
+    ],
+  },
+  {
+    id: 'lc_pale_ground',
+    locationId: 'pale_ground',
+    locationName: 'The Pale Ground',
+    name: 'The Still Place',
+    contractTier: 'gold',
+    storyContract: true,
+    zone: 3,
+    requiredContracts: ['mc_maren_sunwen'],
+    desc: "Animals avoid the Pale Ground. Travelers who camp nearby report dreamless sleep and waking with no memory of the night. A tracker followed footprints into it three weeks ago. The tracks stopped in the middle of an open field with nowhere to go.",
+    storyNote: "The Daughter wasn't running a ritual. She was maintaining one — a passive working that's been active for months. At its center, buried under a flat stone: a list of dates, each crossed off in the same hand. The last date isn't crossed off yet. Whatever the order is counting down to, it hasn't happened.",
+    journalEntry: {
+      title: 'The Countdown',
+      location: 'The Pale Ground',
+      zone: 3,
+      text: `Sera wasn't casting. She was maintaining something that was already running.\n\nUnder the stone at the circle's center: a list of dates. Months of them, each crossed off in the same hand. The last date isn't crossed. I don't know what it marks — a convergence, a signal, an arrival.\n\nC isn't just building a network. There's a schedule. Whatever this is, it has an end point. I don't know how much time is left.`,
+    },
+    encounter: {
+      enemyType: 'daughters',
+      waveSize: 1,
+      enemyNames: ['Sera'],
+      dialogue: [
+        "You were supposed to be stopped before you got here. I suppose I'll have to do it myself.",
+      ],
+    },
+    rewards: [
+      { type: 'staminaPots',   amount: 2  },
+      { type: 'gold',          amount: 60 },
+      { type: 'xp',            amount: 130 },
+    ],
+  },
+  {
+    id: 'lc_old_watch',
+    locationId: 'old_watch',
+    locationName: 'The Old Watch',
+    name: 'The One They Left',
+    contractTier: 'blood',
+    zone: 3,
+    requiredContracts: ['lc_pale_ground'],
+    desc: "The watchtower at the zone's edge has been reoccupied. The fortifications are deliberate, the supply lines organized. The commander has been here for months. She wasn't sent in response to anything. She was placed here long before you arrived.",
+    journalEntry: {
+      title: 'Placed',
+      location: 'The Old Watch',
+      zone: 3,
+      text: `Valdris wasn't reactive. She'd been in that tower for four months before I ever crossed into this zone.\n\nBefore she fell, she said C had written my name down before I found the harbor. They knew I was coming before I did.\n\nThere was a sealed envelope on the desk addressed to me by name. I opened it. One line: 'You are further along than the others. That is the point. — C.'\n\nI don't know what that means. I know it should concern me more than it does.`,
+    },
+    encounter: {
+      enemyType: 'elite',
+      eliteId: 'e6',
+      waveSize: 1,
+      dialogue: "C wrote your name down before you found the harbor. I've been waiting here since before you knew you were coming.",
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 3   },
+      { type: 'gold',           amount: 80  },
+      { type: 'xp',             amount: 200 },
+    ],
+  },
+
   {
     id: 'mc_bryn_solveig',
     locationId: 'old_tree',
@@ -289,6 +378,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'gold',
     mercyContract: true,
     zone: 3,
+    requiredContracts: ['lc_ashfield'],
     desc: "Two veteran fighters were last seen near The Hollow — a shield-captain from the Northern Reach and the skjaldmær who rode beside her. Both still standing. Neither aware the war they're fighting is already over.",
     encounter: {
       enemyType: 'cursed',
@@ -311,6 +401,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'gold',
     mercyContract: true,
     zone: 3,
+    requiredContracts: ['mc_bryn_solveig'],
     desc: "A survivor of the second expedition who walked back in, and the foreign prince who found her on the road. They reached the Old Nexus and stopped. Whatever they found here, they couldn't leave it.",
     encounter: {
       enemyType: 'cursed',
