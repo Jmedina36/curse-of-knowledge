@@ -392,15 +392,15 @@ const ContractsTab = ({
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
               const storyContracts = visible.filter(lc => lc.storyContract);
-              const mercyContracts = visible.filter(lc => lc.contractTier === 'mercy');
-              const fieldContracts = visible.filter(lc => !lc.storyContract && lc.contractTier !== 'mercy');
+              const mercyContracts = visible.filter(lc => lc.mercyContract);
+              const fieldContracts = visible.filter(lc => !lc.storyContract && !lc.mercyContract);
 
               const renderCard = (lc) => {
                 const isCompleted = completedLocationContracts?.includes(lc.id);
                 const isPending = pendingLocationRewards?.includes(lc.id);
                 const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
-                const tier = lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : lc.contractTier === 'mercy' ? TIER.mercy : TIER.silver;
-                const tierLabel = lc.contractTier === 'gold' ? 'Gold' : lc.contractTier === 'blood' ? 'Blood' : lc.contractTier === 'mercy' ? 'Mercy' : 'Silver';
+                const tier = lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
+                const tierLabel = lc.contractTier === 'gold' ? (lc.mercyContract ? 'Mercy' : 'Gold') : lc.contractTier === 'blood' ? 'Blood' : 'Silver';
                 return (
                   <div key={lc.id} style={{
                     position: 'relative',
@@ -412,9 +412,7 @@ const ContractsTab = ({
                           ? 'linear-gradient(160deg,rgba(45,35,5,0.7),rgba(32,24,4,0.7))'
                           : lc.contractTier === 'blood'
                             ? 'linear-gradient(160deg,rgba(50,10,10,0.7),rgba(35,5,5,0.7))'
-                            : lc.contractTier === 'mercy'
-                              ? 'linear-gradient(160deg,rgba(28,20,42,0.72),rgba(18,14,30,0.72))'
-                              : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
+                            : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
                     border: isCompleted
                       ? '1px solid rgba(80,100,60,0.45)'
                       : isPending
@@ -582,120 +580,6 @@ const ContractsTab = ({
               );
             })()}
 
-            {/* ── GOLD CONTRACTS ── */}
-            {isDayActive && (
-              <>
-                <TierDivider tier="gold" label="Gold Contracts" />
-                <div className="grid md:grid-cols-2 gap-4">
-
-                  {/* Bandit Raid */}
-                  {(() => {
-                    const captDefeated = banditCaptainsDefeated?.length || 0;
-                    const allCaptainsDown = captDefeated >= 3;
-                    const nextWave = (banditWaveNumber || 0) + 1;
-                    return (
-                      <div className="rounded-xl border overflow-hidden" style={{
-                        borderColor: TIER.gold.border,
-                        background: 'linear-gradient(160deg, rgba(70,45,12,0.52) 0%, rgba(50,32,8,0.52) 100%)',
-                        boxShadow: `0 4px 18px ${TIER.gold.glow.replace('0.5','0.12')}`,
-                      }}>
-                        <div style={{ padding: '12px 16px 8px', borderBottom: `1px solid rgba(212,175,55,0.12)` }}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.35em', color: TIER.gold.color, textTransform:'uppercase', opacity:0.95 }}>
-                              Gold Contract
-                            </span>
-                            <div style={{ display:'flex', gap:'5px' }}>
-                              {[0,1,2].map(i => (
-                                <div key={i} style={{
-                                  width:8, height:8, borderRadius:'50%',
-                                  background: i < captDefeated ? TIER.gold.color : 'rgba(212,175,55,0.12)',
-                                  border: `1px solid ${i < captDefeated ? 'rgba(212,175,55,0.8)' : 'rgba(212,175,55,0.25)'}`,
-                                  boxShadow: i < captDefeated ? `0 0 4px ${TIER.gold.glow}` : 'none',
-                                }} />
-                              ))}
-                            </div>
-                          </div>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.15rem', fontWeight:700, color:'#F0D898', letterSpacing:'0.08em', margin:0 }}>
-                            {allCaptainsDown ? 'Bandit Lord Cutter' : `Bandit Raid — Wave ${nextWave}`}
-                          </p>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(220,195,140,0.8)', marginTop:'3px' }}>
-                            {allCaptainsDown ? 'All captains fallen. Cutter awaits.' : `Captains eliminated: ${captDefeated}/3`}
-                          </p>
-                        </div>
-                        <div style={{ padding: '10px 16px' }}>
-                          <button
-                            onClick={() => { sounds.click(); onRaid(nextWave, banditCaptainsDefeated || []); }}
-                            style={{
-                              width:'100%', padding:'8px', borderRadius:'4px', fontFamily:'Cinzel,serif',
-                              fontSize:'0.78rem', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase',
-                              background: 'rgba(55,38,0,0.7)', border: `1px solid ${TIER.gold.border}`,
-                              color: TIER.gold.color, cursor:'pointer', transition:'all 0.2s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background='rgba(80,55,0,0.9)'; e.currentTarget.style.boxShadow=`0 0 12px ${TIER.gold.glow}`; }}
-                            onMouseLeave={e => { e.currentTarget.style.background='rgba(55,38,0,0.7)'; e.currentTarget.style.boxShadow='none'; }}
-                          >
-                            {allCaptainsDown ? 'Confront the Bandit Lord' : 'Launch Raid'}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })()}
-
-                  {/* Daughters of Dusk Raid */}
-                  {(() => {
-                    const captDefeated = daughtersCaptainsDefeated?.length || 0;
-                    const allCaptainsDown = captDefeated >= 3;
-                    const nextWave = (daughtersWaveNumber || 0) + 1;
-                    return (
-                      <div className="rounded-xl border overflow-hidden" style={{
-                        borderColor: TIER.gold.border,
-                        background: 'linear-gradient(160deg, rgba(55,28,72,0.52) 0%, rgba(38,18,52,0.52) 100%)',
-                        boxShadow: `0 4px 18px rgba(139,92,246,0.1)`,
-                      }}>
-                        <div style={{ padding: '12px 16px 8px', borderBottom: `1px solid rgba(212,175,55,0.12)` }}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.72rem', letterSpacing:'0.35em', color: TIER.gold.color, textTransform:'uppercase', opacity:0.95 }}>
-                              Gold Contract
-                            </span>
-                            <div style={{ display:'flex', gap:'5px' }}>
-                              {[0,1,2].map(i => (
-                                <div key={i} style={{
-                                  width:8, height:8, borderRadius:'50%',
-                                  background: i < captDefeated ? '#A855F7' : 'rgba(139,92,246,0.12)',
-                                  border: `1px solid ${i < captDefeated ? 'rgba(168,85,247,0.8)' : 'rgba(139,92,246,0.25)'}`,
-                                  boxShadow: i < captDefeated ? '0 0 4px rgba(168,85,247,0.5)' : 'none',
-                                }} />
-                              ))}
-                            </div>
-                          </div>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.15rem', fontWeight:700, color:'rgba(225,205,255,0.98)', letterSpacing:'0.08em', margin:0 }}>
-                            {allCaptainsDown ? 'Dusk Queen Mira' : `Daughters of Dusk — Wave ${nextWave}`}
-                          </p>
-                          <p style={{ fontFamily:'Cinzel,serif', fontSize:'0.85rem', color:'rgba(200,175,240,0.85)', marginTop:'3px' }}>
-                            {allCaptainsDown ? 'All captains silenced. Mira awaits in the dark.' : `Captains silenced: ${captDefeated}/3`}
-                          </p>
-                        </div>
-                        <div style={{ padding: '10px 16px' }}>
-                          <button
-                            onClick={() => { sounds.click(); onDaughtersRaid(nextWave, daughtersCaptainsDefeated || []); }}
-                            style={{
-                              width:'100%', padding:'8px', borderRadius:'4px', fontFamily:'Cinzel,serif',
-                              fontSize:'0.78rem', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase',
-                              background: 'rgba(30,10,50,0.7)', border: `1px solid ${TIER.gold.border}`,
-                              color: TIER.gold.color, cursor:'pointer', transition:'all 0.2s',
-                            }}
-                            onMouseEnter={e => { e.currentTarget.style.background='rgba(55,20,80,0.9)'; e.currentTarget.style.boxShadow=`0 0 12px ${TIER.gold.glow}`; }}
-                            onMouseLeave={e => { e.currentTarget.style.background='rgba(30,10,50,0.7)'; e.currentTarget.style.boxShadow='none'; }}
-                          >
-                            {allCaptainsDown ? 'Confront the Dusk Queen' : 'Enter the Dusk'}
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </>
-            )}
 
             {/* ── PLATINUM CONTRACT ── */}
             {(() => {

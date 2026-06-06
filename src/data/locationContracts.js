@@ -105,7 +105,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'wardens_stone',
     locationName: "The Warden's Stone",
     name: 'Mercy for the Oath',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 1,
     desc: "Two of the cursed still linger at the Warden's Stone — a young knight who swore an oath he couldn't keep, and the girl who followed him into the dark. Neither can leave. Neither can rest. Someone has to end it.",
     encounter: {
@@ -126,7 +127,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'cactus_flats',
     locationName: 'The Cactus Flats',
     name: 'Lost on the Road',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 2,
     desc: "An elven pathfinder and her escort never made it back from the flats. Locals say they still wander the wasteland at the edge of the road — circling the same stretch of ground they walked before the curse took them.",
     encounter: {
@@ -147,7 +149,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'ghost_fleet',
     locationName: 'The Ghost Fleet',
     name: 'No Refunds',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 2,
     desc: "Two sell-swords — a mercenary sergeant and the opportunist who followed his company — haven't left the harbor ruins in months. One took the contract for money. One didn't take it at all. Now they're both stuck.",
     encounter: {
@@ -168,7 +171,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'old_tree',
     locationName: 'The Hollow',
     name: 'The Shield Does Not Break',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 3,
     desc: "Two veteran fighters were last seen near The Hollow — a shield-captain from the Northern Reach and the skjaldmær who rode beside her. Both still standing. Neither aware the war they're fighting is already over.",
     encounter: {
@@ -189,7 +193,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'old_nexus',
     locationName: 'The Old Nexus',
     name: 'Second Crossing',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 3,
     desc: "A survivor of the second expedition who walked back in, and the foreign prince who found her on the road. They reached the Old Nexus and stopped. Whatever they found here, they couldn't leave it.",
     encounter: {
@@ -210,7 +215,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'precipice',
     locationName: 'The Precipice',
     name: 'The Last Crossing',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 4,
     desc: "A jarl who sent his men home and a steward who stopped managing and started walking — both found at the edge of the mapped world. They made it further than anyone expected. They can't make the last step alone.",
     encounter: {
@@ -231,7 +237,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'crystal_lava',
     locationName: 'The Melt',
     name: 'The Last Mandate',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 5,
     desc: "A queen who abdicated her throne to face the curse herself, and the lorekeeper who spent forty years studying it — both trapped at The Melt. She crossed it once. He mapped it twice. Neither could cross it a final time.",
     encounter: {
@@ -252,7 +259,8 @@ export const LOCATION_CONTRACTS = [
     locationId: 'skull_cave',
     locationName: 'Skull Cavern',
     name: 'The Last Man Standing',
-    contractTier: 'mercy',
+    contractTier: 'gold',
+    mercyContract: true,
     zone: 5,
     desc: "Three expeditions in. Still standing. The Cursed who was never defeated in life has never been defeated in death either. He is the last one. He doesn't know how to stop.",
     encounter: {
