@@ -1765,20 +1765,6 @@ const WorldMapTab = ({
                       </div>
                     );
                   })()
-                ) : displayed.type === 'landmark' ? (
-                  <div style={{
-                    fontSize: '0.52rem', color: 'rgba(180,160,140,0.35)',
-                    background: 'rgba(180,160,140,0.04)',
-                    border: '1px solid rgba(180,160,140,0.1)',
-                    borderRadius: '4px', padding: '7px 10px',
-                    textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase',
-                    lineHeight: 1.7,
-                  }}>
-                    Point of Interest<br />
-                    <span style={{ fontSize: '0.48rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', opacity: 0.75 }}>
-                      No contracts originate here
-                    </span>
-                  </div>
                 ) : activeContract?.type === 'location' && activeContract.contract.locationId === displayed.id ? (
                   <button
                     onClick={() => isDayActive && onBeginContract()}
@@ -1795,6 +1781,20 @@ const WorldMapTab = ({
                       animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                     }}
                   >Begin Contract</button>
+                ) : displayed.type === 'landmark' ? (
+                  <div style={{
+                    fontSize: '0.52rem', color: 'rgba(180,160,140,0.35)',
+                    background: 'rgba(180,160,140,0.04)',
+                    border: '1px solid rgba(180,160,140,0.1)',
+                    borderRadius: '4px', padding: '7px 10px',
+                    textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase',
+                    lineHeight: 1.7,
+                  }}>
+                    Point of Interest<br />
+                    <span style={{ fontSize: '0.48rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', opacity: 0.75 }}>
+                      No contracts originate here
+                    </span>
+                  </div>
                 ) : (() => {
                   const lc = LOCATION_CONTRACTS.find(c => c.locationId === displayed.id);
                   const completed = lc && completedLocationContracts?.includes(lc.id);
