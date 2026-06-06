@@ -87,6 +87,7 @@ const ContractsTab = ({
   completedLocationContracts,
   pendingLocationRewards,
   onCollectLocationReward,
+  debugUnlockedZones = [],
 }) => {
   return (
     <div className="space-y-4">
@@ -387,7 +388,16 @@ const ContractsTab = ({
 
             {/* ── LOCATION CONTRACTS ── */}
             {isDayActive && locationContracts?.length > 0 && (() => {
+              const isZoneUnlocked = (zone) => {
+                if (!zone || zone <= 1) return true;
+                if (debugUnlockedZones?.includes(zone - 1)) return true;
+                const prevContracts = locationContracts.filter(c => c.zone === zone - 1 && !c.mercyContract);
+                if (prevContracts.length === 0) return false;
+                return prevContracts.every(c => completedLocationContracts?.includes(c.id));
+              };
+
               const visible = locationContracts.filter(lc => {
+                if (!isZoneUnlocked(lc.zone)) return false;
                 if (!lc.requiredContracts?.length) return true;
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });

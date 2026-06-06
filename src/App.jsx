@@ -7245,6 +7245,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               completedLocationContracts={completedLocationContracts}
               pendingLocationRewards={pendingLocationRewards}
               onCollectLocationReward={collectLocationReward}
+              debugUnlockedZones={debugUnlockedZones}
             />
           )}
 
