@@ -93,7 +93,178 @@ const FACTION_ROSTER = {
   },
 };
 
-const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMembers = [], addLog }) => {
+const THE_CURSED = [
+  {
+    zone: 1,
+    zoneLabel: 'Zone I — The First Fallen',
+    groups: [
+      {
+        groupName: 'The Oath and the Runaway',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/young-paladin.png',
+            name: 'Aldric',
+            title: 'Knight-Aspirant of the Crown',
+            lore: 'He received his oath the week before the expedition left. He asked to prove himself in the field. They said yes.',
+          },
+          {
+            img: '/cursed/young-princess.png',
+            name: 'Sela',
+            title: 'Third Daughter of House Veyne',
+            lore: "She wasn't in the manifest. She had followed the column for two days before anyone noticed. By then the road back was already wrong.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    zone: 2,
+    zoneLabel: 'Zone II — The Advance',
+    groups: [
+      {
+        groupName: 'The Scouts',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/elven-girl.png',
+            name: 'Lysse of the Old Wood',
+            title: 'Pathfinder of the Verdant Court',
+            lore: 'She knew these lands before the curse took hold. She said she could find the source. She was right. That was the problem.',
+          },
+          {
+            img: '/cursed/mongolian-princess.png',
+            name: 'Kira Sondal',
+            title: 'Horsemistress of the Eastern March',
+            lore: 'She was tasked with keeping Lysse alive. Her last report ends mid-sentence.',
+          },
+        ],
+      },
+      {
+        groupName: 'The Hired Blades',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/mercenary.png',
+            name: 'Conn the Scarred',
+            title: 'Company Sergeant, Ironbell Company',
+            lore: "His company took the contract because the pay was good. They were the only professionals in the column. Also the first ones lost.",
+          },
+          {
+            img: '/cursed/robber.png',
+            name: 'Dar the Fortunate',
+            title: 'No allegiance',
+            lore: "He wasn't hired. He followed the wagons. Stayed when everyone else ran. Doesn't seem to know why.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    zone: 3,
+    zoneLabel: 'Zone III — The Deep Push',
+    groups: [
+      {
+        groupName: 'The Shield Wall',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/warrior-lady.png',
+            name: 'Bryn Ashvale',
+            title: 'Shield-Captain of the Northern Reach',
+            lore: 'She had seen three wars. Said this was worse than all of them combined. Said it calmly.',
+          },
+          {
+            img: '/cursed/viking-woman.png',
+            name: 'Solveig the Unbent',
+            title: 'Skjaldmær of Clan Halvard',
+            lore: 'She never stopped moving forward. Her clan considers that a point of pride. It isn\'t.',
+          },
+        ],
+      },
+      {
+        groupName: 'The Unlikely Champions',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/young-lady.png',
+            name: 'Maren',
+            title: 'Survivor of the Second Expedition',
+            lore: 'She survived. Came back. Gave her report. Refused to speak afterward. Six months later she walked back in. Sun Wen found her on the road.',
+          },
+          {
+            img: '/cursed/young-korean-prince.png',
+            name: 'Sun Wen',
+            title: 'Third Prince of the Eastern Sovereignty',
+            lore: 'He left his court without a word. His attendants followed at a distance. They turned back. He did not.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    zone: 4,
+    zoneLabel: 'Zone IV — The Northern Lords',
+    groups: [
+      {
+        groupName: 'The Northern Lords',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/viking-warrior.png',
+            name: 'Jarl Sigrun',
+            title: 'Jarl of Frost Hold',
+            lore: 'He came with two hundred men. Sent them home when the road became what it became. Continued alone. Said it wasn\'t their fight.',
+          },
+          {
+            img: '/cursed/viking-noble-man.png',
+            name: 'Lord Halvard the Gray',
+            title: 'High Steward of the Northern Conclave',
+            lore: 'He managed the politics of three expeditions. On the fourth he stopped managing and started walking. Nobody could talk him out of it.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    zone: 5,
+    zoneLabel: 'Zone V — The Last Mandate',
+    groups: [
+      {
+        groupName: 'The Last Mandate',
+        solo: false,
+        members: [
+          {
+            img: '/cursed/warrior-queen.png',
+            name: 'Queen Sera Vaine',
+            title: 'Sovereign of the Western Reaches',
+            lore: 'She dissolved her council, abdicated in writing, and walked in alone. Her honor guard made it to zone 4. She made it further.',
+          },
+          {
+            img: '/cursed/old-noble-man.png',
+            name: 'Edric the Elder',
+            title: 'Grand Lorekeeper, Royal Academy',
+            lore: 'He spent forty years mapping the curse. Walked into it at seventy-three. His final letter read: "Someone who understands it should face it."',
+          },
+        ],
+      },
+      {
+        groupName: 'The Last Man',
+        solo: true,
+        members: [
+          {
+            img: '/cursed/gladiator.png',
+            name: 'Brek the Undefeated',
+            title: 'Champion of the Western Pits',
+            lore: "Sixty-one fights. Undefeated. He volunteered because he said the arena had grown boring. That was three expeditions ago. He's still here. Still standing. The curse hasn't finished him — and he hasn't finished it.",
+          },
+        ],
+      },
+    ],
+  },
+];
+
+const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMembers = [], restedCursed = [], addLog }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [openStats, setOpenStats] = useState({});
   const [activeTab, setActiveTab] = useState('stable');
@@ -200,7 +371,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
       >
         {/* Tab bar */}
         <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
-          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }, { key: 'factions', label: 'Factions' }, { key: 'fusion', label: '⚗ Fusion' }].map(t => (
+          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }, { key: 'factions', label: 'Factions' }, { key: 'cursed', label: 'The Cursed' }, { key: 'fusion', label: '⚗ Fusion' }].map(t => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
@@ -451,6 +622,148 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMem
               })}
             </div>
           )}
+
+          {/* ── THE CURSED TAB ── */}
+          {activeTab === 'cursed' && (() => {
+            const totalCursed = THE_CURSED.reduce((acc, z) => acc + z.groups.reduce((a, g) => a + g.members.length, 0), 0);
+            const restedCount = THE_CURSED.reduce((acc, z) => acc + z.groups.reduce((a, g) => a + g.members.filter(m => restedCursed.includes(m.img)).length, 0), 0);
+
+            const CursedCard = ({ member, solo }) => {
+              const atRest = restedCursed.includes(member.img);
+              return (
+                <div style={{
+                  borderRadius: '10px',
+                  padding: solo ? '20px 18px' : '16px 14px',
+                  textAlign: 'center',
+                  background: atRest
+                    ? 'linear-gradient(135deg, rgba(15,15,20,0.8), rgba(8,8,12,0.8))'
+                    : 'linear-gradient(135deg, rgba(40,30,50,0.55), rgba(10,8,15,0.7))',
+                  border: `1px solid ${atRest ? 'rgba(120,130,160,0.25)' : 'rgba(160,130,200,0.3)'}`,
+                  boxShadow: atRest ? 'none' : '0 0 18px rgba(140,100,180,0.1)',
+                  opacity: atRest ? 0.65 : 1,
+                  position: 'relative',
+                  transition: 'all 0.2s',
+                  maxWidth: solo ? '300px' : undefined,
+                  margin: solo ? '0 auto' : undefined,
+                }}>
+                  {/* Status badge */}
+                  <div style={{
+                    position: 'absolute', top: '8px', right: '8px',
+                    fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em',
+                    padding: '2px 7px', borderRadius: '3px',
+                    background: 'rgba(0,0,0,0.55)',
+                    border: `1px solid ${atRest ? 'rgba(150,170,220,0.4)' : 'rgba(160,130,200,0.2)'}`,
+                    color: atRest ? 'rgba(170,190,240,0.85)' : 'rgba(160,140,190,0.4)',
+                  }}>
+                    {atRest ? 'At Rest' : 'Wandering'}
+                  </div>
+
+                  {/* Portrait + AT REST stamp */}
+                  <div style={{ position: 'relative', width: solo ? 110 : 90, margin: '14px auto 12px', display: 'block' }}>
+                    <img
+                      src={member.img}
+                      alt={member.name}
+                      style={{
+                        width: solo ? 110 : 90,
+                        height: solo ? 110 : 90,
+                        objectFit: 'contain',
+                        display: 'block',
+                        filter: atRest
+                          ? 'grayscale(1) brightness(0.4)'
+                          : 'drop-shadow(0 0 10px rgba(160,120,220,0.5))',
+                      }}
+                    />
+                    {atRest && (
+                      <div style={{
+                        position: 'absolute', top: '50%', left: '50%',
+                        transform: 'translate(-50%, -50%) rotate(-15deg)',
+                        fontFamily: 'Cinzel, serif', fontWeight: 900,
+                        fontSize: '1.1rem', letterSpacing: '0.15em',
+                        color: 'rgba(160,180,230,0.88)',
+                        border: '2px solid rgba(160,180,230,0.75)',
+                        padding: '2px 8px', borderRadius: '3px',
+                        textShadow: '0 0 8px rgba(140,160,220,0.5)',
+                        boxShadow: '0 0 10px rgba(140,160,220,0.2), inset 0 0 6px rgba(0,0,0,0.4)',
+                        background: 'rgba(0,0,0,0.4)',
+                        whiteSpace: 'nowrap', pointerEvents: 'none',
+                        fontSize: '0.95rem',
+                      }}>AT REST</div>
+                    )}
+                  </div>
+
+                  {/* Name */}
+                  <p style={{
+                    fontFamily: 'Cinzel, serif', fontWeight: 700,
+                    fontSize: solo ? '1.05rem' : '0.95rem',
+                    color: atRest ? 'rgba(130,120,150,0.55)' : 'rgba(210,190,240,0.9)',
+                    marginBottom: '2px', lineHeight: 1.3,
+                  }}>{member.name}</p>
+
+                  {/* Former title */}
+                  <p style={{
+                    fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em',
+                    color: atRest ? 'rgba(100,95,115,0.45)' : 'rgba(180,160,200,0.5)',
+                    textTransform: 'uppercase', marginBottom: '10px',
+                  }}>{member.title}</p>
+
+                  {/* Lore */}
+                  <p style={{
+                    fontSize: '0.7rem',
+                    color: atRest ? 'rgba(100,95,115,0.4)' : 'rgba(210,200,225,0.6)',
+                    fontStyle: 'italic', lineHeight: 1.55, margin: 0,
+                  }}>{member.lore}</p>
+                </div>
+              );
+            };
+
+            return (
+              <div>
+                {/* Header */}
+                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                  <p style={{ fontSize: '0.72rem', color: 'rgba(190,170,220,0.4)', fontStyle: 'italic', margin: '0 0 6px' }}>
+                    Heroes who came before you. Every one of them failed. Some are still out there.
+                  </p>
+                  <p style={{ fontSize: '0.62rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', color: 'rgba(170,150,210,0.4)', margin: 0 }}>
+                    {restedCount}/{totalCursed} At Rest
+                  </p>
+                </div>
+
+                {THE_CURSED.map(zone => (
+                  <div key={zone.zone} style={{ marginBottom: '36px' }}>
+                    {/* Zone header */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(140,110,180,0.3))' }} />
+                      <span style={{
+                        fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700,
+                        letterSpacing: '0.25em', textTransform: 'uppercase',
+                        color: 'rgba(180,150,220,0.7)',
+                      }}>{zone.zoneLabel}</span>
+                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(140,110,180,0.3))' }} />
+                    </div>
+
+                    {zone.groups.map(group => (
+                      <div key={group.groupName} style={{ marginBottom: '24px' }}>
+                        {/* Group label */}
+                        <p style={{
+                          fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em',
+                          color: 'rgba(180,160,210,0.28)', textTransform: 'uppercase',
+                          textAlign: 'center', marginBottom: '10px',
+                        }}>◆ {group.groupName}</p>
+
+                        {group.solo ? (
+                          <CursedCard member={group.members[0]} solo={true} />
+                        ) : (
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                            {group.members.map(m => <CursedCard key={m.img} member={m} solo={false} />)}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            );
+          })()}
 
           {/* ── FUSION TAB ── */}
           {activeTab === 'fusion' && (() => {
