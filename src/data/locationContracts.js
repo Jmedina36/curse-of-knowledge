@@ -97,6 +97,77 @@ export const LOCATION_CONTRACTS = [
     ],
   },
 
+  // ── Zone 2 Story Contracts ────────────────────────────────────────────────────
+  {
+    id: 'lc_ivy_crossing',
+    locationId: 'ivy_crossing',
+    locationName: 'Ivy Crossing',
+    name: 'The Quiet Toll',
+    contractTier: 'gold',
+    storyContract: true,
+    desc: "The road through Ivy Crossing has been sealed for two weeks. Merchants report armed men turning back specific travelers — not collecting coin, consulting a list. The vines have been cultivated as cover. Someone is controlling who comes and goes.",
+    storyNote: "In the toll post you find a ledger — every person turned back was named. Not random shakedowns. Targeted. The ledger is stamped with a six-pointed sigil. The same mark. A different road. The same hand.",
+    zone: 2,
+    encounter: {
+      enemyType: 'bandit',
+      waveSize: 1,
+      enemyNames: ['Finn'],
+      dialogue: [
+        "Nobody gets through without clearance. Those are my orders. I don't write them.",
+      ],
+    },
+    rewards: [
+      { type: 'gold',        amount: 50 },
+      { type: 'healthPots',  amount: 2  },
+      { type: 'xp',          amount: 100 },
+    ],
+  },
+  {
+    id: 'lc_whisper_forest',
+    locationId: 'whisper_forest',
+    locationName: 'Whisper Forest',
+    name: 'The Deep Working',
+    contractTier: 'gold',
+    storyContract: true,
+    desc: "The Daughters of Dusk have moved deeper into Whisper Forest and stopped hunting outward. Witnesses say they've been there for weeks — chanting, building something. No one who went to look has come back. The forest feels wrong at the edges.",
+    storyNote: "The ritual site is still active when the Daughter falls. At its center: a summoning circle bearing the six-pointed sigil — but inverted. Not calling something in. Sending a signal out. The order is using this forest as a relay. Whatever they're building, it spans more ground than you thought.",
+    zone: 2,
+    encounter: {
+      enemyType: 'daughters',
+      waveSize: 1,
+      enemyNames: ['Vayne'],
+      dialogue: [
+        "You keep finding us. That's going to become a problem for you.",
+      ],
+    },
+    rewards: [
+      { type: 'staminaPots', amount: 2  },
+      { type: 'gold',        amount: 50 },
+      { type: 'xp',          amount: 100 },
+    ],
+  },
+  {
+    id: 'lc_outskirts',
+    locationId: 'outskirts',
+    locationName: 'The Outskirts',
+    name: "Ironblood's Answer",
+    contractTier: 'blood',
+    zone: 2,
+    requiredContracts: ['lc_ivy_crossing', 'lc_whisper_forest'],
+    desc: "A warband has fortified the Outskirts under a banner bearing the six-pointed sigil. Their commander arrived two days after the crossing and the forest went quiet. She wasn't already here. She was sent.",
+    encounter: {
+      enemyType: 'elite',
+      eliteId: 'e4',
+      waveSize: 1,
+      dialogue: "You've been cutting threads that weren't yours to cut. My employer sends regards.",
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 2   },
+      { type: 'gold',           amount: 65  },
+      { type: 'xp',             amount: 150 },
+    ],
+  },
+
   // ── Mercy Contracts — The Cursed ──────────────────────────────────────────────
   // Fallen heroes who cannot leave until someone puts them to rest.
   // Completing one marks those members as restedCursed in the Bestiary.
