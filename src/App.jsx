@@ -137,6 +137,7 @@ const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], d
 
 const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
+  const [contractDrawerOpen, setContractDrawerOpen] = useState(false);
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
   const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
@@ -7140,7 +7141,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }}>
           {[
                 {id:'quest', icon:Sword, label:'Guild'},
-                {id:'contracts', icon:Calendar, label:'Contracts'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'study', icon:Hammer, label:'Forge'},
                 {id:'journal', icon:ScrollText, label:'Journal'},
@@ -7215,42 +7215,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
 
-          {activeTab === 'contracts' && (
-            <ContractsTab
-              hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
-              xp={xp} level={level}
-              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
-              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
-              tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
-              newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
-              timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
-              overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
-              setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
-              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
-              handleDragOver={handleDragOver} handleDrop={handleDrop}
-              setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
-              setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
-              setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
-              start={start} miniBoss={miniBoss} finalBoss={finalBoss}
-              activeContract={activeContract} setActiveContract={setActiveContract}
-              setActiveTab={setActiveTab}
-              setShowImportModal={setShowImportModal}
-              log={log} addLog={addLog}
-              onRaid={spawnBanditWave}
-              banditWaveNumber={banditWaveNumber}
-              banditCaptainsDefeated={banditCaptainsDefeated}
-              onDaughtersRaid={spawnDaughtersWave}
-              daughtersWaveNumber={daughtersWaveNumber}
-              daughtersCaptainsDefeated={daughtersCaptainsDefeated}
-              guildPoints={guildPoints} guildRank={guildRank} guildRanks={GUILD_RANKS}
-              locationContracts={LOCATION_CONTRACTS}
-              completedLocationContracts={completedLocationContracts}
-              pendingLocationRewards={pendingLocationRewards}
-              onCollectLocationReward={collectLocationReward}
-              debugUnlockedZones={debugUnlockedZones}
-            />
-          )}
-
           {activeTab === 'planner' && (
             <PlannerTab
               weeklyPlan={weeklyPlan} setWeeklyPlan={setWeeklyPlan}
@@ -7303,6 +7267,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {activeTab === 'map' && (
+            <div style={{ position: 'relative' }}>
             <WorldMapTab
               currentDay={currentDay}
               level={level}
@@ -7321,6 +7286,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               debugUnlockedZones={debugUnlockedZones}
               huntingChallenges={huntingChallenges}
               onOpenBestiary={() => setActiveTab('bestiary')}
+              onOpenContracts={() => setContractDrawerOpen(true)}
               onHuntingChallenge={({ locationId, zone, faction }) => {
                 const challengeTierWeights = { 1:{1:6,2:4,3:0}, 2:{1:2,2:6,3:2}, 3:{1:0,2:4,3:6}, 4:{1:0,2:2,3:8}, 5:{1:0,2:0,3:10} };
                 contractEncounterRef.current = { tierWeights: challengeTierWeights[zone] || challengeTierWeights[1] };
@@ -7437,6 +7403,98 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onEliteBoss={miniBoss}
               onFinalBoss={finalBoss}
             />
+
+            {/* Contract Drawer overlay */}
+            {contractDrawerOpen && (
+              <div
+                style={{
+                  position: 'absolute', inset: 0, zIndex: 50,
+                  display: 'flex', justifyContent: 'flex-end',
+                }}
+                onClick={(e) => { if (e.target === e.currentTarget) setContractDrawerOpen(false); }}
+              >
+                {/* Backdrop */}
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(0,0,0,0.45)',
+                }} onClick={() => setContractDrawerOpen(false)} />
+
+                {/* Drawer panel */}
+                <div style={{
+                  position: 'relative', zIndex: 1,
+                  width: 'min(680px, 90%)',
+                  height: '100%',
+                  background: 'linear-gradient(to bottom, rgba(15,10,5,0.98), rgba(10,7,3,0.98))',
+                  borderLeft: '1px solid rgba(212,175,55,0.25)',
+                  display: 'flex', flexDirection: 'column',
+                  overflow: 'hidden',
+                  boxShadow: '-8px 0 40px rgba(0,0,0,0.6)',
+                }}>
+                  {/* Drawer header */}
+                  <div style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '14px 20px',
+                    borderBottom: '1px solid rgba(212,175,55,0.15)',
+                    flexShrink: 0,
+                  }}>
+                    <span style={{
+                      fontFamily: 'Cinzel, serif', fontSize: '0.75rem',
+                      letterSpacing: '0.14em', textTransform: 'uppercase',
+                      color: 'rgba(212,175,55,0.7)',
+                    }}>Contract Board</span>
+                    <button
+                      onClick={() => setContractDrawerOpen(false)}
+                      style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        color: 'rgba(200,185,155,0.5)', fontSize: '1.1rem', lineHeight: 1,
+                        padding: '2px 6px',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.color = 'rgba(212,175,55,0.9)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,185,155,0.5)'; }}
+                    >✕</button>
+                  </div>
+
+                  {/* ContractsTab content */}
+                  <div style={{ flex: 1, overflow: 'hidden' }}>
+                    <ContractsTab
+                      hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
+                      xp={xp} level={level}
+                      eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
+                      gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
+                      tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
+                      newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
+                      timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
+                      overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
+                      setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
+                      complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
+                      handleDragOver={handleDragOver} handleDrop={handleDrop}
+                      setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
+                      setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
+                      setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
+                      start={start} miniBoss={miniBoss} finalBoss={finalBoss}
+                      activeContract={activeContract} setActiveContract={setActiveContract}
+                      setActiveTab={setActiveTab}
+                      setShowImportModal={setShowImportModal}
+                      log={log} addLog={addLog}
+                      onRaid={spawnBanditWave}
+                      banditWaveNumber={banditWaveNumber}
+                      banditCaptainsDefeated={banditCaptainsDefeated}
+                      onDaughtersRaid={spawnDaughtersWave}
+                      daughtersWaveNumber={daughtersWaveNumber}
+                      daughtersCaptainsDefeated={daughtersCaptainsDefeated}
+                      guildPoints={guildPoints} guildRank={guildRank} guildRanks={GUILD_RANKS}
+                      locationContracts={LOCATION_CONTRACTS}
+                      completedLocationContracts={completedLocationContracts}
+                      pendingLocationRewards={pendingLocationRewards}
+                      onCollectLocationReward={collectLocationReward}
+                      debugUnlockedZones={debugUnlockedZones}
+                      onCloseDrawer={() => setContractDrawerOpen(false)}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            </div>
           )}
           {activeTab === 'debug' && (
 

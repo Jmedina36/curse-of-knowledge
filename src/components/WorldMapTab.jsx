@@ -530,7 +530,7 @@ const WorldMapTab = ({
   onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
   isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
   completedLocationContracts, debugUnlockedZones, huntingChallenges,
-  onWildEncounter, onOpenBestiary, onDebugToggleZone, onHuntingChallenge,
+  onWildEncounter, onOpenBestiary, onOpenContracts, onDebugToggleZone, onHuntingChallenge,
 }) => {
   const CHALLENGE_COOLDOWN_MS = 4 * 60 * 60 * 1000; // 4 hours
   const getChallengeRemaining = (locationId) => {
@@ -1846,6 +1846,22 @@ const WorldMapTab = ({
                       {lastWildCreature.location} · Zone {lastWildCreature.zone}
                     </div>
                     <div style={{ height: '1px', background: 'rgba(180,150,90,0.08)', marginBottom: '10px' }} />
+                    {onOpenContracts && (
+                      <button
+                        onClick={onOpenContracts}
+                        style={{
+                          width: '100%', fontSize: '0.5rem', fontWeight: 700,
+                          letterSpacing: '0.1em', textTransform: 'uppercase',
+                          color: 'rgba(212,175,55,0.7)',
+                          background: 'rgba(212,175,55,0.06)',
+                          border: '1px solid rgba(212,175,55,0.2)',
+                          borderRadius: '3px', padding: '5px 8px',
+                          cursor: 'pointer', marginBottom: '8px',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.12)'; e.currentTarget.style.color = 'rgba(212,175,55,0.95)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; e.currentTarget.style.color = 'rgba(212,175,55,0.7)'; }}
+                      >◈ Contract Board</button>
+                    )}
                     {onOpenBestiary && (
                       <button
                         onClick={onOpenBestiary}

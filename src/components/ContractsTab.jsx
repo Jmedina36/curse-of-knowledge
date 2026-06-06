@@ -88,6 +88,7 @@ const ContractsTab = ({
   pendingLocationRewards,
   onCollectLocationReward,
   debugUnlockedZones = [],
+  onCloseDrawer,
 }) => {
   return (
     <div className="space-y-4">
@@ -538,6 +539,7 @@ const ContractsTab = ({
                             sounds.click();
                             setActiveContract({ type: 'location', contract: lc });
                             setActiveTab('map');
+                            if (onCloseDrawer) onCloseDrawer();
                           }}
                           disabled={!!activeContract}
                           style={{
