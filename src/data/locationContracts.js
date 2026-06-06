@@ -9,7 +9,16 @@ export const LOCATION_CONTRACTS = [
     locationId: 'fountain',
     locationName: 'Wellspring',
     name: "The Warden's Request",
-    desc: 'The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water. Find out what happened and drive it out.',
+    contractTier: 'gold',
+    storyContract: true,
+    desc: "The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water, and the locals who relied on it have gone quiet. Find out what happened and drive it out.",
+    storyNote: "The warden's body is in the lower chamber. No sigil. No seal. Just a blade wound and a folded note tucked inside his boot: 'Keep the spring clear. Route will pass through before the season ends. Do not interfere.' Unsigned. Whoever left it didn't need to sign their work. They expected no one to look.",
+    journalEntry: {
+      title: 'The Route',
+      location: 'Wellspring',
+      zone: 2,
+      text: `The warden didn't vanish. He was killed for finding something he wasn't supposed to find.\n\nThere was a note in his boot. No sigil, no name — just a single instruction: keep the spring clear, a route will pass through before the season ends, don't interfere. Someone is treating this water source as a waypoint. Not poisoning it. Securing it.\n\nThe harbor fell. The grove fell. The outpost fell. They haven't stopped. They're building something that runs through this entire region — and they're quietly removing anything that gets in the way.`,
+    },
     zone: 2,
     encounter: {
       enemyType: 'wave',
@@ -151,12 +160,12 @@ export const LOCATION_CONTRACTS = [
     storyContract: true,
     requiredContracts: ['lc_wellspring'],
     desc: "The Daughters of Dusk have moved deeper into Whisper Forest and stopped hunting outward. Witnesses say they've been there for weeks — chanting, building something. No one who went to look has come back. The forest feels wrong at the edges.",
-    storyNote: "The ritual site is still active when the Daughter falls. At its center: a summoning circle bearing the six-pointed sigil — but inverted. Not calling something in. Sending a signal out. The order is using this forest as a relay. Whatever they're building, it spans more ground than you thought.",
+    storyNote: "The ritual site is still active when the Daughter falls. At its center: a summoning circle bearing the six-pointed sigil — but inverted. Not calling something in. Sending a signal out. The order is using this forest as a relay node, the same way they used the spring, the grove, the harbor. Whatever they're building spans more ground than you thought.",
     journalEntry: {
       title: 'The Relay',
       location: 'Whisper Forest',
       zone: 2,
-      text: `The ritual circle was still burning when Vayne fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Vayne said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the crossing, now this. Whatever network they're building, it covers more ground than I thought.`,
+      text: `The ritual circle was still burning when Vayne fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Vayne said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the wellspring — now this forest. Whatever network they're building, it doesn't follow roads. It follows routes they've already cleared.`,
     },
     zone: 2,
     encounter: {
@@ -181,7 +190,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'blood',
     zone: 2,
     requiredContracts: ['mc_conn_dar'],
-    desc: "A warband has fortified the Outskirts under a banner bearing the six-pointed sigil. Their commander arrived two days after the crossing and the forest went quiet. She wasn't already here. She was sent.",
+    desc: "A warband has fortified the Outskirts under a banner bearing the six-pointed sigil. Their commander arrived two days after the crossing fell silent. She wasn't already here. She was sent.",
     journalEntry: {
       title: 'Sent',
       location: 'The Outskirts',
