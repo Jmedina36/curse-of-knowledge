@@ -2865,7 +2865,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   const spawnCursedEnemy = (enemy, idx, total) => {
     const hp = enemy.hp || 100;
-    sounds.enemyEntrance();
+    [sounds.demonicLaugh, sounds.possessedLaugh, sounds.cursedLaugh3][Math.floor(Math.random() * 3)]();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
     setBossName(enemy.name);

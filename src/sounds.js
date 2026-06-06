@@ -68,6 +68,7 @@ export const sounds = {
   banditLaugh3:   () => sfxPlay('freesound_community-muahaha-evil-laughter-83217.mp3', 0.8),
   demonicLaugh:   () => sfxPlay('freesound_community-evil-demonic-laugh-6925.mp3', 0.9),
   possessedLaugh: () => sfxPlay('freesound_community-possessed-laugh-94851.mp3', 0.9),
+  cursedLaugh3:   () => sfxPlay('freesound_community-evil-laugh-6125.mp3', 0.85),
 
   // ── Negotiate / beg fails: shadow laughs ────────────────────────────────────
   negotiateFail: () => sfxPlay('mixkit-troll-warrior-laugh-409.wav', 0.8),
