@@ -3160,6 +3160,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setBanditEnemyImg('/bosses/dark-elf-queen.png');
       sounds.finalBossEntrance();
       sounds.finalBossStorm();
+      sounds.possessedLaugh();
       audioManager.play(TRACKS.sylvaris);
       setEnemyDialogue('"Impressive. Truly. But this ends now."');
       addLog('⚡ PHASE 2 — SYLVARIS, QUEEN OF RUIN!');
@@ -3170,6 +3171,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setBanditEnemyImg('/undead-king.png');
       sounds.finalBossEntrance();
       sounds.finalBossStorm();
+      sounds.demonicLaugh();
       audioManager.play(TRACKS.malachar);
       setEnemyDialogue('"I have died seventeen times. I will not die tonight."');
       addLog('💀 PHASE 3 — MALACHAR, THE ETERNAL LICH!');

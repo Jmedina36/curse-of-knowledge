@@ -62,7 +62,9 @@ export const sounds = {
   negotiateOpen: () => sfxPlay('mixkit-monster-evil-voice-290.wav', 0.75),
 
   // ── Bandit laugh ─────────────────────────────────────────────────────────────
-  banditLaugh: () => sfxPlay('freesound_community-evil-laugh-89423.mp3', 0.8),
+  banditLaugh:    () => sfxPlay('freesound_community-evil-laugh-89423.mp3', 0.8),
+  demonicLaugh:   () => sfxPlay('freesound_community-evil-demonic-laugh-6925.mp3', 0.9),
+  possessedLaugh: () => sfxPlay('freesound_community-possessed-laugh-94851.mp3', 0.9),
 
   // ── Negotiate / beg fails: shadow laughs ────────────────────────────────────
   negotiateFail: () => sfxPlay('mixkit-troll-warrior-laugh-409.wav', 0.8),

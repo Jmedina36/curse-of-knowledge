@@ -243,7 +243,8 @@
       "Bash(python3 << 'EOF'\nwith open\\('src/components/BattleModal.jsx', 'r', encoding='utf-8'\\) as f:\n    content = f.read\\(\\)\n\ncontent = content.replace\\(\n    \"                      {canCapture && \\(\",\n    \"                      {false && canCapture && \\(\",\n    1\n\\)\n\nwith open\\('src/components/BattleModal.jsx', 'w', encoding='utf-8'\\) as f:\n    f.write\\(content\\)\nprint\\('done'\\)\nEOF)",
       "Bash(grep -n \"Cutter\\\\|cutter\\\\|isBanditLeader\\\\|isLeader\\\\|Mira\\\\|mira\\\\|isDuskQueen\\\\|isLegendary\\\\|legendary\\\\|tier.*5\\\\|tier5\" src/App.jsx | grep -v \"//\" | head -30)",
       "Bash(grep -n \"audioManager.play\\\\|TRACKS\\\\.\" src/App.jsx | grep -v \"//\" | head -30)",
-      "Bash(grep -n \"creature.*tier.*5\\\\|tier.*5.*creature\\\\|legendary.*spawn\\\\|spawnRegularEnemy\\\\|bossName.*set\\\\|setBossName\" src/App.jsx | grep -v \"//\" | head -20)"
+      "Bash(grep -n \"creature.*tier.*5\\\\|tier.*5.*creature\\\\|legendary.*spawn\\\\|spawnRegularEnemy\\\\|bossName.*set\\\\|setBossName\" src/App.jsx | grep -v \"//\" | head -20)",
+      "Bash(python3 << 'EOF'\nwith open\\('src/sounds.js', 'r', encoding='utf-8'\\) as f:\n    content = f.read\\(\\)\n\nold = \"  banditLaugh: \\(\\) => sfxPlay\\('freesound_community-evil-laugh-89423.mp3', 0.8\\),\"\nnew = \"  banditLaugh:    \\(\\) => sfxPlay\\('freesound_community-evil-laugh-89423.mp3', 0.8\\),\\\\n  demonicLaugh:   \\(\\) => sfxPlay\\('freesound_community-evil-demonic-laugh-6925.mp3', 0.9\\),\\\\n  possessedLaugh: \\(\\) => sfxPlay\\('freesound_community-possessed-laugh-94851.mp3', 0.9\\),\"\nprint\\('found:', content.count\\(old\\)\\)\ncontent = content.replace\\(old, new, 1\\)\n\nwith open\\('src/sounds.js', 'w', encoding='utf-8'\\) as f:\n    f.write\\(content\\)\nprint\\('done'\\)\nEOF)"
     ]
   }
 }
