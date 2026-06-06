@@ -188,6 +188,7 @@ const FantasyStudyQuest = () => {
   const [cleansePots, setCleansePots] = useState(0);
   const [fusionCrystals, setFusionCrystals] = useState(0);
   const [capturedMonsters, setCapturedMonsters] = useState([]);
+  const [defeatedFactionMembers, setDefeatedFactionMembers] = useState([]);
   const [weapon, setWeapon] = useState(0);
   const [armor, setArmor] = useState(0);
   
@@ -1063,6 +1064,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.completedLocationContracts) setCompletedLocationContracts(data.completedLocationContracts);
         if (data.pendingLocationRewards) setPendingLocationRewards(data.pendingLocationRewards);
         if (data.huntingChallenges) setHuntingChallenges(data.huntingChallenges);
+        if (data.defeatedFactionMembers) setDefeatedFactionMembers(data.defeatedFactionMembers);
       } catch (e) {
         console.error('Failed to load save:', e);
         // If saved data is corrupted, generate new hero
@@ -1122,7 +1124,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
-  studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges
+  studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers
 };
       localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
       
@@ -1130,7 +1132,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -3113,6 +3115,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     };
     const t = transitions[phase];
     if (t) { addLog(t.log); setEnemyDialogue(t.dialogue); }
+    if (phase === 1) setDefeatedFactionMembers(prev => prev.includes('/bandits/leader.png') ? prev : [...prev, '/bandits/leader.png']);
+    if (phase === 2) setDefeatedFactionMembers(prev => prev.includes('/daughters-of-dusk/leader.png') ? prev : [...prev, '/daughters-of-dusk/leader.png']);
     finalBossPhaseRef.current = phase + 1;
     setFinalBossPhase(phase + 1);
     setTimeout(() => spawnFinalBossPhase(phase + 1), 2500);
@@ -3574,6 +3578,11 @@ if (battleType === 'elite') {
     const lineup = banditLineupRef.current;
     const defeatedEnemy = lineup[banditLineupIdxRef.current];
 
+    // Track faction member defeats by img path
+    if (defeatedEnemy?.img) {
+      setDefeatedFactionMembers(prev => prev.includes(defeatedEnemy.img) ? prev : [...prev, defeatedEnemy.img]);
+    }
+
     // Track captain defeats
     if (defeatedEnemy?.isCapt) {
       const captIdx = BANDIT_POOL.captains.findIndex(c => c.name === defeatedEnemy.name);
@@ -3614,6 +3623,11 @@ if (battleType === 'elite') {
     const nextIdx = daughtersLineupIdxRef.current + 1;
     const lineup = daughtersLineupRef.current;
     const defeatedEnemy = lineup[daughtersLineupIdxRef.current];
+
+    // Track faction member defeats by img path
+    if (defeatedEnemy?.img) {
+      setDefeatedFactionMembers(prev => prev.includes(defeatedEnemy.img) ? prev : [...prev, defeatedEnemy.img]);
+    }
 
     if (defeatedEnemy?.isCapt) {
       const captIdx = DAUGHTERS_POOL.captains.findIndex(c => c.name === defeatedEnemy.name);
@@ -7179,6 +7193,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <BestiaryTab
               capturedMonsters={capturedMonsters}
               setCapturedMonsters={setCapturedMonsters}
+              defeatedFactionMembers={defeatedFactionMembers}
               addLog={addLog}
             />
           )}

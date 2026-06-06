@@ -48,7 +48,52 @@ const getFusionResult = (a, b) => {
   return pool[seed % pool.length];
 };
 
-const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
+const FACTION_ROSTER = {
+  bandits: {
+    name: 'The Broken Blade',
+    tagline: 'A mercenary company turned criminal syndicate. Military discipline, controlled territory, and orders from above.',
+    color: '#C0392B',
+    glow: 'rgba(192,57,43,0.15)',
+    border: 'rgba(192,57,43,0.4)',
+    members: [
+      { img: '/bandits/bandit-1.png',   name: 'Rook',   title: 'The Lookout',   lore: 'Deserted from a border garrison three years ago. Never explains why. Fights like a man who knows exactly where the exits are.' },
+      { img: '/bandits/bandit-2.png',   name: 'Slag',   title: 'The Breaker',   lore: 'Former blacksmith. Traded the forge for the blade when the city burned his shop for unpaid taxes. Holds a grudge like a vice.' },
+      { img: '/bandits/bandit-3.png',   name: 'Finn',   title: 'The Quick',     lore: 'Youngest in the crew. Too fast to be untrained, too reckless to be disciplined. Joined the Blade to prove something to someone who probably doesn\'t care.' },
+      { img: '/bandits/bandit-4.png',   name: 'Gorse',  title: 'The Collector', lore: 'Takes something from everyone he beats. Not for value — for memory. His coat is covered in other people\'s buttons and clasps.' },
+      { img: '/bandits/bandit-5.png',   name: 'Mace',   title: 'The Wall',      lore: 'Barely speaks. Rarely moves until he has to. When he does, things break.' },
+      { img: '/bandits/bandit-6.png',   name: 'Dray',   title: 'The Fixer',     lore: 'Handles logistics — supply lines, safe houses, bribes. Deadlier with information than with a blade, but handles both fine.' },
+      { img: '/bandits/bandit-7.png',   name: 'Vetch',  title: 'The Grudge',    lore: 'Was wronged by someone with a title once. Now everyone with clean hands is the enemy. Cutter found him useful.' },
+    ],
+    captains: [
+      { img: '/bandits/captain-1.png',  name: 'Harrow', title: 'Blade Captain', lore: 'Cutter\'s longest-serving officer. Runs the western territory with cold efficiency. Doesn\'t question orders — not because he\'s loyal, but because he stopped caring about reasons.' },
+      { img: '/bandits/captain-2.png',  name: 'Sable',  title: 'Blade Captain', lore: 'The only one in the Blade who reads. Keeps a ledger of every contract, every name, every debt. If Cutter falls, Sable already knows who gets what.' },
+      { img: '/bandits/captain-3.png',  name: 'Vorn',   title: 'Blade Captain', lore: 'Recruited personally by Cutter after Vorn burned down a lord\'s estate over a stolen horse. Cutter called it "proportionate." They\'ve understood each other ever since.' },
+    ],
+    leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Lord of the Broken Blade', lore: 'Nobody knows his real name. Cutter is what he does and what he\'s become. He built the Broken Blade from eight men and a grudge into a force that controls three trade routes and answers to exactly one authority — an order whose name he doesn\'t say out loud. He\'s not a bandit. He\'s a contractor. And someone very dangerous is his client.' },
+  },
+  daughters: {
+    name: 'Daughters of Dusk',
+    tagline: 'A sisterhood of shadow-workers — part assassins, part ritualists, part cult. They move at night, leave no witnesses, and believe the world deserves what\'s coming.',
+    color: '#8B5CF6',
+    glow: 'rgba(139,92,246,0.15)',
+    border: 'rgba(139,92,246,0.4)',
+    members: [
+      { img: '/daughters-of-dusk/member-1.png',  name: 'Vael',  title: 'The Whisper', lore: 'Rarely seen before she strikes. Specializes in extraction — people, objects, secrets. Has never failed a contract.' },
+      { img: '/daughters-of-dusk/member-2.png',  name: 'Zira',  title: 'The Hollow',  lore: 'Lost something in a ritual gone wrong. Won\'t say what. Fights with the calm of someone who has already accepted the worst outcome.' },
+      { img: '/daughters-of-dusk/member-3.png',  name: 'Ash',   title: 'The Marked',  lore: 'Bears ritual scars across both arms — voluntary, each one earned. The older sisters stopped asking what they\'re for.' },
+      { img: '/daughters-of-dusk/member-4.png',  name: 'Briar', title: 'The Patient', lore: 'Surveillance specialist. Has spent up to three weeks watching a single target before acting. Believes every fight is already over before it starts.' },
+      { img: '/daughters-of-dusk/member-5.png',  name: 'Knell', title: 'The Last Sound', lore: 'Named by Mira herself. No one remembers her life before the Daughters. That might be the point.' },
+    ],
+    captains: [
+      { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',  title: 'Dusk Captain', lore: 'Commands field operations. Precise, controlled, and deeply loyal to Mira — not out of fear, but conviction. She believes in what the order is building.' },
+      { img: '/daughters-of-dusk/captain-2.png', name: 'Seris', title: 'Dusk Captain', lore: 'The enforcer. Where Lyra plans, Seris executes. She has ended more Daughters for betrayal than enemies in the field. Mira trusts her above all others.' },
+      { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne', title: 'Dusk Captain', lore: 'The newest captain. Elevated after the previous holder disappeared under unclear circumstances. Vayne doesn\'t ask questions. That\'s probably why she was chosen.' },
+    ],
+    leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Queen of Dusk', lore: 'Mira doesn\'t lead through fear or force — she leads through belief. Every Daughter chose her. That\'s what makes her dangerous. She serves an order that promises the world will be remade, and she has decided that\'s worth any cost. She is gracious, patient, and completely without mercy.' },
+  },
+};
+
+const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, defeatedFactionMembers = [], addLog }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [openStats, setOpenStats] = useState({});
   const [activeTab, setActiveTab] = useState('stable');
@@ -155,7 +200,7 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
       >
         {/* Tab bar */}
         <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
-          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }, { key: 'fusion', label: '⚗ Fusion' }].map(t => (
+          {[{ key: 'stable', label: 'Stable' }, { key: 'index', label: 'Creature Index' }, { key: 'factions', label: 'Factions' }, { key: 'fusion', label: '⚗ Fusion' }].map(t => (
             <button
               key={t.key}
               onClick={() => setActiveTab(t.key)}
@@ -253,6 +298,137 @@ const BestiaryTab = ({ capturedMonsters, setCapturedMonsters, addLog }) => {
                           )}
                         </div>
                       ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── FACTIONS TAB ── */}
+          {activeTab === 'factions' && (
+            <div>
+              {Object.values(FACTION_ROSTER).map(faction => {
+                const allEntries = [...faction.members, ...faction.captains, faction.leader];
+                const defeatedCount = allEntries.filter(e => defeatedFactionMembers.includes(e.img)).length;
+
+                const FactionCard = ({ entry, isLeader, isCapt }) => {
+                  const defeated = defeatedFactionMembers.includes(entry.img);
+                  const rankLabel = isLeader ? 'Leader' : isCapt ? 'Captain' : 'Member';
+                  return (
+                    <div style={{
+                      borderRadius: '10px', padding: '16px 14px', textAlign: 'center',
+                      background: defeated
+                        ? 'linear-gradient(135deg, rgba(20,20,20,0.7), rgba(10,10,10,0.7))'
+                        : `linear-gradient(135deg, ${faction.glow}, rgba(0,0,0,0.6))`,
+                      border: `1px solid ${defeated ? 'rgba(80,80,80,0.3)' : faction.border}`,
+                      boxShadow: defeated ? 'none' : `0 0 16px ${faction.glow}`,
+                      opacity: defeated ? 0.6 : 1,
+                      position: 'relative',
+                      transition: 'all 0.2s',
+                    }}>
+                      {/* Status badge */}
+                      <div style={{
+                        position: 'absolute', top: '8px', right: '8px',
+                        fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em',
+                        padding: '2px 7px', borderRadius: '3px',
+                        background: defeated ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.5)',
+                        border: `1px solid ${defeated ? 'rgba(80,200,80,0.4)' : 'rgba(200,200,200,0.15)'}`,
+                        color: defeated ? 'rgba(100,220,100,0.9)' : 'rgba(200,200,200,0.4)',
+                      }}>
+                        {defeated ? 'Defeated' : 'At Large'}
+                      </div>
+
+                      {/* Rank badge */}
+                      <div style={{
+                        position: 'absolute', top: '8px', left: '8px',
+                        fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em',
+                        padding: '2px 6px', borderRadius: '3px',
+                        background: 'rgba(0,0,0,0.5)',
+                        border: `1px solid ${faction.border}`,
+                        color: faction.color,
+                      }}>{rankLabel}</div>
+
+                      {/* Portrait */}
+                      <img
+                        src={entry.img} alt={entry.name}
+                        style={{
+                          width: 90, height: 90, objectFit: 'contain',
+                          margin: '14px auto 12px', display: 'block',
+                          filter: defeated
+                            ? 'grayscale(1) brightness(0.5)'
+                            : `drop-shadow(0 0 10px ${faction.color}66)`,
+                        }}
+                      />
+
+                      {/* Name */}
+                      <p style={{
+                        fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem',
+                        color: defeated ? 'rgba(140,130,110,0.6)' : faction.color,
+                        marginBottom: '2px', lineHeight: 1.3,
+                      }}>{entry.name}</p>
+
+                      {/* Title */}
+                      <p style={{
+                        fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em',
+                        color: defeated ? 'rgba(120,110,90,0.5)' : 'rgba(200,185,150,0.6)',
+                        textTransform: 'uppercase', marginBottom: '10px',
+                      }}>{entry.title}</p>
+
+                      {/* Lore */}
+                      <p style={{
+                        fontSize: '0.7rem', color: defeated ? 'rgba(120,110,90,0.45)' : 'rgba(220,210,185,0.6)',
+                        fontStyle: 'italic', lineHeight: 1.55, margin: 0,
+                      }}>{entry.lore}</p>
+                    </div>
+                  );
+                };
+
+                return (
+                  <div key={faction.name} style={{ marginBottom: '40px' }}>
+                    {/* Faction header */}
+                    <div style={{ marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+                        <div style={{ flex: 1, height: '1px', background: `linear-gradient(to right, transparent, ${faction.border})` }} />
+                        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: faction.color }}>
+                          {faction.name}
+                        </span>
+                        <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${faction.border})` }} />
+                      </div>
+                      <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', margin: '0 0 4px' }}>
+                        {faction.tagline}
+                      </p>
+                      <p style={{ textAlign: 'center', fontSize: '0.62rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em', color: `${faction.color}88`, margin: 0 }}>
+                        {defeatedCount}/{allEntries.length} Defeated
+                      </p>
+                    </div>
+
+                    {/* Members */}
+                    {faction.members.length > 0 && (
+                      <div style={{ marginBottom: '16px' }}>
+                        <p style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em', color: 'rgba(200,185,150,0.3)', textTransform: 'uppercase', textAlign: 'center', marginBottom: '10px' }}>◆ Members</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+                          {faction.members.map(e => <FactionCard key={e.img} entry={e} isLeader={false} isCapt={false} />)}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Captains */}
+                    {faction.captains.length > 0 && (
+                      <div style={{ marginBottom: '16px' }}>
+                        <p style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em', color: 'rgba(200,185,150,0.3)', textTransform: 'uppercase', textAlign: 'center', marginBottom: '10px' }}>◆ Captains</p>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+                          {faction.captains.map(e => <FactionCard key={e.img} entry={e} isLeader={false} isCapt={true} />)}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Leader */}
+                    <div>
+                      <p style={{ fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em', color: 'rgba(200,185,150,0.3)', textTransform: 'uppercase', textAlign: 'center', marginBottom: '10px' }}>◆ Leader</p>
+                      <div style={{ maxWidth: '340px', margin: '0 auto' }}>
+                        <FactionCard entry={faction.leader} isLeader={true} isCapt={false} />
+                      </div>
                     </div>
                   </div>
                 );
