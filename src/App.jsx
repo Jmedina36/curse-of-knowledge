@@ -7510,123 +7510,188 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {activeTab === 'debug' && (
-
             <div className="max-w-4xl mx-auto mb-6 rounded-xl p-6 border-2 relative" style={{
               background: 'linear-gradient(to bottom, rgba(40, 20, 10, 0.95), rgba(20, 10, 5, 0.95))',
               borderColor: 'rgba(139, 0, 0, 0.6)',
               boxShadow: '0 0 30px rgba(139, 0, 0, 0.3), inset 0 0 50px rgba(0, 0, 0, 0.5)'
             }}>
+              {/* Header */}
               <div className="text-center mb-6">
                 <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ARCANE CONSOLE</h3>
                 <div className="flex items-center justify-center gap-2">
-                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.5))'}}></div>
-                  <span style={{color: 'rgba(212, 175, 55, 0.6)', fontSize: '8px'}}>◆</span>
-                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.5))'}}></div>
+                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5))'}}></div>
+                  <span style={{color: 'rgba(212,175,55,0.6)', fontSize: '8px'}}>◆</span>
+                  <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))'}}></div>
                 </div>
                 <p className="text-sm italic mt-2" style={{color: '#C0C0C0'}}>"Bend reality to your will..."</p>
               </div>
 
-              {/* Quick Stats Display */}
-              <div className="bg-black bg-opacity-40 rounded-lg p-2 mb-4 border border-gray-800">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-center">
+              {/* ── QUICK STATS ── */}
+              <div className="bg-black bg-opacity-40 rounded-lg p-3 mb-4 border border-gray-800">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs text-center">
                   <div><span className="text-gray-400">Day:</span> <span className="text-white font-bold">{currentDay}</span></div>
+                  <div><span className="text-gray-400">Level:</span> <span className="text-yellow-400 font-bold">{level}</span></div>
                   <div><span className="text-gray-400">HP:</span> <span className="font-bold" style={{color: COLORS.cream}}>{hp}/{getMaxHp()}</span></div>
                   <div><span className="text-gray-400">SP:</span> <span className="text-blue-400 font-bold">{stamina}/{getMaxStamina()}</span></div>
-                  <div><span className="text-gray-400">Level:</span> <span className="text-yellow-400 font-bold">{level}</span></div>
                   <div><span className="text-gray-400">XP:</span> <span className="text-yellow-400 font-bold">{xp}</span></div>
-                  <div><span className="text-gray-400">Skips:</span> <span className="text-orange-400 font-bold">{skipCount}/4</span></div>
+                  <div><span className="text-gray-400">Gold:</span> <span className="text-amber-400 font-bold">{gold}</span></div>
                   <div><span className="text-gray-400">Curse:</span> <span className="text-purple-400 font-bold">{curseLevel}</span></div>
                   <div><span className="text-gray-400">Class:</span> <span className="text-white font-bold">{hero.class.name}</span></div>
+                  <div><span className="text-gray-400">Contracts:</span> <span className="text-green-400 font-bold">{completedLocationContracts.length}</span></div>
+                  <div><span className="text-gray-400">Skips:</span> <span className="text-orange-400 font-bold">{skipCount}/4</span></div>
                 </div>
               </div>
-              
-              {/* Resources */}
+
+              {/* ── RESOURCES ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>RESOURCES</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <button onClick={() => { setHp(getMaxHp()); addLog('Debug: Full heal'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Full Heal</button>
                   <button onClick={() => { setStamina(getMaxStamina()); addLog('Debug: Full stamina'); }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>Full Stamina</button>
-                  <button onClick={() => { setXp(x => x + 100); addLog('Debug: +100 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+100 XP</button>
+                  <button onClick={() => { setXp(x => x + 500); addLog('Debug: +500 XP'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+500 XP</button>
+                  <button onClick={() => { setLevel(l => Math.min(l + 1, 50)); addLog('Debug: Level up'); }} className="bg-yellow-700 hover:bg-yellow-600 px-4 py-2 rounded text-xs transition-all border border-yellow-500" style={{color: '#F5F5DC'}}>Level Up</button>
                   <button onClick={() => { setGold(g => g + 500); addLog('Debug: +500 Gold'); }} className="bg-amber-700 hover:bg-amber-600 px-4 py-2 rounded text-xs transition-all border border-amber-500" style={{color: '#F5F5DC'}}>+500 Gold</button>
-                  <button onClick={() => { setFusionCrystals(f => f + 5); addLog('Debug: +5 Fusion Crystals'); }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs transition-all border border-cyan-600" style={{color: '#F5F5DC'}}>+5 Crystals</button>
+                  <button onClick={() => { setFusionCrystals(f => f + 5); addLog('Debug: +5 Crystals'); }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs transition-all border border-cyan-600" style={{color: '#F5F5DC'}}>+5 Crystals</button>
                   <button onClick={() => { setHealthPots(h => h + 3); setStaminaPots(s => s + 3); setCleansePots(c => c + 1); addLog('Debug: +Potions'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>+All Potions</button>
-                  <button onClick={() => {
-                    const rarity = rollRarity('normal');
-                    const multiplier = getRarityMultiplier(rarity);
-                    const slots = ['helmet', 'chest', 'gloves', 'boots'];
-                    const slot = slots[Math.floor(Math.random() * slots.length)];
-                    const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-                    const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                    const defense = Math.floor(baseDefense * multiplier);
-                    const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
-                    const name = names[Math.floor(Math.random() * names.length)];
-                    const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-                    const affixes = generateAffixes(rarity, 'armor');
-                    const newArmor = { name, defense, rarity, affixes, id: Date.now() };
-                    setArmorInventory(prev => ({
-                      ...prev,
-                      [slot]: [...prev[slot], newArmor]
-                    }));
-                    addLog(`Debug: Found ${rarityName} ${name} (+${defense} Defense)`);
-                  }} className="bg-amber-800 hover:bg-amber-700 px-4 py-2 rounded text-xs transition-all border border-amber-600" style={{color: '#F5F5DC'}}>+Random Armor</button>
-                  <button onClick={() => {
-                    const rarity = rollRarity('normal');
-                    const multiplier = getRarityMultiplier(rarity);
-                    const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-                    const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                    const attack = Math.floor(baseAttack * multiplier);
-                    const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
-                    const name = names[Math.floor(Math.random() * names.length)];
-                    const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
-                    const affixes = generateAffixes(rarity, 'weapon');
-                    const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-                    setWeaponInventory(prev => [...prev, newWeapon]);
-                    addLog(`Debug: Found ${rarityName} ${name} (+${attack} Attack)`);
-                  }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>+Random Weapon</button>
+                  <button onClick={() => { setHp(getMaxHp()); setStamina(getMaxStamina()); setGold(g => g + 500); setXp(x => x + 500); setHealthPots(h => h + 3); setStaminaPots(s => s + 3); addLog('Debug: Full restore'); }} className="bg-teal-700 hover:bg-teal-600 px-4 py-2 rounded text-xs transition-all border border-teal-500" style={{color: '#F5F5DC'}}>Full Restore</button>
                 </div>
               </div>
-              
-              {/* Warning Box State Testing */}
+
+              {/* ── COMBAT — STANDARD ── */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>WARNING BOX STATE</h4>
-                <div className="flex justify-center gap-2">
-                  <button 
-                    onClick={() => {
-                      const states = [null, 'locked', 'unlocked', 'evening', 'finalhour'];
-                      const currentIndex = states.indexOf(debugWarningState);
-                      const nextIndex = (currentIndex + 1) % states.length;
-                      setDebugWarningState(states[nextIndex]);
-                      const stateName = states[nextIndex] || 'AUTO';
-                      addLog(`Debug: Warning state → ${stateName}`);
-                    }} 
-                    className="bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-xs transition-all border border-gray-600" 
-                    style={{color: '#F5F5DC'}}
-                  >
-                    Cycle: {debugWarningState ? debugWarningState.toUpperCase() : 'AUTO'}
-                  </button>
-                  <button 
-                    onClick={() => {
-                      if (debugWarningState === 'evening') {
-                        setDebugWarningState('finalhour');
-                        addLog('Debug: Warning state → FINALHOUR');
-                      } else {
-                        setDebugWarningState('evening');
-                        addLog('Debug: Warning state → EVENING');
-                      }
-                    }} 
-                    className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" 
-                    style={{color: '#F5F5DC'}}
-                  >
-                    Test Urgency
-                  </button>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT — STANDARD</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <button onClick={() => { spawnRegularEnemy(false, 0, 1); addLog('Debug: Regular enemy'); }} className="bg-orange-800 hover:bg-orange-700 px-4 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
+                  <button onClick={() => {
+                    setBattleType('wave'); audioManager.play(TRACKS.malicious);
+                    setTotalWaveEnemies(3); setCurrentWaveEnemy(1); spawnRegularEnemy(true, 1, 3);
+                    addLog('Debug: Wave (3)');
+                  }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Wave (3)</button>
+                  <button onClick={() => { setBattleType('elite'); audioManager.cut(); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); addLog('Debug: Elite boss'); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
+                  <button onClick={() => {
+                    const lineup = [
+                      { img: '/cursed/young-paladin.png', name: 'Aldric', hp: 90, dialogue: "I can't stop. I can't remember how." },
+                      { img: '/cursed/young-princess.png', name: 'Sela', hp: 75, dialogue: "Is someone finally here? Or is this another dream?" }
+                    ];
+                    cursedLineupRef.current = lineup;
+                    spawnCursedEnemy(lineup[0], 0, lineup.length);
+                    addLog('Debug: Cursed/Mercy (Aldric & Sela)');
+                  }} className="bg-indigo-800 hover:bg-indigo-700 px-4 py-2 rounded text-xs transition-all border border-indigo-600" style={{color: '#F5F5DC'}}>Cursed (Mercy)</button>
                 </div>
               </div>
-              
-              {/* Loot Testing */}
+
+              {/* ── COMBAT — FACTIONS ── */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT — FACTIONS</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="rounded-lg p-3 border" style={{background: 'rgba(139,0,0,0.12)', borderColor: 'rgba(180,50,50,0.35)'}}>
+                    <p className="text-xs font-bold mb-2 text-center" style={{color: 'rgba(240,120,120,0.9)'}}>Bandit Faction</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnBanditWave(1, []); addLog('Debug: Bandit Wave 1 — Grunts'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-xs border border-red-700" style={{color: '#F5F5DC'}}>Wave 1 — Grunts</button>
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnBanditWave(2, []); addLog('Debug: Bandit Wave 2 — Captain'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-xs border border-red-700" style={{color: '#F5F5DC'}}>Wave 2 — Captain</button>
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnBanditWave(3, ['captain-1', 'captain-2']); addLog('Debug: Bandit Wave 3 — Captain'); }} className="bg-red-900 hover:bg-red-800 px-3 py-2 rounded text-xs border border-red-700" style={{color: '#F5F5DC'}}>Wave 3 — Captain</button>
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnBanditWave(4, ['captain-1', 'captain-2', 'captain-3']); addLog('Debug: Bandit Wave 4 — Cutter'); }} className="bg-red-800 hover:bg-red-700 px-3 py-2 rounded text-xs border border-red-500 font-bold" style={{color: '#FFD700'}}>Wave 4 — Cutter</button>
+                    </div>
+                  </div>
+                  <div className="rounded-lg p-3 border" style={{background: 'rgba(80,0,120,0.12)', borderColor: 'rgba(150,60,200,0.35)'}}>
+                    <p className="text-xs font-bold mb-2 text-center" style={{color: 'rgba(200,140,255,0.9)'}}>Daughters of Dusk</p>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnDaughtersWave(1, []); addLog('Debug: Daughters Wave 1 — Members'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-xs border border-purple-700" style={{color: '#F5F5DC'}}>Wave 1 — Members</button>
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnDaughtersWave(2, []); addLog('Debug: Daughters Wave 2 — Captain'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-xs border border-purple-700" style={{color: '#F5F5DC'}}>Wave 2 — Captain</button>
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnDaughtersWave(3, ['captain-1', 'captain-2']); addLog('Debug: Daughters Wave 3 — Captain'); }} className="bg-purple-900 hover:bg-purple-800 px-3 py-2 rounded text-xs border border-purple-700" style={{color: '#F5F5DC'}}>Wave 3 — Captain</button>
+                      <button onClick={() => { audioManager.play(TRACKS.boss); spawnDaughtersWave(4, ['captain-1', 'captain-2', 'captain-3']); addLog('Debug: Daughters Wave 4 — Mira'); }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs border border-purple-500 font-bold" style={{color: '#FFD700'}}>Wave 4 — Mira</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── COMBAT — THE ORDER ── */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT — THE ORDER</h4>
+                <p className="text-xs text-center mb-3" style={{color: 'rgba(180,165,130,0.55)', fontStyle: 'italic'}}>Each antagonist has unique music, SFX, HP scaling, and opening dialogue.</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {[
+                    { id: 'cutter',   label: 'Cutter',   subtitle: 'Bandit Lord',      tier: 'Zone IV', bg: 'rgba(160,30,30,0.2)',   border: 'rgba(220,70,70,0.5)',   text: '#FF9999' },
+                    { id: 'mira',     label: 'Mira',     subtitle: 'Dusk Queen',       tier: 'Zone IV', bg: 'rgba(110,30,170,0.2)',   border: 'rgba(170,80,240,0.5)',  text: '#CC99FF' },
+                    { id: 'sylvaris', label: 'Sylvaris', subtitle: 'Queen of Ruin',    tier: 'Zone V',  bg: 'rgba(30,60,160,0.2)',    border: 'rgba(80,130,240,0.5)',  text: '#99BBFF' },
+                    { id: 'malachar', label: 'Malachar', subtitle: 'The Eternal Lich', tier: 'Zone V',  bg: 'rgba(15,10,35,0.6)',     border: 'rgba(90,70,150,0.6)',   text: '#BBAAFF' },
+                  ].map(({ id, label, subtitle, tier, bg, border, text }) => (
+                    <button key={id} onClick={() => { spawnAntagonist(id); addLog(`Debug: Spawn ${label}`); }}
+                      style={{ background: bg, borderColor: border, border: '2px solid', borderRadius: '8px', padding: '12px 8px', cursor: 'pointer', transition: 'filter 0.15s', textAlign: 'center', color: text }}
+                      onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.25)'}
+                      onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
+                    >
+                      <div style={{fontSize: '0.8rem', fontWeight: 'bold'}}>{label}</div>
+                      <div style={{fontSize: '0.6rem', opacity: 0.7, fontStyle: 'italic', marginTop: '2px'}}>{subtitle}</div>
+                      <div style={{fontSize: '0.55rem', opacity: 0.5, marginTop: '4px', letterSpacing: '0.05em'}}>{tier} · Mythril</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── JOURNAL & CONTRACTS ── */}
+              <div className="mb-4">
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>JOURNAL & CONTRACTS</h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
+                  <button onClick={() => {
+                    const ids = LOCATION_CONTRACTS.filter(lc => lc.journalEntry).map(lc => lc.id);
+                    setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+                    addLog('Debug: All journal entries unlocked');
+                  }} className="bg-amber-900 hover:bg-amber-800 px-4 py-2 rounded text-xs border border-amber-700" style={{color: '#F5F5DC'}}>Unlock All Journal</button>
+                  <button onClick={() => {
+                    const ids = LOCATION_CONTRACTS.map(lc => lc.id);
+                    setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+                    addLog('Debug: All contracts complete');
+                  }} className="bg-green-900 hover:bg-green-800 px-4 py-2 rounded text-xs border border-green-700" style={{color: '#F5F5DC'}}>Complete All</button>
+                  <button onClick={() => {
+                    const ids = ['order_cutter', 'order_mira', 'order_sylvaris', 'order_malachar'];
+                    setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+                    addLog('Debug: The Order contracts completed');
+                  }} className="bg-indigo-900 hover:bg-indigo-800 px-4 py-2 rounded text-xs border border-indigo-700" style={{color: '#F5F5DC'}}>Complete The Order</button>
+                  <button onClick={() => {
+                    const ids = LOCATION_CONTRACTS.filter(lc => lc.mercyContract).map(lc => lc.id);
+                    setCompletedLocationContracts(prev => [...new Set([...prev, ...ids])]);
+                    addLog('Debug: All mercy contracts complete');
+                  }} className="bg-teal-900 hover:bg-teal-800 px-4 py-2 rounded text-xs border border-teal-700" style={{color: '#F5F5DC'}}>Complete All Mercy</button>
+                  <button onClick={() => {
+                    setCompletedLocationContracts([]);
+                    setDebugUnlockedZones([]);
+                    addLog('Debug: All contracts reset');
+                  }} className="bg-orange-900 hover:bg-orange-800 px-4 py-2 rounded text-xs border border-orange-700" style={{color: '#F5F5DC'}}>Reset All</button>
+                  <button onClick={() => {
+                    setDebugUnlockedZones([1, 2, 3, 4, 5]);
+                    addLog('Debug: All zones unlocked');
+                  }} className="bg-yellow-900 hover:bg-yellow-800 px-4 py-2 rounded text-xs border border-yellow-700" style={{color: '#F5F5DC'}}>Unlock All Zones</button>
+                </div>
+                <p className="text-xs text-center mb-2" style={{color: 'rgba(160,145,110,0.6)'}}>Unlock by zone:</p>
+                <div className="grid grid-cols-5 gap-2">
+                  {[1,2,3,4,5].map(z => {
+                    const zoneIds = LOCATION_CONTRACTS.filter(lc => lc.zone === z).map(lc => lc.id);
+                    const doneCount = zoneIds.filter(id => completedLocationContracts.includes(id)).length;
+                    return (
+                      <button key={z} onClick={() => {
+                        setCompletedLocationContracts(prev => [...new Set([...prev, ...zoneIds])]);
+                        setDebugUnlockedZones(prev => [...new Set([...prev, z])]);
+                        addLog(`Debug: Zone ${z} contracts unlocked`);
+                      }} style={{
+                        background: doneCount === zoneIds.length ? 'rgba(40,110,40,0.35)' : 'rgba(50,35,15,0.5)',
+                        borderColor: doneCount === zoneIds.length ? 'rgba(70,180,70,0.5)' : 'rgba(100,75,35,0.4)',
+                        border: '1px solid', borderRadius: '6px', padding: '8px 4px', cursor: 'pointer',
+                        color: '#F5F5DC', fontSize: '0.7rem', textAlign: 'center', transition: 'filter 0.15s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.2)'}
+                      onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
+                      >
+                        Zone {z}<br/><span style={{fontSize:'0.55rem', opacity: 0.55}}>{doneCount}/{zoneIds.length}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ── LOOT TESTING ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LOOT TESTING</h4>
-                
-                {/* Weapons by Rarity */}
                 <div className="mb-3">
                   <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Spawn Weapons:</p>
                   <div className="grid grid-cols-5 gap-2">
@@ -7634,15 +7699,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       <button key={rarity} onClick={() => {
                         const multiplier = getRarityMultiplier(rarity);
                         const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-                        const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                        const attack = Math.floor(baseAttack * multiplier);
+                        const attack = Math.floor((Math.floor(Math.random() * (range.max - range.min + 1)) + range.min) * multiplier);
                         const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
                         const name = names[Math.floor(Math.random() * names.length)];
-                        const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
                         const affixes = generateAffixes(rarity, 'weapon');
-                        const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-                        setWeaponInventory(prev => [...prev, newWeapon]);
-                        addLog(`Debug: ${rarityName} ${name} (+${attack} Attack)`);
+                        setWeaponInventory(prev => [...prev, { name, attack, rarity, affixes, id: Date.now() }]);
+                        addLog(`Debug: ${GAME_CONSTANTS.RARITY_TIERS[rarity].name} ${name} (+${attack} Atk)`);
                       }} className="hover:brightness-110 px-2 py-2 rounded text-xs transition-all border-2" style={{
                         backgroundColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color + '40',
                         borderColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color,
@@ -7653,8 +7715,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     ))}
                   </div>
                 </div>
-
-                {/* Armor by Rarity */}
                 <div className="mb-3">
                   <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Spawn Armor:</p>
                   <div className="grid grid-cols-5 gap-2">
@@ -7664,18 +7724,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         const slots = ['helmet', 'chest', 'gloves', 'boots'];
                         const slot = slots[Math.floor(Math.random() * slots.length)];
                         const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-                        const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                        const defense = Math.floor(baseDefense * multiplier);
+                        const defense = Math.floor((Math.floor(Math.random() * (range.max - range.min + 1)) + range.min) * multiplier);
                         const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
                         const name = names[Math.floor(Math.random() * names.length)];
-                        const rarityName = GAME_CONSTANTS.RARITY_TIERS[rarity].name;
                         const affixes = generateAffixes(rarity, 'armor');
-                        const newArmor = { name, defense, rarity, affixes, id: Date.now() };
-                        setArmorInventory(prev => ({
-                          ...prev,
-                          [slot]: [...prev[slot], newArmor]
-                        }));
-                        addLog(`Debug: ${rarityName} ${name} (+${defense} Defense)`);
+                        setArmorInventory(prev => ({ ...prev, [slot]: [...prev[slot], { name, defense, rarity, affixes, id: Date.now() }] }));
+                        addLog(`Debug: ${GAME_CONSTANTS.RARITY_TIERS[rarity].name} ${name} (+${defense} Def)`);
                       }} className="hover:brightness-110 px-2 py-2 rounded text-xs transition-all border-2" style={{
                         backgroundColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color + '40',
                         borderColor: GAME_CONSTANTS.RARITY_TIERS[rarity].color,
@@ -7686,387 +7740,142 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     ))}
                   </div>
                 </div>
-
-                {/* Special Affix Testing */}
                 <div>
                   <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Special Affixes:</p>
                   <div className="grid grid-cols-3 gap-2">
                     <button onClick={() => {
-                      const rarity = 'epic';
-                      const multiplier = getRarityMultiplier(rarity);
-                      const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-                      const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                      const attack = Math.floor(baseAttack * multiplier);
-                      const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
-                      const name = names[Math.floor(Math.random() * names.length)];
-                      // Force poison affixes
-                      const affixes = {
-                        poisonChance: 20,
-                        poisonDamage: 8,
-                        flatDamage: 10
-                      };
-                      const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-                      setWeaponInventory(prev => [...prev, newWeapon]);
-                      addLog(`Debug: Poisonous ${name} (20% poison, 8 dmg/turn)`);
-                    }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>
-                      Poison Weapon
-                    </button>
+                      const rarity = 'epic'; const mult = getRarityMultiplier(rarity);
+                      const r = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+                      const attack = Math.floor((Math.floor(Math.random() * (r.max - r.min + 1)) + r.min) * mult);
+                      const name = GAME_CONSTANTS.WEAPON_NAMES[rarity][Math.floor(Math.random() * GAME_CONSTANTS.WEAPON_NAMES[rarity].length)];
+                      setWeaponInventory(prev => [...prev, { name, attack, rarity, affixes: { poisonChance: 20, poisonDamage: 8, flatDamage: 10 }, id: Date.now() }]);
+                      addLog('Debug: Poison weapon (20% chance, 8/turn)');
+                    }} className="bg-purple-800 hover:bg-purple-700 px-3 py-2 rounded text-xs border border-purple-600" style={{color: '#F5F5DC'}}>Poison Weapon</button>
                     <button onClick={() => {
-                      const rarity = 'epic';
-                      const multiplier = getRarityMultiplier(rarity);
-                      const range = GAME_CONSTANTS.WEAPON_STAT_RANGES;
-                      const baseAttack = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                      const attack = Math.floor(baseAttack * multiplier);
-                      const names = GAME_CONSTANTS.WEAPON_NAMES[rarity];
-                      const name = names[Math.floor(Math.random() * names.length)];
-                      // Force crit affixes
-                      const affixes = {
-                        critChance: 8,
-                        critMultiplier: 0.8,
-                        percentDamage: 15
-                      };
-                      const newWeapon = { name, attack, rarity, affixes, id: Date.now() };
-                      setWeaponInventory(prev => [...prev, newWeapon]);
-                      addLog(`Debug: Critical ${name} (8% crit, +0.8x mult)`);
-                    }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>
-                      Crit Weapon
-                    </button>
+                      const rarity = 'epic'; const mult = getRarityMultiplier(rarity);
+                      const r = GAME_CONSTANTS.WEAPON_STAT_RANGES;
+                      const attack = Math.floor((Math.floor(Math.random() * (r.max - r.min + 1)) + r.min) * mult);
+                      const name = GAME_CONSTANTS.WEAPON_NAMES[rarity][Math.floor(Math.random() * GAME_CONSTANTS.WEAPON_NAMES[rarity].length)];
+                      setWeaponInventory(prev => [...prev, { name, attack, rarity, affixes: { critChance: 8, critMultiplier: 0.8, percentDamage: 15 }, id: Date.now() }]);
+                      addLog('Debug: Crit weapon (8% crit, +0.8x)');
+                    }} className="bg-yellow-800 hover:bg-yellow-700 px-3 py-2 rounded text-xs border border-yellow-600" style={{color: '#F5F5DC'}}>Crit Weapon</button>
                     <button onClick={() => {
-                      const rarity = 'epic';
-                      const multiplier = getRarityMultiplier(rarity);
+                      const rarity = 'epic'; const mult = getRarityMultiplier(rarity);
                       const slots = ['helmet', 'chest', 'gloves', 'boots'];
                       const slot = slots[Math.floor(Math.random() * slots.length)];
                       const range = GAME_CONSTANTS.ARMOR_STAT_RANGES[slot];
-                      const baseDefense = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
-                      const defense = Math.floor(baseDefense * multiplier);
-                      const names = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity];
-                      const name = names[Math.floor(Math.random() * names.length)];
-                      // Force tank affixes
-                      const affixes = {
-                        flatArmor: 10,
-                        percentDR: 5,
-                        flatHP: 20
-                      };
-                      const newArmor = { name, defense, rarity, affixes, id: Date.now() };
-                      setArmorInventory(prev => ({
-                        ...prev,
-                        [slot]: [...prev[slot], newArmor]
-                      }));
-                      addLog(`Debug: Tank ${name} (+10 armor, +5% DR, +20 HP)`);
-                    }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>
-                      Tank Armor
-                    </button>
+                      const defense = Math.floor((Math.floor(Math.random() * (range.max - range.min + 1)) + range.min) * mult);
+                      const name = GAME_CONSTANTS.ARMOR_NAMES[slot][rarity][Math.floor(Math.random() * GAME_CONSTANTS.ARMOR_NAMES[slot][rarity].length)];
+                      setArmorInventory(prev => ({ ...prev, [slot]: [...prev[slot], { name, defense, rarity, affixes: { flatArmor: 10, percentDR: 5, flatHP: 20 }, id: Date.now() }] }));
+                      addLog('Debug: Tank armor (+10 armor, +5% DR, +20 HP)');
+                    }} className="bg-blue-800 hover:bg-blue-700 px-3 py-2 rounded text-xs border border-blue-600" style={{color: '#F5F5DC'}}>Tank Armor</button>
                   </div>
                 </div>
               </div>
 
-              {/* Combat */}
+              {/* ── WARNING BOX STATE ── */}
               <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-2">
-                  <button onClick={() => spawnRegularEnemy(false, 0, 1)} className="bg-orange-800 hover:bg-orange-700 px-4 py-2 rounded text-xs transition-all border border-orange-600" style={{color: '#F5F5DC'}}>Regular Enemy</button>
-                  <button onClick={() => {
-                    setBattleType('wave');
-                    audioManager.play(TRACKS.malicious);
-                    setTotalWaveEnemies(3);
-                    setCurrentWaveEnemy(1);
-                    spawnRegularEnemy(true, 1, 3);
-                  }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Wave (3)</button>
-                  <button onClick={() => { setBattleType('elite'); audioManager.cut(); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
-                  <button onClick={() => {
-                    audioManager.play(TRACKS.boss);
-                    spawnBanditWave(1, []);
-                    addLog('Debug: Bandit Raid started');
-                  }} className="bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-xs transition-all border border-red-700" style={{color: '#F5F5DC'}}>Bandit Raid</button>
-                  <button onClick={() => {
-                    audioManager.play(TRACKS.boss);
-                    spawnDaughtersWave(1, []);
-                    addLog('Debug: Daughters Raid started');
-                  }} className="bg-purple-900 hover:bg-purple-800 px-4 py-2 rounded text-xs transition-all border border-purple-700" style={{color: '#F5F5DC'}}>Daughters Raid</button>
-                </div>
-                {/* Final Boss Phases */}
-                <p className="text-xs text-center mb-2" style={{color: '#C0C0C0'}}>Final Boss Phases:</p>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {[
-                    { label: 'P1: Cutter', phase: 1, color: 'bg-red-900 border-red-700', setup: () => {
-                      setBattleType('final'); audioManager.play(TRACKS.boss);
-                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
-                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
-                      setChargeStacks(0); setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
-                      setEnragedTurns(0); setHasFled(false);
-                      setInPhase3(false); setInPhase2(false); setInPhase1(false);
-                      setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0);
-                      setHasSpawnedPreviewAdd(false); setShadowAdds([]); setAoeWarning(false);
-                      setShowDodgeButton(false); setDodgeReady(false); setPhase3TurnCounter(0); setLifeDrainCounter(0);
-                      finalBossPhaseRef.current = 1; setFinalBossPhase(1);
-                      const hp = 200; setBossName('Cutter'); setBossHp(hp); setBossMax(hp);
-                      setBanditEnemyImg('/bandits/leader.png');
-                      sounds.banditLaugh();
-                      setEnemyDialogue('"You walk into your own grave."');
-                      addLog('🗡️ DEBUG: Phase 1 — Cutter, Bandit Lord');
-                    }},
-                    { label: 'P1b: Mira', phase: 2, color: 'bg-purple-900 border-purple-700', setup: () => {
-                      setBattleType('final'); audioManager.play(TRACKS.boss);
-                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
-                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
-                      finalBossPhaseRef.current = 2; setFinalBossPhase(2);
-                      spawnFinalBossPhase(2);
-                      addLog('Debug: Jumped to Phase 1b — Mira');
-                    }},
-                    { label: 'P2: Sylvaris', phase: 3, color: 'bg-indigo-900 border-indigo-700', setup: () => {
-                      setBattleType('final'); audioManager.play(TRACKS.boss);
-                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
-                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
-                      finalBossPhaseRef.current = 3; setFinalBossPhase(3);
-                      spawnFinalBossPhase(3);
-                      addLog('Debug: Jumped to Phase 2 — Sylvaris');
-                    }},
-                    { label: 'P3: Malachar', phase: 4, color: 'bg-gray-900 border-gray-600', setup: () => {
-                      setBattleType('final'); audioManager.play(TRACKS.boss);
-                      setShowBoss(true); setBattling(true); setBattleMenu('main'); setBattleMode(true);
-                      setIsFinalBoss(true); setCanFlee(false); setVictoryLoot([]); setVictoryChest(null);
-                      finalBossPhaseRef.current = 4; setFinalBossPhase(4);
-                      spawnFinalBossPhase(4);
-                      addLog('Debug: Jumped to Phase 3 — Malachar');
-                    }},
-                  ].map(({ label, color, setup }) => (
-                    <button key={label} onClick={setup} className={`${color} hover:brightness-110 px-3 py-2 rounded text-xs transition-all border`} style={{color: '#F5F5DC'}}>{label}</button>
+                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>WARNING BOX STATE</h4>
+                <div className="flex justify-center gap-2 flex-wrap">
+                  {[null, 'locked', 'unlocked', 'evening', 'finalhour'].map(state => (
+                    <button key={String(state)} onClick={() => { setDebugWarningState(state); addLog(`Debug: Warning → ${state || 'AUTO'}`); }}
+                      className="px-4 py-2 rounded text-xs border transition-all"
+                      style={{
+                        background: debugWarningState === state ? 'rgba(212,175,55,0.2)' : 'rgba(40,30,20,0.5)',
+                        borderColor: debugWarningState === state ? 'rgba(212,175,55,0.6)' : 'rgba(100,80,50,0.3)',
+                        color: '#F5F5DC',
+                      }}
+                    >{state ? state.toUpperCase() : 'AUTO'}</button>
                   ))}
                 </div>
               </div>
 
-              {/* Day & Curse */}
+              {/* ── DAY & CURSE ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DAY & CURSE</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  <button onClick={() => { setCurrentDay(d => d + 1); addLog(`Debug: Advanced to Day ${currentDay + 1}`); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>+1 Day</button>
-                  <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Clear Curse</button>
-                  <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Curse Lvl 1</button>
-                  <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED'); }} className="bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Curse Lvl 3</button>
+                  <button onClick={() => { setCurrentDay(d => d + 1); addLog(`Debug: Day → ${currentDay + 1}`); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>+1 Day</button>
+                  <button onClick={() => { setCurrentDay(d => d + 7); addLog('Debug: +7 days'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>+7 Days</button>
+                  <button onClick={() => { setCurseLevel(0); addLog('Debug: Curse cleared'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs border border-green-600" style={{color: '#F5F5DC'}}>Clear Curse</button>
+                  <button onClick={() => { setCurseLevel(1); addLog('Debug: Cursed Lvl 1'); }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs border border-purple-600" style={{color: '#F5F5DC'}}>Curse Lvl 1</button>
+                  <button onClick={() => { setCurseLevel(2); addLog('Debug: Cursed Lvl 2'); }} className="bg-purple-900 hover:bg-purple-800 px-4 py-2 rounded text-xs border border-purple-700" style={{color: '#F5F5DC'}}>Curse Lvl 2</button>
+                  <button onClick={() => { setCurseLevel(3); addLog('Debug: CONDEMNED'); }} className="bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Curse Lvl 3</button>
+                  <button onClick={() => { setEliteBossDefeatedToday(false); addLog('Debug: Elite boss cooldown reset'); }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs border border-cyan-600" style={{color: '#F5F5DC'}}>Reset Elite CD</button>
+                  <button onClick={() => { setHuntingChallenges({}); addLog('Debug: Challenge cooldowns cleared'); }} className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded text-xs border border-teal-600" style={{color: '#F5F5DC'}}>Reset Challenges</button>
                 </div>
               </div>
 
-              {/* Tasks */}
+              {/* ── TASKS ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>TASKS</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => { 
-                    setTasks(t => [...t, { id: Date.now(), title: 'Test Task', priority: 'routine', done: false, overdue: false }]); 
-                    addLog('Debug: Added test task'); 
-                  }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs transition-all border border-blue-600" style={{color: '#F5F5DC'}}>+Test Task</button>
-                  <button onClick={() => { 
-                    setTasks(t => [...t, { id: Date.now(), title: 'Important Task', priority: 'important', done: false, overdue: false }]); 
-                    addLog('Debug: Added important task'); 
-                  }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>+Important Task</button>
-                  <button onClick={() => { 
-                    setTasks(t => t.map(task => ({ ...task, overdue: true }))); 
-                    addLog('Debug: All tasks now overdue'); 
-                  }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Mark All Overdue</button>
-                  <button onClick={() => { 
-                    setTasks(t => t.map(task => ({ ...task, done: true }))); 
-                    addLog('Debug: Completed all tasks'); 
-                  }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs transition-all border border-green-600" style={{color: '#F5F5DC'}}>Complete All</button>
-                  <button onClick={() => { 
-                    setTasks([]); 
-                    addLog('Debug: Tasks cleared'); 
-                  }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Tasks</button>
+                  <button onClick={() => { setTasks(t => [...t, { id: Date.now(), title: 'Test Task', priority: 'routine', done: false, overdue: false }]); addLog('Debug: +Routine task'); }} className="bg-blue-800 hover:bg-blue-700 px-4 py-2 rounded text-xs border border-blue-600" style={{color: '#F5F5DC'}}>+Routine Task</button>
+                  <button onClick={() => { setTasks(t => [...t, { id: Date.now(), title: 'Important Task', priority: 'important', done: false, overdue: false }]); addLog('Debug: +Important task'); }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs border border-yellow-600" style={{color: '#F5F5DC'}}>+Important Task</button>
+                  <button onClick={() => { setTasks(t => t.map(task => ({ ...task, overdue: true }))); addLog('Debug: All tasks → overdue'); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Mark All Overdue</button>
+                  <button onClick={() => { setTasks(t => t.map(task => ({ ...task, done: true }))); addLog('Debug: All tasks completed'); }} className="bg-green-800 hover:bg-green-700 px-4 py-2 rounded text-xs border border-green-600" style={{color: '#F5F5DC'}}>Complete All</button>
+                  <button onClick={() => { setTasks([]); addLog('Debug: Tasks cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Tasks</button>
                 </div>
               </div>
 
-              {/* Game State Resets */}
-              <div className="mb-4">
-                <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>GAME STATE</h4>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => {
-                    setEliteBossDefeatedToday(false);
-                    addLog('Debug: Face the Darkness reset - can fight elite boss again today');
-                  }} className="bg-cyan-800 hover:bg-cyan-700 px-4 py-2 rounded text-xs transition-all border border-cyan-600" style={{color: '#F5F5DC'}}>Reset Face Darkness</button>
-                  <button onClick={() => {
-                    setGauntletMilestone(1500);
-                    setGauntletUnlocked(false);
-                    addLog('Debug: Gauntlet reset - next unlock at 1500 XP');
-                  }} className="bg-purple-800 hover:bg-purple-700 px-4 py-2 rounded text-xs transition-all border border-purple-600" style={{color: '#F5F5DC'}}>Reset Gauntlet</button>
-                  <button onClick={() => {
-                    setGauntletMilestone(0);
-                    setGauntletUnlocked(true);
-                    setTasks(t => t.map(task => ({ ...task, done: true })));
-                    addLog('Debug: Gauntlet force-unlocked, all tasks completed');
-                  }} className="bg-green-900 hover:bg-green-800 px-4 py-2 rounded text-xs transition-all border border-green-700" style={{color: '#F5F5DC'}}>Force Unlock Gauntlet</button>
-                  <button onClick={() => {
-                    setHuntingChallenges({});
-                    addLog('Debug: All challenge cooldowns cleared');
-                  }} className="bg-teal-800 hover:bg-teal-700 px-4 py-2 rounded text-xs transition-all border border-teal-600" style={{color: '#F5F5DC'}}>Reset Challenges</button>
-                  <button onClick={() => {
-                    setCompletedLocationContracts([]);
-                    setDebugUnlockedZones([]);
-                    addLog('Debug: All location contracts and zone unlocks reset');
-                  }} className="bg-orange-900 hover:bg-orange-800 px-4 py-2 rounded text-xs transition-all border border-orange-700" style={{color: '#F5F5DC'}}>Reset Zone Progress</button>
-                  <button onClick={() => {
-                    setDebugUnlockedZones([1, 2, 3, 4, 5]);
-                    addLog('Debug: All zones force-unlocked');
-                  }} className="bg-yellow-900 hover:bg-yellow-800 px-4 py-2 rounded text-xs transition-all border border-yellow-700" style={{color: '#F5F5DC'}}>Unlock All Zones</button>
-                </div>
-              </div>
-
-              {/* Data Management */}
+              {/* ── DATA ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>DATA</h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
-                  <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
-                  <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs transition-all border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
-                  <button onClick={() => { 
-                    if (window.confirm('⚠️ Clear saved game data from browser? Will need to refresh page after.')) { 
-                      localStorage.removeItem('fantasyStudyQuestSave');
-                      addLog('Debug: Save data cleared from localStorage - please refresh page'); 
-                    } 
-                  }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Clear Save Data</button>
+                  <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
+                  <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
+                  <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
+                  <button onClick={() => { if (window.confirm('Clear save data from localStorage?')) { localStorage.removeItem('fantasyStudyQuestSave'); addLog('Debug: Save cleared — refresh to apply'); } }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Clear Save Data</button>
                 </div>
               </div>
 
-              {/* Full Reset */}
-              <button 
-                onClick={() => { 
-                  if (window.confirm('⚠️ FULL RESET - Delete EVERYTHING and start fresh? Cannot be undone!')) {
+              {/* ── FULL RESET ── */}
+              <button
+                onClick={() => {
+                  if (window.confirm('FULL RESET — Delete everything and start fresh?')) {
                     const newHero = makeName();
-                    setHero(newHero);
-                    setCanCustomize(true);
-                    setCurrentDay(1);
-                    setHasStarted(false);
-                    setHp(GAME_CONSTANTS.MAX_HP);
-                    setStamina(GAME_CONSTANTS.MAX_STAMINA);
-                    setXp(0);
-                    setLevel(1);
-                    setHealthPots(0);
-                    setStaminaPots(0);
-                    setCleansePots(0);
-                    setFusionCrystals(0);
-                    setCapturedMonsters([]);
-
-                    // Reset old gear system (for compatibility)
-                    setWeapon(0);
-                    setArmor(0);
-                    
-                    // Reset new loot system
-                    setGold(0);
-                    setEquippedWeapon(null);
-                    setWeaponInventory([]);
+                    setHero(newHero); setCanCustomize(true); setCurrentDay(1); setHasStarted(false);
+                    setHp(GAME_CONSTANTS.MAX_HP); setStamina(GAME_CONSTANTS.MAX_STAMINA);
+                    setXp(0); setLevel(1); setHealthPots(0); setStaminaPots(0); setCleansePots(0); setFusionCrystals(0);
+                    setCapturedMonsters([]); setWeapon(0); setArmor(0); setGold(0);
+                    setEquippedWeapon(null); setWeaponInventory([]);
                     setEquippedArmor({ helmet: null, chest: null, gloves: null, boots: null });
                     setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
-                    setEquippedGrimoire(null);
-                    setEquippedTome(null);
-                    setGrimoireInventory([]);
-                    setTomeInventory([]);
+                    setEquippedGrimoire(null); setEquippedTome(null); setGrimoireInventory([]); setTomeInventory([]);
                     setWaveGoldTotal(0);
-
-                    // Reset market
                     setMarketModifiers({ weapon: 1.0, armor: 1.0, grimoire: 1.0, tome: 1.0, healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0, weaponOil: 1.0, armorPolish: 1.0, luckyCharm: 1.0 });
-                    setLastMarketUpdateDay(0);
-                    setShopInventory([]);
-                    setDaysSinceShop(0);
-                    setDailyQuestCompleted(false);
-                    setGuildPoints(0);
-                    setGauntletMilestone(1500);
-                    setGauntletUnlocked(false);
-                    setLastRealDay(null);
-
-                    // Reset contract / map state
-                    setSelectedZone(null);
-                    setActiveContract(null);
-                    setCompletedLocationContracts([]);
-                    setPendingLocationRewards([]);
+                    setLastMarketUpdateDay(0); setShopInventory([]); setDaysSinceShop(0); setDailyQuestCompleted(false);
+                    setGuildPoints(0); setGauntletMilestone(1500); setGauntletUnlocked(false); setLastRealDay(null);
+                    setSelectedZone(null); setActiveContract(null);
+                    setCompletedLocationContracts([]); setDebugUnlockedZones([]); setPendingLocationRewards([]);
                     contractEncounterRef.current = null;
-
-                    setTasks([]);
-                    setActiveTask(null);
-                    setTimer(0);
-                    setRunning(false);
-                    setShowPomodoro(false);
-                    setPomodoroTask(null);
+                    setTasks([]); setActiveTask(null); setTimer(0); setRunning(false); setShowPomodoro(false); setPomodoroTask(null);
                     setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
-                    setCalendarTasks({});
-                    setCalendarFocus({});
-                    setCalendarEvents({});
-                    
-                    // Reset battle/boss system
-                    setShowBoss(false);
-                    setBattling(false);
-                    setBattleMode(false);
-                    setBossHp(0);
-                    setBossMax(0);
-                    setBattleType('regular');
-                    setBattleMenu('main');
-                    setIsFinalBoss(false);
-                    setBossName('');
+                    setCalendarTasks({}); setCalendarFocus({}); setCalendarEvents({});
+                    setShowBoss(false); setBattling(false); setBattleMode(false);
+                    setBossHp(0); setBossMax(0); setBattleType('regular'); setBattleMenu('main');
+                    setIsFinalBoss(false); setBossName('');
                     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
-  setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
-                    setRecklessStacks(0);
-                    setInPhase1(false);
-                    setInPhase2(false);
-                    setInPhase3(false);
-                    setPhase1TurnCounter(0);
-                    setPhase2TurnCounter(0);
-                    setPhase2DamageStacks(0);
-                    setPhase3TurnCounter(0);
-                    setShadowAdds([]);
-                    setAoeWarning(false);
-                    setBossFlash(false);
-                    setPlayerFlash(false);
-                    setCurrentWaveEnemy(0);
-                    setTotalWaveEnemies(1);
-                    setWaveCount(0);
-                    setCurrentBattleCreature(null);
-                    setIsBanditWave(false);
-                    setBanditWaveNumber(0);
-                    setBanditCaptainsDefeated([]);
-                    setIsDaughtersWave(false);
-                    setDaughtersWaveNumber(0);
-                    setDaughtersCaptainsDefeated([]);
-                    setChargeStacks(0);
-
-                    setEnemyDialogue('');
-                    setEnragedTurns(0);
-                    
-                    setLog([]);
-                    setGraveyard([]);
-                    setHeroes([]);
-                    setSkipCount(0);
-                    setConsecutiveDays(0);
-                    setLastPlayedDate(null);
-                    setMiniBossCount(0);
-                    setCurseLevel(0);
-                    setEliteBossDefeatedToday(false);
-                    setIsDayActive(false);
+                    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+                    setRecklessStacks(0); setInPhase1(false); setInPhase2(false); setInPhase3(false);
+                    setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0); setPhase3TurnCounter(0);
+                    setShadowAdds([]); setAoeWarning(false); setBossFlash(false); setPlayerFlash(false);
+                    setCurrentWaveEnemy(0); setTotalWaveEnemies(1); setWaveCount(0); setCurrentBattleCreature(null);
+                    setIsBanditWave(false); setBanditWaveNumber(0); setBanditCaptainsDefeated([]);
+                    setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
+                    setChargeStacks(0); setEnemyDialogue(''); setEnragedTurns(0);
+                    setLog([]); setGraveyard([]); setHeroes([]); setSkipCount(0); setConsecutiveDays(0);
+                    setLastPlayedDate(null); setMiniBossCount(0); setCurseLevel(0);
+                    setEliteBossDefeatedToday(false); setIsDayActive(false);
                     setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, perfectDays: 0, weeklyHistory: [] });
-                    
-                    // Reset flashcard system
-                    setFlashcardDecks([]);
-                    setSelectedDeck(null);
-                    setCurrentCardIndex(0);
-                    setStudyQueue([]);
-                    setWrongCardIndices([]);
-                    
-                    // Reset achievements
-                    setAchievementStats({
-                      tasksCompleted: 0,
-                      studyMinutes: 0,
-                      deepWorkSessions: 0,
-                      perfectDays: 0,
-                      bossesDefeated: 0,
-                      eliteBossesDefeated: 0,
-                      battlesFled: 0,
-                      battlesWon: 0,
-                      cardsStudied: 0,
-                      consecutiveDays: 0
-                    });
+                    setFlashcardDecks([]); setSelectedDeck(null); setCurrentCardIndex(0); setStudyQueue([]); setWrongCardIndices([]);
+                    setAchievementStats({ tasksCompleted: 0, studyMinutes: 0, deepWorkSessions: 0, perfectDays: 0, bossesDefeated: 0, eliteBossesDefeated: 0, battlesFled: 0, battlesWon: 0, cardsStudied: 0, consecutiveDays: 0 });
                     setUnlockedAchievements([]);
-                    
                     localStorage.removeItem('fantasyStudyQuest');
-                    addLog('🔄 FULL RESET - Everything cleared!');
+                    addLog('Debug: FULL RESET complete');
                     setActiveTab('quest');
                   }
                 }}
-                className="w-full bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-sm font-bold transition-all border-2 border-red-600"
+                className="w-full bg-red-900 hover:bg-red-800 px-4 py-2 rounded text-sm font-bold border-2 border-red-600 mt-2"
                 style={{color: '#F5F5DC', letterSpacing: '0.1em'}}
               >
                 🔄 FULL RESET
