@@ -58,6 +58,7 @@ export const LOCATION_CONTRACTS = [
     name: 'The Rite at the Grove',
     contractTier: 'gold',
     storyContract: true,
+    requiredContracts: ['lc_harbor'],
     desc: "The sacred tree is dying from the roots up. Witnesses report robed women circling it at night, chanting over a carved ritual circle. The grove keeper hasn't been seen in days.",
     storyNote: "The ritual circle still smolders after the Daughters fall. At its heart, carved into the oldest root, is a six-pointed sigil — the same mark from the harbor. Different faction. Same order. Whatever they serve, it moves through more than one hand.",
     journalEntry: {
@@ -147,6 +148,7 @@ export const LOCATION_CONTRACTS = [
     name: 'The Deep Working',
     contractTier: 'gold',
     storyContract: true,
+    requiredContracts: ['lc_ivy_crossing'],
     desc: "The Daughters of Dusk have moved deeper into Whisper Forest and stopped hunting outward. Witnesses say they've been there for weeks — chanting, building something. No one who went to look has come back. The forest feels wrong at the edges.",
     storyNote: "The ritual site is still active when the Daughter falls. At its center: a summoning circle bearing the six-pointed sigil — but inverted. Not calling something in. Sending a signal out. The order is using this forest as a relay. Whatever they're building, it spans more ground than you thought.",
     journalEntry: {
