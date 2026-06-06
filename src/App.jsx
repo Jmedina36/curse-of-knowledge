@@ -657,6 +657,7 @@ const guildRank = [...GUILD_RANKS].reverse().find(r => guildPoints >= r.min) || 
 const [cleansePotionPurchasedToday, setCleansePotionPurchasedToday] = useState(false);
 const [lastRealDay, setLastRealDay] = useState(null);
 const [debugWarningState, setDebugWarningState] = useState(null); // null = auto, or 'locked', 'unlocked', 'evening', 'finalhour'
+const [godMode, setGodMode] = useState(false);
   
   // QoL state variables
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
@@ -3054,7 +3055,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const _openDmg = _first ? 0 : Math.max(3, Math.floor(_rawAtk * (_decisive ? 0.65 : 0.40) * (1 - _wis * 0.02)));
     const _stunned = !_first && _decisive;
     if (!_first) {
-      setHp(prev => Math.max(0, prev - _openDmg));
+      if (!godMode) setHp(prev => Math.max(0, prev - _openDmg));
       addLog(`Initiative: ${a.name} acts first — ${_decisive ? 'decisive' : 'narrow'} edge. ${_openDmg} damage.`);
       if (_stunned) { setPlayerDebuffs(prev => ({ ...prev, stunned: true })); addLog('You are stunned for 1 turn!'); }
     } else {
@@ -3429,7 +3430,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
           (getBaseDefense() + (armorPolishActive ? 5 : 0))
         ));
         
-        setHp(h => Math.max(0, h - baseDamage));
+        if (!godMode) setHp(h => Math.max(0, h - baseDamage));
         addLog(`The enemy retaliates, dealing ${baseDamage} damage to the hero!`);
         setPlayerFlash(true);
         sounds.playerDamage();
@@ -3572,7 +3573,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       bonusMessages.push(`✙ +${bastionBonus} from Bastion of Faith (+15%)`);
     }
     
-    const newBossHp = Math.max(0, bossHp - finalDamage);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
     
     // Crusader Holy Empowerment: heal on hit
@@ -3922,7 +3923,7 @@ const rawEnemyDamage = Math.floor((baseAttack + (currentDay * attackScaling)) * 
 if (playerDebuffs.bleedTurns > 0) {
   const bleedDmg = playerDebuffs.bleedDamage;
   setHp(h => {
-    const next = Math.max(0, h - bleedDmg);
+    const next = godMode ? h : Math.max(0, h - bleedDmg);
     if (next <= 0) setTimeout(() => enterDyingState(), 200);
     return next;
   });
@@ -4212,7 +4213,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           }
           
           setBossHp(h => {
-            const newHp = Math.max(0, h - poisonDmg);
+            const newHp = godMode ? h : Math.max(0, h - poisonDmg);
             if (newHp > 0) {
               // Assassin gains stamina from poison ticks
               if (hero?.class?.name === 'Assassin') {
@@ -4325,7 +4326,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           // Life drain every 5 turns
           if (lifeDrainCounter >= 5) {
             const drainAmount = 15;
-            setHp(h => Math.max(0, h - drainAmount));
+            if (!godMode) setHp(h => Math.max(0, h - drainAmount));
             setBossHp(b => Math.min(bossMax, b + drainAmount));
             addLog(`🩸 LIFE DRAIN! Boss drains ${drainAmount} HP from you!`);
             setLifeDrainCounter(0);
@@ -4544,7 +4545,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       effectMessage = `✙ JUDGMENT OF LIGHT! +${healAmount} HP, Holy Empowerment (3 turns: +25% dmg, +15% crit, heal on hit)`;
     }
     
-    const newBossHp = Math.max(0, bossHp - damage);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
     setBossHp(newBossHp);
     
     // Update dialogue based on HP phase
@@ -4785,7 +4786,7 @@ const rawEnemyDamage = Math.floor((baseAttack + (currentDay * attackScaling)) * 
 if (playerDebuffs.bleedTurns > 0) {
   const bleedDmg = playerDebuffs.bleedDamage;
   setHp(h => {
-    const next = Math.max(0, h - bleedDmg);
+    const next = godMode ? h : Math.max(0, h - bleedDmg);
     if (next <= 0) setTimeout(() => enterDyingState(), 200);
     return next;
   });
@@ -5003,7 +5004,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             }
             
             setBossHp(h => {
-              const newHp = Math.max(0, h - poisonDmg);
+              const newHp = godMode ? h : Math.max(0, h - poisonDmg);
               if (newHp > 0) {
                 // Assassin gains stamina from poison ticks
                 if (hero?.class?.name === 'Assassin') {
@@ -5110,7 +5111,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     const tierLabel = critMult >= 4 ? 'LEGENDARY STRIKE' : critMult >= 3 ? 'DEVASTATING CRIT' : critMult >= 2.5 ? 'HEAVY CRIT' : critMult >= 2 ? 'CRITICAL HIT' : 'GLANCING CRIT';
     addLog(`⚡ ${chargedAttackName.toUpperCase()}! ${tierLabel}! (${critMult}x) — ${damage} damage!`);
 
-    const newBossHp = Math.max(0, bossHp - damage);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
     setBossHp(newBossHp);
     setBossFlash(true);
     setTimeout(() => setBossFlash(false), 200);
@@ -5172,7 +5173,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
       if (playerDebuffs.bleedTurns > 0) {
         const bleedDmg = playerDebuffs.bleedDamage;
-        setHp(h => { const n = Math.max(0, h - bleedDmg); if (n <= 0) setTimeout(() => enterDyingState(), 200); return n; });
+        if (!godMode) setHp(h => { const n = Math.max(0, h - bleedDmg); if (n <= 0) setTimeout(() => enterDyingState(), 200); return n; });
         addLog(`Bleeding! -${bleedDmg} HP`);
         setPlayerDebuffs(prev => ({ ...prev, bleedTurns: prev.bleedTurns - 1 }));
       }
@@ -5324,7 +5325,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       bonusMessages.push(`⚔️ +${bloodOathBonus} from Blood Oath (+50%)`);
     }
     
-    const newBossHp = Math.max(0, bossHp - finalDamage);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
     
     addLog(`⚔️ CRUSHING BLOW! Dealt ${finalDamage} damage!`);
@@ -5687,7 +5688,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       bonusMessages.push(`✙ +${bastionBonus} from Bastion of Faith (+15%)`);
     }
     
-    const newBossHp = Math.max(0, bossHp - finalDamage);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - finalDamage);
     setBossHp(newBossHp);
     
     // Heal from Smite
@@ -7540,6 +7541,29 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <div><span className="text-gray-400">Contracts:</span> <span className="text-green-400 font-bold">{completedLocationContracts.length}</span></div>
                   <div><span className="text-gray-400">Skips:</span> <span className="text-orange-400 font-bold">{skipCount}/4</span></div>
                 </div>
+              </div>
+
+              {/* ── GOD MODE ── */}
+              <div className="mb-4">
+                <button
+                  onClick={() => { setGodMode(g => !g); addLog(godMode ? 'Debug: God Mode OFF' : 'Debug: God Mode ON — 1-hit kills + full immunity'); }}
+                  style={{
+                    width: '100%', padding: '14px 8px', borderRadius: '8px', cursor: 'pointer',
+                    border: '2px solid', transition: 'all 0.25s',
+                    background: godMode ? 'rgba(212,175,55,0.2)' : 'rgba(35,25,10,0.6)',
+                    borderColor: godMode ? 'rgba(212,175,55,0.75)' : 'rgba(90,70,35,0.45)',
+                    color: godMode ? '#FFD700' : 'rgba(160,140,90,0.7)',
+                    fontSize: '0.85rem', fontWeight: 'bold', letterSpacing: '0.14em',
+                    boxShadow: godMode ? '0 0 24px rgba(212,175,55,0.25), inset 0 0 12px rgba(212,175,55,0.08)' : 'none',
+                  }}
+                >
+                  {godMode ? '✦ GOD MODE — ACTIVE' : '✦ GOD MODE — OFF'}
+                </button>
+                {godMode && (
+                  <p className="text-xs text-center mt-2" style={{color: 'rgba(212,175,55,0.55)', fontStyle: 'italic'}}>
+                    Enemies die in 1 hit · Hero immune to all damage
+                  </p>
+                )}
               </div>
 
               {/* ── RESOURCES ── */}
