@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Hammer, Link, Plus, Sparkles, X } from 'lucide-react';
+import { Hammer, Plus, Sparkles, X } from 'lucide-react';
 import { COLORS } from '../constants';
 import { sounds } from '../sounds';
 
@@ -49,8 +49,6 @@ const ForgeTab = ({
   setNewWebsiteName,
   newWebsiteUrl,
   setNewWebsiteUrl,
-  newWebsiteCategory,
-  setNewWebsiteCategory,
   addStudyWebsite,
   removeStudyWebsite,
   trackWebsiteClick,

@@ -7413,7 +7413,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               studyWebsites={studyWebsites}
               newWebsiteUrl={newWebsiteUrl} setNewWebsiteUrl={setNewWebsiteUrl}
               newWebsiteName={newWebsiteName} setNewWebsiteName={setNewWebsiteName}
-              newWebsiteCategory={newWebsiteCategory} setNewWebsiteCategory={setNewWebsiteCategory}
               addStudyWebsite={addStudyWebsite} removeStudyWebsite={removeStudyWebsite}
               trackWebsiteClick={trackWebsiteClick}
               generateQuiz={generateQuiz} startMatchGame={startMatchGame}
