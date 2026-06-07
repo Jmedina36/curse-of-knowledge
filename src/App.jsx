@@ -7010,7 +7010,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                             alt={label}
                             style={{ width: '140px', height: '140px', objectFit: 'cover', objectPosition: 'top', borderRadius: '6px', border: `1px solid ${charCreateClass ? charCreateClass.color : 'rgba(212,175,55,0.4)'}` }}
                           />
-                          <span style={{ fontFamily: "'Cinzel', serif", fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#F5F5DC' }}>{label}</span>
                         </button>
                       ))}
                     </div>
