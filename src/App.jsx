@@ -7427,11 +7427,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           )}
           {activeTab === 'bestiary' && (
             <BestiaryTab
-              capturedMonsters={capturedMonsters}
-              setCapturedMonsters={setCapturedMonsters}
               defeatedFactionMembers={defeatedFactionMembers}
               restedCursed={restedCursed}
-              addLog={addLog}
             />
           )}
           {activeTab === 'map' && (
