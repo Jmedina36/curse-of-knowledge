@@ -1,16 +1,33 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
+function passwordIssues(pass) {
+  const issues = [];
+  if (pass.length < 8)        issues.push('At least 8 characters');
+  if (!/[A-Z]/.test(pass))    issues.push('One uppercase letter');
+  if (!/[0-9]/.test(pass))    issues.push('One number');
+  return issues;
+}
+
 export default function AuthGate({ onEnter }) {
-  const [mode, setMode] = useState('signin'); // 'signin' | 'signup' | 'magic'
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [status, setStatus] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [mode, setMode]             = useState('signin');
+  const [email, setEmail]           = useState('');
+  const [password, setPassword]     = useState('');
+  const [status, setStatus]         = useState(null);
+  const [loading, setLoading]       = useState(false);
+  const [failedAttempts, setFailed] = useState(0);
+  const [resetSent, setResetSent]   = useState(false);
+
+  const issues = mode === 'signup' ? passwordIssues(password) : [];
+  const showResetPrompt = failedAttempts >= 3;
 
   async function handleSubmit(e) {
     e.preventDefault();
     setStatus(null);
+    if (mode === 'signup' && issues.length) {
+      setStatus({ type: 'error', msg: 'Please meet all password requirements.' });
+      return;
+    }
     setLoading(true);
     try {
       if (mode === 'magic') {
@@ -23,7 +40,7 @@ export default function AuthGate({ onEnter }) {
         setStatus({ type: 'success', msg: 'Account created. Check your email to confirm, then sign in.' });
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) { setFailed(f => f + 1); throw error; }
         onEnter({ user: data.user, offline: false });
       }
     } catch (err) {
@@ -31,6 +48,16 @@ export default function AuthGate({ onEnter }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleReset() {
+    if (!email.trim()) { setStatus({ type: 'error', msg: 'Enter your email address above first.' }); return; }
+    setLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: window.location.origin });
+    setLoading(false);
+    if (error) { setStatus({ type: 'error', msg: error.message }); return; }
+    setResetSent(true);
+    setStatus({ type: 'success', msg: 'Password reset email sent — check your inbox.' });
   }
 
   const inputStyle = {
@@ -126,37 +153,37 @@ export default function AuthGate({ onEnter }) {
         </div>
 
         <form onSubmit={handleSubmit} style={{ padding: '28px 28px 24px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            style={inputStyle}
-            onFocus={e => e.target.style.borderColor = 'rgba(212,175,55,0.5)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(212,175,55,0.25)'}
-          />
+          <input type="email" placeholder="Email address" value={email} onChange={e => setEmail(e.target.value)} required maxLength={254} style={inputStyle} onFocus={e => e.target.style.borderColor = 'rgba(212,175,55,0.5)'} onBlur={e => e.target.style.borderColor = 'rgba(212,175,55,0.25)'} />
           {mode !== 'magic' && (
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              required
-              style={inputStyle}
-              onFocus={e => e.target.style.borderColor = 'rgba(212,175,55,0.5)'}
-              onBlur={e => e.target.style.borderColor = 'rgba(212,175,55,0.25)'}
-            />
+            <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required maxLength={128} style={inputStyle} onFocus={e => e.target.style.borderColor = 'rgba(212,175,55,0.5)'} onBlur={e => e.target.style.borderColor = 'rgba(212,175,55,0.25)'} />
+          )}
+
+          {/* Live password requirements on signup */}
+          {mode === 'signup' && password && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              {['At least 8 characters', 'One uppercase letter', 'One number'].map(req => {
+                const pass = !issues.includes(req);
+                return (
+                  <div key={req} style={{ fontSize: '0.68rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <span>{pass ? '✓' : '○'}</span> {req}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* After 3 failed sign-in attempts */}
+          {showResetPrompt && !resetSent && (
+            <div style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '6px', padding: '10px 12px' }}>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic' }}>Having trouble signing in?</p>
+              <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.72rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
+                Send password reset email →
+              </button>
+            </div>
           )}
 
           {status && (
-            <p style={{
-              fontSize: '0.75rem',
-              fontStyle: 'italic',
-              color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)',
-              margin: 0,
-              lineHeight: 1.5,
-            }}>
+            <p style={{ fontSize: '0.75rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', margin: 0, lineHeight: 1.5 }}>
               {status.msg}
             </p>
           )}

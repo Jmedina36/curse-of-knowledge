@@ -378,6 +378,7 @@ const ForgeTab = ({
             placeholder="Relic Name (e.g., Canvas LMS)"
             value={newWebsiteName}
             onChange={(e) => setNewWebsiteName(e.target.value)}
+            maxLength={60}
             onKeyPress={(e) => {
               if (e.key === 'Enter' && newWebsiteName && newWebsiteUrl) {
                 addStudyWebsite();
@@ -396,6 +397,7 @@ const ForgeTab = ({
             placeholder="Source URL (e.g., canvas.instructure.com)"
             value={newWebsiteUrl}
             onChange={(e) => setNewWebsiteUrl(e.target.value)}
+            maxLength={500}
             onKeyPress={(e) => {
               if (e.key === 'Enter' && newWebsiteName && newWebsiteUrl) {
                 addStudyWebsite();

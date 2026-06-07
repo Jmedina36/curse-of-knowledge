@@ -49,11 +49,12 @@ const CustomizeModal = ({
       
       <div className="mb-4">
         <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Hero Name</label>
-        <input 
-          type="text" 
-          placeholder="Enter your hero's name" 
+        <input
+          type="text"
+          placeholder="Enter your hero's name"
           value={customName}
           onChange={e => setCustomName(e.target.value)}
+          maxLength={30}
           spellCheck="true"
           autoCorrect="on"
           autoCapitalize="words"

@@ -97,11 +97,12 @@ const FlashcardModals = ({
         </div>
       </div>
       
-      <input 
-        type="text" 
-        placeholder="Deck name (e.g., Spanish Vocabulary)" 
-        value={newDeck.name} 
-        onChange={e => setNewDeck({name: e.target.value})} 
+      <input
+        type="text"
+        placeholder="Deck name (e.g., Spanish Vocabulary)"
+        value={newDeck.name}
+        onChange={e => setNewDeck({name: e.target.value})}
+        maxLength={60}
         spellCheck="true"
         autoCorrect="on"
         autoCapitalize="words"
@@ -182,10 +183,11 @@ const FlashcardModals = ({
       
       <div className="mb-4">
         <label className="block text-sm mb-2" style={{color: COLORS.silver}}>Front (Question)</label>
-        <textarea 
-          placeholder="e.g., What is the capital of France?" 
-          value={newCard.front} 
-          onChange={e => setNewCard({...newCard, front: e.target.value})} 
+        <textarea
+          placeholder="e.g., What is the capital of France?"
+          value={newCard.front}
+          onChange={e => setNewCard({...newCard, front: e.target.value})}
+          maxLength={500}
           className="w-full p-3 rounded-lg border focus:outline-none resize-none" 
           style={{
             background: 'rgba(0, 0, 0, 0.5)',
@@ -202,10 +204,11 @@ const FlashcardModals = ({
       
       <div className="mb-4">
         <label className="block text-sm mb-2" style={{color: COLORS.silver}}>Back (Answer)</label>
-        <textarea 
-          placeholder="e.g., Paris" 
-          value={newCard.back} 
-          onChange={e => setNewCard({...newCard, back: e.target.value})} 
+        <textarea
+          placeholder="e.g., Paris"
+          value={newCard.back}
+          onChange={e => setNewCard({...newCard, back: e.target.value})}
+          maxLength={500}
           className="w-full p-3 rounded-lg border focus:outline-none resize-none" 
           style={{
             background: 'rgba(0, 0, 0, 0.5)',
@@ -952,11 +955,12 @@ const FlashcardModals = ({
         </div>
       </div>
       
-      <input 
-        type="text" 
-        placeholder="Name your trial" 
-        value={newTask.title} 
-        onChange={e => setNewTask({...newTask, title: e.target.value})} 
+      <input
+        type="text"
+        placeholder="Name your trial"
+        value={newTask.title}
+        onChange={e => setNewTask({...newTask, title: e.target.value})}
+        maxLength={120}
         spellCheck="true"
         autoCorrect="on"
         autoCapitalize="sentences"

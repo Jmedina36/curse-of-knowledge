@@ -35,6 +35,7 @@ import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
+import SetPasswordModal from './components/SetPasswordModal';
 import { supabase } from './lib/supabase';
 import { loadSave, writeSave } from './lib/saveManager';
 
@@ -665,6 +666,8 @@ const [godMode, setGodMode] = useState(false);
   // Auth state
   const [supabaseUser, setSupabaseUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showSetPasswordModal, setShowSetPasswordModal] = useState(false);
+  const inactivityTimerRef = useRef(null);
 
   // QoL state variables
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
@@ -1036,11 +1039,13 @@ const getDateKey = useCallback((date) => {
       supabaseUserRef.current = user;
       setSupabaseUser(user);
       if (event === 'SIGNED_IN') {
-        // Advance past mode-select if signing in mid-intro
         setIntroPhase(p => p === 'mode-select' ? 'revealed' : p);
         setShowAuthModal(false);
         const cloudData = await loadSave();
         if (cloudData) applyLoadedData(cloudData);
+      }
+      if (event === 'PASSWORD_RECOVERY') {
+        setShowSetPasswordModal(true);
       }
       if (event === 'SIGNED_OUT') {
         setSupabaseUser(null);
@@ -1048,6 +1053,30 @@ const getDateKey = useCallback((date) => {
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  // Auto-logout after 30 minutes of inactivity
+  useEffect(() => {
+    if (!supabaseUser) {
+      clearTimeout(inactivityTimerRef.current);
+      return;
+    }
+    const TIMEOUT = 30 * 60 * 1000;
+    const resetTimer = () => {
+      clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = setTimeout(async () => {
+        await supabase.auth.signOut();
+        setSupabaseUser(null);
+        supabaseUserRef.current = null;
+      }, TIMEOUT);
+    };
+    const events = ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'];
+    events.forEach(ev => window.addEventListener(ev, resetTimer, { passive: true }));
+    resetTimer();
+    return () => {
+      clearTimeout(inactivityTimerRef.current);
+      events.forEach(ev => window.removeEventListener(ev, resetTimer));
+    };
+  }, [supabaseUser]);
 
   function applyLoadedData(data) {
         if (data.hero) setHero(data.hero);
@@ -6858,6 +6887,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     value={charCreateName}
                     onChange={e => setCharCreateName(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter' && charCreateName.trim()) setCharCreateStep(1); }}
+                    maxLength={30}
                     autoFocus
                     style={{
                       fontFamily: "'Cinzel', serif", fontSize: '1.1rem', letterSpacing: '0.1em',
@@ -7357,7 +7387,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'map', icon:Map, label:'Map'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'journal', icon:ScrollText, label:'Journal'},
-                {id:'debug', icon:Settings, label:'Debug'},
+                ...(import.meta.env.DEV ? [{id:'debug', icon:Settings, label:'Debug'}] : []),
               ].map(t => (
                 <button
                   key={t.id}
@@ -7672,7 +7702,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onFinalBoss={finalBoss}
             />
           )}
-          {activeTab === 'debug' && (
+          {import.meta.env.DEV && activeTab === 'debug' && (
             <div className="max-w-4xl mx-auto mb-6 rounded-xl p-6 border-2 relative" style={{
               background: 'linear-gradient(to bottom, rgba(40, 20, 10, 0.95), rgba(20, 10, 5, 0.95))',
               borderColor: 'rgba(139, 0, 0, 0.6)',
@@ -8743,7 +8773,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         <AuthModal
           onClose={() => {
             setShowAuthModal(false);
-            // If they dismiss from mode-select, fall back to offline
             if (introPhase === 'mode-select') setIntroPhase('revealed');
           }}
           onSignIn={(user) => {
@@ -8752,6 +8781,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             if (introPhase === 'mode-select') setIntroPhase('revealed');
           }}
         />
+      )}
+
+      {showSetPasswordModal && (
+        <SetPasswordModal onClose={() => setShowSetPasswordModal(false)} />
       )}
 
     </div>

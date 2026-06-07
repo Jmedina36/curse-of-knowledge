@@ -71,11 +71,12 @@ const CalendarModal = ({
       <div className="mb-4">
         <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Today's Focus Class</label>
         <div className="flex gap-2 mb-2">
-          <input 
-            type="text" 
-            placeholder="e.g., Math, Physics, Chemistry..." 
-            value={newFocus} 
-            onChange={e => setNewFocus(e.target.value)} 
+          <input
+            type="text"
+            placeholder="e.g., Math, Physics, Chemistry..."
+            value={newFocus}
+            onChange={e => setNewFocus(e.target.value)}
+            maxLength={80}
             spellCheck="true"
             autoCorrect="on"
             autoCapitalize="words"
@@ -150,11 +151,12 @@ const CalendarModal = ({
       <div className="mb-4">
         <label className="block text-sm mb-2 text-center" style={{color: COLORS.silver}}>Add Event</label>
         <div className="flex gap-2 mb-4">
-          <input 
-            type="text" 
-            placeholder="e.g., Midterm Exam, Office Hours..." 
-            value={newEvent} 
-            onChange={e => setNewEvent(e.target.value)} 
+          <input
+            type="text"
+            placeholder="e.g., Midterm Exam, Office Hours..."
+            value={newEvent}
+            onChange={e => setNewEvent(e.target.value)}
+            maxLength={120}
             spellCheck="true"
             autoCorrect="on"
             autoCapitalize="words"
