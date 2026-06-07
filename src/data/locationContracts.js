@@ -171,7 +171,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'daughters',
       waveSize: 1,
-      enemyNames: ['Vayne'],
+      enemyNames: ['Knell'],
       dialogue: [
         "You keep finding us. That's going to become a problem for you.",
       ],
@@ -301,6 +301,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'bandit',
       waveSize: 2,
+      enemyNames: ['Rook'],
       dialogue: [
         "Road's closed. Turn back or we make sure you do.",
       ],
@@ -331,6 +332,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'daughters',
       waveSize: 2,
+      enemyNames: ['Vael'],
       dialogue: [
         "You weren't supposed to think clearly enough to find us. Interesting.",
       ],
@@ -361,6 +363,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'bandit',
       waveSize: 3,
+      enemyNames: ['Slag'],
       dialogue: [
         "The stones aren't for you. Nothing in this zone is for you.",
       ],
@@ -391,6 +394,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'daughters',
       waveSize: 2,
+      enemyNames: ['Zira'],
       dialogue: [
         "You're too late. The last transit already went through.",
       ],
@@ -421,6 +425,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'bandit',
       waveSize: 3,
+      enemyNames: ['Gorse'],
       dialogue: [
         "You read the pillars. That means you understand what's coming. And you still can't stop it.",
       ],
@@ -452,6 +457,7 @@ export const LOCATION_CONTRACTS = [
     encounter: {
       enemyType: 'daughters',
       waveSize: 3,
+      enemyNames: ['Ash'],
       dialogue: [
         "The letter said you might make it this far. It also said it wouldn't matter. Let's find out which of you was right.",
       ],

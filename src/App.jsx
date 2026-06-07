@@ -7448,10 +7448,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   if (enemyType === 'bandit') {
                     const { enemyNames, dialogue } = lc.encounter;
                     const lineup = [];
-                    // Named member first
+                    // Named member first — check grunts then captains
                     const namedName = enemyNames?.[0];
-                    const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName) || BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
-                    lineup.push({ img: namedGrunt.img, name: namedGrunt.name, isCapt: false, isLeader: false, contractDialogue: dialogue?.[0] || null });
+                    const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName);
+                    const namedCapt  = BANDIT_POOL.captains.find(c => c.name === namedName);
+                    const namedBandit = namedGrunt || namedCapt || BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
+                    lineup.push({ img: namedBandit.img, name: namedBandit.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null });
                     // Fill rest with creatures
                     for (let i = lineup.length; i < 3; i++) {
                       const c = pickCreatureForDay(currentDay);
@@ -7464,10 +7466,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   } else if (enemyType === 'daughters') {
                     const { enemyNames, dialogue } = lc.encounter;
                     const lineup = [];
-                    // Named member first
+                    // Named member first — check members then captains
                     const namedName = enemyNames?.[0];
-                    const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName) || DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
-                    lineup.push({ img: namedMember.img, name: namedMember.name, isCapt: false, isLeader: false, contractDialogue: dialogue?.[0] || null });
+                    const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName);
+                    const namedCapt   = DAUGHTERS_POOL.captains.find(c => c.name === namedName);
+                    const namedDaughter = namedMember || namedCapt || DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
+                    lineup.push({ img: namedDaughter.img, name: namedDaughter.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null });
                     // Fill rest with creatures
                     for (let i = lineup.length; i < 3; i++) {
                       const c = pickCreatureForDay(currentDay);
