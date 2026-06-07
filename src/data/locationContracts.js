@@ -673,6 +673,8 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'mythril',
     zone: 4,
     requiredContracts: ['lc_stone_cavern'],
+    desc: "The Vault has been Cutter's base of operations since before you crossed into the first zone. He built the bandit network from here — recruited, organized, deployed. He knew you were coming. He stayed anyway.",
+    storyNote: "Cutter didn't run. He said C told him not to — that holding the Vault was worth more than surviving it. Before the end he said one thing that mattered: C isn't a person. It's a title. The one who holds it changes. The work doesn't.",
     encounter: {
       enemyType: 'bandit',
       members: [
@@ -706,6 +708,8 @@ He's done now.`,
     contractTier: 'mythril',
     zone: 4,
     requiredContracts: ['mc_sigrun'],
+    desc: "The Crystal Wastes became Mira's base after the monolith went dark. The Daughters regrouped here — not in retreat, in preparation. Whatever Mira planned after the monolith failed, she's been executing it from here.",
+    storyNote: "Mira didn't blame you for the monolith. She said the work was never meant to succeed on the first attempt. C had designed it to be a proof of concept — a demonstration that the network could be assembled at all. You stopped it. That was accounted for. The next attempt won't look anything like the first.",
     encounter: {
       enemyType: 'daughters',
       members: [

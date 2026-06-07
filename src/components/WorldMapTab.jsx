@@ -385,10 +385,22 @@ const LOCATIONS = [
 
   // ── THE ORDER — Mythril Contract Locations ──────────────────────────────────
   {
-    id: 'ironhold',
-    name: 'The Ironhold',
+    id: 'stone_cavern',
+    name: 'The Stone Cavern',
+    subtitle: 'C\'s Intake Point',
+    desc: "Every operative in zone 4 passed through here first. The cavern was the entry point — quiet, invisible, impossible to trace. The bandits left behind don't know why they're still here.",
+    marker: '/worldmap/dungeon.png',
+    type: 'contract',
+    contractZone: 4,
+    unlockLevel: 8,
+    position: { left: '35%', top: '22%' },
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+  },
+  {
+    id: 'the_vault',
+    name: 'The Vault',
     subtitle: "Cutter's Stronghold",
-    desc: "The order gave Cutter this ground. He fortified it himself and never left. His men say he's waiting for someone worth killing.",
+    desc: "The order gave Cutter this ground. He fortified it himself and never left. He knew you were coming. He stayed anyway.",
     marker: '/worldmap/dungeon.png',
     type: 'contract',
     contractZone: 4,
