@@ -7331,23 +7331,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           >
           {activeTab === 'quest' && (
             <QuestTab
-              hero={hero} hp={hp} stamina={stamina} xp={xp} level={level} gold={gold}
+              hero={hero} hp={hp} stamina={stamina} xp={xp} level={level}
               currentDay={currentDay} curseLevel={curseLevel}
-              isDayActive={isDayActive} timeUntilMidnight={timeUntilMidnight}
-              consecutiveDays={consecutiveDays} skipCount={skipCount} miniBossCount={miniBossCount}
-              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
-              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
-              heroCardCollapsed={heroCardCollapsed} setHeroCardCollapsed={setHeroCardCollapsed}
-              equippedWeapon={equippedWeapon} equippedArmor={equippedArmor}
-              equippedGrimoire={equippedGrimoire} equippedTome={equippedTome}
-              weaponOilActive={weaponOilActive} armorPolishActive={armorPolishActive} luckyCharmActive={luckyCharmActive}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
               setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
               setShowCraftingModal={setShowCraftingModal}
               onOpenHealer={() => setShowHealerModal(true)}
-              capturedMonsters={capturedMonsters} fusionCrystals={fusionCrystals}
-              onReleaseMonster={releaseMonster}
               guildRank={guildRank}
               onOpenBestiary={() => setActiveTab('bestiary')}
               onOpenForge={() => setActiveTab('study')}
@@ -7403,13 +7393,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <ForgeTab
               forgeSubTab={forgeSubTab} setForgeSubTab={setForgeSubTab}
               flashcardDecks={flashcardDecks} setFlashcardDecks={setFlashcardDecks}
-              selectedDeck={selectedDeck} setSelectedDeck={setSelectedDeck}
-              showDeckModal={showDeckModal} setShowDeckModal={setShowDeckModal}
-              showCardModal={showCardModal} setShowCardModal={setShowCardModal}
-              showStudyModal={showStudyModal} setShowStudyModal={setShowStudyModal}
-              currentCardIndex={currentCardIndex} setCurrentCardIndex={setCurrentCardIndex}
-              studyQueue={studyQueue} setStudyQueue={setStudyQueue}
-              isFlipped={isFlipped} setIsFlipped={setIsFlipped}
+              setSelectedDeck={setSelectedDeck} setShowDeckModal={setShowDeckModal}
+              setShowCardModal={setShowCardModal} setShowStudyModal={setShowStudyModal}
+              setCurrentCardIndex={setCurrentCardIndex}
+              setStudyQueue={setStudyQueue} setIsFlipped={setIsFlipped}
               studyWebsites={studyWebsites}
               newWebsiteUrl={newWebsiteUrl} setNewWebsiteUrl={setNewWebsiteUrl}
               newWebsiteName={newWebsiteName} setNewWebsiteName={setNewWebsiteName}
@@ -7442,9 +7429,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               activeContract={activeContract}
               setActiveContract={setActiveContract}
               isDayActive={isDayActive}
-              eliteBossDefeatedToday={eliteBossDefeatedToday}
-              gauntletUnlocked={gauntletUnlocked}
-              tasks={tasks}
               completedLocationContracts={completedLocationContracts}
               debugUnlockedZones={debugUnlockedZones}
               huntingChallenges={huntingChallenges}

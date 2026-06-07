@@ -3,33 +3,6 @@ import { HeartPulse, ShieldCheck, Sparkles, Swords } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
 
-const GUILD_RANKS = [
-  { min: 1,  max: 2,  name: 'Initiate',    color: 'rgba(180,180,180,0.75)' },
-  { min: 3,  max: 4,  name: 'Apprentice',  color: 'rgba(180,180,180,0.85)' },
-  { min: 5,  max: 6,  name: 'Journeyman',  color: 'rgba(180,160,100,0.9)'  },
-  { min: 7,  max: 9,  name: 'Adept',       color: 'rgba(212,175,55,0.95)'  },
-  { min: 10, max: 14, name: 'Master',       color: 'rgba(230,200,80,1)'     },
-  { min: 15, max: 999,name: 'Grand Master', color: 'rgba(255,220,100,1)'    },
-];
-const getGuildRank = (level) => GUILD_RANKS.find(r => level >= r.min && level <= r.max) || GUILD_RANKS[0];
-
-const getMonsterImg = (monster) => {
-  if (monster.tier === 3) return '/undead-king.png';
-  if (monster.tier === 2) {
-    const ELITE_IMGS = [
-      '/bosses/frozen-zombie.png',
-      '/bosses/undead-vampire-woman.png',
-      '/bosses/orc-chief.png',
-      '/bosses/orc-lady.png',
-      '/bosses/orc-warrior.png',
-    ];
-    const seed = monster.name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    return ELITE_IMGS[seed % ELITE_IMGS.length];
-  }
-  const idx = monster.creatureIdx != null ? monster.creatureIdx : (monster.id % 8);
-  return `/creatures/creature${1 + (idx % 8)}.png`;
-};
-
 const DWARF_NPCS = [
   { img: '/npcs/dwarf-warrior.png',  name: 'Grimdar', title: 'Master Smith'     },
   { img: '/npcs/dwarf-explorer.png', name: 'Borin',   title: 'Wandering Forger' },
@@ -54,26 +27,8 @@ const QuestTab = ({
   stamina,
   xp,
   level,
-  gold,
   currentDay,
   curseLevel,
-  isDayActive,
-  timeUntilMidnight,
-  consecutiveDays,
-  skipCount,
-  miniBossCount,
-  gauntletUnlocked,
-  gauntletMilestone,
-  eliteBossDefeatedToday,
-  debugWarningState,
-  // Equipment
-  equippedWeapon,
-  equippedArmor,
-  equippedGrimoire,
-  equippedTome,
-  weaponOilActive,
-  armorPolishActive,
-  luckyCharmActive,
   // Computed stats
   getMaxHp,
   getMaxStamina,
@@ -85,9 +40,6 @@ const QuestTab = ({
   setShowInventoryModal,
   setShowCraftingModal,
   onOpenHealer,
-  capturedMonsters,
-  fusionCrystals,
-  onReleaseMonster,
   guildRank,
   onOpenBestiary,
   onOpenForge,

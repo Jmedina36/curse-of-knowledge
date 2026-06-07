@@ -562,8 +562,8 @@ const TIER_META = {
 const WorldMapTab = ({
   currentDay, level, gold, hp, maxHp, selectedZone, setSelectedZone,
   activeContract, setActiveContract,
-  onBeginContract, onStartPomodoro, onEliteBoss, onFinalBoss,
-  isDayActive, eliteBossDefeatedToday, gauntletUnlocked, tasks,
+  onBeginContract, onEliteBoss, onFinalBoss,
+  isDayActive,
   completedLocationContracts, debugUnlockedZones, huntingChallenges,
   onWildEncounter, onOpenBestiary, onDebugToggleZone, onHuntingChallenge,
 }) => {
@@ -1053,7 +1053,7 @@ const WorldMapTab = ({
                 const isTaskEligible = !loc.isElite && !loc.isLegendary && unlocked;
                 const hasActiveContract =
                   (isTaskEligible && activeContract?.type === 'task' && selectedZone?.id === loc.id) ||
-                  (loc.id === 'dungeon' && activeContract?.type === 'elite') ||
+                  (loc.id === 'dungeon_fallen' && activeContract?.type === 'elite') ||
                   (loc.id === 'skull_cave' && activeContract?.type === 'final') ||
                   (activeContract?.type === 'location' && activeContract.contract.locationId === loc.id);
 
@@ -1623,7 +1623,7 @@ const WorldMapTab = ({
 
                 {/* Contract name — only when active */}
                 {displayed.contract && (
-                  (displayed.id === 'dungeon' && activeContract?.type === 'elite') ||
+                  (displayed.id === 'dungeon_fallen' && activeContract?.type === 'elite') ||
                   (displayed.id === 'skull_cave' && activeContract?.type === 'final') ||
                   (activeContract?.type === 'location' && activeContract.contract.locationId === displayed.id)
                 ) && (
@@ -1639,7 +1639,7 @@ const WorldMapTab = ({
                 </p>
 
                 {/* Status / Action */}
-                {displayed.id === 'dungeon' ? (
+                {displayed.id === 'dungeon_fallen' ? (
                   // Elite boss location
                   activeContract?.type === 'elite' ? (
                     <button
