@@ -35,6 +35,7 @@ import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
+import AuthGate from './components/AuthGate';
 import { supabase } from './lib/supabase';
 import { loadSave, writeSave, pushSaveNow } from './lib/saveManager';
 
@@ -664,6 +665,8 @@ const [godMode, setGodMode] = useState(false);
   // Auth state
   const [supabaseUser, setSupabaseUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [showAuthGate, setShowAuthGate] = useState(false);
 
   // QoL state variables
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
@@ -1012,14 +1015,28 @@ const getDateKey = useCallback((date) => {
   }, []);
 
     useEffect(() => {
-    // Subscribe to Supabase auth changes
+    // Check existing session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setSupabaseUser(session.user);
+        setShowAuthGate(false);
+      } else {
+        setShowAuthGate(true);
+      }
+      setAuthChecked(true);
+    });
+
+    // Keep session in sync across tabs / token refresh
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const user = session?.user ?? null;
       setSupabaseUser(user);
       if (event === 'SIGNED_IN') {
-        // Pull cloud save on sign-in; it takes priority over local
+        setShowAuthGate(false);
         const cloudData = await loadSave();
         if (cloudData) applyLoadedData(cloudData);
+      }
+      if (event === 'SIGNED_OUT') {
+        setSupabaseUser(null);
       }
     });
     return () => subscription.unsubscribe();
@@ -6689,6 +6706,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }
       `}</style>
 
+      {/* ── Auth gate — shown before everything until session is resolved ── */}
+      {!authChecked && (
+        <div style={{ position: 'fixed', inset: 0, background: '#0a0503', zIndex: 10000 }} />
+      )}
+      {authChecked && showAuthGate && (
+        <AuthGate onEnter={({ user, offline }) => {
+          if (user) setSupabaseUser(user);
+          setShowAuthGate(false);
+        }} />
+      )}
+
       {/* ── Intro / menu overlay — one screen, title never moves ── */}
       {introPhase !== 'done' && (
         <div
@@ -7316,24 +7344,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </span>
                 </button>
               ))}
-          <button
-            onClick={async () => { sounds.click(); if (supabaseUser) { if (window.confirm(`Signed in as ${supabaseUser.email}\n\nSign out?`)) { await supabase.auth.signOut(); setSupabaseUser(null); } } else { setShowAuthModal(true); } }}
-            className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all border-2"
-            style={{
-              backgroundColor: 'transparent',
-              borderColor: supabaseUser ? 'rgba(120,200,120,0.3)' : 'transparent',
-              opacity: 0.7,
-              marginLeft: 'auto',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.5)' : 'rgba(212,175,55,0.3)'; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = 0.7; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.3)' : 'transparent'; }}
-            title={supabaseUser ? `Signed in: ${supabaseUser.email}` : 'Sign in to sync across devices'}
-          >
-            <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{supabaseUser ? '☁' : '○'}</span>
-            <span className="text-xs uppercase tracking-wider" style={{ color: supabaseUser ? 'rgba(120,200,120,0.8)' : '#F5F5DC', fontWeight: 'normal' }}>
-              {supabaseUser ? 'Synced' : 'Offline'}
-            </span>
-          </button>
         </nav>
 
         <div className="max-w-6xl mx-auto">
@@ -7615,6 +7625,20 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))'}}></div>
                 </div>
                 <p className="text-sm italic mt-2" style={{color: '#C0C0C0'}}>"Bend reality to your will..."</p>
+              </div>
+
+              {/* ── CLOUD SYNC ── */}
+              <div className="bg-black bg-opacity-40 rounded-lg p-3 mb-4 border border-gray-800 flex items-center justify-between">
+                <div className="text-xs" style={{ color: supabaseUser ? 'rgba(120,200,120,0.8)' : 'rgba(160,140,100,0.6)' }}>
+                  {supabaseUser ? `☁ Synced — ${supabaseUser.email}` : '○ Offline — progress saved locally only'}
+                </div>
+                <button
+                  onClick={async () => { if (supabaseUser) { await supabase.auth.signOut(); setSupabaseUser(null); } else { setShowAuthModal(true); } }}
+                  className="text-xs px-3 py-1 rounded border"
+                  style={{ borderColor: 'rgba(212,175,55,0.3)', color: 'rgba(212,175,55,0.7)', background: 'transparent', cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em' }}
+                >
+                  {supabaseUser ? 'Sign Out' : 'Sign In'}
+                </button>
               </div>
 
               {/* ── QUICK STATS ── */}
