@@ -755,7 +755,11 @@ const WorldMapTab = ({
               boxShadow: isDayActive ? '0 0 40px rgba(0,0,0,0.6)' : '0 0 40px rgba(20,20,60,0.8)',
               scrollbarWidth: 'thin',
               scrollbarColor: 'rgba(212,175,55,0.2) rgba(0,0,0,0.3)',
-              transition: 'border-color 1s, box-shadow 1s',
+              transition: 'border-color 1s, box-shadow 1s, background 1.2s',
+              backgroundImage: 'url(/Ocean.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundColor: isDayActive ? 'transparent' : 'rgba(5,8,30,0.55)',
             }}
           >
             <div
