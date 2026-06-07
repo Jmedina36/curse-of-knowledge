@@ -88,8 +88,6 @@ const DWARF_QUOTES = {
 };
 
 const InventoryModal = ({
-  // kept for compat but replaced by local state
-  suppliesTab, setSuppliesTab,
   setShowInventoryModal,
   currentDay,
   hp, stamina, level, gold,

@@ -626,7 +626,6 @@ const [showCustomizeModal, setShowCustomizeModal] = useState(false);
 const [customName, setCustomName] = useState('');
 const [customClass, setCustomClass] = useState(null);
   const [showInventoryModal, setShowInventoryModal] = useState(false);
-  const [suppliesTab, setSuppliesTab] = useState('potions'); // 'potions' or 'armor'
   const [showCraftingModal, setShowCraftingModal] = useState(false);
   const [showHealerModal, setShowHealerModal] = useState(false);
   const [craftingTab, setCraftingTab] = useState('craft'); // 'craft', 'manage', 'disenchant', 'links'
@@ -7321,7 +7320,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               currentDay={currentDay} curseLevel={curseLevel}
               getMaxHp={getMaxHp} getMaxStamina={getMaxStamina}
               getBaseAttack={getBaseAttack} getBaseDefense={getBaseDefense} getCardStyle={getCardStyle}
-              setSuppliesTab={setSuppliesTab} setShowInventoryModal={setShowInventoryModal}
+              setShowInventoryModal={setShowInventoryModal}
               setShowCraftingModal={setShowCraftingModal}
               onOpenHealer={() => setShowHealerModal(true)}
               guildRank={guildRank}
@@ -8119,7 +8118,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           </AnimatePresence>
           {showInventoryModal && (
             <InventoryModal
-              suppliesTab={suppliesTab} setSuppliesTab={setSuppliesTab}
               setShowInventoryModal={setShowInventoryModal}
               currentDay={currentDay}
               hp={hp} stamina={stamina} setStamina={setStamina} level={level} gold={gold} curseLevel={curseLevel}
@@ -8162,24 +8160,18 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               setShowCraftingModal={setShowCraftingModal}
               craftingTab={craftingTab} setCraftingTab={setCraftingTab}
               level={level} gold={gold} currentDay={currentDay}
-              hp={hp} stamina={stamina} healthPots={healthPots} staminaPots={staminaPots}
+              healthPots={healthPots} staminaPots={staminaPots}
               cleansePots={cleansePots}
               cleansePotionPurchasedToday={cleansePotionPurchasedToday}
-              weaponOilActive={weaponOilActive} setWeaponOilActive={setWeaponOilActive}
-              armorPolishActive={armorPolishActive} setArmorPolishActive={setArmorPolishActive}
-              luckyCharmActive={luckyCharmActive} setLuckyCharmActive={setLuckyCharmActive}
-              equippedWeapon={equippedWeapon} setEquippedWeapon={setEquippedWeapon}
-              equippedArmor={equippedArmor} setEquippedArmor={setEquippedArmor}
-              equippedGrimoire={equippedGrimoire} setEquippedGrimoire={setEquippedGrimoire}
-              equippedTome={equippedTome} setEquippedTome={setEquippedTome}
-              weaponInventory={weaponInventory} setWeaponInventory={setWeaponInventory}
-              armorInventory={armorInventory} setArmorInventory={setArmorInventory}
-              grimoireInventory={grimoireInventory} setGrimoireInventory={setGrimoireInventory}
-              tomeInventory={tomeInventory} setTomeInventory={setTomeInventory}
-              shopInventory={shopInventory} setShopInventory={setShopInventory}
+              weaponOilActive={weaponOilActive}
+              armorPolishActive={armorPolishActive}
+              luckyCharmActive={luckyCharmActive}
+              weaponInventory={weaponInventory} armorInventory={armorInventory}
+              grimoireInventory={grimoireInventory} tomeInventory={tomeInventory}
+              shopInventory={shopInventory}
               merchantTab={merchantTab} setMerchantTab={setMerchantTab}
               marketModifiers={marketModifiers}
-              studyWebsites={studyWebsites} setStudyWebsites={setStudyWebsites}
+              studyWebsites={studyWebsites}
               newWebsiteUrl={newWebsiteUrl} setNewWebsiteUrl={setNewWebsiteUrl}
               newWebsiteName={newWebsiteName} setNewWebsiteName={setNewWebsiteName}
               newWebsiteCategory={newWebsiteCategory} setNewWebsiteCategory={setNewWebsiteCategory}

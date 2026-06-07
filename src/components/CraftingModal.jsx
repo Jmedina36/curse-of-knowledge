@@ -133,8 +133,6 @@ const CraftingModal = ({
   craftingTab,
   setCraftingTab,
   // Player state
-  hp,
-  stamina,
   level,
   gold,
   currentDay,
@@ -173,7 +171,6 @@ const CraftingModal = ({
   sortByRarity,
   addLog,
   // Action callbacks
-  buyItem,
   purchaseShopItem,
   sellEquipment,
   sellPotion,

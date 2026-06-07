@@ -36,7 +36,6 @@ const QuestTab = ({
   getBaseDefense,
   getCardStyle,
   // Modal triggers
-  setSuppliesTab,
   setShowInventoryModal,
   setShowCraftingModal,
   onOpenHealer,
@@ -211,7 +210,7 @@ const QuestTab = ({
 
               {/* Armory */}
               <button
-                onClick={() => { sounds.click(); setSuppliesTab('potions'); setShowInventoryModal(true); }}
+                onClick={() => { sounds.click(); setShowInventoryModal(true); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
                   background:'linear-gradient(160deg,#2a0808,#420d0d,#1a0505)',
                   border:'1px solid rgba(180,50,40,0.55)',
