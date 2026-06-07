@@ -40,11 +40,11 @@ import { supabase } from './lib/supabase';
 import { loadSave, writeSave } from './lib/saveManager';
 
 const NARRATION_PAGES = [
-  "Once, knowledge kept the darkness at bay.\n\nScholars, warriors, seekers of truth — they held the line together.\n\nThen, one by one, they stopped.",
-  "The Abyss does not conquer.\n\nIt waits.\n\nEvery abandoned lesson, every surrendered hour — it grows stronger. Until the shadows learn to hunt.",
+  "Once, knowledge kept the darkness at bay.\n\nScholars, warriors, seekers of truth. They held the line together.\n\nThen, one by one, they stopped.",
+  "The Abyss does not conquer.\n\nIt waits.\n\nEvery abandoned lesson, every surrendered hour gives it strength. Until the shadows learn to hunt.",
   "Old roads are no longer safe.\nShadows move with purpose.\nThings that should not exist do.\n\nThey are not the cause of the world’s suffering.\nThey are its symptom.",
-  "But the chaos is not random.\n\nThere are whispers of something coordinating the dark — a force with purpose, with patience, with a design no champion has lived long enough to understand.\n\nRumors. Nothing more.\n\nFor now.",
-  "A holy order, ancient and dwindling, has sent you.\n\nNot to fight — but to understand.\n\nFind the root of the chaos. Learn what no champion before you could.",
+  "But the chaos is not random.\n\nThere are whispers of something behind it. A force with purpose, with patience, with a plan no champion has lived long enough to understand.\n\nRumors. Nothing more.\n\nFor now.",
+  "A holy order, ancient and dwindling, has sent you.\n\nNot to fight. To understand.\n\nFind the root of the chaos. Learn what no champion before you could.",
   "The flame is yours now.\n\nStudy. Endure. Push back the dark.\n\nHow long can you hold the Abyss at bay?",
 ];
 
@@ -6823,18 +6823,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               >
                 <p style={{
                   fontFamily: "'Cinzel', serif",
-                  fontSize: narrationIndex === 0 || narrationIndex === NARRATION_PAGES.length - 1
-                    ? 'clamp(1.1rem, 3vw, 1.5rem)'
-                    : 'clamp(0.9rem, 2.2vw, 1.1rem)',
+                  fontSize: 'clamp(0.9rem, 2.2vw, 1.1rem)',
                   lineHeight: 2,
                   letterSpacing: '0.04em',
-                  color: narrationIndex === NARRATION_PAGES.length - 1
-                    ? 'rgba(245,245,220,0.95)'
-                    : 'rgba(210,190,170,0.82)',
+                  color: 'rgba(210,190,170,0.82)',
                   whiteSpace: 'pre-line',
-                  textShadow: narrationIndex === NARRATION_PAGES.length - 1
-                    ? '0 0 30px rgba(200,30,30,0.4)'
-                    : 'none',
+                  textShadow: 'none',
                 }}>
                   {NARRATION_PAGES[narrationIndex]}
                 </p>
