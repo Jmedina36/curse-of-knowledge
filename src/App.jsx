@@ -806,10 +806,18 @@ const getDateKey = useCallback((date) => {
       return;
     }
     
-    // Add https:// if missing
+    // Validate URL — only allow http/https
     let url = newWebsiteUrl.trim();
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = 'https://' + url;
+    try {
+      const parsed = new URL(url.includes('://') ? url : 'https://' + url);
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        alert('Only http:// and https:// URLs are allowed.');
+        return;
+      }
+      url = parsed.href;
+    } catch {
+      alert('Please enter a valid URL.');
+      return;
     }
     
     const newSite = {
