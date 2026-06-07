@@ -613,8 +613,8 @@ export const LOCATION_CONTRACTS = [
   // ── The Order — Mythril Contracts ─────────────────────────────────────────────
   {
     id: 'order_cutter',
-    locationId: 'ironhold',
-    locationName: 'The Ironhold',
+    locationId: 'the_vault',
+    locationName: 'The Vault',
     name: 'The Bandit Lord',
     contractTier: 'mythril',
     zone: 4,
@@ -629,7 +629,7 @@ export const LOCATION_CONTRACTS = [
     },
     journalEntry: {
       title: 'Cutter',
-      location: 'The Ironhold',
+      location: 'The Vault',
       zone: 4,
       text: `He was waiting. No ambush, no speech. Just standing in the middle of the room like a man who had done this before.
 
