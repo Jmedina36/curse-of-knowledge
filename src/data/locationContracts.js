@@ -165,7 +165,7 @@ export const LOCATION_CONTRACTS = [
       title: 'The Relay',
       location: 'Whisper Forest',
       zone: 2,
-      text: `The ritual circle was still burning when Vayne fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Vayne said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the wellspring — now this forest. Whatever network they're building, it doesn't follow roads. It follows routes they've already cleared.`,
+      text: `The ritual circle was still burning when Knell fell. I've seen the sigil carved and stamped and sealed in wax — this time it was inverted. Knell said I keep finding them like it was a problem I was causing.\n\nThe circle wasn't summoning anything. It was broadcasting. A relay point, passing something outward across the forest.\n\nThey have nodes. The harbor, the grove, the wellspring — now this forest. Whatever network they're building, it doesn't follow roads. It follows routes they've already cleared.`,
     },
     zone: 2,
     encounter: {
@@ -529,7 +529,7 @@ export const LOCATION_CONTRACTS = [
     mercyContract: true,
     zone: 3,
     requiredContracts: ['lc_stonehenge'],
-    desc: "A survivor of the second expedition who walked back in, and the foreign prince who found her on the road. They reached the Old Nexus and stopped. Whatever they found here, they couldn't leave it.",
+    desc: "A survivor of the second expedition who walked back in, and the foreign prince who found her on the road. They stopped at the barrow ruins and never left. Whatever they found here, they couldn't walk away from it.",
     encounter: {
       enemyType: 'cursed',
       members: [
@@ -693,7 +693,7 @@ export const LOCATION_CONTRACTS = [
 
 Cutter was the first piece C placed. The harbor, the ledger, the banner at the canopy — all of it ran through him. He didn't ask questions. He built what he was told to build and held what he was told to hold.
 
-He's done now.`,
+He's gone. But not finished.`,
     },
     rewards: [
       { type: 'fusionCrystals', amount: 3  },
