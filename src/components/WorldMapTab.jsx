@@ -433,10 +433,10 @@ const LOCATIONS = [
     danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
   },
   {
-    id: 'lich_vault',
-    name: 'The Lich Vault',
+    id: 'void_spire',
+    name: 'The Void Spire',
     subtitle: "Malachar's Sanctum",
-    desc: "Everything the order built leads here. Malachar has died seventeen times. He does not expect to die again.",
+    desc: "A tower that shouldn't exist, rising from ground that has no record of being built on. Everything the order constructed leads here. Malachar has died seventeen times. He does not expect to die again.",
     marker: '/worldmap/skull-cave.png',
     type: 'contract',
     contractZone: 5,

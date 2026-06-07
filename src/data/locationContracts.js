@@ -762,8 +762,8 @@ One left.`,
   },
   {
     id: 'order_malachar',
-    locationId: 'lich_vault',
-    locationName: 'The Lich Vault',
+    locationId: 'void_spire',
+    locationName: 'The Void Spire',
     name: 'The Eternal Lich',
     contractTier: 'mythril',
     zone: 5,
@@ -771,7 +771,7 @@ One left.`,
     encounter: { enemyType: 'antagonist', antagonistId: 'malachar' },
     journalEntry: {
       title: 'Malachar',
-      location: 'The Lich Vault',
+      location: 'The Void Spire',
       zone: 5,
       text: `He said he had died seventeen times. He was counting on eighteen.
 
