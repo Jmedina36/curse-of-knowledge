@@ -35,7 +35,7 @@ function sanitizeSave(data) {
 
   // Booleans
   ['hasStarted', 'isDayActive', 'gauntletUnlocked', 'eliteBossDefeatedToday',
-   'dailyQuestCompleted', 'restedCursed'].forEach(k => {
+   'dailyQuestCompleted'].forEach(k => {
     if (d[k] !== undefined) d[k] = Boolean(d[k]);
   });
 
@@ -43,7 +43,7 @@ function sanitizeSave(data) {
   ['tasks', 'graveyard', 'weaponInventory', 'grimoireInventory',
    'tomeInventory', 'capturedMonsters', 'completedLocationContracts',
    'pendingLocationRewards', 'huntingChallenges', 'defeatedFactionMembers',
-   'studyWebsites', 'shopInventory'].forEach(k => {
+   'studyWebsites', 'shopInventory', 'restedCursed'].forEach(k => {
     if (d[k] !== undefined && !Array.isArray(d[k])) d[k] = [];
   });
 

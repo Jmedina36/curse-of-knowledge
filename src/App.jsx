@@ -1141,7 +1141,7 @@ const getDateKey = useCallback((date) => {
         if (data.pendingLocationRewards) setPendingLocationRewards(data.pendingLocationRewards);
         if (data.huntingChallenges) setHuntingChallenges(data.huntingChallenges);
         if (data.defeatedFactionMembers) setDefeatedFactionMembers(data.defeatedFactionMembers);
-        if (data.restedCursed) setRestedCursed(data.restedCursed);
+        if (Array.isArray(data.restedCursed)) setRestedCursed(data.restedCursed);
         if (data.lastEncounterDay !== undefined) setLastEncounterDay(data.lastEncounterDay);
   }
 
