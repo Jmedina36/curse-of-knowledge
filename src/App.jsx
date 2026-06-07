@@ -3019,6 +3019,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersLaugh1(),  dialogue: '"You spilled bandit blood. Now you face the dark."' },
     sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.possessedLaugh(),   dialogue: '"Impressive. Truly. But this ends now."' },
     malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),     dialogue: '"I have died seventeen times. I will not die tonight."' },
+    the_omen: { name: 'The Omen',                   img: '/main bad.png',                   hpMult: 8.0, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),     dialogue: '...' },
   };
 
   const spawnAntagonist = (antagonistId) => {

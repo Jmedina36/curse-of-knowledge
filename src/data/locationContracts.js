@@ -862,10 +862,10 @@ It's done. Whatever the order was building, it ends here. I don't know if that's
     desc: "Malachar passed the title before he fell. Cutter and Mira survived their defeats — they were never meant to die in zone 4. They were meant to regroup here, at the order's last stronghold, and make a final stand against whoever came this far. You came this far.",
     storyNote: "They fought together at the end — Cutter and Mira, the last pieces of the order that could still stand. There was no speech. They knew what this was. When it was over, the order was finished. Not because of Malachar or Sylvaris, but because the two people C trusted most to hold it together were finally, at last, done.",
     journalEntry: {
-      title: 'The Last Stand',
+      title: 'Too Late',
       location: 'The Skull Order',
       zone: 5,
-      text: `Cutter and Mira. Together. The order's last move — not ambush, not escape, just two people who survived everything else choosing to make a stand at the end.\n\nThey fought well. They always did. That was never the problem.\n\nThe order is finished. The structure Malachar built across five zones, across decades — it's gone. C is a title with no one left to hold it.\n\nI don't know what comes next. I know this is done.`,
+      text: `Cutter and Mira. Together. I thought it was a last stand.\n\nIt wasn't. They were buying time.\n\nWhen Mira fell, something in the cavern behind her changed. A sound — not loud, just wrong. The kind of sound that means something that was sealed has been opened.\n\nThey didn't come here to survive. They came here to finish the activation. I stopped the order. I didn't stop what the order was for.\n\nIt's in the Skull Cavern. I don't know what it is. I'm going in.`,
     },
     encounter: {
       enemyType: 'order_final',
@@ -875,6 +875,32 @@ It's done. Whatever the order was building, it ends here. I don't know if that's
       { type: 'fusionCrystals', amount: 10  },
       { type: 'gold',           amount: 300 },
       { type: 'xp',             amount: 1000 },
+    ],
+  },
+  {
+    id: 'lc_skull_cavern',
+    locationId: 'skull_cave',
+    locationName: 'Skull Cavern',
+    name: 'The Omen',
+    contractTier: 'mythril',
+    storyContract: true,
+    zone: 5,
+    requiredContracts: ['lc_skull_order'],
+    desc: "The cavern was sealed for a reason no record explains. The order spent five zones building toward the moment it would open. It's open now. Something is inside. It hasn't come out yet.",
+    journalEntry: {
+      title: 'What Was Always Coming',
+      location: 'Skull Cavern',
+      zone: 5,
+      text: `It didn't speak. It didn't need to.\n\nWhatever the order was — the network, the operatives, the ritual work across five zones — all of it was scaffolding. A way to prepare the ground. This is what the ground was being prepared for.\n\nI don't know what it is. I don't know where it came from. I know the order spent decades making sure nothing would stop it from arriving.\n\nI stopped it anyway.\n\nI don't know if that's enough. But it's done.`,
+    },
+    encounter: {
+      enemyType: 'antagonist',
+      antagonistId: 'the_omen',
+    },
+    rewards: [
+      { type: 'fusionCrystals', amount: 15  },
+      { type: 'gold',           amount: 500 },
+      { type: 'xp',             amount: 2000 },
     ],
   },
 ];
