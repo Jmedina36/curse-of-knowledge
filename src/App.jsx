@@ -7365,7 +7365,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
 
         {/* Navigation Section - Full Width */}
-        <nav className="flex flex-wrap gap-4 justify-center items-center mb-8 pt-2 pb-6 border-b-2" style={{
+        <nav className="flex flex-wrap gap-4 justify-center items-center mb-8 py-3 border-b-2" style={{
           marginLeft: 'calc(-50vw + 50%)',
           marginRight: 'calc(-50vw + 50%)',
           borderColor: 'rgba(212, 175, 55, 0.2)',
