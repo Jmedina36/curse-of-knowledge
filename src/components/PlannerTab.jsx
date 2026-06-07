@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, GripVertical, Plus, X } from 'lucide-react';
+import { GripVertical, Plus, X } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
 
@@ -36,18 +36,18 @@ const PlannerTab = ({
   setCurrentMonth,
   currentYear,
   setCurrentYear,
-  calendarTasks,
   calendarEvents,
   calendarFocus,
-  draggedPlanTask,
-  setDraggedPlanTask,
+  handlePlanDragStart,
   handlePlanDragEnd,
   handlePlanDragOver,
+  handlePlanDrop,
   getNextDayOfWeek,
   setSelectedDate,
   setSelectedDay,
   setShowCalendarModal,
   setShowPlanModal,
+  setTasks,
   addLog,
 }) => {
   const todayDayName = new Date().toLocaleDateString('en-US', { weekday: 'long' });

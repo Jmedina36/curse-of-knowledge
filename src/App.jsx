@@ -7373,13 +7373,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               hidePlannerCompleted={hidePlannerCompleted} setHidePlannerCompleted={setHidePlannerCompleted}
               currentMonth={currentMonth} setCurrentMonth={setCurrentMonth}
               currentYear={currentYear} setCurrentYear={setCurrentYear}
-              calendarTasks={calendarTasks} calendarEvents={calendarEvents} calendarFocus={calendarFocus}
-              draggedPlanTask={draggedPlanTask} setDraggedPlanTask={setDraggedPlanTask}
-              handlePlanDragEnd={handlePlanDragEnd} handlePlanDragOver={handlePlanDragOver}
+              calendarEvents={calendarEvents} calendarFocus={calendarFocus}
+              handlePlanDragStart={handlePlanDragStart} handlePlanDragEnd={handlePlanDragEnd}
+              handlePlanDragOver={handlePlanDragOver} handlePlanDrop={handlePlanDrop}
               getNextDayOfWeek={getNextDayOfWeek}
               setSelectedDate={setSelectedDate} setSelectedDay={setSelectedDay}
               setShowCalendarModal={setShowCalendarModal} setShowPlanModal={setShowPlanModal}
-              addLog={addLog}
+              setTasks={setTasks} addLog={addLog}
             />
           )}
           {activeTab === 'study' && (
