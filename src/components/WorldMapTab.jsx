@@ -670,7 +670,7 @@ const WorldMapTab = ({
     if (!zone || zone <= 1) return true;
     // Debug override: if the previous zone is flagged as complete, unlock this zone
     if (debugUnlockedZones?.includes(zone - 1)) return true;
-    const prevContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone - 1);
+    const prevContracts = LOCATION_CONTRACTS.filter(c => c.zone === zone - 1 && !c.mercyContract);
     if (prevContracts.length === 0) return false;
     return prevContracts.every(c => completedLocationContracts?.includes(c.id));
   };

@@ -7359,7 +7359,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
               xp={xp} level={level}
               eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
-              gauntletUnlocked={gauntletUnlocked} gauntletMilestone={gauntletMilestone}
               tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
               newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
               timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
@@ -7370,17 +7369,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
               setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
               setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
-              start={start} miniBoss={miniBoss} finalBoss={finalBoss}
+              start={start}
               activeContract={activeContract} setActiveContract={setActiveContract}
               setActiveTab={setActiveTab}
               setShowImportModal={setShowImportModal}
               log={log} addLog={addLog}
-              onRaid={spawnBanditWave}
-              banditWaveNumber={banditWaveNumber}
-              banditCaptainsDefeated={banditCaptainsDefeated}
-              onDaughtersRaid={spawnDaughtersWave}
-              daughtersWaveNumber={daughtersWaveNumber}
-              daughtersCaptainsDefeated={daughtersCaptainsDefeated}
               guildPoints={guildPoints} guildRank={guildRank} guildRanks={GUILD_RANKS}
               locationContracts={LOCATION_CONTRACTS}
               completedLocationContracts={completedLocationContracts}

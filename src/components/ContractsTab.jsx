@@ -35,8 +35,6 @@ const ContractsTab = ({
   level,
   eliteBossDefeatedToday,
   debugWarningState,
-  gauntletUnlocked,
-  gauntletMilestone,
   tasks,
   setTasks,
   showModal,
@@ -66,20 +64,12 @@ const ContractsTab = ({
   setIsBreak,
   setPomodorosCompleted,
   start,
-  miniBoss,
-  finalBoss,
   activeContract,
   setActiveContract,
   setActiveTab,
   setShowImportModal,
   log,
   addLog,
-  onRaid,
-  banditWaveNumber,
-  banditCaptainsDefeated,
-  onDaughtersRaid,
-  daughtersWaveNumber,
-  daughtersCaptainsDefeated,
   guildPoints,
   guildRank,
   guildRanks,
@@ -402,7 +392,7 @@ const ContractsTab = ({
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
               const fieldContracts   = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier !== 'blood' && lc.contractTier !== 'mythril');
-              const storyContracts   = visible.filter(lc => lc.storyContract);
+              const storyContracts   = visible.filter(lc => lc.storyContract && lc.contractTier !== 'mythril');
               const mercyContracts   = visible.filter(lc => lc.mercyContract);
               const bloodContracts   = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier === 'blood');
               const mythrilContracts = visible.filter(lc => lc.contractTier === 'mythril');
