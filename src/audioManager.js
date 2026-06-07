@@ -12,7 +12,7 @@
 
 export const TRACKS = {
   nightVigil:        '/sounds/music/Night Vigil.mp3',
-  midnightTale:      '/sounds/music/Midnight Tale.mp3',
+  midnightTale:      '/sounds/music/SCP-x6x.mp3',
   unholyKnight:      '/sounds/music/Unholy Knight.mp3',
   darkling:          '/sounds/music/Darkling.mp3',
   malicious:         '/sounds/music/Malicious.mp3',
