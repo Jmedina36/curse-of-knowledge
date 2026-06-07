@@ -551,6 +551,7 @@ export const LOCATION_CONTRACTS = [
     contractTier: 'gold',
     mercyContract: true,
     zone: 4,
+    requiredContracts: ['order_cutter'],
     desc: "A jarl who sent his men home and a steward who stopped managing and started walking — both found at the edge of the mapped world. They made it further than anyone expected. They can't make the last step alone.",
     encounter: {
       enemyType: 'cursed',
@@ -610,6 +611,38 @@ export const LOCATION_CONTRACTS = [
     ],
   },
 
+  // ── Zone 4 Story Contracts ────────────────────────────────────────────────────
+  {
+    id: 'lc_stone_cavern',
+    locationId: 'stone_cavern',
+    locationName: 'The Stone Cavern',
+    name: 'The Way Through',
+    contractTier: 'gold',
+    storyContract: true,
+    zone: 4,
+    desc: "The cavern system beneath the fourth zone has been used as a supply corridor for months. Whatever the order moved through here, it came out the other side ready. The bandits posted inside aren't guarding it anymore — they're living in it.",
+    storyNote: "Vetch had a ledger — not cargo manifests, personnel records. Names, roles, assigned positions across the zone. Cross-referenced with transit dates. C didn't just move supplies through here. They moved people. Every operative in the zone passed through this cavern at some point. It was the intake point. Whatever C built in zone 4, it started here.",
+    journalEntry: {
+      title: 'The Intake',
+      location: 'The Stone Cavern',
+      zone: 4,
+      text: `Vetch had a personnel ledger. Every name in the zone, every role, every assigned position — all dated, all cross-referenced with transit windows through the cavern.\n\nC didn't recruit locally. They moved people in. Carefully, quietly, one at a time. The cavern was the intake point. Everyone who ended up holding a position in this zone came through here first.\n\nCutter's name was at the top of the list. First in. The Vault was already waiting for him.\n\nI'm through the intake now. Whatever C built on the other side, I'm inside it.`,
+    },
+    encounter: {
+      enemyType: 'bandit',
+      waveSize: 2,
+      enemyNames: ['Vetch'],
+      dialogue: [
+        "You made it this far. Cutter said you might. He didn't say what to do about it.",
+      ],
+    },
+    rewards: [
+      { type: 'gold',          amount: 85  },
+      { type: 'healthPots',    amount: 2   },
+      { type: 'xp',            amount: 190 },
+    ],
+  },
+
   // ── The Order — Mythril Contracts ─────────────────────────────────────────────
   {
     id: 'order_cutter',
@@ -618,6 +651,7 @@ export const LOCATION_CONTRACTS = [
     name: 'The Bandit Lord',
     contractTier: 'mythril',
     zone: 4,
+    requiredContracts: ['lc_stone_cavern'],
     encounter: {
       enemyType: 'bandit',
       members: [
@@ -650,7 +684,7 @@ He's done now.`,
     name: 'The Dusk Queen',
     contractTier: 'mythril',
     zone: 4,
-    requiredContracts: ['order_cutter'],
+    requiredContracts: ['mc_sigrun_halvard'],
     encounter: {
       enemyType: 'daughters',
       members: [
