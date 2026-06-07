@@ -36,7 +36,7 @@ import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
 import { supabase } from './lib/supabase';
-import { loadSave, writeSave, pushSaveNow } from './lib/saveManager';
+import { loadSave, writeSave } from './lib/saveManager';
 
 const NARRATION_PAGES = [
   "Before the first lesson was abandoned,\nthere was only light.\n\nNot the light of fire or sun — but the light of understanding. Of questions asked and answered. Of minds that refused to stay in the dark.",

@@ -39,12 +39,3 @@ export function writeSave(saveData) {
   }, 5000);
 }
 
-export async function pushSaveNow(saveData) {
-  clearTimeout(writeTimer);
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-  await supabase.from('saves').upsert(
-    { user_id: user.id, data: saveData, updated_at: new Date().toISOString() },
-    { onConflict: 'user_id' }
-  );
-}
