@@ -35,7 +35,6 @@ import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
-import AuthGate from './components/AuthGate';
 import { supabase } from './lib/supabase';
 import { loadSave, writeSave, pushSaveNow } from './lib/saveManager';
 
@@ -152,6 +151,7 @@ const FantasyStudyQuest = () => {
   const [charCreateClass, setCharCreateClass] = useState(null);
   const [charCreateGender, setCharCreateGender] = useState(null);
   const introTimers = useRef([]);
+  const supabaseUserRef = useRef(null);
   const enterDyingRef = useRef(false); // guard against re-entry during death saves
   const [diceRoll, setDiceRoll] = useState(null); // { roll, bonusXP, bonusGold }
   const [currentEncounter, setCurrentEncounter] = useState(null);
@@ -665,8 +665,6 @@ const [godMode, setGodMode] = useState(false);
   // Auth state
   const [supabaseUser, setSupabaseUser] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authChecked, setAuthChecked] = useState(false);
-  const [showAuthGate, setShowAuthGate] = useState(false);
 
   // QoL state variables
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
@@ -1004,7 +1002,8 @@ const getDateKey = useCallback((date) => {
     const advance = () => {
       audioManager.play(TRACKS.nightVigil);
       introTimers.current.forEach(clearTimeout);
-      setIntroPhase('revealed');
+      // Already signed in — skip mode-select entirely
+      setIntroPhase(supabaseUserRef.current ? 'revealed' : 'mode-select');
     };
     const onKey = (e) => { if (e.key === 'Enter') advance(); };
     window.addEventListener('keydown', onKey);
@@ -1015,23 +1014,23 @@ const getDateKey = useCallback((date) => {
   }, []);
 
     useEffect(() => {
-    // Check existing session on mount
+    // Restore existing session on mount (returning user — skip mode select)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
+        supabaseUserRef.current = session.user;
         setSupabaseUser(session.user);
-        setShowAuthGate(false);
-      } else {
-        setShowAuthGate(true);
       }
-      setAuthChecked(true);
     });
 
     // Keep session in sync across tabs / token refresh
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       const user = session?.user ?? null;
+      supabaseUserRef.current = user;
       setSupabaseUser(user);
       if (event === 'SIGNED_IN') {
-        setShowAuthGate(false);
+        // Advance past mode-select if signing in mid-intro
+        setIntroPhase(p => p === 'mode-select' ? 'revealed' : p);
+        setShowAuthModal(false);
         const cloudData = await loadSave();
         if (cloudData) applyLoadedData(cloudData);
       }
@@ -6706,23 +6705,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }
       `}</style>
 
-      {/* ── Auth gate — shown before everything until session is resolved ── */}
-      {!authChecked && (
-        <div style={{ position: 'fixed', inset: 0, background: '#0a0503', zIndex: 10000 }} />
-      )}
-      {authChecked && showAuthGate && (
-        <AuthGate onEnter={({ user, offline }) => {
-          if (user) setSupabaseUser(user);
-          setShowAuthGate(false);
-        }} />
-      )}
-
       {/* ── Intro / menu overlay — one screen, title never moves ── */}
       {introPhase !== 'done' && (
         <div
           onClick={introPhase === 'visible' ? () => {
             audioManager.play(TRACKS.nightVigil);
-            setIntroPhase('revealed');
+            setIntroPhase(supabaseUserRef.current ? 'revealed' : 'mode-select');
           } : undefined}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
@@ -7101,6 +7089,58 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 color: 'rgba(212,175,55,0.75)',
                 animation: 'intro-fade-up 0.5s ease-out 2.8s both, intro-hint-pulse 2s ease-in-out 3.3s infinite',
               }}>✦ press enter or tap to begin ✦</p>
+            )}
+
+            {/* Mode select */}
+            {introPhase === 'mode-select' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', animation: 'intro-fade-up 0.45s ease-out both' }}>
+                <p style={{
+                  fontFamily: "'Cinzel', serif",
+                  fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)',
+                  letterSpacing: '0.28em',
+                  textTransform: 'uppercase',
+                  color: 'rgba(212,175,55,0.4)',
+                  marginBottom: '8px',
+                }}>Choose your path</p>
+
+                <button
+                  onClick={() => { setShowAuthModal(true); }}
+                  style={{
+                    fontFamily: "'Cinzel', serif", fontWeight: 700,
+                    fontSize: 'clamp(1rem, 2.5vw, 1.3rem)', letterSpacing: '0.25em',
+                    textTransform: 'uppercase', color: '#F5F5DC',
+                    background: 'none', border: 'none', padding: '14px 64px',
+                    cursor: 'pointer', minWidth: '300px', transition: 'all 0.25s',
+                    textShadow: '0 0 16px rgba(200,30,30,0.6)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.textShadow = '0 0 28px rgba(220,50,50,1), 0 0 60px rgba(180,0,0,0.7)'; e.currentTarget.style.transform = 'scale(1.06)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#F5F5DC'; e.currentTarget.style.textShadow = '0 0 16px rgba(200,30,30,0.6)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                >
+                  Play Online
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '240px' }}>
+                  <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.2))' }} />
+                  <span style={{ color: 'rgba(212,175,55,0.25)', fontSize: '7px' }}>◆</span>
+                  <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.2))' }} />
+                </div>
+
+                <button
+                  onClick={() => { setIntroPhase('revealed'); }}
+                  style={{
+                    fontFamily: "'Cinzel', serif", fontWeight: 600,
+                    fontSize: 'clamp(0.85rem, 2vw, 1rem)', letterSpacing: '0.25em',
+                    textTransform: 'uppercase', color: 'rgba(212,175,55,0.55)',
+                    background: 'none', border: 'none', padding: '12px 64px',
+                    cursor: 'pointer', minWidth: '300px', transition: 'all 0.25s',
+                    textShadow: '0 0 10px rgba(212,175,55,0.2)',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.color = 'rgba(212,175,55,0.9)'; e.currentTarget.style.textShadow = '0 0 20px rgba(212,175,55,0.5)'; e.currentTarget.style.transform = 'scale(1.04)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(212,175,55,0.55)'; e.currentTarget.style.textShadow = '0 0 10px rgba(212,175,55,0.2)'; e.currentTarget.style.transform = 'scale(1)'; }}
+                >
+                  Play Offline
+                </button>
+              </div>
             )}
 
             {/* Continue / New Adventure */}
@@ -8709,8 +8749,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
       {showAuthModal && (
         <AuthModal
-          onClose={() => setShowAuthModal(false)}
-          onSignIn={(user) => setSupabaseUser(user)}
+          onClose={() => {
+            setShowAuthModal(false);
+            // If they dismiss from mode-select, fall back to offline
+            if (introPhase === 'mode-select') setIntroPhase('revealed');
+          }}
+          onSignIn={(user) => {
+            setSupabaseUser(user);
+            setShowAuthModal(false);
+            if (introPhase === 'mode-select') setIntroPhase('revealed');
+          }}
         />
       )}
 
