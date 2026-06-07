@@ -771,6 +771,7 @@ const WorldMapTab = ({
                 alt="Ararlul"
                 style={{
                   width: '100%', display: 'block',
+                  mixBlendMode: 'lighten',
                   filter: isDayActive ? 'none' : 'brightness(0.45) saturate(0.5) hue-rotate(200deg)',
                   transition: 'filter 1.2s ease',
                 }}
