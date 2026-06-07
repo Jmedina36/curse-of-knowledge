@@ -40,12 +40,22 @@ function sanitizeSave(data) {
   });
 
   // Arrays — corrupt non-arrays become empty arrays
-  ['tasks', 'graveyard', 'weaponInventory', 'armorInventory', 'grimoireInventory',
+  ['tasks', 'graveyard', 'weaponInventory', 'grimoireInventory',
    'tomeInventory', 'capturedMonsters', 'completedLocationContracts',
    'pendingLocationRewards', 'huntingChallenges', 'defeatedFactionMembers',
    'studyWebsites', 'shopInventory'].forEach(k => {
     if (d[k] !== undefined && !Array.isArray(d[k])) d[k] = [];
   });
+
+  // armorInventory is an object with slot arrays — repair if corrupt
+  if (d.armorInventory !== undefined) {
+    if (typeof d.armorInventory !== 'object' || d.armorInventory === null || Array.isArray(d.armorInventory)) {
+      d.armorInventory = { helmet: [], chest: [], gloves: [], boots: [] };
+    } else {
+      const slots = ['helmet', 'chest', 'gloves', 'boots'];
+      slots.forEach(s => { if (!Array.isArray(d.armorInventory[s])) d.armorInventory[s] = []; });
+    }
+  }
 
   // Objects — corrupt non-objects are dropped (will fall back to defaults)
   ['hero', 'equippedWeapon', 'equippedArmor', 'equippedGrimoire', 'equippedTome',
