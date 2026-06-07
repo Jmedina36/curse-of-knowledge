@@ -161,9 +161,9 @@ const LOCATIONS = [
 
   // ── CENTRAL LANDMASS — Level 3-5 ──────────────────────────────────────────
   {
-    id: 'stone_bridge',
+    id: 'old_crossing',
     name: 'The Old Crossing',
-    contractZone: 2,
+    contractZone: 3,
     subtitle: 'Ancient Bridge',
     desc: 'A bridge that outlasted the kingdom that built it. The river below has something old and patient living in it.',
     marker: '/worldmap/rock-bridge.png',
@@ -172,19 +172,6 @@ const LOCATIONS = [
     position: { left: '58%', top: '55%' },
     danger: 2, dangerLabel: 'Moderate', dangerColor: '#CD7F32',
     contract: 'Toll of the Deep',
-  },
-  {
-    id: 'treasure_vault',
-    name: 'The Vault',
-    contractZone: 4,
-    subtitle: 'Hidden Cache',
-    desc: 'A vault sealed by someone who never returned for it. The guardians they posted are still at their post.',
-    marker: '/worldmap/treasure-chest.png',
-    type: 'contract',
-    unlockLevel: 8,
-    position: { left: '38%', top: '24%' },
-    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
-    contract: 'The Lost Cache',
   },
   {
     id: 'barrow_ruins',
@@ -199,7 +186,7 @@ const LOCATIONS = [
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
   },
   {
-    id: 'old_tree',
+    id: 'the_hollow',
     name: 'The Hollow',
     contractZone: 3,
     subtitle: 'Dead Landmark',
@@ -212,10 +199,10 @@ const LOCATIONS = [
     contract: 'Extermination Order',
   },
   {
-    id: 'runic_circle',
-    name: 'Runic Circle',
+    id: 'stonehenge',
+    name: 'The Stonehenge',
     contractZone: 3,
-    subtitle: 'Arcane Site',
+    subtitle: 'Standing Stones',
     desc: 'Runes cut into bedrock that pulse without heat or wind. The ritual is still running — no one knows what it\'s building toward.',
     marker: '/worldmap/runic-stone.png',
     type: 'contract',
@@ -237,7 +224,7 @@ const LOCATIONS = [
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
   },
   {
-    id: 'magic_stone',
+    id: 'arcane_monolith',
     name: 'The Arcane Monolith',
     contractZone: 3,
     subtitle: 'Power Node',
@@ -250,7 +237,7 @@ const LOCATIONS = [
     contract: 'Shatter the Node',
   },
   {
-    id: 'column_ruins',
+    id: 'the_pillars',
     name: 'The Pillars',
     contractZone: 3,
     subtitle: 'Fallen Temple',
@@ -263,7 +250,7 @@ const LOCATIONS = [
     contract: 'Temple Cleansing',
   },
   {
-    id: 'dungeon',
+    id: 'dungeon_fallen',
     name: 'Dungeon of the Fallen',
     subtitle: 'Elite Territory',
     desc: 'Ruins above, dungeon below. Elite hunters go in. Not all come out. Enter when the contract calls for it.',
@@ -303,7 +290,7 @@ const LOCATIONS = [
     contract: 'Edge of the World',
   },
   {
-    id: 'dry_tree',
+    id: 'withered_woods',
     name: 'The Withered Wood',
     contractZone: 3,
     subtitle: 'Ashen Forest',
@@ -314,19 +301,6 @@ const LOCATIONS = [
     position: { left: '36%', top: '53%' },
     danger: 3, dangerLabel: 'Dangerous', dangerColor: '#DC2626',
     contract: 'The Restless Dead',
-  },
-  {
-    id: 'crystal_stones',
-    name: 'Crystal Wastes',
-    contractZone: 4,
-    subtitle: 'Corrupted Ground',
-    desc: 'Crystals that grew from poisoned ground. They spread into everything — stone, soil, bone. Nothing that feeds on them stays what it was.',
-    marker: '/worldmap/crystal-stones.png',
-    type: 'contract',
-    unlockLevel: 8,
-    position: { left: '20%', top: '5%' },
-    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
-    contract: 'Purge the Corruption',
   },
 
   // ── TOP-RIGHT ISLAND — Level 8+ dire / Legendary ──────────────────────────
@@ -451,10 +425,10 @@ const LOCATIONS = [
 // Confirmed land anchors used for placement:
 //   Sandy island:   outskirts(56,80) fountain(62,67) whisper_forest(72,77) ivy_crossing(72,88)
 //   Green island:   harbor(28,79) canopy_outpost(22,63) holy_tree(38,67)
-//   Central:        runic_circle(20,46) stonehenge(36,38) barrow_ruins(48,47)
-//                   treasure_vault(36,53) stone_bridge(58,55) magic_stone(50,34)
-//                   old_tree(72,44) column_ruins(62,40) dungeon(74,36)
-//   Top-left:       crystal_stones(20,10) stoneback_cave(22,18) precipice(10,24) dry_tree(34,27)
+//   Central:        stonehenge(14,50) stonehenge_wilds(30,44) barrow_ruins(48,47)
+//                   old_crossing(58,55) arcane_monolith(50,34)
+//                   the_hollow(82,50) the_pillars(62,28) dungeon_fallen(74,42)
+//   Top-left:       crystal_wastes(10,10) stoneback_cave(16,24) precipice(22,14) withered_woods(36,53)
 //   Top-right:      crystal_lava(50,5) lava_wastes(58,14) crystal_column(70,7) skull_cave(82,4)
 const DECORATIONS = [
   // zone = geographic zone for wild encounter scaling and lock gating
