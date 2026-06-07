@@ -2,7 +2,7 @@ export const DAILY_ENCOUNTERS = [
   {
     id: 'wandering_sage',
     title: 'The Wandering Sage',
-    icon: '🧙',
+    icon: '',
     rarity: 'uncommon',
     description: 'An ancient sage materializes at your study table, drawn by the glow of your focus. He places a weathered hand on your shoulder.',
     flavor: '"True mastery is not knowing all answers — it is asking better questions."',
@@ -46,7 +46,7 @@ export const DAILY_ENCOUNTERS = [
   {
     id: 'battle_hymn',
     title: 'The Battle Hymn',
-    icon: '⚔️',
+    icon: '',
     rarity: 'rare',
     description: 'A distant war drum echoes through the halls. Its rhythm fills you with fierce determination — every task today feels like a conquest.',
     flavor: '"Let the rhythm of struggle sharpen your mind."',
@@ -90,7 +90,7 @@ export const DAILY_ENCOUNTERS = [
   {
     id: 'ancestral_blessing',
     title: 'Ancestral Blessing',
-    icon: '✨',
+    icon: '',
     rarity: 'rare',
     description: 'The spirits of scholars past gather around you at dawn, their hands glowing with restorative light. You feel whole again.',
     flavor: '"We who came before walk beside you still."',
@@ -112,7 +112,7 @@ export const DAILY_ENCOUNTERS = [
   {
     id: 'storm_warning',
     title: 'The Coming Storm',
-    icon: '⛈️',
+    icon: '',
     rarity: 'common',
     description: 'Dark clouds gather on the horizon. The air crackles with tension. Something is coming — but you will be ready.',
     flavor: '"A storm tests what the calm has built."',
@@ -156,7 +156,7 @@ export const DAILY_ENCOUNTERS = [
   {
     id: 'alchemy_accident',
     title: 'Alchemical Discovery',
-    icon: '⚗️',
+    icon: '',
     rarity: 'uncommon',
     description: 'An accidental mixture of your study potions produces a faintly glowing brew. You drink it. Your mind hums with an unfamiliar energy.',
     flavor: '"The best discoveries are rarely intentional."',
