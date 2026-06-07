@@ -411,7 +411,7 @@ const InventoryModal = ({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '16px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(212,175,55,0.3)`,
-          background: 'rgba(0,0,0,0.55)',
+          background: 'rgba(0,0,0,0.3)',
           position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
@@ -430,7 +430,7 @@ const InventoryModal = ({
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
           {/* LEFT — Collected items */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.2)`, overflow: 'hidden', background: 'rgba(0,0,0,0.45)' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: `1px solid rgba(212,175,55,0.2)`, overflow: 'hidden', background: 'rgba(0,0,0,0.25)' }}>
 
             {/* Category filter */}
             <div style={{ display: 'flex', gap: '6px', padding: '10px 16px 8px', flexShrink: 0, background: 'rgba(0,0,0,0.2)', borderBottom: `1px solid rgba(212,175,55,0.2)` }}>
@@ -460,7 +460,7 @@ const InventoryModal = ({
           </div>
 
           {/* RIGHT — Equipped gear */}
-          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(0,0,0,0.5)', flexShrink: 0 }}>
+          <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(0,0,0,0.25)', flexShrink: 0 }}>
 
             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
