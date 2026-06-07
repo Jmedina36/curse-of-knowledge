@@ -256,7 +256,7 @@ const CraftingModal = ({
           initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          style={{ width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh', backgroundImage: "url('/Merchant shop.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
+          style={{ width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh', backgroundImage: "url('/Stonewall1.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
           onClick={e => e.stopPropagation()}
         >
           {/* ── HEADER ── */}
