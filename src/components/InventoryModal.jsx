@@ -440,7 +440,7 @@ const InventoryModal = ({
                   style={{
                     flex: 1, padding: '8px 4px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
                     border: `1px solid ${category === key ? 'rgba(212,175,55,0.6)' : 'rgba(155,139,126,0.25)'}`,
-                    background: category === key ? 'rgba(184,134,11,0.3)' : 'rgba(0,0,0,0.3)',
+                    background: category === key ? 'rgba(184,134,11,0.75)' : 'rgba(37,33,24,0.88)',
                     color: category === key ? COLORS.gold : COLORS.silver,
                     cursor: 'pointer',
                   }}
