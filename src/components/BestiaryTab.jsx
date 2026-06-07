@@ -611,7 +611,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
                         position: 'absolute', top: '50%', left: '50%',
                         transform: 'translate(-50%, -50%) rotate(-15deg)',
                         fontFamily: 'Cinzel, serif', fontWeight: 900,
-                        fontSize: '1.1rem', letterSpacing: '0.15em',
+                        fontSize: '0.95rem', letterSpacing: '0.15em',
                         color: 'rgba(160,180,230,0.88)',
                         border: '2px solid rgba(160,180,230,0.75)',
                         padding: '2px 8px', borderRadius: '3px',
@@ -619,7 +619,6 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
                         boxShadow: '0 0 10px rgba(140,160,220,0.2), inset 0 0 6px rgba(0,0,0,0.4)',
                         background: 'rgba(0,0,0,0.4)',
                         whiteSpace: 'nowrap', pointerEvents: 'none',
-                        fontSize: '0.95rem',
                       }}>AT REST</div>
                     )}
                   </div>
