@@ -618,7 +618,15 @@ export const LOCATION_CONTRACTS = [
     name: 'The Bandit Lord',
     contractTier: 'mythril',
     zone: 4,
-    encounter: { enemyType: 'antagonist', antagonistId: 'cutter' },
+    encounter: {
+      enemyType: 'bandit',
+      members: [
+        { img: '/bandits/bandit-5.png',  name: 'Mace',   isCapt: false, isLeader: false },
+        { img: '/bandits/captain-1.png', name: 'Harrow', isCapt: true,  isLeader: false },
+        { img: '/bandits/leader.png',    name: 'Cutter', isCapt: false, isLeader: true  },
+      ],
+      dialogue: ["End of the road. Nothing personal."],
+    },
     journalEntry: {
       title: 'Cutter',
       location: 'The Ironhold',
@@ -637,20 +645,28 @@ He's done now.`,
   },
   {
     id: 'order_mira',
-    locationId: 'dusk_sanctum',
-    locationName: 'The Dusk Sanctum',
+    locationId: 'crystal_wastes',
+    locationName: 'The Crystal Wastes',
     name: 'The Dusk Queen',
     contractTier: 'mythril',
     zone: 4,
     requiredContracts: ['order_cutter'],
-    encounter: { enemyType: 'antagonist', antagonistId: 'mira' },
+    encounter: {
+      enemyType: 'daughters',
+      members: [
+        { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne', isCapt: true,  isLeader: false },
+        { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',  isCapt: true,  isLeader: false },
+        { img: '/daughters-of-dusk/leader.png',    name: 'Mira',  isCapt: false, isLeader: true  },
+      ],
+      dialogue: ["You've come a long way to reach me. That only means I'll remember it."],
+    },
     journalEntry: {
       title: 'Mira',
-      location: 'The Dusk Sanctum',
+      location: 'The Crystal Wastes',
       zone: 4,
       text: `She knew everything before I walked in. The harbor. The crossing. Every name I've put down. She catalogued it like she was proud of me.
 
-Mira built the ritual network — the relay in Whisper Forest, the circle at the grove. She wasn't following the order's instructions. She was extending them. She believed in whatever C is building.
+Mira built the ritual network — the relay in Whisper Forest, the silence in the Withered Woods, the transit through the dungeon. She wasn't following the order's instructions. She was extending them. She believed in whatever C is building.
 
 Two leaders down. Whatever is above them hasn't moved yet.`,
     },

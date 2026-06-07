@@ -7446,38 +7446,48 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   const { enemyType, waveSize, tierWeights } = lc.encounter;
                   addLog(`Contract battle: "${lc.name}" — ${waveSize} enemies stand between you and your reward.`);
                   if (enemyType === 'bandit') {
-                    const { enemyNames, dialogue } = lc.encounter;
-                    const lineup = [];
-                    // Named member first — check grunts then captains
-                    const namedName = enemyNames?.[0];
-                    const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName);
-                    const namedCapt  = BANDIT_POOL.captains.find(c => c.name === namedName);
-                    const namedBandit = namedGrunt || namedCapt || BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
-                    lineup.push({ img: namedBandit.img, name: namedBandit.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null });
-                    // Fill rest with creatures
-                    for (let i = lineup.length; i < 3; i++) {
-                      const c = pickCreatureForDay(currentDay);
-                      lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
+                    const { enemyNames, dialogue, members: fixedMembers } = lc.encounter;
+                    let lineup = [];
+                    if (fixedMembers) {
+                      // Fixed wave lineup (e.g. grunt → captain → leader)
+                      lineup = fixedMembers.map((m, i) => ({ ...m, contractDialogue: i === 0 ? (dialogue?.[0] || null) : null }));
+                    } else {
+                      // Named member first — check grunts then captains
+                      const namedName = enemyNames?.[0];
+                      const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName);
+                      const namedCapt  = BANDIT_POOL.captains.find(c => c.name === namedName);
+                      const namedBandit = namedGrunt || namedCapt || BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
+                      lineup.push({ img: namedBandit.img, name: namedBandit.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null });
+                      // Fill rest with creatures
+                      for (let i = lineup.length; i < 3; i++) {
+                        const c = pickCreatureForDay(currentDay);
+                        lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
+                      }
+                      lineup.sort(() => Math.random() - 0.5);
                     }
-                    lineup.sort(() => Math.random() - 0.5);
                     banditLineupRef.current = lineup;
                     banditLineupIdxRef.current = 0;
                     setTimeout(() => spawnBanditEnemy(lineup[0], 0, lineup.length), 1000);
                   } else if (enemyType === 'daughters') {
-                    const { enemyNames, dialogue } = lc.encounter;
-                    const lineup = [];
-                    // Named member first — check members then captains
-                    const namedName = enemyNames?.[0];
-                    const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName);
-                    const namedCapt   = DAUGHTERS_POOL.captains.find(c => c.name === namedName);
-                    const namedDaughter = namedMember || namedCapt || DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
-                    lineup.push({ img: namedDaughter.img, name: namedDaughter.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null });
-                    // Fill rest with creatures
-                    for (let i = lineup.length; i < 3; i++) {
-                      const c = pickCreatureForDay(currentDay);
-                      lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
+                    const { enemyNames, dialogue, members: fixedMembers } = lc.encounter;
+                    let lineup = [];
+                    if (fixedMembers) {
+                      // Fixed wave lineup (e.g. member → captain → leader)
+                      lineup = fixedMembers.map((m, i) => ({ ...m, contractDialogue: i === 0 ? (dialogue?.[0] || null) : null }));
+                    } else {
+                      // Named member first — check members then captains
+                      const namedName = enemyNames?.[0];
+                      const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName);
+                      const namedCapt   = DAUGHTERS_POOL.captains.find(c => c.name === namedName);
+                      const namedDaughter = namedMember || namedCapt || DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
+                      lineup.push({ img: namedDaughter.img, name: namedDaughter.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null });
+                      // Fill rest with creatures
+                      for (let i = lineup.length; i < 3; i++) {
+                        const c = pickCreatureForDay(currentDay);
+                        lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
+                      }
+                      lineup.sort(() => Math.random() - 0.5);
                     }
-                    lineup.sort(() => Math.random() - 0.5);
                     daughtersLineupRef.current = lineup;
                     daughtersLineupIdxRef.current = 0;
                     setTimeout(() => spawnDaughtersEnemy(lineup[0], 0, lineup.length), 1000);
