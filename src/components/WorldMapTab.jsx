@@ -756,10 +756,7 @@ const WorldMapTab = ({
               scrollbarWidth: 'thin',
               scrollbarColor: 'rgba(212,175,55,0.2) rgba(0,0,0,0.3)',
               transition: 'border-color 1s, box-shadow 1s, background 1.2s',
-              backgroundImage: 'url(/Ocean.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              backgroundColor: isDayActive ? 'transparent' : 'rgba(5,8,30,0.55)',
+              backgroundColor: isDayActive ? '#2a6fa8' : '#0d1f3c',
             }}
           >
             <div
@@ -771,7 +768,6 @@ const WorldMapTab = ({
                 alt="Ararlul"
                 style={{
                   width: '100%', display: 'block',
-                  mixBlendMode: 'lighten',
                   filter: isDayActive ? 'none' : 'brightness(0.45) saturate(0.5) hue-rotate(200deg)',
                   transition: 'filter 1.2s ease',
                 }}
