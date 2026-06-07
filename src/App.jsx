@@ -34,6 +34,9 @@ import { LOCATION_CONTRACTS, REWARD_LABELS } from './data/locationContracts';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
+import AuthModal from './components/AuthModal';
+import { supabase } from './lib/supabase';
+import { loadSave, writeSave, pushSaveNow } from './lib/saveManager';
 
 const NARRATION_PAGES = [
   "Before the first lesson was abandoned,\nthere was only light.\n\nNot the light of fire or sun — but the light of understanding. Of questions asked and answered. Of minds that refused to stay in the dark.",
@@ -658,6 +661,10 @@ const [lastRealDay, setLastRealDay] = useState(null);
 const [debugWarningState, setDebugWarningState] = useState(null); // null = auto, or 'locked', 'unlocked', 'evening', 'finalhour'
 const [godMode, setGodMode] = useState(false);
   
+  // Auth state
+  const [supabaseUser, setSupabaseUser] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   // QoL state variables
   const [showSavedIndicator, setShowSavedIndicator] = useState(false);
   const [hideCompletedTasks, setHideCompletedTasks] = useState(false);
@@ -1005,21 +1012,26 @@ const getDateKey = useCallback((date) => {
   }, []);
 
     useEffect(() => {
-    const saved = localStorage.getItem('fantasyStudyQuest');
-    if (saved) {
-      try {
-        const data = JSON.parse(saved);
+    // Subscribe to Supabase auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const user = session?.user ?? null;
+      setSupabaseUser(user);
+      if (event === 'SIGNED_IN') {
+        // Pull cloud save on sign-in; it takes priority over local
+        const cloudData = await loadSave();
+        if (cloudData) applyLoadedData(cloudData);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  function applyLoadedData(data) {
         if (data.hero) setHero(data.hero);
         if (data.currentDay) setCurrentDay(data.currentDay);
         if (data.hp !== undefined) setHp(data.hp);
         if (data.stamina !== undefined) setStamina(data.stamina);
         if (data.xp !== undefined) setXp(data.xp);
-        // Migrate old "essence" saves to "gold"
-        if (data.gold !== undefined) {
-          setGold(data.gold);
-        } else if (data.essence !== undefined) {
-          setGold(data.essence); // Backwards compatibility
-        }
+        if (data.gold !== undefined) { setGold(data.gold); } else if (data.essence !== undefined) { setGold(data.essence); }
         if (data.gauntletMilestone !== undefined) setGauntletMilestone(data.gauntletMilestone);
         if (data.gauntletUnlocked !== undefined) setGauntletUnlocked(data.gauntletUnlocked);
         if (data.isDayActive !== undefined) setIsDayActive(data.isDayActive);
@@ -1051,26 +1063,22 @@ const getDateKey = useCallback((date) => {
         if (data.skipCount !== undefined) setSkipCount(data.skipCount);
         if (data.consecutiveDays !== undefined) setConsecutiveDays(data.consecutiveDays);
         if (data.lastPlayedDate) setLastPlayedDate(data.lastPlayedDate);
-       if (data.curseLevel !== undefined) setCurseLevel(data.curseLevel);
-if (data.eliteBossDefeatedToday !== undefined) setEliteBossDefeatedToday(data.eliteBossDefeatedToday);
-if (data.lastRealDay) setLastRealDay(data.lastRealDay);
+        if (data.curseLevel !== undefined) setCurseLevel(data.curseLevel);
+        if (data.eliteBossDefeatedToday !== undefined) setEliteBossDefeatedToday(data.eliteBossDefeatedToday);
+        if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.studyStats) setStudyStats(data.studyStats);
         if (data.weeklyPlan) setWeeklyPlan(data.weeklyPlan);
         if (data.calendarTasks) setCalendarTasks(data.calendarTasks);
         if (data.calendarFocus) setCalendarFocus(data.calendarFocus);
         if (data.calendarEvents) {
-          // Migrate old string format to array format
           const migratedEvents = {};
           Object.keys(data.calendarEvents).forEach(dateKey => {
             const eventData = data.calendarEvents[dateKey];
             if (typeof eventData === 'string') {
-              // Old format: single string
               migratedEvents[dateKey] = eventData ? [eventData] : [];
             } else if (Array.isArray(eventData)) {
-              // New format: already array
               migratedEvents[dateKey] = eventData;
             } else {
-              // Invalid format: skip
               migratedEvents[dateKey] = [];
             }
           });
@@ -1083,19 +1091,25 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
         if (data.huntingChallenges) setHuntingChallenges(data.huntingChallenges);
         if (data.defeatedFactionMembers) setDefeatedFactionMembers(data.defeatedFactionMembers);
         if (data.restedCursed) setRestedCursed(data.restedCursed);
+  }
+
+    useEffect(() => {
+    (async () => {
+      try {
+        const data = await loadSave();
+        if (data) {
+          applyLoadedData(data);
+        } else {
+          setHero(makeName());
+        }
       } catch (e) {
         console.error('Failed to load save:', e);
-        // If saved data is corrupted, generate new hero
         setHero(makeName());
       }
-    } else {
-      // No saved data exists - generate new hero
-      setHero(makeName());
-    }
-    
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+    })();
   }, []);
   
   // Initialize starting equipment when hero is created
@@ -1145,7 +1159,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
   restedCursed,
 };
-      localStorage.setItem('fantasyStudyQuest', JSON.stringify(saveData));
+      writeSave(saveData);
       
       // Show auto-save indicator
       setShowSavedIndicator(true);
@@ -7302,6 +7316,24 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </span>
                 </button>
               ))}
+          <button
+            onClick={async () => { sounds.click(); if (supabaseUser) { if (window.confirm(`Signed in as ${supabaseUser.email}\n\nSign out?`)) { await supabase.auth.signOut(); setSupabaseUser(null); } } else { setShowAuthModal(true); } }}
+            className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all border-2"
+            style={{
+              backgroundColor: 'transparent',
+              borderColor: supabaseUser ? 'rgba(120,200,120,0.3)' : 'transparent',
+              opacity: 0.7,
+              marginLeft: 'auto',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.5)' : 'rgba(212,175,55,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = 0.7; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.3)' : 'transparent'; }}
+            title={supabaseUser ? `Signed in: ${supabaseUser.email}` : 'Sign in to sync across devices'}
+          >
+            <span style={{ fontSize: '1.2rem', lineHeight: 1 }}>{supabaseUser ? '☁' : '○'}</span>
+            <span className="text-xs uppercase tracking-wider" style={{ color: supabaseUser ? 'rgba(120,200,120,0.8)' : '#F5F5DC', fontWeight: 'normal' }}>
+              {supabaseUser ? 'Synced' : 'Offline'}
+            </span>
+          </button>
         </nav>
 
         <div className="max-w-6xl mx-auto">
@@ -8619,6 +8651,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             {curseOverlay.isFinal ? 'A new soul must take up the burden...' : 'You have fallen. The abyss marks you.'}
           </p>
         </div>
+      )}
+
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          onSignIn={(user) => setSupabaseUser(user)}
+        />
       )}
 
     </div>
