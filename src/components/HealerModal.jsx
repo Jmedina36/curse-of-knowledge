@@ -55,8 +55,8 @@ const HealerModal = ({
   curseLevel,
   cleansePotionPurchasedToday,
   setCleansePotionPurchasedToday,
-  marketModifiers,
-  getPotionPrice,
+  healerModifiers,
+  getHealerPotionPrice,
   addLog,
   useHealth,
   useCleanse,
@@ -108,7 +108,7 @@ const HealerModal = ({
 
   const handleBuyPotion = (key) => {
     const basePrices = { healthPotion: 25, staminaPotion: 20, cleansePotion: 250 };
-    const price = getPotionPrice ? getPotionPrice(key, basePrices[key]) : Math.floor(basePrices[key] * ((marketModifiers?.[key]) || 1));
+    const price = getHealerPotionPrice ? getHealerPotionPrice(key, basePrices[key]) : Math.floor(basePrices[key] * ((healerModifiers?.[key]) || 1));
     if (gold < price) { addLog('Not enough gold.'); return; }
     if (key === 'cleansePotion' && cleansePotionPurchasedToday) {
       addLog('Sister Mara shakes her head: "Only one Cleanse Potion per day."');
@@ -148,7 +148,7 @@ const HealerModal = ({
       display: 'flex', alignItems: 'center', gap: '14px',
       padding: '12px 16px', marginBottom: '10px', borderRadius: '10px',
       border: `1px solid ${border}`,
-      background: 'rgba(0,20,15,0.55)',
+      background: 'rgba(37,33,24,0.88)',
     }}>
       <span style={{ fontSize: '28px', flexShrink: 0 }}>{emoji}</span>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -160,11 +160,11 @@ const HealerModal = ({
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>
         <button
           onClick={() => { sounds.click(); onBuy(); }}
-          disabled={soldOut || (marketModifiers ? gold < price : false)}
+          disabled={soldOut || (healerModifiers ? gold < price : false)}
           style={{
             padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
             fontSize: '0.82rem', fontWeight: 700, cursor: soldOut ? 'not-allowed' : 'pointer',
-            background: soldOut ? 'rgba(0,0,0,0.3)' : 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))',
+            background: soldOut ? 'rgba(37,33,24,0.88)' : 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))',
             border: `1px solid ${soldOut ? 'rgba(155,139,126,0.2)' : 'rgba(212,175,55,0.5)'}`,
             color: soldOut ? 'rgba(245,245,220,0.3)' : '#F5F5DC',
             opacity: (!soldOut && gold < price) ? 0.45 : 1,
@@ -176,7 +176,7 @@ const HealerModal = ({
           style={{
             padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
             fontSize: '0.82rem', fontWeight: 700, cursor: disabled ? 'not-allowed' : 'pointer',
-            background: disabled ? 'rgba(0,0,0,0.3)' : 'rgba(52,211,153,0.15)',
+            background: disabled ? 'rgba(37,33,24,0.88)' : 'rgba(52,211,153,0.15)',
             border: `1px solid ${disabled ? 'rgba(52,211,153,0.1)' : greenBorder}`,
             color: disabled ? 'rgba(52,211,153,0.25)' : green,
           }}
@@ -186,9 +186,9 @@ const HealerModal = ({
   );
 
   const basePrices = { healthPotion: 25, staminaPotion: 20, cleansePotion: 250 };
-  const hpPrice     = getPotionPrice ? getPotionPrice('healthPotion',  25)  : Math.floor(25  * ((marketModifiers?.healthPotion)  || 1));
-  const spPrice     = getPotionPrice ? getPotionPrice('staminaPotion', 20)  : Math.floor(20  * ((marketModifiers?.staminaPotion) || 1));
-  const clsPrice    = getPotionPrice ? getPotionPrice('cleansePotion', 250) : Math.floor(250 * ((marketModifiers?.cleansePotion) || 1));
+  const hpPrice     = getHealerPotionPrice ? getHealerPotionPrice('healthPotion',  25)  : Math.floor(25  * ((healerModifiers?.healthPotion)  || 1));
+  const spPrice     = getHealerPotionPrice ? getHealerPotionPrice('staminaPotion', 20)  : Math.floor(20  * ((healerModifiers?.staminaPotion) || 1));
+  const clsPrice    = getHealerPotionPrice ? getHealerPotionPrice('cleansePotion', 250) : Math.floor(250 * ((healerModifiers?.cleansePotion) || 1));
 
   return (
     <div
@@ -243,7 +243,9 @@ const HealerModal = ({
         style={{
           width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
           maxWidth: '1200px', height: '90vh',
-          background: 'linear-gradient(160deg, #021a10 0%, #051f14 50%, #030f0a 100%)',
+          backgroundImage: 'url(/Stonewall1.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           borderColor: greenBorder,
           boxShadow: '0 0 60px rgba(52,211,153,0.12), 0 0 120px rgba(52,211,153,0.05)',
         }}
@@ -257,7 +259,7 @@ const HealerModal = ({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '16px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(52,211,153,0.2)`,
-          background: 'rgba(0,0,0,0.55)', position: 'relative',
+          background: 'rgba(0,0,0,0.3)', position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(52,211,153,0.5)' }}>THE APOTHECARY</p>
@@ -272,20 +274,20 @@ const HealerModal = ({
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: `1px solid rgba(52,211,153,0.15)`, flexShrink: 0, background: 'rgba(0,0,0,0.3)' }}>
+        <div style={{ display: 'flex', borderBottom: `1px solid rgba(52,211,153,0.15)`, flexShrink: 0, background: 'rgba(0,0,0,0.25)' }}>
           {tabBtn('mend', 'Mend')}
           {tabBtn('supplies', 'Supplies')}
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', background: 'rgba(0,0,0,0.25)' }}>
 
           {/* ── MEND TAB ── */}
           {tab === 'mend' && (
             <div style={{ maxWidth: '420px', margin: '0 auto' }}>
               {/* HP display */}
               <div style={{
-                background: 'rgba(0,0,0,0.4)', borderRadius: '12px', padding: '18px',
+                background: 'rgba(37,33,24,0.88)', borderRadius: '12px', padding: '18px',
                 marginBottom: '20px', border: `1px solid rgba(52,211,153,0.2)`, textAlign: 'center',
               }}>
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: greenDim, marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Current HP</p>
@@ -311,7 +313,7 @@ const HealerModal = ({
                     style={{
                       padding: '14px', borderRadius: '10px', fontFamily: 'Cinzel, serif', fontWeight: 700,
                       fontSize: '0.9rem', cursor: gold < halfCost ? 'not-allowed' : 'pointer',
-                      background: gold < halfCost ? 'rgba(0,0,0,0.3)' : 'rgba(52,211,153,0.12)',
+                      background: gold < halfCost ? 'rgba(37,33,24,0.88)' : 'rgba(52,211,153,0.12)',
                       border: `1px solid ${gold < halfCost ? 'rgba(52,211,153,0.1)' : greenBorder}`,
                       color: gold < halfCost ? 'rgba(52,211,153,0.25)' : green,
                       transition: 'all 0.2s',
@@ -328,7 +330,7 @@ const HealerModal = ({
                     style={{
                       padding: '14px', borderRadius: '10px', fontFamily: 'Cinzel, serif', fontWeight: 700,
                       fontSize: '0.9rem', cursor: gold < fullCost ? 'not-allowed' : 'pointer',
-                      background: gold < fullCost ? 'rgba(0,0,0,0.3)' : 'rgba(52,211,153,0.22)',
+                      background: gold < fullCost ? 'rgba(37,33,24,0.88)' : 'rgba(52,211,153,0.22)',
                       border: `1px solid ${gold < fullCost ? 'rgba(52,211,153,0.1)' : green}`,
                       color: gold < fullCost ? 'rgba(52,211,153,0.25)' : green,
                       transition: 'all 0.2s',
@@ -342,7 +344,7 @@ const HealerModal = ({
                   </button>
                 </div>
               ) : (
-                <div style={{ textAlign: 'center', padding: '20px', border: `1px solid rgba(52,211,153,0.15)`, borderRadius: '10px', background: 'rgba(0,0,0,0.2)' }}>
+                <div style={{ textAlign: 'center', padding: '20px', border: `1px solid rgba(52,211,153,0.15)`, borderRadius: '10px', background: 'rgba(37,33,24,0.88)' }}>
                   <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', color: greenDim }}>
                     {MARA_QUOTES.fullHealth[Math.floor(hp / maxHp * MARA_QUOTES.fullHealth.length) % MARA_QUOTES.fullHealth.length]}
                   </p>

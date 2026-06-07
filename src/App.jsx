@@ -183,6 +183,8 @@ const FantasyStudyQuest = () => {
     tome: 1.0,
   }); // Dynamic market prices (1.0 = normal, 1.5 = 50% bonus, etc.)
   const [lastMarketUpdateDay, setLastMarketUpdateDay] = useState(0); // Track last day market was updated
+  const [healerModifiers, setHealerModifiers] = useState({ healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0 });
+  const [lastHealerUpdateDay, setLastHealerUpdateDay] = useState(0);
   const pityCounterRef = useRef(0); // Fights without a rare+ drop (pity timer)
   const pendingBattleSpawnRef = useRef(null); // Spawn deferred until D20 modal closes
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
@@ -1454,6 +1456,10 @@ const getDateKey = useCallback((date) => {
       setLastMarketUpdateDay(currentDay);
       addLog('Market prices have shifted overnight...');
     }
+    if (currentDay > lastHealerUpdateDay) {
+      updateHealerPrices();
+      setLastHealerUpdateDay(currentDay);
+    }
   }, [currentDay]);
   
   // Check for daily quest completion and award bonus
@@ -1891,6 +1897,21 @@ if (tasks.length === 0) {
     });
     
     setMarketModifiers(newModifiers);
+  };
+
+  const updateHealerPrices = () => {
+    const types = ['healthPotion', 'staminaPotion', 'cleansePotion'];
+    const newModifiers = {};
+    types.forEach(type => {
+      const fluctuation = 0.7 + (Math.random() * 0.6);
+      newModifiers[type] = Math.round(fluctuation * 100) / 100;
+    });
+    setHealerModifiers(newModifiers);
+  };
+
+  const getHealerPotionPrice = (itemType, basePrice) => {
+    const mod = healerModifiers[itemType] || 1.0;
+    return Math.floor(basePrice * mod);
   };
 
   // Generate shop inventory based on current day
@@ -8206,7 +8227,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setEquippedGrimoire(null); setEquippedTome(null); setGrimoireInventory([]); setTomeInventory([]);
                     setWaveGoldTotal(0);
                     setMarketModifiers({ weapon: 1.0, armor: 1.0, grimoire: 1.0, tome: 1.0 });
-                    setLastMarketUpdateDay(0); setShopInventory([]); setDaysSinceShop(0); setDailyQuestCompleted(false);
+                    setHealerModifiers({ healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0 });
+                    setLastMarketUpdateDay(0); setLastHealerUpdateDay(0); setShopInventory([]); setDaysSinceShop(0); setDailyQuestCompleted(false);
                     setGuildPoints(0); setGauntletMilestone(1500); setGauntletUnlocked(false); setLastRealDay(null);
                     setSelectedZone(null); setActiveContract(null);
                     setCompletedLocationContracts([]); setDebugUnlockedZones([]); setPendingLocationRewards([]);
@@ -8281,8 +8303,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               curseLevel={curseLevel}
               cleansePotionPurchasedToday={cleansePotionPurchasedToday}
               setCleansePotionPurchasedToday={setCleansePotionPurchasedToday}
-              marketModifiers={marketModifiers}
-              getPotionPrice={getPotionPrice}
+              healerModifiers={healerModifiers}
+              getHealerPotionPrice={getHealerPotionPrice}
               addLog={addLog}
               useHealth={useHealth}
               useCleanse={useCleanse}
