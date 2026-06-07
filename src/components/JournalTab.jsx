@@ -11,12 +11,24 @@ const ZONE_LABELS = {
 
 // Deductions that unlock progressively as entries are found
 const DEDUCTIONS = [
-  { requiresId: 'lc_harbor',        text: 'An organization — possibly called "the order" — is operating in the region. Signed only as C. Scope unknown.' },
-  { requiresId: 'lc_holy_tree',     text: 'The order uses multiple factions. Bandits and Daughters of Dusk both bear the same mark. They are not loyal to one group.' },
-  { requiresId: 'lc_canopy',        text: 'They know who I am. They were watching before I found the harbor. They deployed three separate attempts to hold the outpost.' },
-  { requiresId: 'lc_ivy_crossing',  text: 'Movement is being controlled. Specific people are being blocked or allowed through. Something is being contained — or protected.' },
+  // Zone 1–2
+  { requiresId: 'lc_harbor',         text: 'An organization — possibly called "the order" — is operating in the region. Signed only as C. Scope unknown.' },
+  { requiresId: 'lc_holy_tree',      text: 'The order uses multiple factions. Bandits and Daughters of Dusk both bear the same mark. They are not loyal to one group.' },
+  { requiresId: 'lc_canopy',         text: 'They know who I am. They were watching before I found the harbor. They deployed three separate attempts to hold the outpost.' },
+  { requiresId: 'lc_ivy_crossing',   text: 'Movement is being controlled. Specific people are being blocked or allowed through. Something is being contained — or protected.' },
   { requiresId: 'lc_whisper_forest', text: 'They have relay nodes distributed across the region. The network is wider than I thought. This is infrastructure.' },
-  { requiresId: 'lc_outskirts',     text: 'C is tracking my progress in real time. Gryvara was deployed two days after I cleared the crossing. Every move I make is being answered.' },
+  { requiresId: 'lc_outskirts',      text: 'C is tracking my progress in real time. Gryvara was deployed two days after I cleared the crossing. Every move I make is being answered.' },
+  // Zone 3
+  { requiresId: 'lc_old_crossing',   text: 'Zone 3 is a construction site, not a territory. There is a structure called the monolith at the center. Everything inside this zone was built or positioned in service of it.' },
+  { requiresId: 'lc_the_pillars',    text: "C didn't design this system. The standing stones, the dungeon, the pillars — built centuries ago by someone who understood what the monolith could do. C found a plan that already existed and executed it." },
+  { requiresId: 'lc_arcane_monolith', text: "The activation was stopped. C's note said I wouldn't be in time. They were wrong. But C builds systems and leaves. Whatever comes next was already in motion before I reached the monolith." },
+  { requiresId: 'lc_old_nexus',      text: "The activation drew something ancient. It said the order had opened a door that was already there — not something C built. Whatever was on the other side was coming regardless. C may have simply accelerated it." },
+  // Zone 4
+  { requiresId: 'order_mira',        text: "Mira built the entire ritual network — the relay, the silence, the transit system. She wasn't following orders. She was extending them. She believed in what C was building. Two faction leaders down. Whoever is above them hasn't responded." },
+  // Zone 5
+  { requiresId: 'order_malachar',    text: "Malachar is C. Or C answers to Malachar. He built the order over decades, operating under a title, not a name. He prepared for death seventeen times. The order's reach, its patience, its architecture — all of it was his." },
+  { requiresId: 'lc_skull_order',    text: "Cutter and Mira weren't making a last stand. They were finishing an activation. I stopped the order. I didn't stop what the order was for. Something was opened before they fell." },
+  { requiresId: 'lc_skull_cavern',   text: "The order was scaffolding. The network, the monolith, the decades of preparation — all of it was making room for something to arrive. I stopped it. I don't know what it was. The work is done." },
 ];
 
 export default function JournalTab({ completedLocationContracts = [] }) {
