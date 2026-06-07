@@ -5,7 +5,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
-import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText } from 'lucide-react';
+import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText, LogIn, LogOut } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
@@ -7349,51 +7349,34 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'map', icon:Map, label:'Map'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'journal', icon:ScrollText, label:'Journal'},
-
                 {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
-                <button 
-                  key={t.id} 
+                <button
+                  key={t.id}
                   onClick={() => { sounds.click(); setActiveTab(t.id); }}
                   className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all border-2"
                   style={{
                     backgroundColor: activeTab === t.id ? 'rgba(184, 134, 11, 0.3)' : 'transparent',
                     borderColor: activeTab === t.id ? '#D4AF37' : 'transparent',
-                    opacity: activeTab === t.id ? 1 : 0.7
+                    opacity: activeTab === t.id ? 1 : 0.7,
                   }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.opacity = 1;
-                    if (activeTab !== t.id) e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab !== t.id) {
-                      e.currentTarget.style.opacity = 0.7;
-                      e.currentTarget.style.borderColor = 'transparent';
-                    }
-                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = 1; if (activeTab !== t.id) e.currentTarget.style.borderColor = 'rgba(212,175,55,0.3)'; }}
+                  onMouseLeave={e => { if (activeTab !== t.id) { e.currentTarget.style.opacity = 0.7; e.currentTarget.style.borderColor = 'transparent'; } }}
                 >
-                  <t.icon size={24} style={{color: activeTab === t.id ? '#D4AF37' : '#F5F5DC'}}/>
-                  <span 
-                    className="text-xs uppercase tracking-wider"
-                    style={{
-                      color: activeTab === t.id ? '#D4AF37' : '#F5F5DC',
-                      fontWeight: activeTab === t.id ? 'bold' : 'normal'
-                    }}
-                  >
+                  <t.icon size={24} style={{ color: activeTab === t.id ? '#D4AF37' : '#F5F5DC' }} />
+                  <span className="text-xs uppercase tracking-wider" style={{ color: activeTab === t.id ? '#D4AF37' : '#F5F5DC', fontWeight: activeTab === t.id ? 'bold' : 'normal' }}>
                     {t.label}
                   </span>
                 </button>
               ))}
 
-          {/* Account button */}
+          {/* Account button — matches tab style */}
           <button
             onClick={async () => {
               sounds.click();
               if (supabaseUser) {
-                if (window.confirm(`Signed in as ${supabaseUser.email}\n\nSign out?`)) {
-                  await supabase.auth.signOut();
-                  setSupabaseUser(null);
-                }
+                await supabase.auth.signOut();
+                setSupabaseUser(null);
               } else {
                 setShowAuthModal(true);
               }
@@ -7401,17 +7384,18 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all border-2"
             style={{
               backgroundColor: 'transparent',
-              borderColor: supabaseUser ? 'rgba(120,200,120,0.25)' : 'transparent',
+              borderColor: 'transparent',
               opacity: 0.7,
-              marginLeft: 'auto',
             }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.5)' : 'rgba(212,175,55,0.3)'; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = 0.7; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.25)' : 'transparent'; }}
-            title={supabaseUser ? `Signed in as ${supabaseUser.email}` : 'Sign in to sync across devices'}
+            onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = 0.7; e.currentTarget.style.borderColor = 'transparent'; }}
+            title={supabaseUser ? `Sign out (${supabaseUser.email})` : 'Sign in to sync across devices'}
           >
-            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{supabaseUser ? '☁' : '○'}</span>
-            <span className="text-xs uppercase tracking-wider" style={{ color: supabaseUser ? 'rgba(120,200,120,0.8)' : 'rgba(200,185,155,0.6)', fontWeight: 'normal' }}>
-              {supabaseUser ? 'Synced' : 'Sign In'}
+            {supabaseUser
+              ? <LogOut size={24} style={{ color: '#F5F5DC' }} />
+              : <LogIn size={24} style={{ color: '#F5F5DC' }} />}
+            <span className="text-xs uppercase tracking-wider" style={{ color: '#F5F5DC', fontWeight: 'normal' }}>
+              {supabaseUser ? 'Sign Out' : 'Sign In'}
             </span>
           </button>
         </nav>
