@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { GAME_CONSTANTS } from '../constants';
+import { GAME_CONSTANTS, COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
 
 const MARA_QUOTES = {
@@ -123,9 +123,9 @@ const HealerModal = ({
     say(MARA_QUOTES.buy);
   };
 
-  const green = 'rgba(52,211,153,1)';
-  const greenDim = 'rgba(52,211,153,0.6)';
-  const greenBorder = 'rgba(52,211,153,0.35)';
+  const green = COLORS.gold;
+  const greenDim = 'rgba(212,175,55,0.6)';
+  const greenBorder = 'rgba(212,175,55,0.35)';
 
   const tabBtn = (key, label) => (
     <button
@@ -135,9 +135,9 @@ const HealerModal = ({
         fontSize: '0.9rem', letterSpacing: '0.15em', textTransform: 'uppercase',
         cursor: 'pointer', transition: 'all 0.2s', border: 'none',
         background: tab === key
-          ? 'linear-gradient(to bottom, rgba(52,211,153,0.35), rgba(16,185,129,0.35))'
+          ? 'linear-gradient(to bottom, rgba(212,175,55,0.35), rgba(16,185,129,0.35))'
           : 'rgba(0,0,0,0.2)',
-        color: tab === key ? green : 'rgba(52,211,153,0.45)',
+        color: tab === key ? green : 'rgba(212,175,55,0.45)',
         borderBottom: `2px solid ${tab === key ? green : 'transparent'}`,
       }}
     >{label}</button>
@@ -176,9 +176,9 @@ const HealerModal = ({
           style={{
             padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
             fontSize: '0.82rem', fontWeight: 700, cursor: disabled ? 'not-allowed' : 'pointer',
-            background: disabled ? 'rgba(37,33,24,0.88)' : 'rgba(52,211,153,0.15)',
-            border: `1px solid ${disabled ? 'rgba(52,211,153,0.1)' : greenBorder}`,
-            color: disabled ? 'rgba(52,211,153,0.25)' : green,
+            background: disabled ? 'rgba(37,33,24,0.88)' : 'rgba(212,175,55,0.15)',
+            border: `1px solid ${disabled ? 'rgba(212,175,55,0.1)' : greenBorder}`,
+            color: disabled ? 'rgba(212,175,55,0.25)' : green,
           }}
         >Use</button>
       </div>
@@ -218,11 +218,11 @@ const HealerModal = ({
               width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)',
               borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${green}`,
-              boxShadow: '0 0 40px rgba(52,211,153,0.5), 0 0 100px rgba(52,211,153,0.2)',
+              boxShadow: '0 0 40px rgba(212,175,55,0.5), 0 0 100px rgba(212,175,55,0.2)',
             }}
           />
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: green, letterSpacing: '0.12em', textAlign: 'center' }}>SISTER MARA</p>
-          <p style={{ fontSize: '11px', color: 'rgba(52,211,153,0.6)', fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
+          <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.6)', fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
           <div style={{
             marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
             background: 'rgba(0,20,15,0.9)', border: `1px solid ${greenBorder}`,
@@ -247,7 +247,7 @@ const HealerModal = ({
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderColor: greenBorder,
-          boxShadow: '0 0 60px rgba(52,211,153,0.12), 0 0 120px rgba(52,211,153,0.05)',
+          boxShadow: '0 0 60px rgba(212,175,55,0.12), 0 0 120px rgba(212,175,55,0.05)',
         }}
         initial={{ opacity: 0, scale: 0.97, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -258,11 +258,11 @@ const HealerModal = ({
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '16px 20px', flexShrink: 0,
-          borderBottom: `1px solid rgba(52,211,153,0.2)`,
+          borderBottom: `1px solid rgba(212,175,55,0.2)`,
           background: 'rgba(0,0,0,0.3)', position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(52,211,153,0.5)' }}>THE APOTHECARY</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(212,175,55,0.5)' }}>THE APOTHECARY</p>
             <p style={{ fontSize: '11px', color: greenDim, fontStyle: 'italic', marginTop: '4px' }}>Sister Mara · Apothecary & Healer</p>
           </div>
           <button
@@ -274,7 +274,7 @@ const HealerModal = ({
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: `1px solid rgba(52,211,153,0.15)`, flexShrink: 0, background: 'rgba(0,0,0,0.25)' }}>
+        <div style={{ display: 'flex', borderBottom: `1px solid rgba(212,175,55,0.15)`, flexShrink: 0, background: 'rgba(0,0,0,0.25)' }}>
           {tabBtn('mend', 'Mend')}
           {tabBtn('supplies', 'Supplies')}
         </div>
@@ -288,7 +288,7 @@ const HealerModal = ({
               {/* HP display */}
               <div style={{
                 background: 'rgba(37,33,24,0.88)', borderRadius: '12px', padding: '18px',
-                marginBottom: '20px', border: `1px solid rgba(52,211,153,0.2)`, textAlign: 'center',
+                marginBottom: '20px', border: `1px solid rgba(212,175,55,0.2)`, textAlign: 'center',
               }}>
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: greenDim, marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Current HP</p>
                 <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '2rem', color: hp / maxHp < 0.25 ? '#EF4444' : '#fff', marginBottom: '8px' }}>
@@ -302,7 +302,7 @@ const HealerModal = ({
                     borderRadius: '3px', transition: 'width 0.3s ease',
                   }}/>
                 </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', color: 'rgba(52,211,153,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', color: 'rgba(212,175,55,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
               </div>
 
               {missing > 0 ? (
@@ -313,13 +313,13 @@ const HealerModal = ({
                     style={{
                       padding: '14px', borderRadius: '10px', fontFamily: 'Cinzel, serif', fontWeight: 700,
                       fontSize: '0.9rem', cursor: gold < halfCost ? 'not-allowed' : 'pointer',
-                      background: gold < halfCost ? 'rgba(37,33,24,0.88)' : 'rgba(52,211,153,0.12)',
-                      border: `1px solid ${gold < halfCost ? 'rgba(52,211,153,0.1)' : greenBorder}`,
-                      color: gold < halfCost ? 'rgba(52,211,153,0.25)' : green,
+                      background: gold < halfCost ? 'rgba(37,33,24,0.88)' : 'rgba(212,175,55,0.12)',
+                      border: `1px solid ${gold < halfCost ? 'rgba(212,175,55,0.1)' : greenBorder}`,
+                      color: gold < halfCost ? 'rgba(212,175,55,0.25)' : green,
                       transition: 'all 0.2s',
                     }}
-                    onMouseEnter={e => { if (gold >= halfCost) e.currentTarget.style.background = 'rgba(52,211,153,0.22)'; }}
-                    onMouseLeave={e => { if (gold >= halfCost) e.currentTarget.style.background = 'rgba(52,211,153,0.12)'; }}
+                    onMouseEnter={e => { if (gold >= halfCost) e.currentTarget.style.background = 'rgba(212,175,55,0.22)'; }}
+                    onMouseLeave={e => { if (gold >= halfCost) e.currentTarget.style.background = 'rgba(212,175,55,0.12)'; }}
                   >
                     Heal Half — {halfCost} gold
                     <span style={{ display: 'block', fontSize: '0.65rem', color: greenDim, fontWeight: 400, marginTop: '3px' }}>Restores {halfMissing} HP</span>
@@ -330,21 +330,21 @@ const HealerModal = ({
                     style={{
                       padding: '14px', borderRadius: '10px', fontFamily: 'Cinzel, serif', fontWeight: 700,
                       fontSize: '0.9rem', cursor: gold < fullCost ? 'not-allowed' : 'pointer',
-                      background: gold < fullCost ? 'rgba(37,33,24,0.88)' : 'rgba(52,211,153,0.22)',
-                      border: `1px solid ${gold < fullCost ? 'rgba(52,211,153,0.1)' : green}`,
-                      color: gold < fullCost ? 'rgba(52,211,153,0.25)' : green,
+                      background: gold < fullCost ? 'rgba(37,33,24,0.88)' : 'rgba(212,175,55,0.22)',
+                      border: `1px solid ${gold < fullCost ? 'rgba(212,175,55,0.1)' : green}`,
+                      color: gold < fullCost ? 'rgba(212,175,55,0.25)' : green,
                       transition: 'all 0.2s',
-                      boxShadow: gold >= fullCost ? '0 0 18px rgba(52,211,153,0.15)' : 'none',
+                      boxShadow: gold >= fullCost ? '0 0 18px rgba(212,175,55,0.15)' : 'none',
                     }}
-                    onMouseEnter={e => { if (gold >= fullCost) e.currentTarget.style.background = 'rgba(52,211,153,0.32)'; }}
-                    onMouseLeave={e => { if (gold >= fullCost) e.currentTarget.style.background = 'rgba(52,211,153,0.22)'; }}
+                    onMouseEnter={e => { if (gold >= fullCost) e.currentTarget.style.background = 'rgba(212,175,55,0.32)'; }}
+                    onMouseLeave={e => { if (gold >= fullCost) e.currentTarget.style.background = 'rgba(212,175,55,0.22)'; }}
                   >
                     Full Heal — {fullCost} gold
                     <span style={{ display: 'block', fontSize: '0.65rem', color: greenDim, fontWeight: 400, marginTop: '3px' }}>Restores {missing} HP</span>
                   </button>
                 </div>
               ) : (
-                <div style={{ textAlign: 'center', padding: '20px', border: `1px solid rgba(52,211,153,0.15)`, borderRadius: '10px', background: 'rgba(37,33,24,0.88)' }}>
+                <div style={{ textAlign: 'center', padding: '20px', border: `1px solid rgba(212,175,55,0.15)`, borderRadius: '10px', background: 'rgba(37,33,24,0.88)' }}>
                   <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', color: greenDim }}>
                     {MARA_QUOTES.fullHealth[Math.floor(hp / maxHp * MARA_QUOTES.fullHealth.length) % MARA_QUOTES.fullHealth.length]}
                   </p>
@@ -356,7 +356,7 @@ const HealerModal = ({
           {/* ── SUPPLIES TAB ── */}
           {tab === 'supplies' && (
             <div style={{ maxWidth: '520px', margin: '0 auto' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(52,211,153,0.45)', marginBottom: '16px', textAlign: 'center' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)', marginBottom: '16px', textAlign: 'center' }}>
                 Gold on hand: <span style={{ color: '#D4AF37', fontWeight: 700 }}>{gold}</span>
               </p>
 
