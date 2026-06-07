@@ -5,8 +5,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
-import { Sword, Shield, Heart, Zap, Skull, Trophy, Plus, Play, Pause, X, Calendar, Hammer, Swords, ShieldCheck, HeartPulse, Sparkles, User, Target, GripVertical, BookOpen, Settings, Map, ScrollText } from 'lucide-react';
-import { COLORS, VISUAL_STYLES, GAME_CONSTANTS, HERO_TITLES, globalStyles, HERO_CLASSES, STARTING_ABILITIES, PRIMARY_ABILITY, SECONDARY_ABILITY } from './constants';
+import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText } from 'lucide-react';
+import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
@@ -139,7 +139,6 @@ const FantasyStudyQuest = () => {
   const [activeTab, setActiveTab] = useState('quest');
   const [plannerSubTab, setPlannerSubTab] = useState('weekly');
   const [forgeSubTab, setForgeSubTab] = useState('flashcards'); // 'flashcards' or 'resources'
-  const [heroCardCollapsed, setHeroCardCollapsed] = useState(false);
   const [introPhase, setIntroPhase] = useState('visible'); // 'visible' | 'revealed' | 'confirm' | 'narrating' | 'fading' | 'done'
   const [narrationIndex, setNarrationIndex] = useState(0);
   const [narrationActive, setNarrationActive] = useState(false); // keeps narration content visible during fade-out
@@ -190,7 +189,6 @@ const FantasyStudyQuest = () => {
   const pityCounterRef = useRef(0); // Fights without a rare+ drop (pity timer)
   const pendingBattleSpawnRef = useRef(null); // Spawn deferred until D20 modal closes
   const [shopInventory, setShopInventory] = useState([]); // Current shop items
-  const [showShop, setShowShop] = useState(false); // Shop modal visibility
   const [daysSinceShop, setDaysSinceShop] = useState(0); // Track shop refresh
   const [gauntletMilestone, setGauntletMilestone] = useState(1500); // Next XP threshold for Gauntlet (increased from 1000)
   const [gauntletUnlocked, setGauntletUnlocked] = useState(false); // Is Gauntlet currently available
@@ -495,7 +493,6 @@ const [selectedAnswer, setSelectedAnswer] = useState(null);
   });
   const [unlockedAchievements, setUnlockedAchievements] = useState([]);
   const [showAchievementNotification, setShowAchievementNotification] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
 const [showQuizResults, setShowQuizResults] = useState(false);
 const [wrongCardIndices, setWrongCardIndices] = useState([]);
 const [isRetakeQuiz, setIsRetakeQuiz] = useState(false);
@@ -532,7 +529,6 @@ const [matchGlowCards, setMatchGlowCards] = useState([]); // Cards currently glo
   const contractEncounterRef = useRef(null); // tier weights for active location contract battle
   const wildCreatureOverrideRef = useRef(null); // map wild encounter: override name/img in spawnRegularEnemy
   const activeContractRef = useRef(null);
-  const pomodoroFromMapRef = useRef(false);
   const [battleType, setBattleType] = useState('regular');
 const [waveCount, setWaveCount] = useState(0);
 const [currentWaveEnemy, setCurrentWaveEnemy] = useState(0);
@@ -641,7 +637,6 @@ const [customClass, setCustomClass] = useState(null);
   const [enragedTurns, setEnragedTurns] = useState(0);
   const [log, setLog] = useState([]);
   const [graveyard, setGraveyard] = useState([]);
-  const [heroes, setHeroes] = useState([]);
   const [skipCount, setSkipCount] = useState(0);
   const [consecutiveDays, setConsecutiveDays] = useState(0);
   const [lastPlayedDate, setLastPlayedDate] = useState(null);
@@ -1053,7 +1048,6 @@ const getDateKey = useCallback((date) => {
         if (data.tasks) setTasks(data.tasks);
         if (data.flashcardDecks) setFlashcardDecks(data.flashcardDecks);
         if (data.graveyard) setGraveyard(data.graveyard);
-        if (data.heroes) setHeroes(data.heroes);
         if (data.hasStarted !== undefined) setHasStarted(data.hasStarted);
         if (data.skipCount !== undefined) setSkipCount(data.skipCount);
         if (data.consecutiveDays !== undefined) setConsecutiveDays(data.consecutiveDays);
@@ -1145,7 +1139,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
   hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters,
   weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, 
   equippedGrimoire, equippedTome, grimoireInventory, tomeInventory,
-  tasks, flashcardDecks, graveyard, heroes, hasStarted, skipCount, consecutiveDays,
+  tasks, flashcardDecks, graveyard, hasStarted, skipCount, consecutiveDays,
   lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
@@ -1158,7 +1152,7 @@ if (data.lastRealDay) setLastRealDay(data.lastRealDay);
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, heroes, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -1837,7 +1831,6 @@ if (tasks.length === 0) {
       newModifiers[type] = Math.round(fluctuation * 100) / 100;
     });
     
-    console.log('Market prices updated:', newModifiers);
     setMarketModifiers(newModifiers);
   };
 
@@ -1960,12 +1953,6 @@ if (tasks.length === 0) {
     setShopInventory(items);
     // Don't log here - causes circular dependency
   }, [currentDay, getRarityMultiplier, generateAffixes]);
-
-  // Get current price for a potion/item
-  const getCurrentPrice = (itemType, basePrice) => {
-    const marketMod = marketModifiers[itemType] || 1.0;
-    return Math.floor(basePrice * marketMod);
-  };
 
   // Get dynamic price for potions
   const getPotionPrice = (itemType, basePrice) => {
@@ -2290,7 +2277,7 @@ pendingBattleSpawnRef.current = () => {
 };
   }
 
-}, [tasks, currentDay, addLog, consecutiveDays, skipCount, curseLevel, hp, sessionStartTime, taskPauseCount, getMaxHp, getMaxStamina, weapon, armor, overdueTask]);
+}, [tasks, currentDay, addLog, consecutiveDays, skipCount, curseLevel, getMaxHp, getMaxStamina, dayBonuses, hero, rollRarity, getRarityMultiplier, generateAffixes, sortByRarity]);
   
   // Drag-and-drop handlers for daily quest tasks
   const handleDragStart = (e, task) => {
@@ -7189,7 +7176,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       setRecklessStacks(0);
                       setLog([]);
                       setGraveyard([]);
-                      setHeroes([]);
                       setSkipCount(0);
                       setConsecutiveDays(0);
                       setLastPlayedDate(null);
@@ -8109,7 +8095,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
                     setIsEliteWave(false); setIsOrderFinal(false);
                     setChargeStacks(0); setEnemyDialogue(''); setEnragedTurns(0);
-                    setLog([]); setGraveyard([]); setHeroes([]); setSkipCount(0); setConsecutiveDays(0);
+                    setLog([]); setGraveyard([]); setSkipCount(0); setConsecutiveDays(0);
                     setLastPlayedDate(null); setMiniBossCount(0); setCurseLevel(0);
                     setEliteBossDefeatedToday(false); setIsDayActive(false);
                     setStudyStats({ totalMinutesToday: 0, totalMinutesWeek: 0, sessionsToday: 0, longestStreak: 0, currentStreak: 0, tasksCompletedToday: 0, deepWorkSessions: 0, perfectDays: 0, weeklyHistory: [] });
