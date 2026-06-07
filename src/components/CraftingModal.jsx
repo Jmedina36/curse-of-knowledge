@@ -8,7 +8,7 @@ import { sounds } from '../sounds';
 
 const MarketRates = ({ entries, footer }) => (
   <div className="rounded-lg p-2 mb-4 border"
-    style={{ background: 'rgba(0,0,0,0.3)', borderColor: 'rgba(212,175,55,0.3)' }}>
+    style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
     <p className="text-xs font-bold mb-2 text-center" style={{ color: '#D4AF37' }}>TODAY'S MARKET RATES</p>
     <div className={`text-xs ${entries.length <= 3 ? 'flex justify-center gap-4' : 'grid grid-cols-4 gap-2'}`}>
       {entries.map(({ label, mod }) => (
@@ -312,9 +312,9 @@ const CraftingModal = ({
                 return (
                   <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
                     className="py-2 rounded-lg font-bold text-sm transition-all border-2"
-                    style={{ background: active ? activeGrad : 'rgba(0,0,0,0.3)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(40,40,40,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(0,0,0,0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    style={{ background: active ? activeGrad : 'rgba(37,33,24,0.88)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(50,45,35,0.95)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(37,33,24,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
                     {label}
                   </button>
@@ -333,9 +333,9 @@ const CraftingModal = ({
                 return (
                   <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
                     className="py-2 rounded-lg font-bold text-sm transition-all border-2"
-                    style={{ background: active ? activeGrad : 'rgba(0,0,0,0.3)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(40,40,40,0.4)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(0,0,0,0.3)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    style={{ background: active ? activeGrad : 'rgba(37,33,24,0.88)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(50,45,35,0.95)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(37,33,24,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
                     {label}
                   </button>
@@ -397,7 +397,7 @@ const CraftingModal = ({
                   <h3 className="font-bold text-sm mb-2" style={{ color: '#D4AF37' }}>POTIONS</h3>
                   <div className="space-y-2">
                     {healthPots > 0 && (
-                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(0,0,0,0.3)', borderColor: 'rgba(220,38,38,0.6)' }}>
+                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(220,38,38,0.6)' }}>
                         <div className="flex-1">
                           <p className="text-sm font-bold" style={{ color: '#FF6B6B' }}>Health Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {healthPots}</p>
@@ -408,7 +408,7 @@ const CraftingModal = ({
                       </div>
                     )}
                     {staminaPots > 0 && (
-                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(0,0,0,0.3)', borderColor: 'rgba(59,130,246,0.6)' }}>
+                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(59,130,246,0.6)' }}>
                         <div className="flex-1">
                           <p className="text-sm font-bold" style={{ color: '#6BB6FF' }}>Stamina Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {staminaPots}</p>
@@ -419,7 +419,7 @@ const CraftingModal = ({
                       </div>
                     )}
                     {cleansePots > 0 && (
-                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(0,0,0,0.3)', borderColor: 'rgba(168,85,247,0.6)' }}>
+                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(168,85,247,0.6)' }}>
                         <div className="flex-1">
                           <p className="text-sm font-bold" style={{ color: '#B794F4' }}>Cleanse Potion</p>
                           <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {cleansePots}</p>
@@ -432,7 +432,7 @@ const CraftingModal = ({
                   </div>
                 </div>
               ) : (
-                <div className="rounded-lg p-8 border-2 text-center" style={{ background: 'rgba(0,0,0,0.3)', borderColor: 'rgba(212,175,55,0.3)' }}>
+                <div className="rounded-lg p-8 border-2 text-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
                   <p className="text-sm italic" style={{ color: '#9CA3AF' }}>No potions to sell. Purchase potions or defeat enemies to gather them.</p>
                 </div>
               )}
@@ -461,7 +461,7 @@ const CraftingModal = ({
                   const canAfford  = gold >= finalPrice;
                   return (
                     <div key={item.id} className="rounded-lg p-2 border-2 transition-all"
-                      style={{ background: 'rgba(0,0,0,0.4)', borderColor: getRarityColor(item.rarity) }}>
+                      style={{ background: 'rgba(37,33,24,0.88)', borderColor: getRarityColor(item.rarity) }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'space-between' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
                         {item.type === 'weapon' && (
@@ -551,7 +551,7 @@ const CraftingModal = ({
               />
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {isEmpty ? (
-                  <div className="rounded-lg p-8 border-2 text-center" style={{ background: 'rgba(0,0,0,0.3)', borderColor: 'rgba(212,175,55,0.3)' }}>
+                  <div className="rounded-lg p-8 border-2 text-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
                     <p className="text-sm italic" style={{ color: '#9CA3AF' }}>No equipment to sell. Defeat enemies to gather loot.</p>
                   </div>
                 ) : (
@@ -568,7 +568,7 @@ const CraftingModal = ({
                               : null;
                             return (
                               <div key={item.id} className="rounded-lg p-2 border"
-                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(0,0,0,0.3)', borderColor: color, gap: '10px' }}>
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(37,33,24,0.88)', borderColor: color, gap: '10px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
                                 {sprite && (
                                   <img src={sprite} alt={item.name}
