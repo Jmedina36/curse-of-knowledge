@@ -5,32 +5,6 @@
 
 export const LOCATION_CONTRACTS = [
   {
-    id: 'lc_wellspring',
-    locationId: 'fountain',
-    locationName: 'Wellspring',
-    name: "The Warden's Request",
-    contractTier: 'gold',
-    storyContract: true,
-    desc: "The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water, and the locals who relied on it have gone quiet. Find out what happened and drive it out.",
-    storyNote: "The warden's body is in the lower chamber. No sigil. No seal. Just a blade wound and a folded note tucked inside his boot: 'Keep the spring clear. Route will pass through before the season ends. Do not interfere.' Unsigned. Whoever left it didn't need to sign their work. They expected no one to look.",
-    journalEntry: {
-      title: 'The Route',
-      location: 'Wellspring',
-      zone: 2,
-      text: `The warden didn't vanish. He was killed for finding something he wasn't supposed to find.\n\nThere was a note in his boot. No sigil, no name — just a single instruction: keep the spring clear, a route will pass through before the season ends, don't interfere. Someone is treating this water source as a waypoint. Not poisoning it. Securing it.\n\nThe harbor fell. The grove fell. The outpost fell. They haven't stopped. They're building something that runs through this entire region — and they're quietly removing anything that gets in the way.`,
-    },
-    zone: 2,
-    encounter: {
-      enemyType: 'wave',
-      waveSize: 3,
-    },
-    rewards: [
-      { type: 'cleansePots', amount: 2  },
-      { type: 'gold',        amount: 20 },
-      { type: 'xp',         amount: 50 },
-    ],
-  },
-  {
     id: 'lc_harbor',
     locationId: 'harbor',
     locationName: 'Ghost Harbor',
@@ -120,6 +94,32 @@ export const LOCATION_CONTRACTS = [
   },
 
   // ── Zone 2 Story Contracts ────────────────────────────────────────────────────
+  {
+    id: 'lc_wellspring',
+    locationId: 'fountain',
+    locationName: 'Wellspring',
+    name: "The Warden's Request",
+    contractTier: 'gold',
+    storyContract: true,
+    desc: "The warden stopped reporting weeks ago. The spring still flows — but something foul has taken root in the water, and the locals who relied on it have gone quiet. Find out what happened and drive it out.",
+    storyNote: "The warden's body is in the lower chamber. No sigil. No seal. Just a blade wound and a folded note tucked inside his boot: 'Keep the spring clear. Route will pass through before the season ends. Do not interfere.' Unsigned. Whoever left it didn't need to sign their work. They expected no one to look.",
+    journalEntry: {
+      title: 'The Route',
+      location: 'Wellspring',
+      zone: 2,
+      text: `The warden didn't vanish. He was killed for finding something he wasn't supposed to find.\n\nThere was a note in his boot. No sigil, no name — just a single instruction: keep the spring clear, a route will pass through before the season ends, don't interfere. Someone is treating this water source as a waypoint. Not poisoning it. Securing it.\n\nThe harbor fell. The grove fell. The outpost fell. They haven't stopped. They're building something that runs through this entire region — and they're quietly removing anything that gets in the way.`,
+    },
+    zone: 2,
+    encounter: {
+      enemyType: 'wave',
+      waveSize: 3,
+    },
+    rewards: [
+      { type: 'cleansePots', amount: 2  },
+      { type: 'gold',        amount: 20 },
+      { type: 'xp',         amount: 50 },
+    ],
+  },
   {
     id: 'lc_ivy_crossing',
     locationId: 'ivy_crossing',
