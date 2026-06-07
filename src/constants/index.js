@@ -72,11 +72,6 @@ export const VISUAL_STYLES = {
 export const GAME_CONSTANTS = {
   MAX_HP: 100,
   MAX_STAMINA: 100,
-  BASE_ATTACK: 25,
-  BASE_DEFENSE: 5,
-  PLAYER_HP_PER_DAY: 8,
-  PLAYER_SP_PER_DAY: 8,
-  PLAYER_ATK_PER_DAY: 2,
   HEALTH_POTION_HEAL_PERCENT: 22, // 22% of max HP
   HEALTH_POTION_MIN: 22, // Minimum heal amount
   STAMINA_POTION_RESTORE_PERCENT: 50, // 50% of max stamina
@@ -810,6 +805,3 @@ export const PRIMARY_ABILITY = {
   Knight: 'str', Wizard: 'int', Assassin: 'dex', Crusader: 'con',
 };
 
-export const SECONDARY_ABILITY = {
-  Knight: 'con', Wizard: 'wis', Assassin: 'cha', Crusader: 'str',
-};
