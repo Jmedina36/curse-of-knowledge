@@ -12,7 +12,6 @@
 
 export const TRACKS = {
   nightVigil:        '/sounds/music/Night Vigil.mp3',
-  ancientWinds:      '/sounds/music/Ancient Winds.mp3',
   midnightTale:      '/sounds/music/Midnight Tale.mp3',
   unholyKnight:      '/sounds/music/Unholy Knight.mp3',
   darkling:          '/sounds/music/Darkling.mp3',
@@ -75,11 +74,6 @@ class AudioManager {
   setMuted(val) {
     this._muted = val;
     if (this._el) this._el.volume = val ? 0 : this._vol;
-  }
-
-  setVolume(vol) {
-    this._vol = Math.max(0, Math.min(1, vol));
-    if (this._el && !this._muted) this._el.volume = this._vol;
   }
 
   get muted() { return this._muted; }
