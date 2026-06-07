@@ -54,9 +54,9 @@ export const VISUAL_STYLES = {
   
   // Card/container backgrounds
   card: {
-    default: 'rgba(37, 33, 24, 0.6)',
-    elevated: 'rgba(42, 36, 28, 0.8)',
-    subtle: 'rgba(26, 22, 18, 0.4)'
+    default: 'rgba(37, 33, 24, 0.88)',
+    elevated: 'rgba(42, 36, 28, 0.95)',
+    subtle: 'rgba(26, 22, 18, 0.75)'
   },
   
   // Decorative dividers - more subtle
