@@ -552,6 +552,11 @@ const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
 const [isCursedWave, setIsCursedWave] = useState(false);
 const cursedLineupRef = useRef([]);
 const cursedLineupIdxRef = useRef(0);
+const [isEliteWave, setIsEliteWave] = useState(false);
+const eliteWaveRef = useRef({ creatures: [], eliteId: null, eliteDialogue: null, creatureIdx: 0 });
+const [isOrderFinal, setIsOrderFinal] = useState(false);
+const orderFinalLineupRef = useRef([]);
+const orderFinalIdxRef = useRef(0);
   const [battling, setBattling] = useState(false);
   const [battleMenu, setBattleMenu] = useState('main'); // 'main', 'fight', 'items'
   const [isFinalBoss, setIsFinalBoss] = useState(false);
@@ -3833,6 +3838,59 @@ if (battleType === 'elite') {
     return;
   }
 
+  // Check if elite wave contract continues (creatures → elite)
+  if (isEliteWave) {
+    const ew = eliteWaveRef.current;
+    const nextCreatureIdx = ew.creatureIdx + 1;
+    if (nextCreatureIdx < ew.creatures.length) {
+      // More creatures
+      ew.creatureIdx = nextCreatureIdx;
+      setCurrentWaveEnemy(nextCreatureIdx + 1);
+      addLog(`Another creature closes in...`);
+      setTimeout(() => spawnRegularEnemy(false), 1500);
+      return;
+    }
+    if (nextCreatureIdx === ew.creatures.length) {
+      // All creatures down — spawn the elite
+      ew.creatureIdx = nextCreatureIdx;
+      setCurrentWaveEnemy(ew.creatures.length + 1);
+      addLog(`The elite emerges from the chaos!`);
+      setTimeout(() => spawnSpecificElite(ew.eliteId, ew.eliteDialogue), 1500);
+      return;
+    }
+    // Elite defeated — wave complete
+    setIsEliteWave(false);
+    setBattling(false);
+    setBattleMode(false);
+    generateVictoryLoot(battleType, false, goldGain, waveGoldTotal + goldGain);
+    return;
+  }
+
+  // Check if order final wave continues (Cutter → Mira)
+  if (isOrderFinal) {
+    const nextIdx = orderFinalIdxRef.current + 1;
+    const lineup = orderFinalLineupRef.current;
+    if (nextIdx < lineup.length) {
+      orderFinalIdxRef.current = nextIdx;
+      const next = lineup[nextIdx];
+      setCurrentWaveEnemy(nextIdx + 1);
+      addLog(`${next.name} steps forward — the order is not finished.`);
+      if (next.faction === 'bandit') setTimeout(() => spawnBanditEnemy(next, nextIdx, lineup.length), 1500);
+      else setTimeout(() => spawnDaughtersEnemy(next, nextIdx, lineup.length), 1500);
+      return;
+    }
+    // Full order defeated
+    setIsOrderFinal(false);
+    setDefeatedFactionMembers(prev => {
+      const imgs = lineup.map(m => m.img);
+      return [...prev, ...imgs.filter(i => !prev.includes(i))];
+    });
+    setBattling(false);
+    setBattleMode(false);
+    generateVictoryLoot(battleType, true, goldGain, waveGoldTotal + goldGain);
+    return;
+  }
+
   // Check if regular wave continues
   if (battleType === 'wave' && currentWaveEnemy < totalWaveEnemies) {
     // More enemies in wave - keep battle screen open
@@ -6041,6 +6099,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setVictoryLoot([]);
     setVictoryChest(null); // No loot when fleeing
     setHasFled(true); // Mark that we fled
+    setIsEliteWave(false);
+    setIsOrderFinal(false);
     setBossHp(0); // Trigger victory screen
     setBattling(false);
     setBattleMode(false); // Clear battle border
@@ -7494,6 +7554,29 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   } else if (enemyType === 'elite') {
                     const { eliteId, dialogue: eliteDialogue } = lc.encounter;
                     setTimeout(() => spawnSpecificElite(eliteId, eliteDialogue), 1000);
+                  } else if (enemyType === 'elite_wave') {
+                    const { eliteId, creatureCount, dialogue: eliteDialogue } = lc.encounter;
+                    const creatures = Array.from({ length: creatureCount }, () => ({ ...pickCreatureForDay(currentDay), isCreature: true }));
+                    eliteWaveRef.current = { creatures, eliteId, eliteDialogue: eliteDialogue?.[0] || null, creatureIdx: 0 };
+                    setIsEliteWave(true);
+                    setBattleType('wave');
+                    setCurrentWaveEnemy(1);
+                    setTotalWaveEnemies(creatureCount + 1);
+                    addLog(`${creatureCount} creatures guard the way — and something worse waits behind them.`);
+                    setTimeout(() => spawnRegularEnemy(false), 1000);
+                  } else if (enemyType === 'order_final') {
+                    const lineup = [
+                      { img: '/bandits/leader.png',         name: 'Cutter', isCapt: false, isLeader: true, faction: 'bandit'    },
+                      { img: '/daughters-of-dusk/leader.png', name: 'Mira', isCapt: false, isLeader: true, faction: 'daughters' },
+                    ];
+                    orderFinalLineupRef.current = lineup;
+                    orderFinalIdxRef.current = 0;
+                    setIsOrderFinal(true);
+                    setBattleType('wave');
+                    setCurrentWaveEnemy(1);
+                    setTotalWaveEnemies(2);
+                    addLog(`The order makes its final stand. Cutter and Mira — together.`);
+                    setTimeout(() => spawnBanditEnemy(lineup[0], 0, 2), 1000);
                   } else if (enemyType === 'cursed') {
                     const { members } = lc.encounter;
                     cursedLineupRef.current = members;
@@ -8057,6 +8140,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setCurrentWaveEnemy(0); setTotalWaveEnemies(1); setWaveCount(0); setCurrentBattleCreature(null);
                     setIsBanditWave(false); setBanditWaveNumber(0); setBanditCaptainsDefeated([]);
                     setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
+                    setIsEliteWave(false); setIsOrderFinal(false);
                     setChargeStacks(0); setEnemyDialogue(''); setEnragedTurns(0);
                     setLog([]); setGraveyard([]); setHeroes([]); setSkipCount(0); setConsecutiveDays(0);
                     setLastPlayedDate(null); setMiniBossCount(0); setCurseLevel(0);
