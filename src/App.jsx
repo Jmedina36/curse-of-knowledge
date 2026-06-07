@@ -7321,7 +7321,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.textShadow = '0 0 24px rgba(220,50,50,1)'; e.currentTarget.style.transform = 'scale(1.06)'; }}
                     onMouseLeave={e => { e.currentTarget.style.color = '#F5F5DC'; e.currentTarget.style.textShadow = '0 0 14px rgba(200,30,30,0.6)'; e.currentTarget.style.transform = 'scale(1)'; }}
                   >
-                    Begin Fresh
+                    New Adventure
                   </button>
 
                   <button
@@ -7336,7 +7336,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     onMouseEnter={e => { e.currentTarget.style.color = 'rgba(220,220,220,0.85)'; e.currentTarget.style.transform = 'scale(1.04)'; }}
                     onMouseLeave={e => { e.currentTarget.style.color = 'rgba(180,180,180,0.5)'; e.currentTarget.style.transform = 'scale(1)'; }}
                   >
-                    ← Go Back
+                    Go Back
                   </button>
                 </div>
               </div>
