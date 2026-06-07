@@ -276,169 +276,22 @@ const CraftingModal = ({
           {/* ── SCROLLABLE CONTENT ── */}
           <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 24px', background: 'rgba(0,0,0,0.25)' }}>
 
-        {/* Main Tabs: Potions / Equipment */}
+        {/* Equipment Tabs: Buy / Sell */}
         <div className="grid grid-cols-2 gap-2 mb-4">
-          {[
-            { key: 'buy', label: 'Potions', active: isPotionsTab,
-              activeGrad:   'linear-gradient(to bottom, rgba(168,85,247,0.7), rgba(126,34,206,0.8))',
-              inactiveGrad: 'linear-gradient(to bottom, rgba(80,40,120,0.3), rgba(60,30,90,0.4))',
-              activeHover:  'linear-gradient(to bottom, rgba(192,132,252,0.8), rgba(147,51,234,0.9))',
-              inactiveHover:'linear-gradient(to bottom, rgba(100,50,150,0.4), rgba(80,40,120,0.5))',
-              activeBorder: '#A855F7', inactiveBorder: 'rgba(168,85,247,0.4)', glow: 'rgba(168,85,247,0.3)' },
-            { key: 'buyEquipment', label: 'Equipment', active: isEquipmentTab,
-              activeGrad:   'linear-gradient(to bottom, rgba(220,38,38,0.7), rgba(153,27,27,0.8))',
-              inactiveGrad: 'linear-gradient(to bottom, rgba(100,20,20,0.3), rgba(80,15,15,0.4))',
-              activeHover:  'linear-gradient(to bottom, rgba(239,68,68,0.8), rgba(185,28,28,0.9))',
-              inactiveHover:'linear-gradient(to bottom, rgba(120,25,25,0.4), rgba(100,20,20,0.5))',
-              activeBorder: '#DC2626', inactiveBorder: 'rgba(220,38,38,0.4)', glow: 'rgba(220,38,38,0.3)' },
-          ].map(({ key, label, active, activeGrad, inactiveGrad, activeHover, inactiveHover, activeBorder, inactiveBorder, glow }) => (
-            <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
-              className="py-3 rounded-lg font-bold uppercase text-sm transition-all border-2"
-              style={{ background: active ? activeGrad : inactiveGrad, borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', boxShadow: active ? `0 0 15px ${glow}` : 'none' }}
-              onMouseEnter={e => { e.currentTarget.style.background = active ? activeHover : inactiveHover; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : inactiveGrad; e.currentTarget.style.transform = 'translateY(0)'; }}
-            >
-              {label}
-            </button>
-          ))}
+          {subTabCfg('buyEquipment', 'sellEquipment').map(({ key, label, activeGrad, hoverGrad, activeBorder, inactiveBorder }) => {
+            const active = merchantTab === key;
+            return (
+              <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
+                className="py-3 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                style={{ background: active ? activeGrad : 'rgba(37,33,24,0.88)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
+                onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(50,45,35,0.95)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(37,33,24,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
-
-        {/* Potions Sub-tabs */}
-        {isPotionsTab && (
-          <div className="rounded-lg p-2 mb-6 border" style={{ background: 'rgba(168,85,247,0.15)', borderColor: 'rgba(168,85,247,0.3)' }}>
-            <div className="grid grid-cols-2 gap-2">
-              {subTabCfg('buy', 'sellPotions').map(({ key, label, activeGrad, hoverGrad, activeBorder, inactiveBorder }) => {
-                const active = merchantTab === key;
-                return (
-                  <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
-                    className="py-2 rounded-lg font-bold text-sm transition-all border-2"
-                    style={{ background: active ? activeGrad : 'rgba(37,33,24,0.88)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(50,45,35,0.95)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(37,33,24,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Equipment Sub-tabs */}
-        {isEquipmentTab && (
-          <div className="rounded-lg p-2 mb-6 border" style={{ background: 'rgba(139,0,0,0.15)', borderColor: 'rgba(139,0,0,0.3)' }}>
-            <div className="grid grid-cols-2 gap-2">
-              {subTabCfg('buyEquipment', 'sellEquipment').map(({ key, label, activeGrad, hoverGrad, activeBorder, inactiveBorder }) => {
-                const active = merchantTab === key;
-                return (
-                  <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
-                    className="py-2 rounded-lg font-bold text-sm transition-all border-2"
-                    style={{ background: active ? activeGrad : 'rgba(37,33,24,0.88)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(50,45,35,0.95)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(37,33,24,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* ── Buy Potions ── */}
-        {merchantTab === 'buy' && (() => {
-          const prices = {
-            healthPotion:  getPotionPrice('healthPotion', 25),
-            staminaPotion: getPotionPrice('staminaPotion', 20),
-            cleansePotion: getPotionPrice('cleansePotion', 250),
-            weaponOil:     getPotionPrice('weaponOil', 40),
-            armorPolish:   getPotionPrice('armorPolish', 40),
-            luckyCharm:    getPotionPrice('luckyCharm', 80),
-          };
-          const potions = [
-            { key: 'healthPotion',  label: 'Health Potion',   price: prices.healthPotion,  effect: '30% Health',          effectColor: '#FF6B6B', lore: '"Crimson elixir"',  canBuy: gold >= prices.healthPotion,                             bgStop: ['rgba(180,35,35,0.35)', 'rgba(130,25,25,0.4)', 'rgba(100,22,22,0.45)'], hoverStop: ['rgba(200,40,40,0.4)',   'rgba(150,30,30,0.45)', 'rgba(120,25,25,0.5)'], border: 'rgba(180,35,35,0.6)' },
-            { key: 'staminaPotion', label: 'Stamina Potion',  price: prices.staminaPotion, effect: '50% Stamina',          effectColor: '#6BB6FF', lore: '"Azure draught"',   canBuy: gold >= prices.staminaPotion,                            bgStop: ['rgba(59,130,246,0.35)', 'rgba(30,64,175,0.4)',  'rgba(29,78,216,0.45)'], hoverStop: ['rgba(80,150,250,0.4)',  'rgba(59,130,246,0.45)', 'rgba(37,99,235,0.5)'],  border: 'rgba(59,130,246,0.65)' },
-            { key: 'cleansePotion', label: 'Cleanse Potion',  price: prices.cleansePotion, effect: 'Removes 1 curse level', effectColor: '#B794F4', lore: '"Purifying brew"', canBuy: gold >= prices.cleansePotion && !cleansePotionPurchasedToday, soldOut: cleansePotionPurchasedToday, bgStop: ['rgba(168,85,247,0.35)', 'rgba(126,34,206,0.4)', 'rgba(107,33,168,0.45)'], hoverStop: ['rgba(192,132,252,0.4)', 'rgba(147,51,234,0.45)', 'rgba(126,34,206,0.5)'], border: 'rgba(168,85,247,0.65)' },
-            { key: 'weaponOil',     label: 'Fury Elixir',     price: prices.weaponOil,     effect: '+5 Attack',            effectColor: '#DAA520', lore: '"Rage incarnate"',  canBuy: gold >= prices.weaponOil && !weaponOilActive,     active: weaponOilActive,    bgStop: ['rgba(234,179,8,0.35)',  'rgba(202,138,4,0.4)', 'rgba(161,98,7,0.45)'],  hoverStop: ['rgba(250,204,21,0.4)',  'rgba(234,179,8,0.45)',  'rgba(202,138,4,0.5)'],  border: 'rgba(234,179,8,0.65)' },
-            { key: 'armorPolish',   label: 'Ironbark Tonic',  price: prices.armorPolish,   effect: '+5 Defense',           effectColor: '#6BB6FF', lore: '"Stone-hard skin"', canBuy: gold >= prices.armorPolish && !armorPolishActive,  active: armorPolishActive,  bgStop: ['rgba(20,184,166,0.35)', 'rgba(13,148,136,0.4)', 'rgba(15,118,110,0.45)'], hoverStop: ['rgba(45,212,191,0.4)',  'rgba(20,184,166,0.45)', 'rgba(13,148,136,0.5)'], border: 'rgba(20,184,166,0.65)' },
-            { key: 'luckyCharm',    label: 'Fortune Philter', price: prices.luckyCharm,    effect: '2x loot',              effectColor: '#68D391', lore: '"Liquid luck"',     canBuy: gold >= prices.luckyCharm && !luckyCharmActive,   active: luckyCharmActive,   bgStop: ['rgba(34,197,94,0.35)', 'rgba(22,163,74,0.4)',  'rgba(21,128,61,0.45)'],  hoverStop: ['rgba(74,222,128,0.4)', 'rgba(34,197,94,0.45)',  'rgba(22,163,74,0.5)'],  border: 'rgba(34,197,94,0.65)' },
-          ];
-          return (
-            <div>
-              <MarketRates
-                entries={[
-                  { label: 'Health',  mod: marketModifiers.healthPotion },
-                  { label: 'Stamina', mod: marketModifiers.staminaPotion },
-                  { label: 'Cleanse', mod: marketModifiers.cleansePotion },
-                ]}
-                footer="Prices refresh daily"
-              />
-              <div className="grid grid-cols-3 gap-2">
-                {potions.map(p => <BuyPotionBtn key={p.key} {...p} onClick={() => { sounds.click(); handleBuyPotion(p.key); }} />)}
-              </div>
-            </div>
-          );
-        })()}
-
-        {/* ── Sell Potions ── */}
-        {merchantTab === 'sellPotions' && (
-          <div>
-            <MarketRates
-              entries={[
-                { label: 'Health',  mod: marketModifiers.healthPotion },
-                { label: 'Stamina', mod: marketModifiers.staminaPotion },
-                { label: 'Cleanse', mod: marketModifiers.cleansePotion },
-              ]}
-              footer="Prices refresh daily"
-            />
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              {(healthPots > 0 || staminaPots > 0 || cleansePots > 0) ? (
-                <div>
-                  <h3 className="font-bold text-sm mb-2" style={{ color: '#D4AF37' }}>POTIONS</h3>
-                  <div className="space-y-2">
-                    {healthPots > 0 && (
-                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(220,38,38,0.6)' }}>
-                        <div className="flex-1">
-                          <p className="text-sm font-bold" style={{ color: '#FF6B6B' }}>Health Potion</p>
-                          <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {healthPots}</p>
-                        </div>
-                        <SellBtn onClick={() => handleSell('Health Potion', Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7), null, () => sellPotion('healthPotion'))}>
-                          Sell: {Math.floor(25 * (marketModifiers.healthPotion || 1.0) * 0.7)} Gold
-                        </SellBtn>
-                      </div>
-                    )}
-                    {staminaPots > 0 && (
-                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(59,130,246,0.6)' }}>
-                        <div className="flex-1">
-                          <p className="text-sm font-bold" style={{ color: '#6BB6FF' }}>Stamina Potion</p>
-                          <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {staminaPots}</p>
-                        </div>
-                        <SellBtn onClick={() => handleSell('Stamina Potion', Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7), null, () => sellPotion('staminaPotion'))}>
-                          Sell: {Math.floor(20 * (marketModifiers.staminaPotion || 1.0) * 0.7)} Gold
-                        </SellBtn>
-                      </div>
-                    )}
-                    {cleansePots > 0 && (
-                      <div className="rounded-lg p-2 border flex justify-between items-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(168,85,247,0.6)' }}>
-                        <div className="flex-1">
-                          <p className="text-sm font-bold" style={{ color: '#B794F4' }}>Cleanse Potion</p>
-                          <p className="text-xs" style={{ color: '#F5F5DC' }}>Quantity: {cleansePots}</p>
-                        </div>
-                        <SellBtn onClick={() => handleSell('Cleanse Potion', Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7), null, () => sellPotion('cleansePotion'))}>
-                          Sell: {Math.floor(50 * (marketModifiers.cleansePotion || 1.0) * 0.7)} Gold
-                        </SellBtn>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="rounded-lg p-8 border-2 text-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
-                  <p className="text-sm italic" style={{ color: '#9CA3AF' }}>No potions to sell. Purchase potions or defeat enemies to gather them.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {/* ── Buy Equipment ── */}
         {merchantTab === 'buyEquipment' && (

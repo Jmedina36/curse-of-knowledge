@@ -175,7 +175,7 @@ const FantasyStudyQuest = () => {
   const [gold, setGold] = useState(0); // Currency from combat
   const [currency, setCurrency] = useState(0); // Gold for shop purchases
   const [dailyQuestCompleted, setDailyQuestCompleted] = useState(false); // Track if today's quests are done
-  const [merchantTab, setMerchantTab] = useState('buy'); // 'buy' or 'sell'
+  const [merchantTab, setMerchantTab] = useState('buyEquipment');
   const [marketModifiers, setMarketModifiers] = useState({
     weapon: 1.0,
     armor: 1.0,
