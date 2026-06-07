@@ -7351,7 +7351,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       }}></div>
       
       {!hero ? (
-        <div className="relative z-10 p-6">
+        <div className="relative z-10 pt-0 px-6 pb-6">
           <div className="max-w-6xl mx-auto text-center">
             <h1 className="text-6xl font-black text-red-400 mb-4">Loading...</h1>
             <p className="text-gray-400">Preparing your journey...</p>
@@ -7359,7 +7359,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
       ) : (
       
-      <div className="relative z-10 p-6">
+      <div className="relative z-10 pt-0 px-6 pb-6">
         <div className={`max-w-6xl mx-auto rounded-xl transition-all`}>
 
         </div>
