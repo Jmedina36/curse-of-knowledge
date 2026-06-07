@@ -181,12 +181,6 @@ const FantasyStudyQuest = () => {
     armor: 1.0,
     grimoire: 1.0,
     tome: 1.0,
-    healthPotion: 1.0,
-    staminaPotion: 1.0,
-    cleansePotion: 1.0,
-    weaponOil: 1.0,
-    armorPolish: 1.0,
-    luckyCharm: 1.0
   }); // Dynamic market prices (1.0 = normal, 1.5 = 50% bonus, etc.)
   const [lastMarketUpdateDay, setLastMarketUpdateDay] = useState(0); // Track last day market was updated
   const pityCounterRef = useRef(0); // Fights without a rare+ drop (pity timer)
@@ -1888,7 +1882,7 @@ if (tasks.length === 0) {
   // Update market modifiers (called daily or when entering merchant)
   const updateMarketPrices = () => {
     const newModifiers = {};
-    const types = ['weapon', 'armor', 'grimoire', 'tome', 'healthPotion', 'staminaPotion', 'cleansePotion', 'weaponOil', 'armorPolish', 'luckyCharm'];
+    const types = ['weapon', 'armor', 'grimoire', 'tome'];
     
     types.forEach(type => {
       // Random fluctuation between 0.7x and 1.3x
@@ -8211,7 +8205,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setArmorInventory({ helmet: [], chest: [], gloves: [], boots: [] });
                     setEquippedGrimoire(null); setEquippedTome(null); setGrimoireInventory([]); setTomeInventory([]);
                     setWaveGoldTotal(0);
-                    setMarketModifiers({ weapon: 1.0, armor: 1.0, grimoire: 1.0, tome: 1.0, healthPotion: 1.0, staminaPotion: 1.0, cleansePotion: 1.0, weaponOil: 1.0, armorPolish: 1.0, luckyCharm: 1.0 });
+                    setMarketModifiers({ weapon: 1.0, armor: 1.0, grimoire: 1.0, tome: 1.0 });
                     setLastMarketUpdateDay(0); setShopInventory([]); setDaysSinceShop(0); setDailyQuestCompleted(false);
                     setGuildPoints(0); setGauntletMilestone(1500); setGauntletUnlocked(false); setLastRealDay(null);
                     setSelectedZone(null); setActiveContract(null);
