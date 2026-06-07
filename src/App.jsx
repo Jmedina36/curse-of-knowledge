@@ -7344,6 +7344,36 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   </span>
                 </button>
               ))}
+
+          {/* Account button */}
+          <button
+            onClick={async () => {
+              sounds.click();
+              if (supabaseUser) {
+                if (window.confirm(`Signed in as ${supabaseUser.email}\n\nSign out?`)) {
+                  await supabase.auth.signOut();
+                  setSupabaseUser(null);
+                }
+              } else {
+                setShowAuthModal(true);
+              }
+            }}
+            className="flex flex-col items-center gap-2 px-4 py-3 rounded-lg transition-all border-2"
+            style={{
+              backgroundColor: 'transparent',
+              borderColor: supabaseUser ? 'rgba(120,200,120,0.25)' : 'transparent',
+              opacity: 0.7,
+              marginLeft: 'auto',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.opacity = 1; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.5)' : 'rgba(212,175,55,0.3)'; }}
+            onMouseLeave={e => { e.currentTarget.style.opacity = 0.7; e.currentTarget.style.borderColor = supabaseUser ? 'rgba(120,200,120,0.25)' : 'transparent'; }}
+            title={supabaseUser ? `Signed in as ${supabaseUser.email}` : 'Sign in to sync across devices'}
+          >
+            <span style={{ fontSize: '1.1rem', lineHeight: 1 }}>{supabaseUser ? '☁' : '○'}</span>
+            <span className="text-xs uppercase tracking-wider" style={{ color: supabaseUser ? 'rgba(120,200,120,0.8)' : 'rgba(200,185,155,0.6)', fontWeight: 'normal' }}>
+              {supabaseUser ? 'Synced' : 'Sign In'}
+            </span>
+          </button>
         </nav>
 
         <div className="max-w-6xl mx-auto">
