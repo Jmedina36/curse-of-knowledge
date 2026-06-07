@@ -396,7 +396,7 @@ const InventoryModal = ({
         className="relative flex flex-col rounded-xl border-2 overflow-hidden"
         style={{
           width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh',
-          backgroundImage: 'url(/Stonewall1.png)',
+          backgroundImage: 'url(/Stonewall2.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           borderColor: COLORS.silver,
