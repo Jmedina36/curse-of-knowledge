@@ -7377,7 +7377,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 {id:'map', icon:Map, label:'Map'},
                 {id:'planner', icon:BookOpen, label:'Codex'},
                 {id:'journal', icon:ScrollText, label:'Journal'},
-                ...(import.meta.env.DEV ? [{id:'debug', icon:Settings, label:'Debug'}] : []),
+                {id:'debug', icon:Settings, label:'Debug'},
               ].map(t => (
                 <button
                   key={t.id}
@@ -7692,7 +7692,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onFinalBoss={finalBoss}
             />
           )}
-          {import.meta.env.DEV && activeTab === 'debug' && (
+          {activeTab === 'debug' && (
             <div className="max-w-4xl mx-auto mb-6 rounded-xl p-6 border-2 relative" style={{
               background: 'linear-gradient(to bottom, rgba(40, 20, 10, 0.95), rgba(20, 10, 5, 0.95))',
               borderColor: 'rgba(139, 0, 0, 0.6)',
