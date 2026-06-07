@@ -6913,10 +6913,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* Step 1: Class Selection */}
               {charCreateStep === 1 && (() => {
                 const CLASS_LORE = {
-                  Knight:   'The greatest failures in history were failures of learning, not strength. The Knight carries every lesson the fallen could not finish — and fights to ensure nothing is ever forgotten.',
-                  Wizard:   'Every spell is a truth unlocked. Without study, magic feeds the Abyss directly. You understand what most will not: knowledge is the only wall standing between the world and oblivion.',
-                  Assassin: 'The darkness hoards secrets — knowledge buried, skills lost to silence. You move through shadow to recover what was abandoned, restoring what others chose to let die.',
-                  Crusader: 'Faith without understanding is hollow. True devotion demands discipline. Your light is not given — it is earned through relentless study and hard-won in the dark.',
+                  Knight:   'Strength without knowledge breaks. You carry the lessons the fallen left behind.',
+                  Wizard:   'Every page turned is a blow against the dark. Knowledge is your only real weapon.',
+                  Assassin: 'The darkness buries what it fears. You recover what others let die.',
+                  Crusader: 'Faith without discipline is hollow. Your light is earned, not given.',
                 };
                 const CC_CLASSES = [
                   { name: 'Knight',   emblem: '⚔︎', color: '#c0392b' },
@@ -6938,7 +6938,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           key={cls.name}
                           onClick={() => setCharCreateClass(cls)}
                           style={{
-                            fontFamily: "'Cinzel', serif", textAlign: 'left',
+                            fontFamily: "'Cinzel', serif", textAlign: 'center',
                             padding: '16px 18px',
                             background: charCreateClass && charCreateClass.name === cls.name ? 'rgba(212,175,55,0.08)' : 'rgba(0,0,0,0.4)',
                             border: charCreateClass && charCreateClass.name === cls.name ? '1px solid rgba(212,175,55,0.6)' : '1px solid rgba(255,255,255,0.08)',
@@ -6947,11 +6947,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           onMouseEnter={e => { if (!charCreateClass || charCreateClass.name !== cls.name) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; e.currentTarget.style.background = 'rgba(0,0,0,0.55)'; } }}
                           onMouseLeave={e => { if (!charCreateClass || charCreateClass.name !== cls.name) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(0,0,0,0.4)'; } }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                            <span style={{ fontSize: '1.4rem', color: cls.color }}>{cls.emblem}</span>
+                          <div style={{ textAlign: 'center', marginBottom: '8px' }}>
                             <span style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.12em', color: '#F5F5DC' }}>{cls.name}</span>
                           </div>
-                          <p style={{ fontSize: '0.7rem', lineHeight: 1.6, color: 'rgba(180,165,150,0.7)', letterSpacing: '0.02em', margin: 0 }}>
+                          <p style={{ fontSize: '0.7rem', lineHeight: 1.6, color: 'rgba(180,165,150,0.7)', letterSpacing: '0.02em', margin: 0, textAlign: 'center' }}>
                             {CLASS_LORE[cls.name]}
                           </p>
                         </button>
