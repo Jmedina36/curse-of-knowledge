@@ -7347,23 +7347,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {activeTab === 'contracts' && (
             <ContractsTab
               hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
-              xp={xp} level={level}
-              eliteBossDefeatedToday={eliteBossDefeatedToday} debugWarningState={debugWarningState}
-              tasks={tasks} setTasks={setTasks} showModal={showModal} setShowModal={setShowModal}
-              newTask={newTask} setNewTask={setNewTask} activeTask={activeTask} setActiveTask={setActiveTask}
-              timer={timer} setTimer={setTimer} running={running} setRunning={setRunning}
-              overdueTask={overdueTask} hideCompletedTasks={hideCompletedTasks}
-              setHideCompletedTasks={setHideCompletedTasks} draggedTask={draggedTask} setDraggedTask={setDraggedTask}
-              complete={complete} handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
+              eliteBossDefeatedToday={eliteBossDefeatedToday}
+              tasks={tasks} setShowModal={setShowModal}
+              hideCompletedTasks={hideCompletedTasks} setHideCompletedTasks={setHideCompletedTasks}
+              handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
               handleDragOver={handleDragOver} handleDrop={handleDrop}
-              setShowPomodoro={setShowPomodoro} setPomodoroTask={setPomodoroTask}
-              setPomodoroTimer={setPomodoroTimer} setPomodoroRunning={setPomodoroRunning}
-              setIsBreak={setIsBreak} setPomodorosCompleted={setPomodorosCompleted}
               start={start}
               activeContract={activeContract} setActiveContract={setActiveContract}
               setActiveTab={setActiveTab}
               setShowImportModal={setShowImportModal}
-              log={log} addLog={addLog}
+              log={log}
               guildPoints={guildPoints} guildRank={guildRank} guildRanks={GUILD_RANKS}
               locationContracts={LOCATION_CONTRACTS}
               completedLocationContracts={completedLocationContracts}
