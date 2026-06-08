@@ -58,10 +58,53 @@ const QuestTab = ({
 
               {/* RPG Character Sheet layout — ink on parchment */}
               <>
-              {/* Watermark emblem */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:0.06,color:'#3D1F08'}}>
-                {getCardStyle(hero.class, currentDay).emblem}
-              </div>
+              {/* ── Watermark / Curse overlays ── */}
+              {curseLevel === 0 && (
+                /* Class emblem — no curse */
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:0.06,color:'#3D1F08'}}>
+                  {getCardStyle(hero.class, currentDay).emblem}
+                </div>
+              )}
+
+              {curseLevel === 1 && (
+                /* Level 1 — single faint skull, purple shadow */
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:0.07,color:'#2A0040'}}>
+                  ☠
+                </div>
+              )}
+
+              {curseLevel === 2 && (<>
+                {/* Level 2 — central skull + 4 corner skulls + card vignette */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:0.1,color:'#1A0030'}}>☠</div>
+                {[{top:'6%',left:'4%'},{top:'6%',right:'4%'},{bottom:'6%',left:'4%'},{bottom:'6%',right:'4%'}].map((pos,i)=>(
+                  <div key={i} className="absolute pointer-events-none" style={{...pos,fontSize:'2rem',opacity:0.07,color:'#1A0030',lineHeight:1}}>☠</div>
+                ))}
+                <div className="absolute inset-0 pointer-events-none" style={{borderRadius:'12px',background:'radial-gradient(ellipse at center, transparent 40%, rgba(30,0,50,0.18) 100%)'}}/>
+              </>)}
+
+              {curseLevel === 3 && (<>
+                {/* Level 3 — macabre: dark overlay, blood drip, pulsing central skull, 8 surrounding skulls */}
+                {/* Dark crimson wash over the whole card */}
+                <div className="absolute inset-0 pointer-events-none" style={{borderRadius:'12px',background:'rgba(30,0,0,0.22)'}}/>
+                {/* Blood seeping from top */}
+                <div className="absolute inset-0 pointer-events-none" style={{borderRadius:'12px',background:'linear-gradient(to bottom, rgba(80,0,0,0.35) 0%, rgba(50,0,0,0.15) 25%, transparent 55%)'}}/>
+                {/* Heavy vignette */}
+                <div className="absolute inset-0 pointer-events-none" style={{borderRadius:'12px',background:'radial-gradient(ellipse at center, transparent 25%, rgba(60,0,0,0.38) 100%)'}}/>
+                {/* Central skull — pulsing */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none animate-pulse" style={{fontSize:'20rem',lineHeight:1,opacity:0.14,color:'#5A0000'}}>☠</div>
+                {/* 4 corner skulls */}
+                {[{top:'5%',left:'3%'},{top:'5%',right:'3%'},{bottom:'5%',left:'3%'},{bottom:'5%',right:'3%'}].map((pos,i)=>(
+                  <div key={`c${i}`} className="absolute pointer-events-none" style={{...pos,fontSize:'2.2rem',opacity:0.13,color:'#5A0000',lineHeight:1}}>☠</div>
+                ))}
+                {/* 4 mid-edge skulls */}
+                {[{top:'3%',left:'50%',transform:'translateX(-50%)'},{bottom:'3%',left:'50%',transform:'translateX(-50%)'},{top:'50%',left:'1%',transform:'translateY(-50%)'},{top:'50%',right:'1%',transform:'translateY(-50%)'}].map((pos,i)=>(
+                  <div key={`e${i}`} className="absolute pointer-events-none" style={{...pos,fontSize:'1.5rem',opacity:0.09,color:'#5A0000',lineHeight:1}}>☠</div>
+                ))}
+                {/* Condemned text stamp */}
+                <div className="absolute pointer-events-none" style={{bottom:'14%',left:'50%',transform:'translateX(-50%) rotate(-8deg)',fontFamily:'Cinzel,serif',fontSize:'1.1rem',fontWeight:900,letterSpacing:'0.35em',textTransform:'uppercase',color:'rgba(100,0,0,0.18)',whiteSpace:'nowrap',userSelect:'none'}}>
+                  CONDEMNED
+                </div>
+              </>)}
 
               {/* Corner badges */}
               <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderLeft:'none'}}>
