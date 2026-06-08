@@ -115,7 +115,7 @@ const ForgeTab = ({
       backgroundPosition: 'center',
     }}>
 
-      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(0,0,0,0.3)', position: 'relative' }}>
+      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.92)', position: 'relative' }}>
         {onClose && (
           <button
             onClick={() => { sounds.click(); onClose(); }}
@@ -153,7 +153,7 @@ const ForgeTab = ({
     </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px', background: 'rgba(0,0,0,0.25)' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px', background: 'rgba(20,17,10,0.88)' }}>
     {/* Flashcards Tab Content */}
     {forgeSubTab === 'flashcards' && (
     <>

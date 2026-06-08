@@ -42,7 +42,7 @@ const PlannerTab = ({
     }}>
 
       {/* Fixed header section */}
-      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(0,0,0,0.3)' }}>
+      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.92)' }}>
         {/* Sub-navigation tabs */}
         <div className="flex gap-2 justify-center mb-4">
           <button
@@ -71,7 +71,7 @@ const PlannerTab = ({
       </div>
 
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 24px', background: 'rgba(0,0,0,0.25)' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 24px', background: 'rgba(20,17,10,0.88)' }}>
 
         {/* Weekly Plan Content */}
         {plannerSubTab === 'weekly' && (
@@ -95,7 +95,7 @@ const PlannerTab = ({
 
               if (isToday) {
                 if (weeklyPlan[day].length > 0) {
-                  cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.55) 0%, rgba(30, 41, 59, 0.42) 100%)';
+                  cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.88) 100%)';
                   titleColor = '#D4AF37';
                   titleShadow = 'none';
                   themeColor = '#DAA520';
@@ -113,7 +113,7 @@ const PlannerTab = ({
                 }
                 dividerColor = 'rgba(212, 175, 55, 0.5)';
               } else if (isFuture) {
-                cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.55) 0%, rgba(30, 41, 59, 0.42) 100%)';
+                cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.88) 100%)';
                 titleColor = 'rgba(192, 192, 192, 0.75)';
                 titleShadow = 'none';
                 themeColor = 'rgba(156, 163, 175, 0.6)';
@@ -122,7 +122,7 @@ const PlannerTab = ({
                 shadowStyle = '0 2px 4px rgba(0, 0, 0, 0.2)';
                 dividerColor = 'rgba(156, 163, 175, 0.25)';
               } else {
-                cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.4) 0%, rgba(30, 41, 59, 0.3) 100%)';
+                cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.82) 0%, rgba(30, 41, 59, 0.82) 100%)';
                 titleColor = 'rgba(156, 163, 175, 0.55)';
                 titleShadow = 'none';
                 themeColor = 'rgba(156, 163, 175, 0.4)';
