@@ -110,12 +110,12 @@ const ContractsTab = ({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            border: '6px solid rgba(101,67,33,0.9)',
-            borderRadius: '12px',
+            border: '14px solid rgba(120,72,28,0.97)',
+            borderRadius: '14px',
             padding: '20px',
-            boxShadow: '0 6px 40px rgba(0,0,0,0.7), inset 0 0 0 2px rgba(160,100,30,0.25), inset 0 0 30px rgba(0,0,0,0.35)',
-            outline: '2px solid rgba(55,30,5,0.85)',
-            outlineOffset: '3px',
+            boxShadow: '0 6px 40px rgba(0,0,0,0.7), inset 0 0 0 3px rgba(80,45,10,0.9), inset 0 0 30px rgba(0,0,0,0.4)',
+            outline: '3px solid rgba(60,32,6,0.95)',
+            outlineOffset: '4px',
           }}>
 
             {/* Board header */}
