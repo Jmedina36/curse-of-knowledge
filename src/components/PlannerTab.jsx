@@ -34,7 +34,6 @@ const PlannerTab = ({
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       borderRadius: '12px',
-      border: '2px solid rgba(212, 175, 55, 0.6)',
       height: 'calc(100vh - 180px)',
       display: 'flex',
       flexDirection: 'column',
