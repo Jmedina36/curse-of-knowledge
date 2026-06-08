@@ -47,47 +47,21 @@ const QuestTab = ({
 }) => {
   return (
             <div className="space-y-4">
-            <div className={`rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden${curseLevel === 3 ? ' animate-pulse' : ''}`} style={{
+            <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
               backgroundImage: 'url(/Updated%20scroll.png)',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              border: (() => {
-                if (curseLevel === 3) return '2px solid rgba(139,0,0,0.85)';
-                if (curseLevel === 2) return '2px solid rgba(107,44,145,0.75)';
-                if (curseLevel === 1) return '2px solid rgba(107,44,145,0.45)';
-                const m={red:'rgba(180,30,30,0.5)',blue:'rgba(59,130,246,0.4)',green:'rgba(16,185,129,0.4)',white:'rgba(200,200,200,0.35)',purple:'rgba(139,92,246,0.4)',yellow:'rgba(212,175,55,0.4)',amber:'rgba(34,197,94,0.4)'};
-                return '2px solid '+(m[hero.class.color]||m.yellow);
-              })(),
-              boxShadow: (() => {
-                if (curseLevel === 3) return '0 4px 30px rgba(139,0,0,0.6), 0 0 80px rgba(100,0,0,0.4)';
-                if (curseLevel === 2) return '0 4px 30px rgba(107,44,145,0.5), 0 0 70px rgba(80,20,120,0.3)';
-                if (curseLevel === 1) return '0 4px 30px rgba(107,44,145,0.25), 0 0 50px rgba(60,10,90,0.15)';
-                const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'};
-                const g=m[hero.class.color]||m.yellow;
-                return '0 4px 30px '+g+', 0 0 60px '+g;
-              })()
+              border: (()=>{const m={red:'rgba(180,30,30,0.5)',blue:'rgba(59,130,246,0.4)',green:'rgba(16,185,129,0.4)',white:'rgba(200,200,200,0.35)',purple:'rgba(139,92,246,0.4)',yellow:'rgba(212,175,55,0.4)',amber:'rgba(34,197,94,0.4)'};return '2px solid '+(m[hero.class.color]||m.yellow);})(),
+              boxShadow: (()=>{const m={red:'rgba(180,30,30,0.25)',blue:'rgba(59,130,246,0.2)',green:'rgba(16,185,129,0.2)',white:'rgba(200,200,200,0.15)',purple:'rgba(139,92,246,0.2)',yellow:'rgba(212,175,55,0.2)',amber:'rgba(34,197,94,0.2)'};const g=m[hero.class.color]||m.yellow;return '0 4px 30px '+g+', 0 0 60px '+g;})()
             }}>
 
               {/* RPG Character Sheet layout — ink on parchment */}
               <>
-              {/* Watermark emblem / curse skull */}
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:curseLevel===3?0.1:0.06,color:curseLevel===3?'#3D0000':curseLevel>0?'#2A0040':'#3D1F08'}}>
-                {curseLevel === 3 ? '☠' : getCardStyle(hero.class, currentDay).emblem}
+              {/* Watermark emblem */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none" style={{fontSize:'20rem',lineHeight:1,opacity:0.06,color:'#3D1F08'}}>
+                {getCardStyle(hero.class, currentDay).emblem}
               </div>
-
-              {/* Curse vignette overlay */}
-              {curseLevel > 0 && (
-                <div className="absolute inset-0 pointer-events-none" style={{
-                  borderRadius: '12px',
-                  background: curseLevel === 3
-                    ? 'radial-gradient(ellipse at center, transparent 20%, rgba(80,0,0,0.32) 100%)'
-                    : curseLevel === 2
-                      ? 'radial-gradient(ellipse at center, transparent 30%, rgba(40,0,60,0.22) 100%)'
-                      : 'radial-gradient(ellipse at center, transparent 50%, rgba(20,0,40,0.12) 100%)',
-                  zIndex: 1,
-                }} />
-              )}
 
               {/* Corner badges */}
               <div className="absolute top-0 left-0 px-3 py-1 rounded-br-lg z-20" style={{background:'rgba(200,170,120,0.5)',border:'1px solid rgba(100,60,20,0.35)',borderTop:'none',borderLeft:'none'}}>
@@ -109,13 +83,28 @@ const QuestTab = ({
 
                   {/* LEFT: Portrait */}
                   <div style={{flexShrink:0,width:'clamp(90px,22%,130px)',display:'flex',flexDirection:'column',alignItems:'center',gap:'6px'}}>
-                    <div style={{width:'100%',aspectRatio:'3/4',borderRadius:'6px',overflow:'hidden',position:'relative',border:'2px solid rgba(80,45,15,0.6)',boxShadow:'0 2px 12px rgba(0,0,0,0.35)'}}>
+                    <div className={curseLevel===3?'animate-pulse':''} style={{
+                      width:'100%',aspectRatio:'3/4',borderRadius:'6px',overflow:'hidden',position:'relative',
+                      border: curseLevel===3?'2px solid rgba(139,0,0,0.9)':curseLevel===2?'2px solid rgba(107,44,145,0.8)':curseLevel===1?'2px solid rgba(107,44,145,0.5)':'2px solid rgba(80,45,15,0.6)',
+                      boxShadow: curseLevel===3?'0 0 18px rgba(139,0,0,0.7), 0 0 40px rgba(100,0,0,0.4)':curseLevel===2?'0 0 14px rgba(107,44,145,0.6), 0 0 30px rgba(80,20,120,0.3)':curseLevel===1?'0 0 10px rgba(107,44,145,0.3)':'0 2px 12px rgba(0,0,0,0.35)',
+                      transition:'border-color 0.5s ease, box-shadow 0.5s ease',
+                    }}>
                       <img src={getHeroPortrait(hero.class.name, hero.gender)} alt={hero.name}
                         style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'top',
                           filter: curseLevel===3?'saturate(0.4) brightness(0.8) sepia(0.25)':curseLevel===2?'saturate(0.7) brightness(0.9)':'none',
                           transition:'filter 0.5s ease'}}
                         onError={e=>{e.currentTarget.style.display='none';}}
                       />
+                      {/* Curse vignette — portrait only */}
+                      {curseLevel > 0 && (
+                        <div style={{position:'absolute',inset:0,pointerEvents:'none',
+                          background: curseLevel===3?'radial-gradient(ellipse at center, transparent 25%, rgba(80,0,0,0.45) 100%)':curseLevel===2?'radial-gradient(ellipse at center, transparent 35%, rgba(40,0,60,0.35) 100%)':'radial-gradient(ellipse at center, transparent 55%, rgba(20,0,40,0.18) 100%)',
+                        }}/>
+                      )}
+                      {/* Skull overlay at level 3 */}
+                      {curseLevel === 3 && (
+                        <div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',pointerEvents:'none',fontSize:'3rem',opacity:0.18,color:'#8B0000',lineHeight:1}}>☠</div>
+                      )}
                     </div>
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.85rem,2vw,1.05rem)',letterSpacing:'0.06em',color:'#000',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
