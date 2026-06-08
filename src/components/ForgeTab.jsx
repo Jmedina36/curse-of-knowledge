@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Hammer, Plus, Sparkles, X } from 'lucide-react';
-import { COLORS } from '../constants';
+import { COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
 
 const RYLAN_IDLE = [
@@ -103,43 +103,45 @@ const ForgeTab = ({
         </div>
       )}
 
-    <div className="bg-black bg-opacity-50 rounded-xl border-2" style={{
+    <div className="rounded-xl border-2" style={{
       borderColor: 'rgba(212, 175, 55, 0.6)',
       width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
       margin: '0 auto',
       height: 'calc(100vh - 180px)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      backgroundImage: 'url(/Stonewall1.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
     }}>
 
-      <div style={{ flexShrink: 0, padding: '16px 24px 0' }}>
+      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(0,0,0,0.3)' }}>
         {/* Sub-navigation tabs */}
         <div className="flex gap-2 justify-center mb-4">
-      <button 
-        onClick={() => { sounds.click(); setForgeSubTab('flashcards'); }}
-        className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
-        style={{
-          backgroundColor: forgeSubTab === 'flashcards' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
-          borderColor: forgeSubTab === 'flashcards' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
-          color: '#F5F5DC'
-        }}
-      >
-        DRILLS
-      </button>
-      <button 
-        onClick={() => { sounds.click(); setForgeSubTab('resources'); }}
-        className="px-6 py-2 rounded-lg transition-all border-2 font-semibold"
-        style={{
-          backgroundColor: forgeSubTab === 'resources' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
-          borderColor: forgeSubTab === 'resources' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
-          color: '#F5F5DC'
-        }}
-      >
-        RELICS
-      </button>
+      {['flashcards', 'resources'].map((tab) => {
+        const active = forgeSubTab === tab;
+        const label = tab === 'flashcards' ? 'DRILLS' : 'RELICS';
+        return (
+          <button
+            key={tab}
+            onClick={() => { sounds.click(); setForgeSubTab(tab); }}
+            className="px-6 py-2 rounded-lg transition-all border-2 font-bold uppercase text-sm"
+            style={{
+              background: active
+                ? 'linear-gradient(to bottom, rgba(184,134,11,0.75), rgba(139,105,20,0.75))'
+                : VISUAL_STYLES.card.default,
+              borderColor: active ? COLORS.gold : 'rgba(212,175,55,0.25)',
+              color: '#F5F5DC',
+              letterSpacing: '0.08em',
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px', background: 'rgba(0,0,0,0.25)' }}>
     {/* Flashcards Tab Content */}
     {forgeSubTab === 'flashcards' && (
     <>
@@ -166,8 +168,8 @@ const ForgeTab = ({
     
     {flashcardDecks.length === 0 ? (
       <div className="text-center py-12 rounded-lg border-2" style={{
-        background: 'rgba(0, 0, 0, 0.5)',
-        borderColor: 'rgba(212, 175, 55, 0.6)'
+        background: VISUAL_STYLES.card.default,
+        borderColor: 'rgba(212, 175, 55, 0.4)'
       }}>
         <p className="mb-2 text-lg" style={{color: '#C0C0C0'}}>The forge stands empty...</p>
         <p className="text-sm" style={{color: '#95A5A6'}}>Create your first deck to begin forging knowledge</p>
@@ -176,9 +178,9 @@ const ForgeTab = ({
       <div className="space-y-4">
         {flashcardDecks.map((deck, idx) => (
           <div key={idx} className="rounded-lg p-4 border-2" style={{
-            background: 'rgba(0, 0, 0, 0.55)',
-            borderColor: 'rgba(212, 175, 55, 0.6)',
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(212, 175, 55, 0.03)'
+            background: VISUAL_STYLES.card.default,
+            borderColor: 'rgba(212, 175, 55, 0.4)',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)'
           }}>
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
@@ -233,8 +235,8 @@ const ForgeTab = ({
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {deck.cards.map((card, cardIdx) => (
                     <div key={cardIdx} className="flex justify-between items-center text-sm rounded p-2" style={{
-                      background: 'rgba(20, 20, 20, 0.6)',
-                      border: '1px solid rgba(212, 175, 55, 0.3)'
+                      background: 'rgba(20, 15, 5, 0.7)',
+                      border: '1px solid rgba(212, 175, 55, 0.25)'
                     }}>
                       <span className="flex-1 truncate" style={{color: '#F5F5DC'}}>
                         {card.mastered && '✓ '}{card.front}
@@ -348,9 +350,10 @@ const ForgeTab = ({
       <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Forge the chains that bind knowledge to will..."</p>
       
       {/* Forge New Link Form */}
-      <div className="bg-black bg-opacity-40 rounded-lg p-4 mb-6 border-2 relative overflow-hidden" style={{
-        borderColor: 'rgba(212, 175, 55, 0.5)',
-        boxShadow: '0 0 20px rgba(212, 175, 55, 0.1)'
+      <div className="rounded-lg p-4 mb-6 border-2 relative overflow-hidden" style={{
+        background: VISUAL_STYLES.card.default,
+        borderColor: 'rgba(212, 175, 55, 0.4)',
+        boxShadow: '0 0 20px rgba(212, 175, 55, 0.08)'
       }}>
         {/* Decorative corner accents */}
         <div style={{
@@ -384,8 +387,9 @@ const ForgeTab = ({
                 addStudyWebsite();
               }
             }}
-            className="px-4 py-3 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
+            className="px-4 py-3 rounded border-2 focus:outline-none focus:border-opacity-100 transition-all"
             style={{
+              background: 'rgba(20,15,5,0.8)',
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
               fontSize: '14px',
@@ -403,8 +407,9 @@ const ForgeTab = ({
                 addStudyWebsite();
               }
             }}
-            className="px-4 py-3 rounded border-2 bg-black bg-opacity-50 focus:outline-none focus:border-opacity-100 transition-all"
+            className="px-4 py-3 rounded border-2 focus:outline-none focus:border-opacity-100 transition-all"
             style={{
+              background: 'rgba(20,15,5,0.8)',
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
               fontSize: '14px',
@@ -465,8 +470,8 @@ const ForgeTab = ({
       {/* Forged Links Collection */}
       {studyWebsites.length === 0 ? (
         <div className="text-center py-12 rounded-lg border-2 relative" style={{
-          background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(26, 22, 18, 0.3))',
-          borderColor: 'rgba(212, 175, 55, 0.3)'
+          background: VISUAL_STYLES.card.default,
+          borderColor: 'rgba(212, 175, 55, 0.4)'
         }}>
           <Sparkles size={32} style={{color: 'rgba(212, 175, 55, 0.3)', margin: '0 auto 12px'}}/>
           <p className="text-sm mb-2" style={{color: '#C9A961', fontWeight: '500'}}>Your forge awaits...</p>
@@ -509,20 +514,18 @@ const ForgeTab = ({
                 key={site.id}
                 className="group relative rounded-lg border-2 transition-all duration-300"
                 style={{
-                  background: 'linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(26, 22, 18, 0.4))',
-                  borderColor: 'rgba(155, 139, 126, 0.4)',
+                  background: VISUAL_STYLES.card.default,
+                  borderColor: 'rgba(212, 175, 55, 0.3)',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                   transform: 'translateY(0)'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(26, 22, 18, 0.7), rgba(42, 36, 28, 0.6))';
                   e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.6)';
                   e.currentTarget.style.boxShadow = '0 6px 20px rgba(212, 175, 55, 0.2), inset 0 1px 0 rgba(212, 175, 55, 0.1)';
                   e.currentTarget.style.transform = 'translateY(-2px)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(26, 22, 18, 0.4))';
-                  e.currentTarget.style.borderColor = 'rgba(155, 139, 126, 0.4)';
+                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.3)';
                   e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.3)';
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
