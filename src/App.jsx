@@ -3109,11 +3109,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
   
   const ANTAGONISTS = {
-    cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditLaugh(),      dialogue: '"The order didn\'t send me. I came because I wanted to."' },
-    mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersLaugh1(),  dialogue: '"You spilled bandit blood. Now you face the dark."' },
-    sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.possessedLaugh(),   dialogue: '"Impressive. Truly. But this ends now."' },
-    malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),     dialogue: '"I have died seventeen times. I will not die tonight."' },
-    the_omen: { name: 'The Omen',                   img: '/main bad.png',                   hpMult: 8.0, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),     dialogue: '...' },
+    cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditLaugh(),        sfxKey: 'bandit',         dialogue: '"The order didn\'t send me. I came because I wanted to."' },
+    mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersLaugh1(),    sfxKey: 'daughters',      dialogue: '"You spilled bandit blood. Now you face the dark."' },
+    sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.lostSoulsFemale(),    sfxKey: 'lostSoulsFemale', dialogue: '"Impressive. Truly. But this ends now."' },
+    malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.eliteIntro(),         sfxKey: 'malachar',       dialogue: '"I have died seventeen times. I will not die tonight."' },
+    the_omen: { name: 'The Omen',                   img: '/main bad.png',                   hpMult: 8.0, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),       sfxKey: null,             dialogue: '...' },
   };
 
   const spawnAntagonist = (antagonistId) => {
@@ -3127,7 +3127,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const bossHealth = Math.floor(baseHp * a.hpMult * (2 - completionRate));
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
-    sounds.bossEntrance();
+    setEliteSfxKey(a.sfxKey ?? null);
     a.sfx();
     audioManager.cut();
     audioManager.play(a.music);

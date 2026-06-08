@@ -389,6 +389,7 @@ const BattleModal = ({
           : battleType === 'elite' ? (
               eliteSfxKey === 'lostSoulsFemale' ? sounds.lostSoulsFemale()
               : eliteSfxKey === 'daughters' ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
+              : eliteSfxKey === 'malachar' ? sounds.eliteLaugh3()
               : sounds.eliteTaunt()
             )
           : sounds.creatureTaunt();

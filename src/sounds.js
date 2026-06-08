@@ -52,6 +52,7 @@ export const sounds = {
   lostSoulsFemale: () => sfxPlay('LostSoulsFemale.mp3', 0.8),
   eliteIntro:      () => sfxPlay('EliteLaugh2.wav', 0.85),
   eliteTaunt:      () => sfxPlay('EliteLaugh1.mp3', 0.85),
+  eliteLaugh3:     () => sfxPlay('EliteLaugh3.wav', 0.85),
 
 
   // ── Final boss entrance: monster evil voice + soft evil storm ───────────────
