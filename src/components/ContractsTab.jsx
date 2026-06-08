@@ -384,6 +384,9 @@ const ContractsTab = ({
 
               const visible = locationContracts.filter(lc => {
                 if (!isZoneUnlocked(lc.zone)) return false;
+                // Always show pending contracts — player already won the battle
+                if (pendingLocationRewards?.includes(lc.id)) return true;
+                if (completedLocationContracts?.includes(lc.id)) return true;
                 if (!lc.requiredContracts?.length) return true;
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
