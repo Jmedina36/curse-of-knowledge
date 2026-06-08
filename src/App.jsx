@@ -6833,7 +6833,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           } : undefined}
           style={{
             position: 'fixed', inset: 0, zIndex: 200,
-            background: 'radial-gradient(ellipse at center, #1a0000 0%, #0d0000 45%, #000000 100%)',
+            backgroundImage: 'linear-gradient(to bottom, rgba(10,5,5,0.87), rgba(8,4,4,0.87)), url(/Stonewall1.png)',
+            backgroundSize: 'cover', backgroundPosition: 'center',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             opacity: introPhase === 'fading' ? 0 : 1,
             transition: 'opacity 0.8s ease-in-out',
