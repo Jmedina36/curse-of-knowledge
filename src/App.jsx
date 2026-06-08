@@ -6560,9 +6560,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   );
 
   return (
-  <div className={`min-h-screen text-white relative overflow-hidden ${currentAnimation || ''} ${
-    curseLevel === 3 ? 'border-8 border-red-600 animate-pulse' : ''
-  }`} style={{ fontFamily: "'Cinzel', serif", backgroundImage: 'linear-gradient(to bottom, rgba(10,9,7,0.82), rgba(17,16,9,0.82)), url(/Stonewall1.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+  <div className={`min-h-screen text-white relative overflow-hidden ${currentAnimation || ''}`} style={{ fontFamily: "'Cinzel', serif", backgroundImage: 'linear-gradient(to bottom, rgba(10,9,7,0.82), rgba(17,16,9,0.82)), url(/Stonewall1.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
       <style>{globalStyles}</style>
       
       {/* Auto-save indicator */}
