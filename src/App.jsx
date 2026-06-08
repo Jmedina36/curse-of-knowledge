@@ -51,18 +51,18 @@ const NARRATION_PAGES = [
 // ─── Bandit faction data ────────────────────────────────────────────────────
 const BANDIT_POOL = {
   grunts: [
-    { img: '/bandits/bandit-1.png', name: 'Rook'  },
-    { img: '/bandits/bandit-2.png', name: 'Slag'  },
-    { img: '/bandits/bandit-3.png', name: 'Finn'  },
-    { img: '/bandits/bandit-4.png', name: 'Gorse' },
-    { img: '/bandits/bandit-5.png', name: 'Mace'  },
-    { img: '/bandits/bandit-6.png', name: 'Dray'  },
-    { img: '/bandits/bandit-7.png', name: 'Vetch' },
+    { img: '/bandits/bandit-1.png', name: 'Rook',  taunt: '"I\'ve been waiting for someone worth robbing."' },
+    { img: '/bandits/bandit-2.png', name: 'Slag',  taunt: '"Nothing personal. Just messy business."' },
+    { img: '/bandits/bandit-3.png', name: 'Finn',  taunt: '"The road has a toll. You\'re it."' },
+    { img: '/bandits/bandit-4.png', name: 'Gorse', taunt: '"Bleed slow or bleed fast — your choice."' },
+    { img: '/bandits/bandit-5.png', name: 'Mace',  taunt: '"I\'ve broken bones for less. You\'re giving me a reason."' },
+    { img: '/bandits/bandit-6.png', name: 'Dray',  taunt: '"Every mark thinks they\'re different. They\'re not."' },
+    { img: '/bandits/bandit-7.png', name: 'Vetch', taunt: '"I smell coin on you. Hand it over or lose the hand."' },
   ],
   captains: [
-    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain' },
-    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain' },
-    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain' },
+    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain', taunt: '"Stand down. I won\'t ask twice."' },
+    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain', taunt: '"The order has a policy. You\'ve violated it."' },
+    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain', taunt: '"I\'ve put down champions. You look like another one."' },
   ],
   leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord' },
 };
@@ -97,16 +97,16 @@ const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day 
 // ─── Daughters of Dusk faction data ─────────────────────────────────────────
 const DAUGHTERS_POOL = {
   members: [
-    { img: '/daughters-of-dusk/member-1.png', name: 'Vael'  },
-    { img: '/daughters-of-dusk/member-2.png', name: 'Zira'  },
-    { img: '/daughters-of-dusk/member-3.png', name: 'Ash'   },
-    { img: '/daughters-of-dusk/member-4.png', name: 'Briar' },
-    { img: '/daughters-of-dusk/member-5.png', name: 'Knell' },
+    { img: '/daughters-of-dusk/member-1.png', name: 'Vael',  taunt: '"The dusk does not pardon the curious."' },
+    { img: '/daughters-of-dusk/member-2.png', name: 'Zira',  taunt: '"You\'ve walked into a wound. Now bleed with it."' },
+    { img: '/daughters-of-dusk/member-3.png', name: 'Ash',   taunt: '"I don\'t fight for gold. I fight for the dark I love."' },
+    { img: '/daughters-of-dusk/member-4.png', name: 'Briar', taunt: '"Every thorn has its purpose. You\'re learning mine."' },
+    { img: '/daughters-of-dusk/member-5.png', name: 'Knell', taunt: '"Death keeps its own time. Your hour approaches."' },
   ],
   captains: [
-    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain' },
-    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris',  title: 'Dusk Captain' },
-    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne',  title: 'Dusk Captain' },
+    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',  title: 'Dusk Captain', taunt: '"The Daughters do not forgive trespass. I am the response."' },
+    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris', title: 'Dusk Captain', taunt: '"You\'ve disturbed something ancient. I am its voice."' },
+    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne', title: 'Dusk Captain', taunt: '"Your kind always underestimates us. Always."' },
   ],
   leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen' },
 };
@@ -2743,10 +2743,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setChargeStacks(0);
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
 
-  // Set meta dialogue for regular enemies
+  // Set dialogue — deterministic per creature name so the same enemy always says the same thing
   const dialoguePool = isWave ? GAME_CONSTANTS.ENEMY_DIALOGUE.WAVE : GAME_CONSTANTS.ENEMY_DIALOGUE.REGULAR;
-  const randomDialogue = dialoguePool[Math.floor(Math.random() * dialoguePool.length)];
-  setEnemyDialogue(randomDialogue);
+  const enemyName = wildOverride ? wildOverride.name : creature.name;
+  const nameHash = (s) => Math.abs([...s].reduce((h, c) => (Math.imul(31, h) + c.charCodeAt(0)) | 0, 0));
+  setEnemyDialogue(dialoguePool[nameHash(enemyName) % dialoguePool.length]);
   
   setEnragedTurns(0);
   setHasFled(false); // Reset fled status
@@ -2834,11 +2835,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     addLog(label);
 
     setEnemyDialogue(
-      enemy.contractDialogue
-        ? enemy.contractDialogue
-        : enemy.isLeader ? "You've made a grave mistake coming here."
-        : enemy.isCapt ? "Stand down, or I'll make you regret it."
-        : "Your coin or your life!"
+      enemy.contractDialogue ? enemy.contractDialogue
+      : enemy.isLeader ? '"The order didn\'t send me. I came because I wanted to."'
+      : enemy.taunt
+        ? enemy.taunt
+        : enemy.isCapt ? '"Stand down, or I\'ll make you regret it."'
+        : '"Your coin or your life!"'
     );
 
     const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
@@ -2932,9 +2934,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     addLog(label);
 
     setEnemyDialogue(
-      enemy.isLeader ? "You should not have come here. There is no leaving the Dusk."
-      : enemy.isCapt ? "The Daughters do not forgive. They do not forget."
-      : "Darkness take you."
+      enemy.contractDialogue ? enemy.contractDialogue
+      : enemy.isLeader ? '"You should not have come here. There is no leaving the Dusk."'
+      : enemy.taunt
+        ? enemy.taunt
+        : enemy.isCapt ? '"The Daughters do not forgive. They do not forget."'
+        : '"Darkness take you."'
     );
 
     const dexMod = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
