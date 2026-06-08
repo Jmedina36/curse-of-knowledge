@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES } from '../constants';
 import { CREATURE_INDEX } from '../creatures';
+import { sounds } from '../sounds';
 
 const KAEL_IDLE = [
   "Every beast in here was defeated by your hand. Remember that.",
@@ -233,7 +235,7 @@ const THE_CURSED = [
   },
 ];
 
-const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
+const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [activeTab, setActiveTab] = useState('index');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -333,7 +335,18 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
         }}
       >
         {/* Tab bar */}
-        <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)' }}>
+        <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(0,0,0,0.3)', position: 'relative' }}>
+          {onClose && (
+            <button
+              onClick={() => { sounds.click(); onClose(); }}
+              style={{
+                position: 'absolute', top: '50%', right: '12px', transform: 'translateY(-50%)',
+                background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.35)',
+                borderRadius: '8px', padding: '8px', color: COLORS.gold,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', zIndex: 1,
+              }}
+            ><X size={18}/></button>
+          )}
           {[{ key: 'index', label: 'Creature Index' }, { key: 'factions', label: 'Factions' }, { key: 'cursed', label: 'The Cursed' }].map(t => (
             <button
               key={t.key}

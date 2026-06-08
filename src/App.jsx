@@ -7590,6 +7590,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               trackWebsiteClick={trackWebsiteClick}
               generateQuiz={generateQuiz} startMatchGame={startMatchGame}
               addLog={addLog}
+              onClose={() => setActiveTab('quest')}
             />
           )}
           {activeTab === 'journal' && (
@@ -7601,6 +7602,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <BestiaryTab
               defeatedFactionMembers={defeatedFactionMembers}
               restedCursed={restedCursed}
+              onClose={() => setActiveTab('quest')}
             />
           )}
           {activeTab === 'map' && (

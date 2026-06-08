@@ -48,6 +48,7 @@ const ForgeTab = ({
   generateQuiz,
   startMatchGame,
   addLog,
+  onClose,
 }) => {
   const [rylanQuote, setRylanQuote] = useState(() => getRylanQuote(flashcardDecks));
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
@@ -114,7 +115,18 @@ const ForgeTab = ({
       backgroundPosition: 'center',
     }}>
 
-      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(0,0,0,0.3)' }}>
+      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(0,0,0,0.3)', position: 'relative' }}>
+        {onClose && (
+          <button
+            onClick={() => { sounds.click(); onClose(); }}
+            style={{
+              position: 'absolute', top: '12px', right: '16px',
+              background: 'rgba(0,0,0,0.5)', border: '1px solid rgba(212,175,55,0.35)',
+              borderRadius: '8px', padding: '8px', color: COLORS.gold,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', zIndex: 1,
+            }}
+          ><X size={18}/></button>
+        )}
         {/* Sub-navigation tabs */}
         <div className="flex gap-2 justify-center mb-4">
       {['flashcards', 'resources'].map((tab) => {
