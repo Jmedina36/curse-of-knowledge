@@ -233,7 +233,8 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); setShowCraftingModal(true); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  background:'linear-gradient(160deg,#1e1400,#332200,#150f00)',
+                  backgroundImage:'linear-gradient(160deg,rgba(30,20,0,0.82),rgba(51,34,0,0.82),rgba(21,15,0,0.82)), url(/Stonewall2.png)',
+                  backgroundSize:'cover',backgroundPosition:'center',
                   border:'1px solid rgba(180,135,20,0.55)',
                   boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,200,60,0.06)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
@@ -253,7 +254,8 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); onOpenHealer && onOpenHealer(); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  background:'linear-gradient(160deg,#071a12,#0d2b1e,#041009)',
+                  backgroundImage:'linear-gradient(160deg,rgba(7,26,18,0.82),rgba(13,43,30,0.82),rgba(4,16,9,0.82)), url(/Stonewall2.png)',
+                  backgroundSize:'cover',backgroundPosition:'center',
                   border:'1px solid rgba(40,180,120,0.5)',
                   boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(52,211,153,0.06)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
