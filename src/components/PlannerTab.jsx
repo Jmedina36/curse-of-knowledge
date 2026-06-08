@@ -34,6 +34,8 @@ const PlannerTab = ({
       display: 'flex',
       flexDirection: 'column',
       overflow: 'hidden',
+      border: '2px solid rgba(212, 175, 55, 0.6)',
+      borderRadius: '12px',
     }}>
 
       {/* Fixed header section */}
