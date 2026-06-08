@@ -68,6 +68,7 @@ const HealerModal = ({
   useGem,
 }) => {
   const [tab, setTab] = useState('mend');
+  const [suppliesMode, setSuppliesMode] = useState('buy');
   const [quote, setQuote] = useState(() => MARA_QUOTES.idle[Math.floor(Math.random() * MARA_QUOTES.idle.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
@@ -122,6 +123,20 @@ const HealerModal = ({
     const names = { healthPotion: 'Health Potion', staminaPotion: 'Stamina Potion' };
     addLog(`Purchased ${names[key]} for ${price} gold.`);
     say(MARA_QUOTES.buy);
+  };
+
+  const getSellPrice = (key) => {
+    const gemBase = { ruby: 200, blue: 150, green: 250, gold: 250, purple: 300 };
+    if (key === 'healthPotion')  return Math.floor(hpPrice * 0.5);
+    if (key === 'staminaPotion') return Math.floor(spPrice * 0.5);
+    return Math.floor((gemBase[key] ?? 0) * 0.5);
+  };
+
+  const handleSell = (key, name, setCount) => {
+    const price = getSellPrice(key);
+    setCount(c => c - 1);
+    setGold(g => g + price);
+    addLog(`Sold ${name} for ${price} gold.`);
   };
 
   const green = COLORS.gold;
@@ -355,11 +370,31 @@ const HealerModal = ({
           {/* ── SUPPLIES TAB ── */}
           {tab === 'supplies' && (
             <div style={{ maxWidth: '520px', margin: '0 auto' }}>
+              {/* Buy / Sell toggle */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
+                {[
+                  { key: 'buy',  label: 'Buy',  grad: 'linear-gradient(to bottom, rgba(184,134,11,0.75), rgba(139,105,20,0.75))', border: COLORS.gold },
+                  { key: 'sell', label: 'Sell', grad: 'linear-gradient(to bottom, rgba(34,197,94,0.8), rgba(22,163,74,0.8))',     border: '#22C55E' },
+                ].map(({ key, label, grad, border }) => {
+                  const active = suppliesMode === key;
+                  return (
+                    <button key={key} onClick={() => { sounds.click(); setSuppliesMode(key); }}
+                      style={{
+                        padding: '10px', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontWeight: 700,
+                        fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer',
+                        border: `2px solid ${active ? border : 'rgba(212,175,55,0.25)'}`,
+                        background: active ? grad : VISUAL_STYLES.card.default,
+                        color: '#F5F5DC', transition: 'all 0.2s',
+                      }}
+                    >{label}</button>
+                  );
+                })}
+              </div>
               <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)', marginBottom: '16px', textAlign: 'center' }}>
                 Gold on hand: <span style={{ color: '#D4AF37', fontWeight: 700 }}>{gold}</span>
               </p>
 
-              {potionCard({
+              {suppliesMode === 'buy' && potionCard({
                 key: 'healthPotion',
                 emoji: <img src="/items/LIFE-BOTTLE-1.png" alt="Health Potion" style={{ width: 36, height: 36, objectFit: 'contain' }} />,
                 name: 'Health Potion',
@@ -374,7 +409,7 @@ const HealerModal = ({
                 onUse: () => { useHealth(); },
               })}
 
-              {potionCard({
+              {suppliesMode === 'buy' && potionCard({
                 key: 'staminaPotion',
                 emoji: <img src="/items/MANA-BOTTLE-1.png" alt="Stamina Potion" style={{ width: 36, height: 36, objectFit: 'contain' }} />,
                 name: 'Stamina Potion',
@@ -397,8 +432,8 @@ const HealerModal = ({
                 },
               })}
 
-              {/* ── GEMS ── */}
-              <div style={{ marginTop: '24px', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '20px' }}>
+              {/* ── GEMS (BUY) ── */}
+              {suppliesMode === 'buy' && <div style={{ marginTop: '24px', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '20px' }}>
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
                 {[
                   { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     effect: '+15% max HP for today',           effectColor: '#FF6B6B', border: 'rgba(180,35,35,0.5)',    price: 200, activeFlag: rubyGemActive },
@@ -452,7 +487,56 @@ const HealerModal = ({
                     </div>
                   );
                 })}
-              </div>
+              </div>}
+
+              {/* ── SELL TAB ── */}
+              {suppliesMode === 'sell' && (() => {
+                const gemDefs = [
+                  { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     border: 'rgba(180,35,35,0.5)' },
+                  { type: 'blue',   img: '/items/GEM-2.png', name: 'Sapphire Shard', border: 'rgba(59,130,246,0.5)' },
+                  { type: 'green',  img: '/items/GEM-3.png', name: 'Emerald Shard',  border: 'rgba(34,197,94,0.5)' },
+                  { type: 'gold',   img: '/items/GEM-1.png', name: 'Golden Shard',   border: 'rgba(212,175,55,0.5)' },
+                  { type: 'purple', img: '/items/GEM-5.png', name: 'Amethyst Shard', border: 'rgba(168,85,247,0.5)' },
+                ];
+                const sellItems = [
+                  { key: 'healthPotion',  emoji: <img src="/items/LIFE-BOTTLE-1.png" alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />, name: 'Health Potion',  count: healthPots,  border: 'rgba(180,35,35,0.5)',  setCount: setHealthPots },
+                  { key: 'staminaPotion', emoji: <img src="/items/MANA-BOTTLE-1.png" alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />, name: 'Stamina Potion', count: staminaPots, border: 'rgba(59,130,246,0.5)', setCount: setStaminaPots },
+                  ...gemDefs.map(g => ({ key: g.type, emoji: <img src={g.img} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />, name: g.name, count: gemCounts?.[g.type] ?? 0, border: g.border, setCount: (fn) => setGemCounts(prev => ({ ...prev, [g.type]: fn(prev[g.type]) })) })),
+                ].filter(item => item.count > 0);
+
+                if (sellItems.length === 0) return (
+                  <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px solid rgba(212,175,55,0.15)', borderRadius: '10px', background: VISUAL_STYLES.card.default }}>
+                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', color: 'rgba(212,175,55,0.45)' }}>Nothing to sell.</p>
+                  </div>
+                );
+
+                return sellItems.map(({ key, emoji, name, count, border, setCount }) => {
+                  const price = getSellPrice(key);
+                  return (
+                    <div key={key} style={{
+                      display: 'flex', alignItems: 'center', gap: '14px',
+                      padding: '12px 16px', marginBottom: '10px', borderRadius: '10px',
+                      border: `1px solid ${border}`, background: VISUAL_STYLES.card.default,
+                    }}>
+                      <span style={{ fontSize: '28px', flexShrink: 0 }}>{emoji}</span>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
+                        <p style={{ fontSize: '0.85rem', color: '#68D391' }}>Sell for {price} gold</p>
+                      </div>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '24px', textAlign: 'center' }}>{count}</span>
+                      <button
+                        onClick={() => { sounds.click(); handleSell(key, name, setCount); }}
+                        style={{
+                          padding: '7px 16px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
+                          fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer',
+                          background: 'linear-gradient(to bottom, rgba(34,197,94,0.6), rgba(22,163,74,0.65))',
+                          border: '1px solid rgba(34,197,94,0.5)', color: '#F5F5DC',
+                        }}
+                      >Sell · {price}g</button>
+                    </div>
+                  );
+                });
+              })()}
             </div>
           )}
         </div>
