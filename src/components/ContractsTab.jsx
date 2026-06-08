@@ -110,12 +110,10 @@ const ContractsTab = ({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            border: '2px solid rgba(65,35,10,0.98)',
-            borderRadius: '14px',
+            border: '2px solid rgba(212,175,55,0.6)',
+            borderRadius: '12px',
             padding: '20px',
-            boxShadow: '0 6px 40px rgba(0,0,0,0.7), inset 0 0 0 3px rgba(80,45,10,0.9), inset 0 0 30px rgba(0,0,0,0.4)',
-            outline: '3px solid rgba(60,32,6,0.95)',
-            outlineOffset: '4px',
+            boxShadow: '0 4px 32px rgba(0,0,0,0.6)',
           }}>
 
             {/* Board header */}
@@ -279,7 +277,7 @@ const ContractsTab = ({
                                 ? `1px solid ${TIER.silver.border}`
                                 : `1px solid ${TIER.copper.border}`,
                           borderRadius: '4px',
-                          padding: '18px 14px 12px',
+                          padding: '14px 14px 12px',
                           boxShadow: t.overdue && !t.done
                             ? '0 2px 16px rgba(180,30,20,0.25), inset 0 0 20px rgba(0,0,0,0.4)'
                             : t.priority === 'important' && !t.done
@@ -293,16 +291,6 @@ const ContractsTab = ({
                           animation: t.overdue && !t.done ? 'pulse-red-border 2s ease-in-out infinite' : undefined,
                         }}
                       >
-                        {/* Push-pin */}
-                        <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <div style={{
-                            width: '16px', height: '16px', borderRadius: '50%',
-                            background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45), ${pinColor})`,
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            boxShadow: `0 2px 6px rgba(0,0,0,0.7), 0 0 8px ${pinColor}66`,
-                          }} />
-                          <div style={{ width: '3px', height: '8px', background: 'linear-gradient(to bottom, rgba(180,150,100,0.8), rgba(60,40,10,0.5))', borderRadius: '0 0 2px 2px' }} />
-                        </div>
 
                         {/* Tier badge row */}
                         <div style={{marginBottom:'8px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
@@ -433,24 +421,9 @@ const ContractsTab = ({
                       : isCompleted ? 'none'
                         : `0 2px 12px ${tier.glow.replace('0.5','0.1').replace('0.4','0.1')}`,
                     borderRadius: '4px',
-                    padding: '18px 14px 12px',
+                    padding: '14px 14px 12px',
                     opacity: isCompleted ? 0.65 : 1,
                   }}>
-                    {/* Push-pin */}
-                    {(() => {
-                      const lc_pinColor = isCompleted ? 'rgba(80,120,60,0.8)' : tier.color;
-                      return (
-                        <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <div style={{
-                            width: '16px', height: '16px', borderRadius: '50%',
-                            background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45), ${lc_pinColor})`,
-                            border: '1px solid rgba(255,255,255,0.2)',
-                            boxShadow: `0 2px 6px rgba(0,0,0,0.7), 0 0 8px ${lc_pinColor}66`,
-                          }} />
-                          <div style={{ width: '3px', height: '8px', background: 'linear-gradient(to bottom, rgba(180,150,100,0.8), rgba(60,40,10,0.5))', borderRadius: '0 0 2px 2px' }} />
-                        </div>
-                      );
-                    })()}
 
                     {/* Tier + location badge */}
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
