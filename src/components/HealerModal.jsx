@@ -285,7 +285,7 @@ const HealerModal = ({
           backgroundImage: 'url(/Stonewall1.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          borderColor: greenBorder,
+          borderColor: 'rgba(212,175,55,0.6)',
           boxShadow: '0 0 60px rgba(212,175,55,0.12), 0 0 120px rgba(212,175,55,0.05)',
         }}
         initial={{ opacity: 0, scale: 0.97, y: 12 }}
@@ -298,7 +298,7 @@ const HealerModal = ({
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '16px 20px', flexShrink: 0,
           borderBottom: `1px solid rgba(212,175,55,0.2)`,
-          background: 'rgba(0,0,0,0.3)', position: 'relative',
+          background: 'rgba(10,9,6,0.65)', position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(212,175,55,0.5)' }}>THE APOTHECARY</p>
@@ -313,13 +313,13 @@ const HealerModal = ({
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', borderBottom: `1px solid rgba(212,175,55,0.15)`, flexShrink: 0, background: 'rgba(0,0,0,0.25)' }}>
+        <div style={{ display: 'flex', borderBottom: `1px solid rgba(212,175,55,0.15)`, flexShrink: 0, background: 'rgba(15,13,8,0.65)' }}>
           {tabBtn('mend', 'Mend')}
           {tabBtn('supplies', 'Supplies')}
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', background: 'rgba(0,0,0,0.25)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', background: 'rgba(15,13,8,0.65)' }}>
 
           {/* ── MEND TAB ── */}
           {tab === 'mend' && (

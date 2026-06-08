@@ -256,11 +256,11 @@ const CraftingModal = ({
           initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.18, ease: 'easeOut' }}
-          style={{ width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh', backgroundImage: "url('/Stonewall1.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: COLORS.silver, boxShadow: VISUAL_STYLES.shadow.elevated }}
+          style={{ width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh', backgroundImage: "url('/Stonewall1.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: 'rgba(212,175,55,0.6)', boxShadow: VISUAL_STYLES.shadow.elevated }}
           onClick={e => e.stopPropagation()}
         >
           {/* ── HEADER ── */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(0,0,0,0.3)', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
               <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
@@ -274,7 +274,7 @@ const CraftingModal = ({
           </div>
 
           {/* ── SCROLLABLE CONTENT ── */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 24px', background: 'rgba(0,0,0,0.25)' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px 24px', background: 'rgba(15,13,8,0.65)' }}>
 
         {/* Equipment Tabs: Buy / Sell */}
         <div className="grid grid-cols-2 gap-2 mb-4">
