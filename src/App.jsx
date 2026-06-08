@@ -631,6 +631,9 @@ const [customClass, setCustomClass] = useState(null);
   const [weaponOilActive, setWeaponOilActive] = useState(false);
   const [armorPolishActive, setArmorPolishActive] = useState(false);
   const [luckyCharmActive, setLuckyCharmActive] = useState(false);
+  const [gemCounts, setGemCounts] = useState({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 });
+  const [goldenGemActive, setGoldenGemActive] = useState(false);
+  const [emeraldGemActive, setEmeraldGemActive] = useState(false);
   const [enemyDialogue, setEnemyDialogue] = useState('');
   const [enragedTurns, setEnragedTurns] = useState(0);
   const [log, setLog] = useState([]);
@@ -1091,6 +1094,7 @@ const getDateKey = useCallback((date) => {
         if (data.healthPots !== undefined) setHealthPots(data.healthPots);
         if (data.staminaPots !== undefined) setStaminaPots(data.staminaPots);
         if (data.cleansePots !== undefined) setCleansePots(data.cleansePots);
+        if (data.gemCounts && typeof data.gemCounts === 'object') setGemCounts(data.gemCounts);
         if (data.fusionCrystals !== undefined) setFusionCrystals(data.fusionCrystals);
         if (data.capturedMonsters !== undefined) setCapturedMonsters(data.capturedMonsters);
         if (data.weapon !== undefined) setWeapon(data.weapon);
@@ -1205,7 +1209,7 @@ const getDateKey = useCallback((date) => {
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
   studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
-  restedCursed, lastEncounterDay,
+  restedCursed, lastEncounterDay, gemCounts,
 };
       writeSave(saveData);
       
@@ -1213,7 +1217,7 @@ const getDateKey = useCallback((date) => {
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -2648,9 +2652,25 @@ pendingBattleSpawnRef.current = () => {
     else if (battleType === 'elite' && _rarityRank[chestRarity] < 3) chestRarity = 'rare';
     else if (battleType === 'wave'  && _rarityRank[chestRarity] < 2) chestRarity = 'uncommon';
 
+    // Emerald Gem: upgrade chest rarity by one tier
+    if (emeraldGemActive) {
+      const _rarityUp = { common: 'uncommon', uncommon: 'rare', rare: 'epic', epic: 'legendary', legendary: 'legendary' };
+      chestRarity = _rarityUp[chestRarity];
+      setEmeraldGemActive(false);
+      addLog('The Emerald Shard glows — the chest shimmers with greater fortune!');
+    }
+
     // Gold bonus scales with chest rarity
     const _goldBonus = { common: 0, uncommon: 10, rare: 25, epic: 60, legendary: 150 };
-    const rarityBonus = _goldBonus[chestRarity] || 0;
+    let rarityBonus = _goldBonus[chestRarity] || 0;
+
+    // Golden Gem: double the chest gold
+    if (goldenGemActive) {
+      rarityBonus *= 2;
+      setGoldenGemActive(false);
+      addLog('The Golden Shard blazes — the chest yields twice the gold!');
+    }
+
     if (rarityBonus > 0) setGold(g => g + rarityBonus);
 
     const displayGold = (battleType === 'wave' ? waveGoldTotal : goldGain) + rarityBonus;
@@ -2660,7 +2680,7 @@ pendingBattleSpawnRef.current = () => {
     setVictoryFlash(true);
     setTimeout(() => setVictoryFlash(false), 400);
     setVictoryChest({ rarity: chestRarity, img: `/items/CHEST-${_rarityRank[chestRarity]}.png` });
-  }, [luckyCharmActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
+  }, [luckyCharmActive, goldenGemActive, emeraldGemActive, addLog, rollRarityWithPity, getRarityMultiplier, generateAffixes, sortByRarity]);
 
   const handleChestOpen = useCallback((loot) => {
     for (const fr of ['legendary', 'epic', 'rare']) {
@@ -3250,7 +3270,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const oldLevel = curseLevel;
     const newLevel = curseLevel - 1;
     setCurseLevel(newLevel);
-    
+
     const curseNames = ['CURSED', 'DEEPLY CURSED', 'CONDEMNED'];
     if (newLevel === 0) {
       addLog(`💜 Cleanse Potion used! ${curseNames[oldLevel - 1]} removed! You are purified.`);
@@ -3259,6 +3279,49 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
   }
 };
+
+  const useGem = (type) => {
+    const maxHp = getMaxHp();
+    const maxSp = getMaxStamina();
+    switch (type) {
+      case 'ruby':
+        if (gemCounts.ruby < 1) return;
+        setGemCounts(g => ({ ...g, ruby: g.ruby - 1 }));
+        setHp(maxHp);
+        addLog('The Ruby Shard shatters — life force surges through you! Full HP restored.');
+        break;
+      case 'blue':
+        if (gemCounts.blue < 1) return;
+        setGemCounts(g => ({ ...g, blue: g.blue - 1 }));
+        setStamina(maxSp);
+        addLog('The Sapphire Shard shatters — clarity washes over you! Full Stamina restored.');
+        break;
+      case 'green':
+        if (gemCounts.green < 1) return;
+        setGemCounts(g => ({ ...g, green: g.green - 1 }));
+        setEmeraldGemActive(true);
+        addLog('The Emerald Shard pulses — fortune will smile on the next chest you open.');
+        break;
+      case 'gold':
+        if (gemCounts.gold < 1) return;
+        setGemCounts(g => ({ ...g, gold: g.gold - 1 }));
+        setGoldenGemActive(true);
+        addLog('The Golden Shard glows — the next chest will yield twice the gold.');
+        break;
+      case 'purple':
+        if (gemCounts.purple < 1 || curseLevel === 0) return;
+        setGemCounts(g => ({ ...g, purple: g.purple - 1 }));
+        sounds.cleanse();
+        const oldLevel = curseLevel;
+        const newLevel = curseLevel - 1;
+        setCurseLevel(newLevel);
+        const curseNames = ['CURSED', 'DEEPLY CURSED', 'CONDEMNED'];
+        if (newLevel === 0) addLog(`The Amethyst Shard shatters — ${curseNames[oldLevel - 1]} lifted! You are purified.`);
+        else addLog(`The Amethyst Shard shatters — ${curseNames[oldLevel - 1]} reduced to ${curseNames[newLevel - 1]}.`);
+        break;
+      default: break;
+    }
+  };
   
   const miniBoss = () => {
     const completedTasks = tasks.filter(t => t.done).length;
@@ -8308,6 +8371,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               addLog={addLog}
               useHealth={useHealth}
               useCleanse={useCleanse}
+              gemCounts={gemCounts}
+              setGemCounts={setGemCounts}
+              goldenGemActive={goldenGemActive}
+              emeraldGemActive={emeraldGemActive}
+              useGem={useGem}
             />
           )}
           {showCraftingModal && (

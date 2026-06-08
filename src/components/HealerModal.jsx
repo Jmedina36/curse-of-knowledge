@@ -60,6 +60,11 @@ const HealerModal = ({
   addLog,
   useHealth,
   useCleanse,
+  gemCounts,
+  setGemCounts,
+  goldenGemActive,
+  emeraldGemActive,
+  useGem,
 }) => {
   const [tab, setTab] = useState('mend');
   const [quote, setQuote] = useState(() => MARA_QUOTES.idle[Math.floor(Math.random() * MARA_QUOTES.idle.length)]);
@@ -362,7 +367,7 @@ const HealerModal = ({
 
               {potionCard({
                 key: 'healthPotion',
-                emoji: '🧪',
+                emoji: <img src="/items/LIFE-BOTTLE-1.png" alt="Health Potion" style={{ width: 36, height: 36, objectFit: 'contain' }} />,
                 name: 'Health Potion',
                 effect: `Restores ${GAME_CONSTANTS.HEALTH_POTION_HEAL_PERCENT}% HP`,
                 effectColor: '#FF6B6B',
@@ -377,7 +382,7 @@ const HealerModal = ({
 
               {potionCard({
                 key: 'staminaPotion',
-                emoji: '💙',
+                emoji: <img src="/items/MANA-BOTTLE-1.png" alt="Stamina Potion" style={{ width: 36, height: 36, objectFit: 'contain' }} />,
                 name: 'Stamina Potion',
                 effect: `Restores ${GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT}% Stamina`,
                 effectColor: '#6BB6FF',
@@ -412,6 +417,63 @@ const HealerModal = ({
                 onBuy: () => handleBuyPotion('cleansePotion'),
                 onUse: () => { useCleanse(); },
               })}
+
+              {/* ── GEMS ── */}
+              <div style={{ marginTop: '24px', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '20px' }}>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
+                {[
+                  { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     effect: 'Restores full HP',              effectColor: '#FF6B6B', border: 'rgba(180,35,35,0.5)',    price: 200 },
+                  { type: 'blue',   img: '/items/GEM-2.png', name: 'Sapphire Shard', effect: 'Restores full Stamina',         effectColor: '#6BB6FF', border: 'rgba(59,130,246,0.5)',   price: 150 },
+                  { type: 'green',  img: '/items/GEM-3.png', name: 'Emerald Shard',  effect: 'Next chest: upgraded rarity',   effectColor: '#68D391', border: 'rgba(34,197,94,0.5)',    price: 250, activeFlag: emeraldGemActive },
+                  { type: 'gold',   img: '/items/GEM-1.png', name: 'Golden Shard',   effect: 'Next chest: double gold',       effectColor: '#D4AF37', border: 'rgba(212,175,55,0.5)',   price: 250, activeFlag: goldenGemActive },
+                  { type: 'purple', img: '/items/GEM-5.png', name: 'Amethyst Shard', effect: 'Removes 1 curse level',         effectColor: '#B794F4', border: 'rgba(168,85,247,0.5)',   price: 300 },
+                ].map(({ type, img, name, effect, effectColor, border, price, activeFlag }) => {
+                  const count = gemCounts?.[type] ?? 0;
+                  const canAfford = gold >= price;
+                  const isActive = !!activeFlag;
+                  const canUse = count > 0 && !isActive && (type !== 'purple' || curseLevel > 0);
+                  return (
+                    <div key={type} style={{
+                      display: 'flex', alignItems: 'center', gap: '14px',
+                      padding: '12px 16px', marginBottom: '10px', borderRadius: '10px',
+                      border: `1px solid ${border}`, background: 'rgba(37,33,24,0.88)',
+                    }}>
+                      <img src={img} alt={name} style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
+                        <p style={{ fontSize: '0.85rem', color: effectColor }}>{effect}</p>
+                        {isActive && <p style={{ fontSize: '0.72rem', color: '#D4AF37', fontStyle: 'italic', marginTop: '2px' }}>Active — awaiting next chest</p>}
+                      </div>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '20px', textAlign: 'center' }}>{count}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>
+                        <button
+                          onClick={() => { sounds.click(); if (canAfford) { setGold(g => g - price); setGemCounts(g => ({ ...g, [type]: g[type] + 1 })); addLog(`Purchased ${name} for ${price} gold.`); } }}
+                          disabled={!canAfford}
+                          style={{
+                            padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
+                            fontSize: '0.82rem', fontWeight: 700, cursor: canAfford ? 'pointer' : 'not-allowed',
+                            background: canAfford ? 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))' : 'rgba(37,33,24,0.88)',
+                            border: `1px solid ${canAfford ? 'rgba(212,175,55,0.5)' : 'rgba(155,139,126,0.2)'}`,
+                            color: canAfford ? '#F5F5DC' : 'rgba(245,245,220,0.3)',
+                            opacity: canAfford ? 1 : 0.5,
+                          }}
+                        >Buy · {price}g</button>
+                        <button
+                          onClick={() => { sounds.click(); useGem(type); }}
+                          disabled={!canUse}
+                          style={{
+                            padding: '5px 12px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
+                            fontSize: '0.82rem', fontWeight: 700, cursor: canUse ? 'pointer' : 'not-allowed',
+                            background: canUse ? 'rgba(212,175,55,0.15)' : 'rgba(37,33,24,0.88)',
+                            border: `1px solid ${canUse ? 'rgba(212,175,55,0.35)' : 'rgba(212,175,55,0.1)'}`,
+                            color: canUse ? COLORS.gold : 'rgba(212,175,55,0.25)',
+                          }}
+                        >{isActive ? 'Active' : 'Use'}</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
