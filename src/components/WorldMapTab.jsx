@@ -686,9 +686,16 @@ const WorldMapTab = ({
       : null;
 
   return (
-    <div style={{ maxWidth: '980px', margin: '0 auto', paddingBottom: '40px' }}>
+    <div style={{
+      maxWidth: '980px', margin: '0 auto', paddingBottom: '24px',
+      backgroundImage: 'url(/Stonewall1.png)',
+      backgroundSize: 'cover', backgroundPosition: 'center',
+      borderRadius: '12px',
+      border: '2px solid rgba(212, 175, 55, 0.5)',
+      padding: '16px',
+    }}>
       {/* Header */}
-      <div className="text-center mb-4">
+      <div className="text-center mb-4" style={{ background: 'rgba(0,0,0,0.35)', borderRadius: '8px', padding: '10px 8px 6px' }}>
         <p style={{ fontSize: '0.6rem', color: 'rgba(212,175,55,0.4)', letterSpacing: '0.35em', textTransform: 'uppercase', marginBottom: '6px' }}>World of</p>
         <h2 style={{
           fontFamily: "'Cinzel', serif", fontSize: 'clamp(1.4rem, 3vw, 2rem)',
