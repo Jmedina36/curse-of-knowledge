@@ -110,7 +110,7 @@ const ContractsTab = ({
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            border: '14px solid rgba(120,72,28,0.97)',
+            border: '14px solid rgba(65,35,10,0.98)',
             borderRadius: '14px',
             padding: '20px',
             boxShadow: '0 6px 40px rgba(0,0,0,0.7), inset 0 0 0 3px rgba(80,45,10,0.9), inset 0 0 30px rgba(0,0,0,0.4)',
