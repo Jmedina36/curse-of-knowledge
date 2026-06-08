@@ -691,7 +691,6 @@ const WorldMapTab = ({
       backgroundImage: 'url(/Stonewall1.png)',
       backgroundSize: 'cover', backgroundPosition: 'center',
       borderRadius: '12px',
-      border: '2px solid rgba(212, 175, 55, 0.5)',
       padding: '16px',
     }}>
       {/* Header */}
