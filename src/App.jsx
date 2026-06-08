@@ -31,6 +31,7 @@ import ASIModal from './components/ASIModal';
 import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
 import { LOCATION_CONTRACTS, REWARD_LABELS } from './data/locationContracts';
+import HeroTab from './components/HeroTab';
 import CalendarModal from './components/CalendarModal';
 import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
@@ -7533,6 +7534,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               guildRank={guildRank}
               onOpenBestiary={() => setActiveTab('bestiary')}
               onOpenForge={() => setActiveTab('study')}
+              onOpenHero={() => setActiveTab('hero')}
             />
           )}
 
@@ -7602,6 +7604,26 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               defeatedFactionMembers={defeatedFactionMembers}
               restedCursed={restedCursed}
               onClose={() => setActiveTab('quest')}
+            />
+          )}
+          {activeTab === 'hero' && (
+            <HeroTab
+              hero={hero}
+              xp={xp}
+              level={level}
+              hp={hp}
+              stamina={stamina}
+              currentDay={currentDay}
+              curseLevel={curseLevel}
+              getMaxHp={getMaxHp}
+              getMaxStamina={getMaxStamina}
+              getBaseAttack={getBaseAttack}
+              getBaseDefense={getBaseDefense}
+              equippedWeapon={equippedWeapon}
+              equippedArmor={equippedArmor}
+              equippedGrimoire={equippedGrimoire}
+              equippedTome={equippedTome}
+              guildRank={guildRank}
             />
           )}
           {activeTab === 'map' && (

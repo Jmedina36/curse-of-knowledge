@@ -42,6 +42,7 @@ const QuestTab = ({
   guildRank,
   onOpenBestiary,
   onOpenForge,
+  onOpenHero,
 }) => {
   return (
             <div className="space-y-4">
@@ -331,23 +332,25 @@ const QuestTab = ({
                 </div>
               </button>
 
-              {/* TBD slot */}
+              {/* Soren — The Chronicle */}
               <button
-                disabled
-                style={{padding:'16px 10px 14px',borderRadius:'10px',textAlign:'center',
-                  background:'linear-gradient(160deg,#0d0d0d,#141414,#0a0a0a)',
-                  border:'1px solid rgba(80,80,80,0.25)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.3)',
-                  opacity:0.35,display:'flex',flexDirection:'column',alignItems:'center',gap:'8px',cursor:'default'}}
+                onClick={() => { sounds.click(); onOpenHero && onOpenHero(); }}
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                  backgroundImage:'linear-gradient(160deg,rgba(5,18,22,0.82),rgba(10,32,40,0.82),rgba(3,12,16,0.82)), url(/Stonewall2.png)',
+                  backgroundSize:'cover',backgroundPosition:'center',
+                  border:'1px solid rgba(20,180,200,0.45)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(80,220,240,0.05)',
+                  transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(10,140,170,0.4), inset 0 1px 0 rgba(80,220,240,0.05)';e.currentTarget.style.borderColor='rgba(60,220,240,0.7)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(80,220,240,0.05)';e.currentTarget.style.borderColor='rgba(20,180,200,0.45)';}}
               >
-                <div style={{width:'96px',height:'96px',borderRadius:'50%',border:'2px solid rgba(80,80,80,0.3)',background:'rgba(40,40,40,0.4)',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                  <span style={{fontSize:'2rem',opacity:0.3}}>?</span>
-                </div>
+                <img src="/npcs/elf-warrior.png" alt="Soren" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(20,180,200,0.55)',boxShadow:'0 0 12px rgba(20,180,200,0.25)'}}
+                  onError={e=>{e.currentTarget.style.display='none';}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(120,120,120,0.5)',marginBottom:'3px'}}>Unknown</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(140,140,140,0.4)',marginBottom:'4px'}}>Coming Soon</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(80,80,80,0.2)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(100,100,100,0.4)',textTransform:'uppercase',lineHeight:1.4}}>· · ·</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(80,210,230,0.8)',marginBottom:'3px'}}>Soren</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(120,235,250,1)',marginBottom:'4px'}}>The Chronicle</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(20,180,200,0.4)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(80,200,220,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Attributes · Growth</p>
                 </div>
               </button>
 
