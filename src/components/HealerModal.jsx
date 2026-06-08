@@ -64,6 +64,8 @@ const HealerModal = ({
   setGemCounts,
   goldenGemActive,
   emeraldGemActive,
+  rubyGemActive,
+  sapphireGemActive,
   useGem,
 }) => {
   const [tab, setTab] = useState('mend');
@@ -422,16 +424,16 @@ const HealerModal = ({
               <div style={{ marginTop: '24px', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '20px' }}>
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
                 {[
-                  { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     effect: 'Restores full HP',              effectColor: '#FF6B6B', border: 'rgba(180,35,35,0.5)',    price: 200 },
-                  { type: 'blue',   img: '/items/GEM-2.png', name: 'Sapphire Shard', effect: 'Restores full Stamina',         effectColor: '#6BB6FF', border: 'rgba(59,130,246,0.5)',   price: 150 },
-                  { type: 'green',  img: '/items/GEM-3.png', name: 'Emerald Shard',  effect: 'Next chest: upgraded rarity',   effectColor: '#68D391', border: 'rgba(34,197,94,0.5)',    price: 250, activeFlag: emeraldGemActive },
-                  { type: 'gold',   img: '/items/GEM-1.png', name: 'Golden Shard',   effect: 'Next chest: double gold',       effectColor: '#D4AF37', border: 'rgba(212,175,55,0.5)',   price: 250, activeFlag: goldenGemActive },
-                  { type: 'purple', img: '/items/GEM-5.png', name: 'Amethyst Shard', effect: 'Removes 1 curse level',         effectColor: '#B794F4', border: 'rgba(168,85,247,0.5)',   price: 300 },
+                  { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     effect: '+15% max HP for today',           effectColor: '#FF6B6B', border: 'rgba(180,35,35,0.5)',    price: 200, activeFlag: rubyGemActive },
+                  { type: 'blue',   img: '/items/GEM-2.png', name: 'Sapphire Shard', effect: '+15% max Stamina for today',      effectColor: '#6BB6FF', border: 'rgba(59,130,246,0.5)',   price: 150, activeFlag: sapphireGemActive },
+                  { type: 'green',  img: '/items/GEM-3.png', name: 'Emerald Shard',  effect: 'Next chest: upgraded rarity',     effectColor: '#68D391', border: 'rgba(34,197,94,0.5)',    price: 250, activeFlag: emeraldGemActive },
+                  { type: 'gold',   img: '/items/GEM-1.png', name: 'Golden Shard',   effect: '+20% chest gold for today',       effectColor: '#D4AF37', border: 'rgba(212,175,55,0.5)',   price: 250, activeFlag: goldenGemActive },
+                  { type: 'purple', img: '/items/GEM-5.png', name: 'Amethyst Shard', effect: 'Removes 1 curse level',           effectColor: '#B794F4', border: 'rgba(168,85,247,0.5)',   price: 300 },
                 ].map(({ type, img, name, effect, effectColor, border, price, activeFlag }) => {
                   const count = gemCounts?.[type] ?? 0;
                   const canAfford = gold >= price;
                   const isActive = !!activeFlag;
-                  const canUse = count > 0 && !isActive && (type !== 'purple' || curseLevel > 0);
+                  const canUse = count > 0 && !isActive && (type !== 'purple' || curseLevel > 0) && (type !== 'green' || !emeraldGemActive);
                   return (
                     <div key={type} style={{
                       display: 'flex', alignItems: 'center', gap: '14px',

@@ -241,14 +241,16 @@ const FantasyStudyQuest = () => {
     });
 
     const conMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.con - 10) / 2)) : 0;
-    return Math.floor(GAME_CONSTANTS.MAX_HP + pendantBonus + pendantFlatHP + armorHpBonus + conMod * 5);
-  }, [equippedGrimoire, equippedArmor]);
+    const base = GAME_CONSTANTS.MAX_HP + pendantBonus + pendantFlatHP + armorHpBonus + conMod * 5;
+    return Math.floor(base * (rubyGemActive ? 1.15 : 1));
+  }, [equippedGrimoire, equippedArmor, rubyGemActive]);
   
   const getMaxStamina = useCallback(() => {
     const ringBonus = equippedTome ? equippedTome.stamina : 0;
     const ringFlatStamina = Math.floor(equippedTome?.affixes?.flatStamina || 0);
-    return Math.floor(GAME_CONSTANTS.MAX_STAMINA + ringBonus + ringFlatStamina);
-  }, [equippedTome]);
+    const base = GAME_CONSTANTS.MAX_STAMINA + ringBonus + ringFlatStamina;
+    return Math.floor(base * (sapphireGemActive ? 1.15 : 1));
+  }, [equippedTome, sapphireGemActive]);
   
   const getBaseAttack = useCallback(() => {
     if (!hero || !hero.class || !hero.class.name) return 10;
@@ -634,6 +636,8 @@ const [customClass, setCustomClass] = useState(null);
   const [gemCounts, setGemCounts] = useState({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 });
   const [goldenGemActive, setGoldenGemActive] = useState(false);
   const [emeraldGemActive, setEmeraldGemActive] = useState(false);
+  const [rubyGemActive, setRubyGemActive] = useState(false);
+  const [sapphireGemActive, setSapphireGemActive] = useState(false);
   const [enemyDialogue, setEnemyDialogue] = useState('');
   const [enragedTurns, setEnragedTurns] = useState(0);
   const [log, setLog] = useState([]);
@@ -1318,6 +1322,9 @@ const getDateKey = useCallback((date) => {
           // Reset daily elite boss flag for new day
           setEliteBossDefeatedToday(false);
           setCleansePotionPurchasedToday(false);
+          setRubyGemActive(false);
+          setSapphireGemActive(false);
+          setGoldenGemActive(false);
           
           // Advance day
           setCurrentDay(nextDay);
@@ -2664,11 +2671,9 @@ pendingBattleSpawnRef.current = () => {
     const _goldBonus = { common: 0, uncommon: 10, rare: 25, epic: 60, legendary: 150 };
     let rarityBonus = _goldBonus[chestRarity] || 0;
 
-    // Golden Gem: double the chest gold
-    if (goldenGemActive) {
-      rarityBonus *= 2;
-      setGoldenGemActive(false);
-      addLog('The Golden Shard blazes — the chest yields twice the gold!');
+    // Golden Gem: +20% chest gold all day (persists, no consume)
+    if (goldenGemActive && rarityBonus > 0) {
+      rarityBonus = Math.floor(rarityBonus * 1.2);
     }
 
     if (rarityBonus > 0) setGold(g => g + rarityBonus);
@@ -3285,16 +3290,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const maxSp = getMaxStamina();
     switch (type) {
       case 'ruby':
-        if (gemCounts.ruby < 1) return;
+        if (gemCounts.ruby < 1 || rubyGemActive) return;
         setGemCounts(g => ({ ...g, ruby: g.ruby - 1 }));
-        setHp(maxHp);
-        addLog('The Ruby Shard shatters — life force surges through you! Full HP restored.');
+        setRubyGemActive(true);
+        addLog('The Ruby Shard pulses — your maximum HP is increased by 15% for today.');
         break;
       case 'blue':
-        if (gemCounts.blue < 1) return;
+        if (gemCounts.blue < 1 || sapphireGemActive) return;
         setGemCounts(g => ({ ...g, blue: g.blue - 1 }));
-        setStamina(maxSp);
-        addLog('The Sapphire Shard shatters — clarity washes over you! Full Stamina restored.');
+        setSapphireGemActive(true);
+        addLog('The Sapphire Shard pulses — your maximum Stamina is increased by 15% for today.');
         break;
       case 'green':
         if (gemCounts.green < 1) return;
@@ -3303,10 +3308,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         addLog('The Emerald Shard pulses — fortune will smile on the next chest you open.');
         break;
       case 'gold':
-        if (gemCounts.gold < 1) return;
+        if (gemCounts.gold < 1 || goldenGemActive) return;
         setGemCounts(g => ({ ...g, gold: g.gold - 1 }));
         setGoldenGemActive(true);
-        addLog('The Golden Shard glows — the next chest will yield twice the gold.');
+        addLog('The Golden Shard glows — all chest gold is increased by 20% for today.');
         break;
       case 'purple':
         if (gemCounts.purple < 1 || curseLevel === 0) return;
@@ -8375,6 +8380,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               setGemCounts={setGemCounts}
               goldenGemActive={goldenGemActive}
               emeraldGemActive={emeraldGemActive}
+              rubyGemActive={rubyGemActive}
+              sapphireGemActive={sapphireGemActive}
               useGem={useGem}
             />
           )}
