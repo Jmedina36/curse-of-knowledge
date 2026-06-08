@@ -2798,7 +2798,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 1.8)
       : base;
 
-    [sounds.banditLaugh, sounds.banditLaugh2, sounds.banditLaugh3][enemy.laughIdx ?? Math.floor(Math.random() * 3)]();
+    sounds.banditIntro();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
@@ -2876,7 +2876,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   const handleBeg = () => {
     // Reset the current wave — no xp/gold credit
-    sounds.banditLaugh();
+    sounds.banditTaunt();
     addLog('🏃 You begged for mercy. The bandits laugh and reset their formation...');
     setIsBanditWave(false);
     setBattling(false);
@@ -3109,7 +3109,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
   
   const ANTAGONISTS = {
-    cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditLaugh(),        sfxKey: 'bandit',         dialogue: '"The order didn\'t send me. I came because I wanted to."' },
+    cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditIntro(),        sfxKey: 'bandit',         dialogue: '"The order didn\'t send me. I came because I wanted to."' },
     mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersLaugh1(),    sfxKey: 'daughters',      dialogue: '"You spilled bandit blood. Now you face the dark."' },
     sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.lostSoulsFemale(),    sfxKey: 'lostSoulsFemale', dialogue: '"Impressive. Truly. But this ends now."' },
     malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.eliteIntro(),         sfxKey: 'malachar',       dialogue: '"I have died seventeen times. I will not die tonight."' },

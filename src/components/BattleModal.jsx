@@ -383,13 +383,14 @@ const BattleModal = ({
       setTimeout(() => {
         raidFaction === 'daughters'
           ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
-          : raidFaction === 'bandit' ? sounds.banditLaugh()
+          : raidFaction === 'bandit' ? sounds.banditTaunt()
           : raidFaction === 'cursed' ? (enemyGender === 'f' ? sounds.lostSoulsFemale() : sounds.lostSoulsMale())
           : isFinalBoss ? sounds.finalBossEntrance()
           : battleType === 'elite' ? (
               eliteSfxKey === 'lostSoulsFemale' ? sounds.lostSoulsFemale()
               : eliteSfxKey === 'daughters' ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
               : eliteSfxKey === 'malachar' ? sounds.eliteLaugh3()
+              : eliteSfxKey === 'bandit' ? sounds.banditTaunt()
               : sounds.eliteTaunt()
             )
           : sounds.creatureTaunt();
@@ -411,7 +412,7 @@ const BattleModal = ({
       const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.UPPER_HAND;
       raidFaction === 'daughters'
         ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
-        : raidFaction === 'bandit' ? sounds.banditLaugh()
+        : raidFaction === 'bandit' ? sounds.banditTaunt()
         : isFinalBoss ? sounds.finalBossEntrance() : sounds.creatureTaunt();
       setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
     }
