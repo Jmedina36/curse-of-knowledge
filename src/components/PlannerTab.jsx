@@ -30,10 +30,6 @@ const PlannerTab = ({
 }) => {
   return (
     <div style={{
-      backgroundImage: 'url(/Stonewall1.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      borderRadius: '12px',
       height: 'calc(100vh - 180px)',
       display: 'flex',
       flexDirection: 'column',

@@ -320,18 +320,13 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }
       )}
 
       <div
-        className="rounded-xl border-2"
         style={{
-          borderColor: 'rgba(212, 175, 55, 0.6)',
           width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
           margin: '0 auto',
           height: 'calc(100vh - 180px)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          backgroundImage: 'url(/Stonewall1.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
         }}
       >
         {/* Tab bar */}

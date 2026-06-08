@@ -60,9 +60,6 @@ export default function JournalTab({ completedLocationContracts = [] }) {
       fontFamily: 'Georgia, serif',
       color: 'rgba(235,220,190,0.9)',
       overflow: 'hidden',
-      backgroundImage: 'url(/Stonewall1.png)',
-      backgroundSize: 'cover', backgroundPosition: 'center',
-      borderRadius: '12px',
     }}>
 
       {/* ── Left panel: entry list ─────────────────────────────────────── */}

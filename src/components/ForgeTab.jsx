@@ -104,15 +104,11 @@ const ForgeTab = ({
         </div>
       )}
 
-    <div className="rounded-xl border-2" style={{
-      borderColor: 'rgba(212, 175, 55, 0.6)',
+    <div style={{
       width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
       margin: '0 auto',
       height: 'calc(100vh - 180px)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      backgroundImage: 'url(/Stonewall1.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
     }}>
 
       <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.92)', position: 'relative' }}>
