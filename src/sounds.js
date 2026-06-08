@@ -63,6 +63,8 @@ export const sounds = {
   daughtersLaugh1: () => sfxPlay('mixkit-female-long-laugh-426.wav', 0.8),
   daughtersLaugh2: () => sfxPlay('mixkit-females-laugh-425.wav', 0.8),
   daughtersLaugh3: () => sfxPlay('dragon-studio-evil-girl-laughing-401720.mp3', 0.8),
+  daughtersIntro:  () => sfxPlay('DaughtersLaugh1.mp3', 0.8),
+  daughtersTaunt:  () => sfxPlay('DaughtersLaugh2.wav', 0.8),
 
 
   // ── Bandit laugh ─────────────────────────────────────────────────────────────

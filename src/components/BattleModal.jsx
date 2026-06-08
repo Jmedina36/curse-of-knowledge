@@ -382,13 +382,13 @@ const BattleModal = ({
       const pool = GAME_CONSTANTS.ENEMY_DIALOGUE.PLAYER_LOW_HP;
       setTimeout(() => {
         raidFaction === 'daughters'
-          ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
+          ? sounds.daughtersTaunt()
           : raidFaction === 'bandit' ? sounds.banditTaunt()
           : raidFaction === 'cursed' ? (enemyGender === 'f' ? sounds.lostSoulsFemale() : sounds.lostSoulsMale())
           : isFinalBoss ? sounds.finalBossEntrance()
           : battleType === 'elite' ? (
               eliteSfxKey === 'lostSoulsFemale' ? sounds.lostSoulsFemale()
-              : eliteSfxKey === 'daughters' ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
+              : eliteSfxKey === 'daughters' ? sounds.daughtersTaunt()
               : eliteSfxKey === 'malachar' ? sounds.eliteLaugh3()
               : eliteSfxKey === 'bandit' ? sounds.banditTaunt()
               : sounds.eliteTaunt()

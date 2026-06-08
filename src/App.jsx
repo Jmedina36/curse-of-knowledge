@@ -2895,7 +2895,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 2.0)
       : Math.floor(base * 1.1);
 
-    [sounds.daughtersLaugh1, sounds.daughtersLaugh2, sounds.daughtersLaugh3][enemy.laughIdx ?? Math.floor(Math.random() * 3)]();
+    sounds.daughtersIntro();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
@@ -3110,7 +3110,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   
   const ANTAGONISTS = {
     cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditIntro(),        sfxKey: 'bandit',         dialogue: '"The order didn\'t send me. I came because I wanted to."' },
-    mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersLaugh1(),    sfxKey: 'daughters',      dialogue: '"You spilled bandit blood. Now you face the dark."' },
+    mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersIntro(),     sfxKey: 'daughters',      dialogue: '"You spilled bandit blood. Now you face the dark."' },
     sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.lostSoulsFemale(),    sfxKey: 'lostSoulsFemale', dialogue: '"Impressive. Truly. But this ends now."' },
     malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.eliteIntro(),         sfxKey: 'malachar',       dialogue: '"I have died seventeen times. I will not die tonight."' },
     the_omen: { name: 'The Omen',                   img: '/main bad.png',                   hpMult: 8.0, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),       sfxKey: null,             dialogue: '...' },
@@ -3192,7 +3192,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const _sfxKey = _eliteSfxMap[creatureId] || 'elite';
     setEliteSfxKey(_sfxKey);
     if (_sfxKey === 'lostSoulsFemale') sounds.lostSoulsFemale();
-    else if (_sfxKey === 'daughters') sounds.daughtersLaugh1();
+    else if (_sfxKey === 'daughters') sounds.daughtersIntro();
     else sounds.eliteIntro();
     setBattleType('elite');
     audioManager.cut();
@@ -3373,7 +3373,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setBossName('Mira');
       setBossHp(hp); setBossMax(hp);
       setBanditEnemyImg('/daughters-of-dusk/leader.png');
-      Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2();
+      sounds.daughtersIntro();
       audioManager.play(TRACKS.mira);
       setEnemyDialogue('"You spilled bandit blood. Now you face the dark."');
       addLog('🌑 MIRA, DUSK QUEEN STEPS FORWARD!');
