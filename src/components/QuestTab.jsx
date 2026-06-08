@@ -212,7 +212,8 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); setShowInventoryModal(true); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  background:'linear-gradient(160deg,#2a0808,#420d0d,#1a0505)',
+                  backgroundImage:'linear-gradient(160deg,rgba(42,8,8,0.82),rgba(66,13,13,0.82),rgba(26,5,5,0.82)), url(/Stonewall2.png)',
+                  backgroundSize:'cover',backgroundPosition:'center',
                   border:'1px solid rgba(180,50,40,0.55)',
                   boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,120,100,0.06)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
