@@ -56,10 +56,13 @@ export default function JournalTab({ completedLocationContracts = [] }) {
   return (
     <div style={{
       display: 'flex',
-      height: '100%',
+      height: 'calc(100vh - 180px)',
       fontFamily: 'Georgia, serif',
       color: 'rgba(235,220,190,0.9)',
       overflow: 'hidden',
+      backgroundImage: 'url(/Stonewall1.png)',
+      backgroundSize: 'cover', backgroundPosition: 'center',
+      borderRadius: '12px',
     }}>
 
       {/* ── Left panel: entry list ─────────────────────────────────────── */}

@@ -44,7 +44,11 @@ const QuestTab = ({
   onOpenForge,
 }) => {
   return (
-            <div className="space-y-4">
+            <div className="space-y-4" style={{
+              backgroundImage: 'url(/Stonewall1.png)',
+              backgroundSize: 'cover', backgroundPosition: 'center',
+              borderRadius: '12px', padding: '16px',
+            }}>
             <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
               backgroundImage: 'url(/Updated%20scroll.png)',
               backgroundSize: 'cover',
