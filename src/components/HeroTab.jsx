@@ -11,22 +11,6 @@ const SOREN_QUOTES = [
   "I have watched many champions rise and fall. What sets the survivors apart is simple: they studied.",
 ];
 
-const ABILITY_FULL = {
-  str: 'Strength',
-  dex: 'Dexterity',
-  con: 'Constitution',
-  int: 'Intelligence',
-  wis: 'Wisdom',
-  cha: 'Charisma',
-};
-const ABILITY_DESC = {
-  str: 'Governs melee damage and physical feat checks.',
-  dex: 'Affects agility, evasion, and precision attacks.',
-  con: 'Increases maximum HP per point above 10.',
-  int: 'Enhances spell power and learning speed.',
-  wis: 'Improves perception, willpower, and capture chance.',
-  cha: 'Affects negotiation, morale bonuses, and persuasion.',
-};
 const PRIMARY_MAP = { Knight: 'str', Wizard: 'int', Assassin: 'dex', Crusader: 'con' };
 
 const getHeroPortrait = (className, gender) => {
@@ -35,32 +19,80 @@ const getHeroPortrait = (className, gender) => {
   return `/npcs/${classMap[className] || 'knight'}-${g}.png`;
 };
 
-const CLASS_COLOR_MAP = {
-  red:    { border: 'rgba(180,30,30,0.6)',   glow: 'rgba(180,30,30,0.3)',   text: '#FF6B6B',  bar: 'linear-gradient(90deg,#7F0000,#C41C1C)' },
-  blue:   { border: 'rgba(59,130,246,0.6)',  glow: 'rgba(59,130,246,0.3)',  text: '#60A5FA',  bar: 'linear-gradient(90deg,#1E3A8A,#2563EB)' },
-  green:  { border: 'rgba(16,185,129,0.6)',  glow: 'rgba(16,185,129,0.3)',  text: '#34D399',  bar: 'linear-gradient(90deg,#064E3B,#059669)' },
-  white:  { border: 'rgba(200,200,200,0.6)', glow: 'rgba(200,200,200,0.3)', text: '#E5E7EB',  bar: 'linear-gradient(90deg,#4B5563,#9CA3AF)' },
-  purple: { border: 'rgba(139,92,246,0.6)',  glow: 'rgba(139,92,246,0.3)',  text: '#A78BFA',  bar: 'linear-gradient(90deg,#4B0082,#7C3AED)' },
-  yellow: { border: 'rgba(212,175,55,0.6)',  glow: 'rgba(212,175,55,0.3)',  text: '#D4AF37',  bar: 'linear-gradient(90deg,#92400E,#B45309)' },
-  amber:  { border: 'rgba(34,197,94,0.6)',   glow: 'rgba(34,197,94,0.3)',   text: '#4ADE80',  bar: 'linear-gradient(90deg,#14532D,#15803D)' },
-};
+const ABILITY_LABEL = { str: 'Strength', dex: 'Dexterity', con: 'Constitution', int: 'Intelligence', wis: 'Wisdom', cha: 'Charisma' };
 
-const CURSE_COLORS  = ['rgba(212,175,55,0.0)', 'rgba(107,44,145,0.7)', 'rgba(107,44,145,0.9)', 'rgba(139,0,0,0.9)'];
-const CURSE_TEXT    = ['#D4AF37', '#C084FC', '#A855F7', '#FF4444'];
-const CURSE_NAMES   = ['None', 'Cursed', 'Deeply Cursed', 'Condemned'];
+const StatRow = ({ label, value, highlight, dim, indent }) => (
+  <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: `${dim ? '3px' : '5px'} ${indent ? '24px' : '0px'}`,
+    gap: '16px',
+  }}>
+    <span style={{
+      fontFamily: 'Cinzel, serif',
+      fontSize: dim ? '0.62rem' : '0.72rem',
+      fontWeight: 700,
+      letterSpacing: '0.14em',
+      textTransform: 'uppercase',
+      color: highlight ? 'rgba(212,175,55,0.85)' : dim ? 'rgba(160,145,118,0.45)' : 'rgba(190,175,148,0.65)',
+      flex: 1,
+    }}>{label}</span>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{
+        flex: 1,
+        height: '1px',
+        width: '60px',
+        background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1))',
+      }} />
+      <span style={{
+        fontFamily: 'Cinzel, serif',
+        fontSize: dim ? '0.65rem' : '0.78rem',
+        fontWeight: 900,
+        letterSpacing: '0.06em',
+        color: highlight ? 'rgba(255,235,160,0.95)' : dim ? 'rgba(190,175,148,0.45)' : 'rgba(240,230,210,0.88)',
+        minWidth: '50px',
+        textAlign: 'right',
+      }}>{value}</span>
+    </div>
+  </div>
+);
+
+const Divider = ({ gold }) => (
+  <div style={{
+    height: '1px',
+    background: gold
+      ? 'linear-gradient(to right, transparent, rgba(212,175,55,0.35), transparent)'
+      : 'linear-gradient(to right, transparent, rgba(212,175,55,0.1), transparent)',
+    margin: '6px 0',
+  }} />
+);
+
+const SectionHeader = ({ label }) => (
+  <div style={{ paddingTop: '10px', paddingBottom: '2px' }}>
+    <span style={{
+      fontFamily: 'Cinzel, serif',
+      fontSize: '0.58rem',
+      fontWeight: 900,
+      letterSpacing: '0.3em',
+      textTransform: 'uppercase',
+      color: 'rgba(212,175,55,0.45)',
+    }}>{label}</span>
+  </div>
+);
 
 const SKILL_TREE = [
-  [{ id: 'sk1', label: 'Iron Will',      desc: '+5 Max HP',         reqLevel: 3  }],
+  [{ id: 'sk1', label: 'Iron Will',       desc: '+5 Max HP',          reqLevel: 3  }],
   [
-    { id: 'sk2', label: 'Keen Edge',      desc: '+2 Attack',         reqLevel: 5  },
-    { id: 'sk3', label: 'Endurance',      desc: '+5 Max SP',         reqLevel: 5  },
+    { id: 'sk2', label: 'Keen Edge',       desc: '+2 Attack',          reqLevel: 5  },
+    { id: 'sk3', label: 'Endurance',       desc: '+5 Max SP',          reqLevel: 5  },
   ],
   [
-    { id: 'sk4', label: 'Battle-Hardened',desc: '+3% Defense',       reqLevel: 8  },
-    { id: 'sk5', label: "Scholar's Mind", desc: '+XP gain',          reqLevel: 8  },
-    { id: 'sk6', label: 'Resilience',     desc: 'Reduce curse dmg',  reqLevel: 8  },
+    { id: 'sk4', label: 'Battle-Hardened', desc: '+3% Defense',        reqLevel: 8  },
+    { id: 'sk5', label: "Scholar's Mind",  desc: '+XP gain',           reqLevel: 8  },
+    { id: 'sk6', label: 'Resilience',      desc: 'Reduce curse dmg',   reqLevel: 8  },
   ],
-  [{ id: 'sk7', label: 'Mastery',         desc: 'Unlock class power', reqLevel: 12 }],
+  [{ id: 'sk7', label: 'Mastery',          desc: 'Unlock class power', reqLevel: 12 }],
 ];
 
 const HeroTab = ({
@@ -82,13 +114,12 @@ const HeroTab = ({
   guildRank,
 }) => {
   const [sorenQuote] = useState(() => SOREN_QUOTES[Math.floor(Math.random() * SOREN_QUOTES.length)]);
-  const [hoveredAbility, setHoveredAbility] = useState(null);
+  const [showSkillTree, setShowSkillTree] = useState(false);
 
   if (!hero) return null;
 
   const ab = hero.abilities || { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 };
   const primaryKey = PRIMARY_MAP[hero.class?.name] || 'str';
-  const cc = CLASS_COLOR_MAP[hero.class?.color] || CLASS_COLOR_MAP.yellow;
 
   // XP math
   let xpFloor = 0;
@@ -97,375 +128,302 @@ const HeroTab = ({
   const xpNeeded = Math.floor(GAME_CONSTANTS.XP_PER_LEVEL * Math.pow(1.3, level - 1));
   const xpPct = Math.min(100, (xpThisLevel / xpNeeded) * 100);
 
-  const strMod = Math.floor((ab.str - 10) / 2);
-  const conMod = Math.floor((ab.con - 10) / 2);
-  const baseMaxHp = getMaxHp();
-  const baseMaxSp = getMaxStamina();
-  const totalAtk = getBaseAttack();
-  const totalDef = getBaseDefense();
-  const defPct = Math.floor((totalDef / (totalDef + 50)) * 100);
+  const conMod  = Math.floor((ab.con - 10) / 2);
+  const strMod  = Math.floor((ab.str - 10) / 2);
+  const maxHp   = getMaxHp();
+  const maxSp   = getMaxStamina();
+  const atk     = getBaseAttack();
+  const def     = getBaseDefense();
+  const defPct  = Math.floor((def / (def + 50)) * 100);
   const classBaseAtk = GAME_CONSTANTS.BASE_ATTACK_BY_CLASS?.[hero.class?.name] || 8;
   const classBaseDef = GAME_CONSTANTS.BASE_DEFENSE_BY_CLASS?.[hero.class?.name] || 5;
+  const armorDef = Object.values(equippedArmor || {}).reduce((t, p) => t + (p?.defense || 0), 0);
 
-  const hasArmor = Object.values(equippedArmor || {}).some(a => a);
-  const armorDefTotal = Object.values(equippedArmor || {}).reduce((t, p) => t + (p?.defense || 0), 0);
+  const hpPct = (hp / maxHp) * 100;
+  const spPct = (stamina / maxSp) * 100;
+
+  const CURSE_NAMES = ['None', 'Cursed', 'Deeply Cursed', 'Condemned'];
+  const CURSE_COLORS = ['rgba(212,175,55,0.6)', 'rgba(167,139,250,0.8)', 'rgba(168,85,247,0.9)', 'rgba(239,68,68,0.9)'];
+  const curseName = CURSE_NAMES[curseLevel] || 'None';
+  const curseColor = CURSE_COLORS[curseLevel] || CURSE_COLORS[0];
 
   return (
-    <div style={{ position: 'relative', minHeight: 'calc(100vh - 180px)', display: 'flex', gap: '20px' }}>
+    <div style={{
+      maxWidth: '820px',
+      margin: '0 auto',
+      paddingBottom: '40px',
+    }}>
 
-      {/* ── Soren NPC — fixed right ── */}
+      {/* ── Main panel ── */}
       <div style={{
-        position: 'fixed',
-        right: '16px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        zIndex: 10,
+        background: 'rgba(6,5,3,0.96)',
+        border: '1px solid rgba(212,175,55,0.18)',
+        borderRadius: '4px',
+        overflow: 'hidden',
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '10px',
-        pointerEvents: 'none',
-        width: '160px',
-      }}>
-        <img
-          src="/npcs/elf-warrior.png"
-          alt="Soren"
-          style={{
-            height: 'clamp(170px, 20vh, 240px)',
-            objectFit: 'contain',
-            objectPosition: 'bottom',
-            filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.85))',
-            opacity: 0.9,
-          }}
-          onError={e => { e.currentTarget.style.opacity = '0'; }}
-        />
-        <div style={{
-          background: 'rgba(12,10,5,0.92)',
-          border: '1px solid rgba(212,175,55,0.3)',
-          borderRadius: '8px',
-          padding: '10px 12px',
-          pointerEvents: 'auto',
-        }}>
-          <p style={{
-            fontFamily: 'Cinzel, serif',
-            fontSize: '0.62rem',
-            fontStyle: 'italic',
-            color: 'rgba(220,200,160,0.72)',
-            lineHeight: 1.55,
-            textAlign: 'center',
-            margin: 0,
-          }}>"{sorenQuote}"</p>
-          <p style={{
-            fontFamily: 'Cinzel, serif',
-            fontSize: '0.6rem',
-            fontWeight: 900,
-            letterSpacing: '0.14em',
-            color: 'rgba(212,175,55,0.5)',
-            textAlign: 'center',
-            marginTop: '6px',
-            marginBottom: 0,
-          }}>— Soren</p>
-        </div>
-      </div>
-
-      {/* ── Main content (leave room for Soren) ── */}
-      <div style={{
-        flex: 1,
-        marginRight: '190px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        paddingBottom: '40px',
+        minHeight: '560px',
       }}>
 
-        {/* ── Hero Header ── */}
+        {/* LEFT: Portrait column */}
         <div style={{
-          borderRadius: '12px',
-          overflow: 'hidden',
-          border: `2px solid ${cc.border}`,
-          boxShadow: `0 4px 28px ${cc.glow}`,
-          backgroundImage: 'url(/Stonewall1.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          width: '220px',
+          flexShrink: 0,
+          background: 'rgba(0,0,0,0.4)',
+          borderRight: '1px solid rgba(212,175,55,0.1)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '24px 16px 20px',
+          gap: '12px',
         }}>
-          <div style={{ background: 'rgba(10,9,6,0.88)', padding: '20px 24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flexWrap: 'wrap' }}>
 
-              {/* Portrait */}
-              <div style={{
-                width: '76px', height: '96px',
-                borderRadius: '6px', overflow: 'hidden', flexShrink: 0,
-                border: `2px solid ${cc.border}`,
-                boxShadow: `0 0 18px ${cc.glow}`,
-              }}>
-                <img
-                  src={getHeroPortrait(hero.class.name, hero.gender)}
-                  alt={hero.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-                  onError={e => { e.currentTarget.style.display = 'none'; }}
-                />
-              </div>
+          {/* Portrait */}
+          <div style={{
+            width: '160px',
+            aspectRatio: '3/4',
+            borderRadius: '2px',
+            overflow: 'hidden',
+            border: '1px solid rgba(212,175,55,0.2)',
+            background: 'rgba(0,0,0,0.5)',
+            flexShrink: 0,
+            filter: curseLevel === 3
+              ? 'saturate(0.35) brightness(0.75) sepia(0.3)'
+              : curseLevel === 2
+                ? 'saturate(0.6) brightness(0.88)'
+                : 'none',
+            transition: 'filter 0.5s ease',
+          }}>
+            <img
+              src={getHeroPortrait(hero.class.name, hero.gender)}
+              alt={hero.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+              onError={e => { e.currentTarget.style.display = 'none'; }}
+            />
+          </div>
 
-              {/* Name / class / rank */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(1.2rem,3vw,1.7rem)', fontWeight: 900, letterSpacing: '0.06em', color: '#F5F5DC', margin: '0 0 2px' }}>{hero.name}</p>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: cc.text, margin: '0 0 6px' }}>
-                  {hero.title} · {hero.class.name}
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'rgba(200,180,140,0.65)', letterSpacing: '0.1em' }}>
-                    Level {level}
-                  </span>
-                  <span style={{ color: 'rgba(212,175,55,0.25)', fontSize: '0.65rem' }}>◆</span>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'rgba(200,180,140,0.65)', letterSpacing: '0.1em' }}>
-                    Day {currentDay}
-                  </span>
-                  {guildRank && (
-                    <>
-                      <span style={{ color: 'rgba(212,175,55,0.25)', fontSize: '0.65rem' }}>◆</span>
-                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.1em', color: guildRank.name === 'Initiate' ? 'rgba(180,160,120,0.55)' : guildRank.color }}>
-                        {guildRank.name}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
+          {/* Name */}
+          <div style={{ textAlign: 'center', width: '100%' }}>
+            <p style={{
+              fontFamily: 'Cinzel, serif', fontWeight: 900,
+              fontSize: 'clamp(0.9rem,2vw,1.1rem)',
+              letterSpacing: '0.08em', color: 'rgba(240,228,200,0.9)',
+              margin: '0 0 3px',
+            }}>{hero.name}</p>
+            <p style={{
+              fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700,
+              letterSpacing: '0.2em', textTransform: 'uppercase',
+              color: 'rgba(212,175,55,0.55)', margin: '0 0 2px',
+            }}>{hero.class.name}</p>
+            <p style={{
+              fontFamily: 'Cinzel, serif', fontSize: '0.58rem',
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: 'rgba(180,165,135,0.4)', margin: 0,
+            }}>{hero.title}</p>
+          </div>
 
-              {/* Curse badge */}
-              {curseLevel > 0 && (
-                <div style={{
-                  padding: '6px 14px', borderRadius: '6px',
-                  background: 'rgba(15,5,20,0.65)',
-                  border: `1px solid ${CURSE_COLORS[curseLevel]}`,
-                  boxShadow: `0 0 14px ${CURSE_COLORS[curseLevel]}`,
-                }}>
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 900, letterSpacing: '0.14em', textTransform: 'uppercase', color: CURSE_TEXT[curseLevel], margin: 0 }}>
-                    {curseLevel === 3 ? '☠ ' : '⚠ '}{CURSE_NAMES[curseLevel]}
-                  </p>
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: CURSE_TEXT[curseLevel], opacity: 0.55, letterSpacing: '0.1em', textAlign: 'center', margin: '2px 0 0' }}>
-                    {curseLevel}/3 curses
-                  </p>
-                </div>
-              )}
+          <Divider />
+
+          {/* HP bar */}
+          <div style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(220,90,90,0.6)' }}>HP</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(230,210,180,0.65)' }}>{hp} / {maxHp}</span>
             </div>
-
-            {/* XP bar */}
-            <div style={{ marginTop: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(200,180,140,0.55)' }}>
-                  Experience
-                </span>
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.68rem', color: 'rgba(200,180,140,0.65)' }}>
-                  {xpThisLevel} / {xpNeeded} XP
-                </span>
-              </div>
-              <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.07)', overflow: 'hidden' }}>
-                <div style={{ height: '100%', borderRadius: '3px', width: `${xpPct}%`, background: cc.bar, transition: 'width 0.5s ease' }} />
-              </div>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(180,160,120,0.4)', textAlign: 'right', marginTop: '3px', letterSpacing: '0.08em' }}>
-                {xpNeeded - xpThisLevel} XP until level {level + 1}
-              </p>
+            <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(100,0,0,0.3)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: '2px', width: `${hpPct}%`, background: hpPct < 25 ? '#7f1d1d' : 'linear-gradient(to right, #7f1d1d, #dc2626)', transition: 'width 0.4s' }} />
             </div>
           </div>
-        </div>
 
-        {/* ── Vitals ── */}
-        <div style={{
-          borderRadius: '12px',
-          overflow: 'hidden',
-          border: '2px solid rgba(212,175,55,0.3)',
-          backgroundImage: 'url(/Stonewall1.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}>
-          <div style={{ background: 'rgba(10,9,6,0.88)' }}>
-            <div style={{ padding: '10px 20px', background: 'rgba(0,0,0,0.25)', borderBottom: '1px solid rgba(212,175,55,0.12)' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.65)', margin: 0 }}>Vitals</p>
+          {/* SP bar */}
+          <div style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(60,120,220,0.6)' }}>SP</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(230,210,180,0.65)' }}>{stamina} / {maxSp}</span>
             </div>
-            <div style={{ padding: '14px 20px', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-
-              {/* HP */}
-              <div style={{ background: 'rgba(139,0,0,0.09)', border: '1px solid rgba(139,0,0,0.28)', borderRadius: '8px', padding: '12px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(220,100,100,0.8)' }}>Hit Points</span>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', fontWeight: 900, color: '#F5F5DC' }}>{hp} / {baseMaxHp}</span>
-                </div>
-                <div style={{ height: '5px', borderRadius: '3px', background: 'rgba(139,0,0,0.18)', overflow: 'hidden', marginBottom: '6px' }}>
-                  <div style={{ height: '100%', borderRadius: '3px', background: hp / baseMaxHp < 0.25 ? '#8B0000' : 'linear-gradient(to right,#7f1d1d,#b91c1c)', width: `${(hp / baseMaxHp) * 100}%`, transition: 'width 0.3s' }} />
-                </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(180,120,120,0.45)', letterSpacing: '0.07em', margin: 0 }}>
-                  Base {GAME_CONSTANTS.MAX_HP}
-                  {conMod > 0 ? ` + ${conMod * 5} (CON)` : ''}
-                  {equippedGrimoire?.hp ? ` + ${equippedGrimoire.hp} (pendant)` : ''}
-                </p>
-              </div>
-
-              {/* SP */}
-              <div style={{ background: 'rgba(30,58,140,0.09)', border: '1px solid rgba(30,58,140,0.28)', borderRadius: '8px', padding: '12px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(96,165,250,0.8)' }}>Stamina</span>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', fontWeight: 900, color: '#F5F5DC' }}>{stamina} / {baseMaxSp}</span>
-                </div>
-                <div style={{ height: '5px', borderRadius: '3px', background: 'rgba(30,58,140,0.18)', overflow: 'hidden', marginBottom: '6px' }}>
-                  <div style={{ height: '100%', borderRadius: '3px', background: 'linear-gradient(to right,#1e3a8a,#2563eb)', width: `${(stamina / baseMaxSp) * 100}%`, transition: 'width 0.3s' }} />
-                </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(120,160,220,0.45)', letterSpacing: '0.07em', margin: 0 }}>
-                  Base {GAME_CONSTANTS.MAX_STAMINA}
-                  {equippedTome?.stamina ? ` + ${equippedTome.stamina} (ring)` : ''}
-                </p>
-              </div>
-
-              {/* Attack */}
-              <div style={{ background: 'rgba(80,50,10,0.09)', border: '1px solid rgba(80,50,10,0.28)', borderRadius: '8px', padding: '12px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(210,170,80,0.8)' }}>Attack</span>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', fontWeight: 900, color: '#F5F5DC', lineHeight: 1 }}>{totalAtk}</span>
-                </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(180,140,70,0.45)', letterSpacing: '0.07em', margin: 0 }}>
-                  Base {classBaseAtk}
-                  {strMod > 0 ? ` + ${strMod} (STR)` : ''}
-                  {equippedWeapon ? ` + ${equippedWeapon.attack} (${equippedWeapon.name || 'weapon'})` : ''}
-                </p>
-              </div>
-
-              {/* Defense */}
-              <div style={{ background: 'rgba(20,70,40,0.09)', border: '1px solid rgba(20,70,40,0.28)', borderRadius: '8px', padding: '12px 14px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(80,200,130,0.8)' }}>Defense</span>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', fontWeight: 900, color: '#F5F5DC', lineHeight: 1 }}>{defPct}%</span>
-                </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(80,160,110,0.45)', letterSpacing: '0.07em', margin: 0 }}>
-                  DR {totalDef} — Base {classBaseDef}
-                  {armorDefTotal > 0 ? ` + ${armorDefTotal} (armor)` : ''}
-                </p>
-              </div>
-
+            <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(0,0,80,0.3)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: '2px', width: `${spPct}%`, background: 'linear-gradient(to right, #1e3a8a, #3b82f6)', transition: 'width 0.4s' }} />
             </div>
           </div>
-        </div>
 
-        {/* ── Ability Scores ── */}
-        <div style={{
-          borderRadius: '12px',
-          overflow: 'hidden',
-          border: '2px solid rgba(212,175,55,0.3)',
-          backgroundImage: 'url(/Stonewall1.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}>
-          <div style={{ background: 'rgba(10,9,6,0.88)' }}>
-            <div style={{ padding: '10px 20px', background: 'rgba(0,0,0,0.25)', borderBottom: '1px solid rgba(212,175,55,0.12)' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.65)', margin: 0 }}>Ability Scores</p>
+          <Divider />
+
+          {/* XP bar */}
+          <div style={{ width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)' }}>Experience</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(212,175,55,0.5)' }}>{Math.round(xpPct)}%</span>
             </div>
-            <div style={{ padding: '14px 20px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
-              {['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => {
-                const score = ab[key] || 10;
-                const mod = Math.floor((score - 10) / 2);
-                const isPrimary = key === primaryKey;
-                const isHov = hoveredAbility === key;
-                return (
-                  <div
-                    key={key}
-                    onMouseEnter={() => setHoveredAbility(key)}
-                    onMouseLeave={() => setHoveredAbility(null)}
-                    style={{
-                      borderRadius: '8px',
-                      padding: '12px 8px',
-                      textAlign: 'center',
-                      background: isPrimary ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isPrimary ? cc.border : 'rgba(255,255,255,0.07)'}`,
-                      boxShadow: isHov ? `0 0 14px ${isPrimary ? cc.glow : 'rgba(255,255,255,0.04)'}` : 'none',
-                      transition: 'box-shadow 0.2s',
-                      cursor: 'default',
-                      minHeight: isHov ? 'auto' : undefined,
-                    }}
-                  >
-                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.12em', textTransform: 'uppercase', color: isPrimary ? cc.text : 'rgba(180,160,130,0.6)', margin: '0 0 4px' }}>
-                      {ABILITY_FULL[key]}
-                      {isPrimary && <span style={{ marginLeft: '4px', fontSize: '0.5rem', opacity: 0.7 }}>★</span>}
-                    </p>
-                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '2rem', fontWeight: 900, color: '#F5F5DC', lineHeight: 1, margin: '0 0 2px' }}>{score}</p>
-                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700, color: mod >= 0 ? 'rgba(160,220,140,0.8)' : 'rgba(220,100,100,0.8)', margin: 0 }}>
-                      {mod >= 0 ? '+' : ''}{mod}
-                    </p>
-                    {isHov && (
-                      <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(180,160,130,0.5)', marginTop: '6px', lineHeight: 1.45, margin: '6px 0 0' }}>
-                        {ABILITY_DESC[key]}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
+            <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(100,80,10,0.25)', overflow: 'hidden' }}>
+              <div style={{ height: '100%', borderRadius: '2px', width: `${xpPct}%`, background: 'linear-gradient(to right, #78350f, #d97706)', transition: 'width 0.4s' }} />
+            </div>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.56rem', color: 'rgba(180,155,100,0.35)', textAlign: 'right', marginTop: '3px', letterSpacing: '0.06em' }}>
+              {xpNeeded - xpThisLevel} to Lv {level + 1}
+            </p>
+          </div>
+
+          {/* Soren quote */}
+          <div style={{ marginTop: 'auto', paddingTop: '12px', width: '100%' }}>
+            <Divider />
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginTop: '10px' }}>
+              <img
+                src="/npcs/elf-warrior.png"
+                alt="Soren"
+                style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '1px solid rgba(212,175,55,0.2)', flexShrink: 0, opacity: 0.75 }}
+                onError={e => { e.currentTarget.style.display = 'none'; }}
+              />
+              <p style={{
+                fontFamily: 'Cinzel, serif', fontSize: '0.56rem', fontStyle: 'italic',
+                color: 'rgba(190,170,130,0.38)', lineHeight: 1.55, margin: 0,
+              }}>"{sorenQuote}"<br /><span style={{ fontStyle: 'normal', color: 'rgba(212,175,55,0.3)', fontSize: '0.52rem', letterSpacing: '0.1em' }}>— Soren</span></p>
             </div>
           </div>
+
         </div>
 
-        {/* ── Skill Tree (placeholder) ── */}
-        <div style={{
-          borderRadius: '12px',
-          overflow: 'hidden',
-          border: '2px solid rgba(212,175,55,0.3)',
-          backgroundImage: 'url(/Stonewall1.png)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}>
-          <div style={{ background: 'rgba(10,9,6,0.88)' }}>
-            <div style={{ padding: '10px 20px', background: 'rgba(0,0,0,0.25)', borderBottom: '1px solid rgba(212,175,55,0.12)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.65)', margin: 0 }}>Skill Tree</p>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(180,160,130,0.3)', fontStyle: 'italic' }}>
-                In development
+        {/* RIGHT: Stats column */}
+        <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto' }}>
+
+          {/* ── Identity ── */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+            <div>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>
+                The Chronicle
               </span>
             </div>
-            <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-              {SKILL_TREE.map((row, ri) => (
-                <div key={ri} style={{ display: 'flex', gap: '14px', justifyContent: 'center' }}>
-                  {row.map(node => {
-                    const unlocked = level >= node.reqLevel;
-                    return (
-                      <div
-                        key={node.id}
-                        style={{
-                          width: '106px',
-                          borderRadius: '8px',
-                          padding: '10px 8px',
-                          textAlign: 'center',
-                          background: unlocked ? 'rgba(212,175,55,0.07)' : 'rgba(25,20,12,0.6)',
-                          border: `1px solid ${unlocked ? 'rgba(212,175,55,0.38)' : 'rgba(80,70,50,0.25)'}`,
-                          opacity: unlocked ? 1 : 0.45,
-                          position: 'relative',
-                        }}
-                      >
-                        {unlocked && (
-                          <div style={{
-                            position: 'absolute', top: '-3px', right: '-3px',
-                            width: '8px', height: '8px', borderRadius: '50%',
-                            background: 'rgba(212,175,55,0.85)',
-                            boxShadow: '0 0 7px rgba(212,175,55,0.7)',
-                          }} />
-                        )}
-                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.64rem', fontWeight: 900, letterSpacing: '0.07em', color: unlocked ? 'rgba(220,200,155,0.85)' : 'rgba(120,110,85,0.5)', margin: '0 0 3px' }}>
-                          {node.label}
-                        </p>
-                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.06em', color: unlocked ? 'rgba(180,160,120,0.55)' : 'rgba(90,82,62,0.4)', margin: 0 }}>
-                          {node.desc}
-                        </p>
-                        {!unlocked && (
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.1em', color: 'rgba(130,115,85,0.35)', marginTop: '3px', marginBottom: 0 }}>
-                            Lv {node.reqLevel}
-                          </p>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.62rem', letterSpacing: '0.12em', color: 'rgba(150,130,100,0.28)', textAlign: 'center', marginTop: '8px', fontStyle: 'italic', marginBottom: 0 }}>
-                Paths of power await those who endure
-              </p>
+            {guildRank && (
+              <span style={{
+                fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900,
+                letterSpacing: '0.18em', textTransform: 'uppercase',
+                color: guildRank.name === 'Initiate' ? 'rgba(180,160,120,0.4)' : guildRank.color,
+                opacity: 0.75,
+              }}>{guildRank.name}</span>
+            )}
+          </div>
+          <Divider gold />
+
+          <StatRow label="Level"     value={level}       highlight />
+          <StatRow label="Day"       value={currentDay} />
+          <StatRow label="Total XP"  value={xp.toLocaleString()} />
+
+          <SectionHeader label="Attributes" />
+          <Divider />
+
+          {['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => {
+            const score = ab[key] || 10;
+            const mod   = Math.floor((score - 10) / 2);
+            const isPrimary = key === primaryKey;
+            return (
+              <StatRow
+                key={key}
+                label={`${ABILITY_LABEL[key]}${isPrimary ? ' ★' : ''}`}
+                value={`${score}  (${mod >= 0 ? '+' : ''}${mod})`}
+                highlight={isPrimary}
+              />
+            );
+          })}
+
+          <SectionHeader label="Derived Stats" />
+          <Divider />
+
+          <StatRow label="Max HP"   value={maxHp} highlight />
+          <StatRow label="Max SP"   value={maxSp} highlight />
+          <StatRow label="Attack"   value={atk}   highlight />
+          <StatRow label="Defense"  value={`${defPct}%`} highlight />
+
+          {/* Breakdowns */}
+          <StatRow label={`  Base HP`}        value={GAME_CONSTANTS.MAX_HP}               dim indent />
+          {conMod > 0 && <StatRow label={`  CON Bonus`}   value={`+${conMod * 5}`}        dim indent />}
+          {equippedGrimoire?.hp && <StatRow label={`  Pendant`} value={`+${equippedGrimoire.hp}`} dim indent />}
+          <StatRow label={`  Base ATK`}       value={classBaseAtk}                        dim indent />
+          {strMod > 0 && <StatRow label={`  STR Bonus`}  value={`+${strMod}`}              dim indent />}
+          {equippedWeapon && <StatRow label={`  ${equippedWeapon.name || 'Weapon'}`} value={`+${equippedWeapon.attack}`} dim indent />}
+          <StatRow label={`  Base DEF`}       value={classBaseDef}                        dim indent />
+          {armorDef > 0 && <StatRow label={`  Armor`}    value={`+${armorDef}`}            dim indent />}
+
+          <SectionHeader label="Status" />
+          <Divider />
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0' }}>
+            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(190,175,148,0.65)' }}>
+              Curse
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{ width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1))' }} />
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 900, letterSpacing: '0.06em', color: curseColor }}>
+                {curseLevel > 0 ? `${curseName}  (${curseLevel}/3)` : 'None'}
+              </span>
             </div>
           </div>
-        </div>
 
+          {equippedWeapon && (
+            <>
+              <SectionHeader label="Equipment" />
+              <Divider />
+              <StatRow label="Weapon"  value={equippedWeapon.name || 'Equipped'} />
+            </>
+          )}
+
+          {Object.values(equippedArmor || {}).some(a => a) && (
+            Object.entries(equippedArmor).map(([slot, piece]) =>
+              piece ? <StatRow key={slot} label={slot.charAt(0).toUpperCase() + slot.slice(1)} value={piece.name || 'Equipped'} dim /> : null
+            )
+          )}
+
+          {/* ── Skill Tree ── */}
+          <div style={{ marginTop: '20px' }}>
+            <button
+              onClick={() => setShowSkillTree(v => !v)}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer', width: '100%', padding: 0,
+                display: 'flex', alignItems: 'center', gap: '10px',
+              }}
+            >
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>
+                Skill Tree
+              </span>
+              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(212,175,55,0.15), transparent)' }} />
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: 'rgba(212,175,55,0.3)', letterSpacing: '0.1em' }}>
+                {showSkillTree ? '▲ hide' : '▼ show'}
+              </span>
+            </button>
+
+            {showSkillTree && (
+              <div style={{ marginTop: '16px' }}>
+                {SKILL_TREE.map((row, ri) => (
+                  <div key={ri} style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '10px' }}>
+                    {row.map(node => {
+                      const unlocked = level >= node.reqLevel;
+                      return (
+                        <div key={node.id} style={{
+                          flex: '0 0 auto',
+                          width: '110px',
+                          borderRadius: '2px',
+                          padding: '9px 10px',
+                          textAlign: 'center',
+                          background: unlocked ? 'rgba(212,175,55,0.06)' : 'rgba(20,18,12,0.6)',
+                          border: `1px solid ${unlocked ? 'rgba(212,175,55,0.3)' : 'rgba(80,70,50,0.2)'}`,
+                          opacity: unlocked ? 1 : 0.4,
+                          position: 'relative',
+                        }}>
+                          {unlocked && (
+                            <div style={{ position: 'absolute', top: '-2px', right: '-2px', width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(212,175,55,0.9)', boxShadow: '0 0 6px rgba(212,175,55,0.7)' }} />
+                          )}
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.62rem', fontWeight: 900, letterSpacing: '0.06em', color: unlocked ? 'rgba(230,210,165,0.85)' : 'rgba(120,110,85,0.45)', margin: '0 0 2px' }}>{node.label}</p>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.54rem', color: unlocked ? 'rgba(180,160,118,0.55)' : 'rgba(90,82,62,0.35)', margin: 0 }}>{node.desc}</p>
+                          {!unlocked && <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', color: 'rgba(130,115,85,0.3)', marginTop: '2px', marginBottom: 0 }}>Lv {node.reqLevel}</p>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.1em', color: 'rgba(150,130,100,0.22)', textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>
+                  Paths of power await those who endure
+                </p>
+              </div>
+            )}
+          </div>
+
+        </div>
       </div>
     </div>
   );
