@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { COLORS } from '../constants';
+import { COLORS, VISUAL_STYLES } from '../constants';
 import { CREATURE_INDEX } from '../creatures';
 
 const KAEL_IDLE = [
@@ -318,7 +318,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
       )}
 
       <div
-        className="bg-black bg-opacity-50 rounded-xl border-2"
+        className="rounded-xl border-2"
         style={{
           borderColor: 'rgba(212, 175, 55, 0.6)',
           width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
@@ -327,6 +327,9 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
+          backgroundImage: 'url(/Stonewall1.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       >
         {/* Tab bar */}
@@ -348,7 +351,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
         </div>
 
         {/* Scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px', background: 'rgba(0,0,0,0.25)' }}>
           {/* ── CREATURE INDEX TAB ── */}
           {activeTab === 'index' && (
             <div>
@@ -369,7 +372,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
                       {entries.map(creature => (
                         <div key={creature.id} style={{
                           borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
-                          background: `linear-gradient(135deg, ${TIER_GLOW[creature.tier]}, rgba(0,0,0,0.55))`,
+                          background: VISUAL_STYLES.card.default,
                           border: `1px solid ${TIER_BORDER[creature.tier]}`,
                           boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
                           position: 'relative',
@@ -422,9 +425,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
                   return (
                     <div style={{
                       borderRadius: '10px', padding: '16px 14px', textAlign: 'center',
-                      background: defeated
-                        ? 'linear-gradient(135deg, rgba(20,20,20,0.7), rgba(10,10,10,0.7))'
-                        : `linear-gradient(135deg, ${faction.glow}, rgba(0,0,0,0.6))`,
+                      background: VISUAL_STYLES.card.default,
                       border: `1px solid ${defeated ? 'rgba(80,80,80,0.3)' : faction.border}`,
                       boxShadow: defeated ? 'none' : `0 0 16px ${faction.glow}`,
                       opacity: defeated ? 0.6 : 1,
@@ -568,9 +569,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [] }) => {
                   borderRadius: '10px',
                   padding: solo ? '20px 18px' : '16px 14px',
                   textAlign: 'center',
-                  background: atRest
-                    ? 'linear-gradient(135deg, rgba(15,15,20,0.8), rgba(8,8,12,0.8))'
-                    : 'linear-gradient(135deg, rgba(40,30,50,0.55), rgba(10,8,15,0.7))',
+                  background: VISUAL_STYLES.card.default,
                   border: `1px solid ${atRest ? 'rgba(120,130,160,0.25)' : 'rgba(160,130,200,0.3)'}`,
                   boxShadow: atRest ? 'none' : '0 0 18px rgba(140,100,180,0.1)',
                   opacity: atRest ? 0.65 : 1,
