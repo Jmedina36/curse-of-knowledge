@@ -227,7 +227,12 @@ const FantasyStudyQuest = () => {
   const [equippedTome, setEquippedTome] = useState(null);
   const [grimoireInventory, setGrimoireInventory] = useState([]);
   const [tomeInventory, setTomeInventory] = useState([]);
-  
+  const [gemCounts, setGemCounts] = useState({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 });
+  const [goldenGemActive, setGoldenGemActive] = useState(false);
+  const [emeraldGemActive, setEmeraldGemActive] = useState(false);
+  const [rubyGemActive, setRubyGemActive] = useState(false);
+  const [sapphireGemActive, setSapphireGemActive] = useState(false);
+
   const getMaxHp = useCallback(() => {
     const pendantBonus = equippedGrimoire ? equippedGrimoire.hp : 0;
     const pendantFlatHP = Math.floor(equippedGrimoire?.affixes?.flatHP || 0);
@@ -633,11 +638,6 @@ const [customClass, setCustomClass] = useState(null);
   const [weaponOilActive, setWeaponOilActive] = useState(false);
   const [armorPolishActive, setArmorPolishActive] = useState(false);
   const [luckyCharmActive, setLuckyCharmActive] = useState(false);
-  const [gemCounts, setGemCounts] = useState({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 });
-  const [goldenGemActive, setGoldenGemActive] = useState(false);
-  const [emeraldGemActive, setEmeraldGemActive] = useState(false);
-  const [rubyGemActive, setRubyGemActive] = useState(false);
-  const [sapphireGemActive, setSapphireGemActive] = useState(false);
   const [enemyDialogue, setEnemyDialogue] = useState('');
   const [enragedTurns, setEnragedTurns] = useState(0);
   const [log, setLog] = useState([]);
