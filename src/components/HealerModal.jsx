@@ -4,6 +4,24 @@ import { X } from 'lucide-react';
 import { GAME_CONSTANTS, COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
 
+const ApothRates = ({ entries }) => (
+  <div className="rounded-lg p-2 mb-4 border"
+    style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
+    <p className="text-xs font-bold mb-2 text-center" style={{ color: '#D4AF37' }}>TODAY'S MARKET RATES</p>
+    <div className="flex justify-center gap-4 text-xs">
+      {entries.map(({ label, mod }) => (
+        <div key={label} className="text-center">
+          <p style={{ color: COLORS.silver }}>{label}</p>
+          <p className="font-bold" style={{ color: mod < 0.9 ? '#68D391' : mod > 1.1 ? '#FF6B6B' : '#F5F5DC' }}>
+            {mod < 0.9 ? 'SALE' : mod > 1.1 ? 'HIGH' : 'NORMAL'}
+          </p>
+        </div>
+      ))}
+    </div>
+    <p className="text-xs italic text-center mt-2" style={{ color: '#9CA3AF' }}>Prices refresh daily</p>
+  </div>
+);
+
 const MARA_QUOTES = {
   idle: [
     "Rest now. The body heals faster when the mind is still.",
@@ -69,6 +87,7 @@ const HealerModal = ({
 }) => {
   const [tab, setTab] = useState('mend');
   const [suppliesMode, setSuppliesMode] = useState('buy');
+  const [sellConfirm, setSellConfirm] = useState(null);
   const [quote, setQuote] = useState(() => MARA_QUOTES.idle[Math.floor(Math.random() * MARA_QUOTES.idle.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
@@ -134,9 +153,15 @@ const HealerModal = ({
 
   const handleSell = (key, name, setCount) => {
     const price = getSellPrice(key);
-    setCount(c => c - 1);
-    setGold(g => g + price);
-    addLog(`Sold ${name} for ${price} gold.`);
+    setSellConfirm({
+      label: name, price,
+      onConfirm: () => {
+        setCount(c => c - 1);
+        setGold(g => g + price);
+        addLog(`Sold ${name} for ${price} gold.`);
+        say(MARA_QUOTES.buy);
+      },
+    });
   };
 
   const green = COLORS.gold;
@@ -504,43 +529,92 @@ const HealerModal = ({
                   ...gemDefs.map(g => ({ key: g.type, emoji: <img src={g.img} alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />, name: g.name, count: gemCounts?.[g.type] ?? 0, border: g.border, setCount: (fn) => setGemCounts(prev => ({ ...prev, [g.type]: fn(prev[g.type]) })) })),
                 ].filter(item => item.count > 0);
 
-                if (sellItems.length === 0) return (
+                return (<>
+                  <ApothRates entries={[
+                    { label: 'Health Pot',  mod: healerModifiers?.healthPotion  ?? 1 },
+                    { label: 'Stamina Pot', mod: healerModifiers?.staminaPotion ?? 1 },
+                  ]} />
+                  {sellItems.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px solid rgba(212,175,55,0.15)', borderRadius: '10px', background: VISUAL_STYLES.card.default }}>
                     <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', color: 'rgba(212,175,55,0.45)' }}>Nothing to sell.</p>
                   </div>
-                );
-
-                return sellItems.map(({ key, emoji, name, count, border, setCount }) => {
-                  const price = getSellPrice(key);
-                  return (
-                    <div key={key} style={{
-                      display: 'flex', alignItems: 'center', gap: '14px',
-                      padding: '12px 16px', marginBottom: '10px', borderRadius: '10px',
-                      border: `1px solid ${border}`, background: VISUAL_STYLES.card.default,
-                    }}>
-                      <span style={{ fontSize: '28px', flexShrink: 0 }}>{emoji}</span>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
-                        <p style={{ fontSize: '0.85rem', color: '#68D391' }}>Sell for {price} gold</p>
+                  ) : (
+                  sellItems.map(({ key, emoji, name, count, border, setCount }) => {
+                    const price = getSellPrice(key);
+                    return (
+                      <div key={key} style={{
+                        display: 'flex', alignItems: 'center', gap: '14px',
+                        padding: '12px 16px', marginBottom: '10px', borderRadius: '10px',
+                        border: `1px solid ${border}`, background: VISUAL_STYLES.card.default,
+                      }}>
+                        <span style={{ fontSize: '28px', flexShrink: 0 }}>{emoji}</span>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
+                          <p style={{ fontSize: '0.85rem', color: '#68D391' }}>Sell for {price} gold</p>
+                        </div>
+                        <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '24px', textAlign: 'center' }}>{count}</span>
+                        <button
+                          onClick={() => { sounds.click(); handleSell(key, name, setCount); }}
+                          className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+                          style={{
+                            background: 'linear-gradient(to bottom, rgba(184,134,11,0.5), rgba(139,101,8,0.55))',
+                            borderColor: 'rgba(212,175,55,0.7)', color: '#F5F5DC',
+                          }}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(218,165,32,0.6), rgba(184,134,11,0.65))'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(184,134,11,0.5), rgba(139,101,8,0.55))'; }}
+                        >Sell: {price} Gold</button>
                       </div>
-                      <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '24px', textAlign: 'center' }}>{count}</span>
-                      <button
-                        onClick={() => { sounds.click(); handleSell(key, name, setCount); }}
-                        style={{
-                          padding: '7px 16px', borderRadius: '6px', fontFamily: 'Cinzel, serif',
-                          fontSize: '0.82rem', fontWeight: 700, cursor: 'pointer',
-                          background: 'linear-gradient(to bottom, rgba(34,197,94,0.6), rgba(22,163,74,0.65))',
-                          border: '1px solid rgba(34,197,94,0.5)', color: '#F5F5DC',
-                        }}
-                      >Sell · {price}g</button>
-                    </div>
-                  );
-                });
+                    );
+                  })
+                  )}
+                </>);
               })()}
             </div>
           )}
         </div>
       </motion.div>
+
+      {/* ── Sell Confirmation Overlay ── */}
+      {sellConfirm && (
+        <div
+          className="fixed inset-0 z-[55] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.65)' }}
+          onClick={() => setSellConfirm(null)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.88 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="rounded-xl p-6 text-center max-w-xs w-full border-2"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(12,8,2,0.99), rgba(6,4,1,0.99))',
+              borderColor: 'rgba(212,175,55,0.5)',
+              boxShadow: '0 0 28px rgba(212,175,55,0.15)',
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
+              CONFIRM SALE
+            </p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: '#F5F5DC', marginBottom: '4px' }}>
+              {sellConfirm.label}
+            </p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.3rem', color: '#D4AF37', marginBottom: '22px' }}>
+              {sellConfirm.price} Gold
+            </p>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => { sounds.click(); setSellConfirm(null); }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
+              >Cancel</button>
+              <button
+                onClick={() => { sounds.click(); sellConfirm.onConfirm(); setSellConfirm(null); }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
+              >Sell</button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
