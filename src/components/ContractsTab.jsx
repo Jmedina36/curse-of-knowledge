@@ -105,17 +105,47 @@ const ContractsTab = ({
       ) : (
         <>
           {/* ── BOARD SHELL ── */}
-          <div className="rounded-xl p-5 border-2" style={{
+          <div style={{
             background: 'linear-gradient(rgba(6,4,1,0.62), rgba(6,4,1,0.62)), url("/Updated scroll.png")',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            borderColor: 'rgba(101,67,33,0.7)',
-            boxShadow: '0 4px 32px rgba(0,0,0,0.6)',
+            border: '6px solid rgba(101,67,33,0.9)',
+            borderRadius: '12px',
+            padding: '20px',
+            boxShadow: '0 6px 40px rgba(0,0,0,0.7), inset 0 0 0 2px rgba(160,100,30,0.25), inset 0 0 30px rgba(0,0,0,0.35)',
+            outline: '2px solid rgba(55,30,5,0.85)',
+            outlineOffset: '3px',
           }}>
 
             {/* Board header */}
             <div className="text-center mb-5">
+
+              {/* ── GUILD NOTICE BOARD title ── */}
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '6px' }}>
+                  <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, transparent, rgba(120,75,20,0.8))' }} />
+                  <span style={{ color: 'rgba(180,120,40,0.6)', fontSize: '10px' }}>✦</span>
+                  <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to left, transparent, rgba(120,75,20,0.8))' }} />
+                </div>
+                <h2 style={{
+                  fontFamily: 'Cinzel, serif', fontSize: 'clamp(1rem, 2.5vw, 1.5rem)', fontWeight: 900,
+                  letterSpacing: '0.35em', textTransform: 'uppercase',
+                  color: 'rgba(205,160,70,0.95)',
+                  textShadow: '0 0 24px rgba(160,110,20,0.6), 0 2px 4px rgba(0,0,0,0.8)',
+                  borderTop: '1px solid rgba(120,75,20,0.4)',
+                  borderBottom: '1px solid rgba(120,75,20,0.4)',
+                  padding: '8px 24px',
+                  display: 'inline-block',
+                  margin: '0 0 6px',
+                }}>Guild Notice Board</h2>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginTop: '6px' }}>
+                  <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, transparent, rgba(120,75,20,0.8))' }} />
+                  <span style={{ color: 'rgba(180,120,40,0.6)', fontSize: '10px' }}>✦</span>
+                  <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to left, transparent, rgba(120,75,20,0.8))' }} />
+                </div>
+              </div>
+
               {/* Guild rank badge */}
               {guildRank && (() => {
                 const nextRank = guildRanks && guildRanks.find(r => r.min > guildPoints);
@@ -249,7 +279,7 @@ const ContractsTab = ({
                                 ? `1px solid ${TIER.silver.border}`
                                 : `1px solid ${TIER.copper.border}`,
                           borderRadius: '4px',
-                          padding: '14px 14px 12px',
+                          padding: '18px 14px 12px',
                           boxShadow: t.overdue && !t.done
                             ? '0 2px 16px rgba(180,30,20,0.25), inset 0 0 20px rgba(0,0,0,0.4)'
                             : t.priority === 'important' && !t.done
@@ -264,13 +294,15 @@ const ContractsTab = ({
                         }}
                       >
                         {/* Push-pin */}
-                        <div style={{
-                          position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
-                          width: '12px', height: '12px', borderRadius: '50%',
-                          background: pinColor,
-                          border: '1px solid rgba(255,255,255,0.15)',
-                          boxShadow: `0 1px 5px rgba(0,0,0,0.6), 0 0 6px ${pinColor}`,
-                        }} />
+                        <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <div style={{
+                            width: '16px', height: '16px', borderRadius: '50%',
+                            background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45), ${pinColor})`,
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            boxShadow: `0 2px 6px rgba(0,0,0,0.7), 0 0 8px ${pinColor}66`,
+                          }} />
+                          <div style={{ width: '3px', height: '8px', background: 'linear-gradient(to bottom, rgba(180,150,100,0.8), rgba(60,40,10,0.5))', borderRadius: '0 0 2px 2px' }} />
+                        </div>
 
                         {/* Tier badge row */}
                         <div style={{marginBottom:'8px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
@@ -401,17 +433,24 @@ const ContractsTab = ({
                       : isCompleted ? 'none'
                         : `0 2px 12px ${tier.glow.replace('0.5','0.1').replace('0.4','0.1')}`,
                     borderRadius: '4px',
-                    padding: '14px 14px 12px',
+                    padding: '18px 14px 12px',
                     opacity: isCompleted ? 0.65 : 1,
                   }}>
                     {/* Push-pin */}
-                    <div style={{
-                      position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)',
-                      width: '12px', height: '12px', borderRadius: '50%',
-                      background: isCompleted ? 'rgba(80,120,60,0.8)' : tier.color,
-                      border: '1px solid rgba(255,255,255,0.15)',
-                      boxShadow: `0 1px 5px rgba(0,0,0,0.6)`,
-                    }} />
+                    {(() => {
+                      const lc_pinColor = isCompleted ? 'rgba(80,120,60,0.8)' : tier.color;
+                      return (
+                        <div style={{ position: 'absolute', top: '-14px', left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <div style={{
+                            width: '16px', height: '16px', borderRadius: '50%',
+                            background: `radial-gradient(circle at 38% 32%, rgba(255,255,255,0.45), ${lc_pinColor})`,
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            boxShadow: `0 2px 6px rgba(0,0,0,0.7), 0 0 8px ${lc_pinColor}66`,
+                          }} />
+                          <div style={{ width: '3px', height: '8px', background: 'linear-gradient(to bottom, rgba(180,150,100,0.8), rgba(60,40,10,0.5))', borderRadius: '0 0 2px 2px' }} />
+                        </div>
+                      );
+                    })()}
 
                     {/* Tier + location badge */}
                     <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -470,6 +509,26 @@ const ContractsTab = ({
                             borderRadius: '2px', padding: '1px 6px',
                           }}>+{r.amount} {REWARD_LABELS[r.type]}</span>
                         ))}
+                      </div>
+                    )}
+
+                    {/* Wax seal — gold, blood, mythril tiers */}
+                    {!isCompleted && (lc.contractTier === 'gold' || lc.contractTier === 'blood' || lc.contractTier === 'mythril') && (
+                      <div style={{
+                        position: 'absolute', top: '10px', right: '10px',
+                        width: '30px', height: '30px', borderRadius: '50%',
+                        background: lc.contractTier === 'mythril'
+                          ? 'radial-gradient(circle at 38% 32%, rgba(180,255,255,0.95), rgba(60,180,200,0.85))'
+                          : lc.contractTier === 'blood'
+                            ? 'radial-gradient(circle at 38% 32%, rgba(220,80,60,0.95), rgba(140,20,20,0.9))'
+                            : 'radial-gradient(circle at 38% 32%, rgba(245,215,90,0.95), rgba(175,125,15,0.9))',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.3)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 900,
+                        color: 'rgba(0,0,0,0.65)',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                      }}>
+                        {lc.contractTier === 'mythril' ? 'M' : lc.contractTier === 'blood' ? '✦' : 'G'}
                       </div>
                     )}
 
