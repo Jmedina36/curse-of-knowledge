@@ -24,7 +24,6 @@ const MARA_QUOTES = {
   ],
   buy: [
     "Potions brewed fresh this morning. Mostly.",
-    "Take care with that cleanse brew — it's potent.",
     "Stock up. You'll thank me later.",
     "Fine quality. I don't deal in anything less.",
     "Take it. The gold is secondary to you surviving.",
@@ -114,18 +113,13 @@ const HealerModal = ({
   };
 
   const handleBuyPotion = (key) => {
-    const basePrices = { healthPotion: 25, staminaPotion: 20, cleansePotion: 250 };
+    const basePrices = { healthPotion: 25, staminaPotion: 20 };
     const price = getHealerPotionPrice ? getHealerPotionPrice(key, basePrices[key]) : Math.floor(basePrices[key] * ((healerModifiers?.[key]) || 1));
     if (gold < price) { addLog('Not enough gold.'); return; }
-    if (key === 'cleansePotion' && cleansePotionPurchasedToday) {
-      addLog('Sister Mara shakes her head: "Only one Cleanse Potion per day."');
-      return;
-    }
     setGold(g => g - price);
     if (key === 'healthPotion')  setHealthPots(p => p + 1);
     if (key === 'staminaPotion') setStaminaPots(p => p + 1);
-    if (key === 'cleansePotion') { setCleansePots(p => p + 1); setCleansePotionPurchasedToday(true); }
-    const names = { healthPotion: 'Health Potion', staminaPotion: 'Stamina Potion', cleansePotion: 'Cleanse Potion' };
+    const names = { healthPotion: 'Health Potion', staminaPotion: 'Stamina Potion' };
     addLog(`Purchased ${names[key]} for ${price} gold.`);
     say(MARA_QUOTES.buy);
   };
@@ -192,10 +186,8 @@ const HealerModal = ({
     </div>
   );
 
-  const basePrices = { healthPotion: 25, staminaPotion: 20, cleansePotion: 250 };
-  const hpPrice     = getHealerPotionPrice ? getHealerPotionPrice('healthPotion',  25)  : Math.floor(25  * ((healerModifiers?.healthPotion)  || 1));
-  const spPrice     = getHealerPotionPrice ? getHealerPotionPrice('staminaPotion', 20)  : Math.floor(20  * ((healerModifiers?.staminaPotion) || 1));
-  const clsPrice    = getHealerPotionPrice ? getHealerPotionPrice('cleansePotion', 250) : Math.floor(250 * ((healerModifiers?.cleansePotion) || 1));
+  const hpPrice = getHealerPotionPrice ? getHealerPotionPrice('healthPotion',  25)  : Math.floor(25  * ((healerModifiers?.healthPotion)  || 1));
+  const spPrice = getHealerPotionPrice ? getHealerPotionPrice('staminaPotion', 20)  : Math.floor(20  * ((healerModifiers?.staminaPotion) || 1));
 
   return (
     <div
@@ -403,21 +395,6 @@ const HealerModal = ({
                     addLog(`Used Stamina Potion! +${amt} SP`);
                   }
                 },
-              })}
-
-              {potionCard({
-                key: 'cleansePotion',
-                emoji: '🔮',
-                name: 'Cleanse Potion',
-                effect: 'Removes 1 curse level',
-                effectColor: '#B794F4',
-                border: `rgba(107,44,145,${curseLevel > 0 ? 0.6 : 0.3})`,
-                price: clsPrice,
-                count: cleansePots,
-                disabled: cleansePots === 0 || curseLevel === 0,
-                soldOut: cleansePotionPurchasedToday,
-                onBuy: () => handleBuyPotion('cleansePotion'),
-                onUse: () => { useCleanse(); },
               })}
 
               {/* ── GEMS ── */}
