@@ -327,10 +327,14 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
+          border: '2px solid rgba(212, 175, 55, 0.6)',
+          borderRadius: '12px',
+          backgroundImage: 'url(/Stonewall1.png)',
+          backgroundSize: 'cover', backgroundPosition: 'center',
         }}
       >
         {/* Tab bar */}
-        <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(10,9,6,0.92)', position: 'relative' }}>
+        <div style={{ display: 'flex', flexShrink: 0, borderBottom: '1px solid rgba(212,175,55,0.2)', background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
           {onClose && (
             <button
               onClick={() => { sounds.click(); onClose(); }}
@@ -359,7 +363,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }
         </div>
 
         {/* Scrollable content */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px', background: 'rgba(20,17,10,0.88)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px', background: 'rgba(15,13,8,0.65)' }}>
           {/* ── CREATURE INDEX TAB ── */}
           {activeTab === 'index' && (
             <div>

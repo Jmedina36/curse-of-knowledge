@@ -109,9 +109,13 @@ const ForgeTab = ({
       margin: '0 auto',
       height: 'calc(100vh - 180px)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      border: '2px solid rgba(212, 175, 55, 0.6)',
+      borderRadius: '12px',
+      backgroundImage: 'url(/Stonewall1.png)',
+      backgroundSize: 'cover', backgroundPosition: 'center',
     }}>
 
-      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.92)', position: 'relative' }}>
+      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
         {onClose && (
           <button
             onClick={() => { sounds.click(); onClose(); }}
@@ -149,7 +153,7 @@ const ForgeTab = ({
     </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px', background: 'rgba(20,17,10,0.88)' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 24px 24px', background: 'rgba(15,13,8,0.65)' }}>
     {/* Flashcards Tab Content */}
     {forgeSubTab === 'flashcards' && (
     <>
