@@ -45,7 +45,13 @@ export const sounds = {
   bossEntrance: () => sfxPlay('mixkit-angry-dragon-growl-309.wav', 0.85),
 
   // ── Regular enemy entrance: monster growl ───────────────────────────────────
-  enemyEntrance: () => sfxPlay('mixkit-monster-growl-1966.wav', 0.8),
+  enemyEntrance:  () => sfxPlay('mixkit-monster-growl-1966.wav', 0.8),
+  creatureIntro:  () => sfxPlay('RegularCreatureIntro.wav', 0.8),
+  creatureTaunt:  () => sfxPlay('RegularCreaturetaunt.wav', 0.8),
+  lostSoulsMale:   () => sfxPlay('LostSoulsMale.mp3', 0.8),
+  lostSoulsFemale: () => sfxPlay('LostSoulsFemale.mp3', 0.8),
+  eliteIntro:      () => sfxPlay('EliteLaugh2.wav', 0.85),
+  eliteTaunt:      () => sfxPlay('EliteLaugh1.mp3', 0.85),
 
 
   // ── Final boss entrance: monster evil voice + soft evil storm ───────────────

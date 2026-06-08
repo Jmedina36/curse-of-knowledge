@@ -215,6 +215,8 @@ const BattleModal = ({
   isBanditWave,
   banditEnemyImg,
   raidFaction,
+  enemyGender,
+  eliteSfxKey,
   playerStunned,
   setPlayerStunned,
   currentBattleCreature,
@@ -382,7 +384,14 @@ const BattleModal = ({
         raidFaction === 'daughters'
           ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
           : raidFaction === 'bandit' ? sounds.banditLaugh()
-          : isFinalBoss ? sounds.finalBossEntrance() : sounds.negotiateFail();
+          : raidFaction === 'cursed' ? (enemyGender === 'f' ? sounds.lostSoulsFemale() : sounds.lostSoulsMale())
+          : isFinalBoss ? sounds.finalBossEntrance()
+          : battleType === 'elite' ? (
+              eliteSfxKey === 'lostSoulsFemale' ? sounds.lostSoulsFemale()
+              : eliteSfxKey === 'daughters' ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
+              : sounds.eliteTaunt()
+            )
+          : sounds.creatureTaunt();
         setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
       }, 600);
     }
@@ -402,7 +411,7 @@ const BattleModal = ({
       raidFaction === 'daughters'
         ? (Math.random() < 0.5 ? sounds.daughtersLaugh1() : sounds.daughtersLaugh2())
         : raidFaction === 'bandit' ? sounds.banditLaugh()
-        : isFinalBoss ? sounds.finalBossEntrance() : sounds.negotiateFail();
+        : isFinalBoss ? sounds.finalBossEntrance() : sounds.creatureTaunt();
       setEnemyDialogue(pool[Math.floor(Math.random() * pool.length)]);
     }
   }, [turnPhase]);

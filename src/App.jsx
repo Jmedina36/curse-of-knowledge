@@ -51,20 +51,20 @@ const NARRATION_PAGES = [
 // ─── Bandit faction data ────────────────────────────────────────────────────
 const BANDIT_POOL = {
   grunts: [
-    { img: '/bandits/bandit-1.png', name: 'Rook'  },
-    { img: '/bandits/bandit-2.png', name: 'Slag'  },
-    { img: '/bandits/bandit-3.png', name: 'Finn'  },
-    { img: '/bandits/bandit-4.png', name: 'Gorse' },
-    { img: '/bandits/bandit-5.png', name: 'Mace'  },
-    { img: '/bandits/bandit-6.png', name: 'Dray'  },
-    { img: '/bandits/bandit-7.png', name: 'Vetch' },
+    { img: '/bandits/bandit-1.png', name: 'Rook',  laughIdx: 0 },
+    { img: '/bandits/bandit-2.png', name: 'Slag',  laughIdx: 1 },
+    { img: '/bandits/bandit-3.png', name: 'Finn',  laughIdx: 2 },
+    { img: '/bandits/bandit-4.png', name: 'Gorse', laughIdx: 0 },
+    { img: '/bandits/bandit-5.png', name: 'Mace',  laughIdx: 1 },
+    { img: '/bandits/bandit-6.png', name: 'Dray',  laughIdx: 2 },
+    { img: '/bandits/bandit-7.png', name: 'Vetch', laughIdx: 0 },
   ],
   captains: [
-    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain' },
-    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain' },
-    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain' },
+    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain', laughIdx: 1 },
+    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain', laughIdx: 2 },
+    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain', laughIdx: 0 },
   ],
-  leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord' },
+  leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord', laughIdx: 2 },
 };
 
 const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day = 1) => {
@@ -75,7 +75,7 @@ const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day 
   // 1 named grunt if alive, rest are creatures
   if (availableGrunts.length > 0) {
     const g = availableGrunts[Math.floor(Math.random() * availableGrunts.length)];
-    lineup.push({ img: g.img, name: g.name, isCapt: false, isLeader: false });
+    lineup.push({ img: g.img, name: g.name, laughIdx: g.laughIdx, isCapt: false, isLeader: false });
   }
   const creatureSlots = waveSize - lineup.length;
   for (let i = 0; i < creatureSlots; i++) {
@@ -97,18 +97,18 @@ const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day 
 // ─── Daughters of Dusk faction data ─────────────────────────────────────────
 const DAUGHTERS_POOL = {
   members: [
-    { img: '/daughters-of-dusk/member-1.png', name: 'Vael'  },
-    { img: '/daughters-of-dusk/member-2.png', name: 'Zira'  },
-    { img: '/daughters-of-dusk/member-3.png', name: 'Ash'   },
-    { img: '/daughters-of-dusk/member-4.png', name: 'Briar' },
-    { img: '/daughters-of-dusk/member-5.png', name: 'Knell' },
+    { img: '/daughters-of-dusk/member-1.png', name: 'Vael',  laughIdx: 0 },
+    { img: '/daughters-of-dusk/member-2.png', name: 'Zira',  laughIdx: 1 },
+    { img: '/daughters-of-dusk/member-3.png', name: 'Ash',   laughIdx: 2 },
+    { img: '/daughters-of-dusk/member-4.png', name: 'Briar', laughIdx: 0 },
+    { img: '/daughters-of-dusk/member-5.png', name: 'Knell', laughIdx: 1 },
   ],
   captains: [
-    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain' },
-    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris',  title: 'Dusk Captain' },
-    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne',  title: 'Dusk Captain' },
+    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain', laughIdx: 2 },
+    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris',  title: 'Dusk Captain', laughIdx: 0 },
+    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne',  title: 'Dusk Captain', laughIdx: 1 },
   ],
-  leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen' },
+  leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen', laughIdx: 2 },
 };
 
 const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day = 1) => {
@@ -119,7 +119,7 @@ const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], d
   // 1 named member if alive, rest are creatures
   if (availableMembers.length > 0) {
     const m = availableMembers[Math.floor(Math.random() * availableMembers.length)];
-    lineup.push({ img: m.img, name: m.name, isCapt: false, isLeader: false });
+    lineup.push({ img: m.img, name: m.name, laughIdx: m.laughIdx, isCapt: false, isLeader: false });
   }
   const creatureSlots = waveSize - lineup.length;
   for (let i = 0; i < creatureSlots; i++) {
@@ -552,6 +552,8 @@ const daughtersLineupIdxRef = useRef(0);
 const [daughtersCaptainsDefeated, setDaughtersCaptainsDefeated] = useState([]);
 const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
 const [isCursedWave, setIsCursedWave] = useState(false);
+const [enemyGender, setEnemyGender] = useState(null);
+const [eliteSfxKey, setEliteSfxKey] = useState(null);
 const cursedLineupRef = useRef([]);
 const cursedLineupIdxRef = useRef(0);
 const [isEliteWave, setIsEliteWave] = useState(false);
@@ -2718,7 +2720,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   setCurrentAnimation('screen-shake');
   setTimeout(() => setCurrentAnimation(null), 500);
-  sounds.enemyEntrance();
+  sounds.creatureIntro();
 
   // Wild encounter overrides the creature's display name/img with the map popup creature
   const wildOverride = wildCreatureOverrideRef.current;
@@ -2796,7 +2798,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 1.8)
       : base;
 
-    [sounds.banditLaugh, sounds.banditLaugh2, sounds.banditLaugh3][Math.floor(Math.random() * 3)]();
+    [sounds.banditLaugh, sounds.banditLaugh2, sounds.banditLaugh3][enemy.laughIdx ?? Math.floor(Math.random() * 3)]();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
@@ -2893,7 +2895,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       : enemy.isCapt ? Math.floor(base * 2.0)
       : Math.floor(base * 1.1);
 
-    [sounds.daughtersLaugh1, sounds.daughtersLaugh2, sounds.daughtersLaugh3][Math.floor(Math.random() * 3)]();
+    [sounds.daughtersLaugh1, sounds.daughtersLaugh2, sounds.daughtersLaugh3][enemy.laughIdx ?? Math.floor(Math.random() * 3)]();
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
 
@@ -2970,9 +2972,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   const spawnCursedEnemy = (enemy, idx, total) => {
     const hp = enemy.hp || 100;
-    enemy.gender === 'f'
-      ? sounds.possessedLaugh()
-      : [sounds.demonicLaugh, sounds.cursedLaugh3][Math.floor(Math.random() * 2)]();
+    enemy.gender === 'f' ? sounds.lostSoulsFemale() : sounds.lostSoulsMale();
+    setEnemyGender(enemy.gender || 'm');
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
     setBossName(enemy.name);
@@ -3184,7 +3185,15 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const bossHealth = Math.floor(scaledHp * (2 - completionRate));
     setCurrentAnimation('screen-shake');
     setTimeout(() => setCurrentAnimation(null), 500);
-    sounds.bossEntrance();
+    const _eliteSfxMap = {
+      e2: 'lostSoulsFemale',
+      e4: 'daughters',
+    };
+    const _sfxKey = _eliteSfxMap[creatureId] || 'elite';
+    setEliteSfxKey(_sfxKey);
+    if (_sfxKey === 'lostSoulsFemale') sounds.lostSoulsFemale();
+    else if (_sfxKey === 'daughters') sounds.daughtersLaugh1();
+    else sounds.eliteIntro();
     setBattleType('elite');
     audioManager.cut();
     audioManager.play(TRACKS.darkling);
@@ -8546,6 +8555,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onCapture={captureMonster}
               isBanditWave={isBanditWave || isDaughtersWave || isCursedWave} banditEnemyImg={banditEnemyImg}
               raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : isCursedWave ? 'cursed' : null}
+              enemyGender={enemyGender}
+              eliteSfxKey={eliteSfxKey}
               playerStunned={playerStunned} setPlayerStunned={setPlayerStunned}
               currentBattleCreature={currentBattleCreature}
             />
