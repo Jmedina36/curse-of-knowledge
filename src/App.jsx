@@ -27,7 +27,6 @@ import InitiativeModal from './components/InitiativeModal';
 import DeathSaveModal from './components/DeathSaveModal';
 import ContractFulfilledModal from './components/ContractFulfilledModal';
 import HealerModal from './components/HealerModal';
-import ASIModal from './components/ASIModal';
 import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
 import { LOCATION_CONTRACTS, REWARD_LABELS } from './data/locationContracts';
@@ -160,7 +159,7 @@ const FantasyStudyQuest = () => {
   const [initiativeRoll, setInitiativeRoll] = useState(null);
   const [playerStunned, setPlayerStunned] = useState(false);
   const [isDying, setIsDying] = useState(false);
-  const [asiPending, setAsiPending] = useState(null); // { newLevel }
+  const [unspentStatPoints, setUnspentStatPoints] = useState(0);
   const [chargedCritRoll, setChargedCritRoll] = useState(null); // { roll, multiplier, attackName }
   const [dayBannerOverlay, setDayBannerOverlay] = useState(null); // { day, theme }
   const [curseOverlay, setCurseOverlay] = useState(null); // { level, name, isFinal }
@@ -1148,6 +1147,7 @@ const getDateKey = useCallback((date) => {
         if (data.defeatedFactionMembers) setDefeatedFactionMembers(data.defeatedFactionMembers);
         if (Array.isArray(data.restedCursed)) setRestedCursed(data.restedCursed);
         if (data.lastEncounterDay !== undefined) setLastEncounterDay(data.lastEncounterDay);
+        if (data.unspentStatPoints !== undefined) setUnspentStatPoints(data.unspentStatPoints);
   }
 
     useEffect(() => {
@@ -1214,7 +1214,7 @@ const getDateKey = useCallback((date) => {
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
   studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
-  restedCursed, lastEncounterDay, gemCounts,
+  restedCursed, lastEncounterDay, gemCounts, unspentStatPoints,
 };
       writeSave(saveData);
       
@@ -1222,7 +1222,7 @@ const getDateKey = useCallback((date) => {
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -1570,7 +1570,7 @@ const getDateKey = useCallback((date) => {
           return { ...prev, abilities: ab };
         });
         addLog(`${primaryAbility.toUpperCase()} increased!`);
-        if (newLevel % 2 === 0) setAsiPending({ newLevel });
+        if (newLevel % 2 === 0) setUnspentStatPoints(p => p + 2);
       }
 
       // Skill unlock notifications
@@ -6486,7 +6486,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       addLog(`\u2b06\ufe0f ASI: ${gained || 'stat'} increased!`);
       return { ...prev, abilities: updatedAbilities };
     });
-    setAsiPending(null);
+    setUnspentStatPoints(0);
   };
 
   const advance = () => {
@@ -7535,6 +7535,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onOpenBestiary={() => setActiveTab('bestiary')}
               onOpenForge={() => setActiveTab('study')}
               onOpenHero={() => setActiveTab('hero')}
+              unspentStatPoints={unspentStatPoints}
             />
           )}
 
@@ -7624,6 +7625,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               equippedGrimoire={equippedGrimoire}
               equippedTome={equippedTome}
               guildRank={guildRank}
+              unspentStatPoints={unspentStatPoints}
+              onConfirmStats={handleASIConfirm}
             />
           )}
           {activeTab === 'map' && (
@@ -8644,13 +8647,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           xpEarned={contractFulfilled.xpEarned}
           tier={contractFulfilled.tier}
           onClose={() => setContractFulfilled(null)}
-        />
-      )}
-      {asiPending && (
-        <ASIModal
-          hero={hero}
-          newLevel={asiPending.newLevel}
-          onClose={handleASIConfirm}
         />
       )}
 

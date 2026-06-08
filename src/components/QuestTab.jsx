@@ -43,6 +43,7 @@ const QuestTab = ({
   onOpenBestiary,
   onOpenForge,
   onOpenHero,
+  unspentStatPoints,
 }) => {
   return (
             <div className="space-y-4">
@@ -335,7 +336,7 @@ const QuestTab = ({
               {/* Soren — The Chronicle */}
               <button
                 onClick={() => { sounds.click(); onOpenHero && onOpenHero(); }}
-                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
+                style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',position:'relative',
                   backgroundImage:'linear-gradient(160deg,rgba(5,18,22,0.82),rgba(10,32,40,0.82),rgba(3,12,16,0.82)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
                   border:'1px solid rgba(20,180,200,0.45)',
@@ -344,6 +345,11 @@ const QuestTab = ({
                 onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(10,140,170,0.4), inset 0 1px 0 rgba(80,220,240,0.05)';e.currentTarget.style.borderColor='rgba(60,220,240,0.7)';}}
                 onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(80,220,240,0.05)';e.currentTarget.style.borderColor='rgba(20,180,200,0.45)';}}
               >
+                {unspentStatPoints > 0 && (
+                  <div style={{position:'absolute',top:'-5px',right:'-5px',minWidth:'20px',height:'20px',borderRadius:'10px',background:'rgba(212,175,55,0.95)',border:'1px solid rgba(255,235,150,0.6)',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 5px',boxShadow:'0 0 10px rgba(212,175,55,0.7)',zIndex:5}}>
+                    <span style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',fontWeight:900,color:'#1a1200',letterSpacing:'0.05em'}}>{unspentStatPoints}</span>
+                  </div>
+                )}
                 <img src="/npcs/elf-warrior.png" alt="Soren" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(20,180,200,0.55)',boxShadow:'0 0 12px rgba(20,180,200,0.25)'}}
                   onError={e=>{e.currentTarget.style.display='none';}}/>
                 <div>
