@@ -36,13 +36,10 @@ const PlannerTab = ({
       overflow: 'hidden',
       border: '2px solid rgba(212, 175, 55, 0.6)',
       borderRadius: '12px',
-      backgroundImage: 'url(/Stonewall1.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
     }}>
 
       {/* Fixed header section */}
-      <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.4)' }}>
+      <div style={{ flexShrink: 0, padding: '16px 24px 0' }}>
         {/* Sub-navigation tabs */}
         <div className="flex gap-2 justify-center mb-4">
           <button
@@ -71,7 +68,7 @@ const PlannerTab = ({
       </div>
 
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 24px', background: 'rgba(15,13,8,0.4)' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px 24px' }}>
 
         {/* Weekly Plan Content */}
         {plannerSubTab === 'weekly' && (
