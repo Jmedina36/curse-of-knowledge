@@ -3873,6 +3873,21 @@ if (battleType === 'elite') {
     skipBanditRaidHandler = true;
   }
 
+  // Location contract daughters wave — same pattern as bandit above
+  let skipDaughtersRaidHandler = false;
+  if (isDaughtersWave && activeContractRef.current?.type === 'location') {
+    const nextIdx = daughtersLineupIdxRef.current + 1;
+    const lineup = daughtersLineupRef.current;
+    if (nextIdx < lineup.length) {
+      addLog(`Another steps forward...`);
+      setTimeout(() => spawnDaughtersEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+      return;
+    }
+    // All contract enemies down — clear daughters flag and fall through to regular victory path
+    setIsDaughtersWave(false);
+    skipDaughtersRaidHandler = true;
+  }
+
   // Check if bandit RAID wave continues
   if (isBanditWave && !skipBanditRaidHandler) {
     const nextIdx = banditLineupIdxRef.current + 1;
@@ -3920,7 +3935,7 @@ if (battleType === 'elite') {
   }
 
   // Check if Daughters of Dusk wave continues
-  if (isDaughtersWave) {
+  if (isDaughtersWave && !skipDaughtersRaidHandler) {
     const nextIdx = daughtersLineupIdxRef.current + 1;
     const lineup = daughtersLineupRef.current;
     const defeatedEnemy = lineup[daughtersLineupIdxRef.current];
