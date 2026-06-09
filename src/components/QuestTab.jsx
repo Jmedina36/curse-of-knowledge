@@ -147,8 +147,8 @@ const QuestTab = ({
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.85rem,2vw,1.05rem)',letterSpacing:'0.06em',color:'#000',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
                     {guildRank && (
-                      <div style={{marginTop:'4px',padding:'3px 10px',borderRadius:'4px',background:'rgba(30,20,10,0.1)',border:`1px solid ${guildRank.name==='Initiate'?'rgba(100,80,40,0.25)':guildRank.color+'44'}`}}>
-                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.62rem',fontWeight:900,letterSpacing:'0.2em',textTransform:'uppercase',textAlign:'center',margin:0,color:guildRank.name==='Initiate'?'rgba(60,45,20,0.75)':guildRank.color,textShadow:guildRank.name==='Initiate'?'none':'0 0 8px rgba(0,0,0,0.2)'}}>{guildRank.name}</p>
+                      <div style={{marginTop:'6px',padding:'6px 0',borderTop:'1px solid rgba(60,30,5,0.25)',borderBottom:'1px solid rgba(60,30,5,0.25)',textAlign:'center'}}>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'1rem',fontWeight:900,letterSpacing:'0.18em',textTransform:'uppercase',margin:0,color:guildRank.name==='Initiate'?'rgba(60,45,20,0.8)':guildRank.color,textShadow:guildRank.name==='Initiate'?'none':`0 0 12px ${guildRank.color}88, 0 1px 3px rgba(0,0,0,0.3)`}}>{guildRank.name}</p>
                       </div>
                     )}
                   </div>
