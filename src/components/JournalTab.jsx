@@ -32,10 +32,11 @@ const DEDUCTIONS = [
   { requiresId: 'lc_old_nexus',      text: "The activation drew something ancient. It said the order had opened a door that was already there — not something C built. Whatever was on the other side was coming regardless. C may have simply accelerated it." },
   // Zone 4
   { requiresId: 'order_mira',        text: "Mira built the entire ritual network — the relay, the silence, the transit system. She wasn't following orders. She was extending them. She believed in what C was building. Two faction leaders down. Whoever is above them hasn't responded." },
+  { requiresId: 'lc_iron_crossing',  text: "The monolith failing didn't end anything. Vorn had sealed contingency orders. The order built a second path before they finished the first. The zone 3 failure only changed the timeline." },
   // Zone 5
-  { requiresId: 'order_malachar',    text: "Malachar is C. Or C answers to Malachar. He built the order over decades, operating under a title, not a name. He prepared for death seventeen times. The order's reach, its patience, its architecture — all of it was his." },
-  { requiresId: 'lc_skull_order',    text: "Cutter and Mira weren't making a last stand. They were finishing an activation. I stopped the order. I didn't stop what the order was for. Something was opened before they fell." },
-  { requiresId: 'lc_skull_cavern',   text: "The order was scaffolding. The network, the monolith, the decades of preparation — all of it was making room for something to arrive. I stopped it. I don't know what it was. The work is done." },
+  { requiresId: 'order_malachar',    text: "C is not a person. It was a title Malachar created so the order would survive his deaths. He has died seventeen times. Every time, someone held the structure under that name until he returned. The order wasn't his legacy — it was his mechanism. And before he fell, he said he had already passed the title on." },
+  { requiresId: 'lc_skull_order',    text: "Cutter and Mira weren't making a last stand. They were the last people C trusted to hold the order together. They're gone. The order's structure is gone. Whatever it was building toward — I don't know if I stopped it or just interrupted it." },
+  { requiresId: 'lc_skull_cavern',   text: "The order was payment. Malachar made a deal in his first life — the deal that let him return seventeen times — with something that predates every record I've found. The order spent decades building the path for it. Something is still out there. It isn't in any room I've cleared. Malachar called it the Omen. He sounded afraid when he said it." },
 ];
 
 export default function JournalTab({ completedLocationContracts = [] }) {
