@@ -282,10 +282,10 @@ export const GAME_CONSTANTS = {
   },
   
   BASIC_ATTACK_NAMES: {
-    Knight: 'Shield Bash',
-    Crusader: 'Holy Strike',
-    Wizard: 'Arcane Bolt',
-    Assassin: 'Quick Slash'
+    Knight: 'Cleave',
+    Crusader: 'Holy Wrath',
+    Wizard: 'Hex Bolt',
+    Assassin: 'Rend'
   },
 
   CHARGED_ATTACK_NAMES: {
