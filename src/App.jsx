@@ -3884,6 +3884,28 @@ if (battleType === 'elite') {
     skipBanditRaidHandler = true;
   }
 
+  // Location contract cursed wave — same pattern as bandit above
+  let skipCursedWaveHandler = false;
+  if (isCursedWave && activeContractRef.current?.type === 'location') {
+    const nextIdx = cursedLineupIdxRef.current + 1;
+    const lineup = cursedLineupRef.current;
+    if (nextIdx < lineup.length) {
+      addLog(`They cannot stop. Neither can you.`);
+      setTimeout(() => spawnCursedEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
+      return;
+    }
+    // All contract enemies down — mark at rest, clear flag, fall through to _ac handler
+    const allImgs = lineup.map(m => m.img);
+    setRestedCursed(prev => {
+      const updated = [...prev];
+      allImgs.forEach(img => { if (!updated.includes(img)) updated.push(img); });
+      return updated;
+    });
+    addLog(`They are finally at rest.`);
+    setIsCursedWave(false);
+    skipCursedWaveHandler = true;
+  }
+
   // Location contract daughters wave — same pattern as bandit above
   let skipDaughtersRaidHandler = false;
   if (isDaughtersWave && activeContractRef.current?.type === 'location') {
@@ -3987,7 +4009,7 @@ if (battleType === 'elite') {
   }
 
   // Check if Cursed mercy contract wave continues
-  if (isCursedWave) {
+  if (isCursedWave && !skipCursedWaveHandler) {
     const nextIdx = cursedLineupIdxRef.current + 1;
     const lineup = cursedLineupRef.current;
     if (nextIdx < lineup.length) {
