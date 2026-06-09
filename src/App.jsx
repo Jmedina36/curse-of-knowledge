@@ -67,7 +67,7 @@ const BANDIT_POOL = {
   leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord', laughIdx: 2 },
 };
 
-const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day = 1) => {
+const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], tierWeights = {1:10,2:0,3:0}) => {
   const lineup = [];
   const waveSize = 3;
   const availableGrunts = BANDIT_POOL.grunts.filter(g => !defeatedImgs.includes(g.img));
@@ -79,7 +79,7 @@ const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day 
   }
   const creatureSlots = waveSize - lineup.length;
   for (let i = 0; i < creatureSlots; i++) {
-    const c = pickCreatureForDay(day);
+    const c = pickCreatureForZone(tierWeights);
     lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
   }
   // Shuffle so named member isn't always first
@@ -111,7 +111,7 @@ const DAUGHTERS_POOL = {
   leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen', laughIdx: 2 },
 };
 
-const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], day = 1) => {
+const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], tierWeights = {1:10,2:0,3:0}) => {
   const lineup = [];
   const waveSize = 3;
   const availableMembers = DAUGHTERS_POOL.members.filter(m => !defeatedImgs.includes(m.img));
@@ -123,7 +123,7 @@ const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], d
   }
   const creatureSlots = waveSize - lineup.length;
   for (let i = 0; i < creatureSlots; i++) {
-    const c = pickCreatureForDay(day);
+    const c = pickCreatureForZone(tierWeights);
     lineup.push({ img: c.img, name: c.name, isCapt: false, isLeader: false, isCreature: true });
   }
   lineup.sort(() => Math.random() - 0.5);
@@ -201,6 +201,7 @@ const FantasyStudyQuest = () => {
   const [capturedMonsters, setCapturedMonsters] = useState([]);
   const [defeatedFactionMembers, setDefeatedFactionMembers] = useState([]);
   const [restedCursed, setRestedCursed] = useState([]);
+  const [discoveredCreatures, setDiscoveredCreatures] = useState([]);
   const [intelUnlocked, setIntelUnlocked] = useState([]);
   const [weapon, setWeapon] = useState(0);
   const [armor, setArmor] = useState(0);
@@ -1149,6 +1150,7 @@ const getDateKey = useCallback((date) => {
         if (data.huntingChallenges) setHuntingChallenges(data.huntingChallenges);
         if (data.defeatedFactionMembers) setDefeatedFactionMembers(data.defeatedFactionMembers);
         if (Array.isArray(data.restedCursed)) setRestedCursed(data.restedCursed);
+        if (Array.isArray(data.discoveredCreatures)) setDiscoveredCreatures(data.discoveredCreatures);
         if (Array.isArray(data.intelUnlocked)) setIntelUnlocked(data.intelUnlocked);
         if (data.lastEncounterDay !== undefined) setLastEncounterDay(data.lastEncounterDay);
         if (data.unspentStatPoints !== undefined) setUnspentStatPoints(data.unspentStatPoints);
@@ -1218,7 +1220,7 @@ const getDateKey = useCallback((date) => {
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
   studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
-  restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked,
+  restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures,
 };
       writeSave(saveData);
       
@@ -1226,7 +1228,7 @@ const getDateKey = useCallback((date) => {
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -2708,11 +2710,13 @@ pendingBattleSpawnRef.current = () => {
 const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves = 1) => {
   if (canCustomize) setCanCustomize(false);
 
-  // Pick a creature — contract encounter overrides zone, zone overrides day
+  // Pick a creature — contract encounter overrides zone, zone overrides highest zone reached
   const zone = contractEncounterRef.current || selectedZoneRef.current;
+  const _spawnZoneTw = { 1:{1:10,2:0,3:0}, 2:{1:10,2:0,3:0}, 3:{1:3,2:7,3:0}, 4:{1:1,2:9,3:0}, 5:{1:0,2:3,3:7} };
+  const _spawnHz = completedLocationContracts.length > 0 ? Math.max(...LOCATION_CONTRACTS.filter(lc => completedLocationContracts.includes(lc.id) && lc.zone).map(lc => lc.zone)) : 1;
   const creature = zone?.tierWeights
     ? pickCreatureForZone(zone.tierWeights)
-    : pickCreatureForDay(currentDay);
+    : pickCreatureForZone(_spawnZoneTw[_spawnHz] || _spawnZoneTw[1]);
   const rolled = rollCreatureStats(creature);
   setCurrentBattleCreature(rolled);
 
@@ -2872,8 +2876,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }), 3200);
   };
 
+  const _ZONE_TW = { 1:{1:10,2:0,3:0}, 2:{1:10,2:0,3:0}, 3:{1:3,2:7,3:0}, 4:{1:1,2:9,3:0}, 5:{1:0,2:3,3:7} };
+  const _hz = completedLocationContracts.length > 0 ? Math.max(...LOCATION_CONTRACTS.filter(lc => completedLocationContracts.includes(lc.id) && lc.zone).map(lc => lc.zone)) : 1;
   const spawnBanditWave = (waveNum, captainsDefeated) => {
-    const lineup = buildBanditLineup(waveNum, captainsDefeated, defeatedFactionMembers, currentDay);
+    const lineup = buildBanditLineup(waveNum, captainsDefeated, defeatedFactionMembers, _ZONE_TW[_hz] || _ZONE_TW[1]);
     banditLineupRef.current = lineup;
     banditLineupIdxRef.current = 0;
     setBanditWaveNumber(waveNum);
@@ -2975,7 +2981,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   };
 
   const spawnDaughtersWave = (waveNum, captainsDefeated) => {
-    const lineup = buildDaughtersLineup(waveNum, captainsDefeated, defeatedFactionMembers, currentDay);
+    const lineup = buildDaughtersLineup(waveNum, captainsDefeated, defeatedFactionMembers, _ZONE_TW[_hz] || _ZONE_TW[1]);
     daughtersLineupRef.current = lineup;
     daughtersLineupIdxRef.current = 0;
     setDaughtersWaveNumber(waveNum);
@@ -4115,6 +4121,10 @@ if (battleType === 'elite') {
   
   setBattling(false);
   setBattleMode(false);
+  // Track creature discovery (tiers 1-3 only)
+  if (currentBattleCreature?.img && currentBattleCreature.tier <= 3) {
+    setDiscoveredCreatures(prev => prev.includes(currentBattleCreature.img) ? prev : [...prev, currentBattleCreature.img]);
+  }
   setCurrentBattleCreature(null);
 
   // Complete active contract on regular battle victory
@@ -7684,6 +7694,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               completedLocationContracts={completedLocationContracts}
               pendingLocationRewards={pendingLocationRewards}
               highestZoneReached={completedLocationContracts.length > 0 ? Math.max(...LOCATION_CONTRACTS.filter(lc => completedLocationContracts.includes(lc.id) && lc.zone).map(lc => lc.zone)) : 1}
+              discoveredCreatures={discoveredCreatures}
               onClose={() => setActiveTab('quest')}
             />
           )}
@@ -8393,7 +8404,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
                     setIsCursedWave(false); setIsEliteWave(false); setIsOrderFinal(false);
                     setDefeatedFactionMembers([]); setHuntingChallenges({});
-                    setRestedCursed([]); setIntelUnlocked([]); setLastEncounterDay(0);
+                    setRestedCursed([]); setIntelUnlocked([]); setDiscoveredCreatures([]); setLastEncounterDay(0);
                     setGemCounts({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 }); setUnspentStatPoints(0);
                     setEnemyGender(null); setEliteSfxKey(null);
                     banditLineupRef.current = []; daughtersLineupRef.current = [];

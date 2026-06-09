@@ -268,7 +268,7 @@ const THE_CURSED = [
   },
 ];
 
-const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], completedLocationContracts = [], pendingLocationRewards = [], highestZoneReached = 1, onClose }) => {
+const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], completedLocationContracts = [], pendingLocationRewards = [], highestZoneReached = 1, discoveredCreatures = [], onClose }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [activeTab, setActiveTab] = useState('index');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -428,27 +428,47 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                         </p>
                       ) : (
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-                          {entries.map((creature, idx) => (
-                            <div key={creature.id} style={{
-                              borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
-                              background: VISUAL_STYLES.card.default,
-                              border: `1px solid ${TIER_BORDER[creature.tier]}`,
-                              boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
-                              position: 'relative',
-                            }}>
-                              <div style={{ position: 'absolute', top: '8px', left: '10px', fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700, color: TIER_COLORS[creature.tier], opacity: 0.7 }}>
-                                #{idx + 1}
+                          {entries.map((creature, idx) => {
+                            const known = discoveredCreatures.includes(creature.img);
+                            return known ? (
+                              <div key={creature.id} style={{
+                                borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
+                                background: VISUAL_STYLES.card.default,
+                                border: `1px solid ${TIER_BORDER[creature.tier]}`,
+                                boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
+                                position: 'relative',
+                              }}>
+                                <div style={{ position: 'absolute', top: '8px', left: '10px', fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700, color: TIER_COLORS[creature.tier], opacity: 0.7 }}>
+                                  #{idx + 1}
+                                </div>
+                                <img
+                                  src={creature.img} alt={creature.name}
+                                  style={{ width: 110, height: 110, objectFit: 'contain', margin: '0 auto 14px', display: 'block', filter: `drop-shadow(0 0 10px ${TIER_COLORS[creature.tier]}55)` }}
+                                />
+                                <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.88rem', color: TIER_COLORS[creature.tier], lineHeight: 1.35, marginBottom: '10px' }}>{creature.name}</p>
+                                {creature.desc && (
+                                  <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.65)', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>{creature.desc}</p>
+                                )}
                               </div>
-                              <img
-                                src={creature.img} alt={creature.name}
-                                style={{ width: 110, height: 110, objectFit: 'contain', margin: '0 auto 14px', display: 'block', filter: `drop-shadow(0 0 10px ${TIER_COLORS[creature.tier]}55)` }}
-                              />
-                              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.88rem', color: TIER_COLORS[creature.tier], lineHeight: 1.35, marginBottom: '10px' }}>{creature.name}</p>
-                              {creature.desc && (
-                                <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.65)', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>{creature.desc}</p>
-                              )}
-                            </div>
-                          ))}
+                            ) : (
+                              <div key={creature.id} style={{
+                                borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
+                                background: 'rgba(8,8,10,0.7)',
+                                border: '1px solid rgba(60,55,45,0.25)',
+                                position: 'relative',
+                              }}>
+                                <div style={{ position: 'absolute', top: '8px', left: '10px', fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700, color: 'rgba(80,70,55,0.4)', opacity: 0.7 }}>
+                                  #{idx + 1}
+                                </div>
+                                <img
+                                  src={creature.img} alt="unknown"
+                                  style={{ width: 110, height: 110, objectFit: 'contain', margin: '0 auto 14px', display: 'block', filter: 'brightness(0) contrast(0.55)' }}
+                                />
+                                <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.88rem', color: 'rgba(80,70,55,0.5)', lineHeight: 1.35, marginBottom: '10px' }}>???</p>
+                                <p style={{ fontSize: '0.72rem', color: 'rgba(80,70,55,0.35)', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>Not yet encountered.</p>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
