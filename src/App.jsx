@@ -4129,6 +4129,7 @@ if (battleType === 'elite') {
     setPendingLocationRewards(prev => [...prev, _ac.contract.id]);
     addLog(`Contract fulfilled: "${_ac.contract.name}" — return to the board to collect your reward.`);
     setActiveContract(null);
+    generateVictoryLoot(battleType, false, goldGain);
   } else if (_ac?.type === 'wild') {
     setActiveContract(null);
     const wildZone = _ac.zone || 1;
