@@ -47,6 +47,14 @@ const QuestTab = ({
 }) => {
   return (
             <div className="space-y-4">
+
+            {/* ── Guild Card title ── */}
+            <div className="max-w-2xl mx-auto flex items-center gap-3">
+              <div style={{flex:1,height:'1px',background:'rgba(212,175,55,0.3)'}}/>
+              <p style={{fontFamily:'Cinzel,serif',fontSize:'0.7rem',fontWeight:900,letterSpacing:'0.28em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',whiteSpace:'nowrap'}}>Guild Card</p>
+              <div style={{flex:1,height:'1px',background:'rgba(212,175,55,0.3)'}}/>
+            </div>
+
             <div className="rounded-xl p-4 max-w-2xl mx-auto relative overflow-hidden" style={{
               backgroundImage: 'url(/Updated%20scroll.png)',
               backgroundSize: 'cover',
@@ -245,6 +253,13 @@ const QuestTab = ({
 
               </div>
               </>
+            </div>
+
+            {/* ── Guild Services separator ── */}
+            <div className="max-w-2xl mx-auto flex items-center gap-3">
+              <div style={{flex:1,height:'1px',background:'rgba(212,175,55,0.3)'}}/>
+              <p style={{fontFamily:'Cinzel,serif',fontSize:'0.7rem',fontWeight:900,letterSpacing:'0.28em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',whiteSpace:'nowrap'}}>Guild Services</p>
+              <div style={{flex:1,height:'1px',background:'rgba(212,175,55,0.3)'}}/>
             </div>
 
             {/* ── Guild Buttons ── */}
