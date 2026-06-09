@@ -268,7 +268,7 @@ const THE_CURSED = [
   },
 ];
 
-const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], completedLocationContracts = [], pendingLocationRewards = [], onClose }) => {
+const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], completedLocationContracts = [], pendingLocationRewards = [], highestZoneReached = 1, onClose }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [activeTab, setActiveTab] = useState('index');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -398,64 +398,65 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
         {/* Scrollable content */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px', background: 'rgba(15,13,8,0.65)' }}>
           {/* ── CREATURE INDEX TAB ── */}
-          {activeTab === 'index' && (
-            <div>
-              {[5, 4, 3, 2, 1].map(tier => {
-                const entries = CREATURE_INDEX.filter(c => c.tier === tier);
-                const tierLabel = TIER_LABELS[tier];
-                return (
-                  <div key={tier} style={{ marginBottom: '32px' }}>
-                    {/* Tier section header */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                      <div style={{ flex: 1, height: '1px', background: `linear-gradient(to right, transparent, ${TIER_BORDER[tier]})` }}/>
-                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: TIER_COLORS[tier] }}>
-                        ◆ {tierLabel}
-                      </span>
-                      <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${TIER_BORDER[tier]})` }}/>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
-                      {entries.map(creature => (
-                        <div key={creature.id} style={{
-                          borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
-                          background: VISUAL_STYLES.card.default,
-                          border: `1px solid ${TIER_BORDER[creature.tier]}`,
-                          boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
-                          position: 'relative',
-                        }}>
-                          {/* Entry number within tier */}
-                          <div style={{
-                            position: 'absolute', top: '8px', left: '10px',
-                            fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700,
-                            color: TIER_COLORS[creature.tier], opacity: 0.7,
-                          }}>
-                            #{entries.indexOf(creature) + 1}
-                          </div>
-                          <img
-                            src={creature.img}
-                            alt={creature.name}
-                            style={{
-                              width: 110, height: 110, objectFit: 'contain', margin: '0 auto 14px', display: 'block',
-                              filter: `drop-shadow(0 0 10px ${TIER_COLORS[creature.tier]}55)`,
-                            }}
-                          />
-                          <p style={{
-                            fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.88rem',
-                            color: TIER_COLORS[creature.tier], lineHeight: 1.35, marginBottom: '10px',
-                          }}>{creature.name}</p>
-                          {creature.desc && (
-                            <p style={{
-                              fontSize: '0.72rem', color: 'rgba(245,245,220,0.65)',
-                              fontStyle: 'italic', lineHeight: 1.5, margin: 0,
-                            }}>{creature.desc}</p>
-                          )}
+          {activeTab === 'index' && (() => {
+            const ZONE_GROUPS = [
+              { label: 'Zone I — II',  tiers: [1], minZone: 1, color: TIER_COLORS[1], border: TIER_BORDER[1], glow: TIER_GLOW[1], tierName: 'Grunt' },
+              { label: 'Zone III — IV', tiers: [2], minZone: 3, color: TIER_COLORS[2], border: TIER_BORDER[2], glow: TIER_GLOW[2], tierName: 'Predator' },
+              { label: 'Zone V',        tiers: [3], minZone: 5, color: TIER_COLORS[3], border: TIER_BORDER[3], glow: TIER_GLOW[3], tierName: 'Dire' },
+            ];
+            return (
+              <div>
+                {ZONE_GROUPS.map(group => {
+                  const unlocked = highestZoneReached >= group.minZone;
+                  const entries = CREATURE_INDEX.filter(c => group.tiers.includes(c.tier));
+                  return (
+                    <div key={group.label} style={{ marginBottom: '32px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+                        <div style={{ flex: 1, height: '1px', background: `linear-gradient(to right, transparent, ${unlocked ? group.border : 'rgba(60,55,45,0.2)'})` }}/>
+                        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.3em', textTransform: 'uppercase', color: unlocked ? group.color : 'rgba(90,80,65,0.4)' }}>
+                          ◆ {group.label}
+                        </span>
+                        <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${unlocked ? group.border : 'rgba(60,55,45,0.2)'})` }}/>
+                      </div>
+                      <p style={{ textAlign: 'center', fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', textTransform: 'uppercase', color: unlocked ? `${group.color}88` : 'rgba(80,70,55,0.35)', margin: '0 0 14px' }}>
+                        {group.tierName}
+                      </p>
+
+                      {!unlocked ? (
+                        <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(90,80,65,0.35)', fontStyle: 'italic', margin: '8px 0 0' }}>
+                          Not yet encountered. Advance further to learn what awaits.
+                        </p>
+                      ) : (
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                          {entries.map((creature, idx) => (
+                            <div key={creature.id} style={{
+                              borderRadius: '12px', padding: '22px 14px 18px', textAlign: 'center',
+                              background: VISUAL_STYLES.card.default,
+                              border: `1px solid ${TIER_BORDER[creature.tier]}`,
+                              boxShadow: `0 4px 16px rgba(0,0,0,0.4), 0 0 24px ${TIER_GLOW[creature.tier]}`,
+                              position: 'relative',
+                            }}>
+                              <div style={{ position: 'absolute', top: '8px', left: '10px', fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700, color: TIER_COLORS[creature.tier], opacity: 0.7 }}>
+                                #{idx + 1}
+                              </div>
+                              <img
+                                src={creature.img} alt={creature.name}
+                                style={{ width: 110, height: 110, objectFit: 'contain', margin: '0 auto 14px', display: 'block', filter: `drop-shadow(0 0 10px ${TIER_COLORS[creature.tier]}55)` }}
+                              />
+                              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.88rem', color: TIER_COLORS[creature.tier], lineHeight: 1.35, marginBottom: '10px' }}>{creature.name}</p>
+                              {creature.desc && (
+                                <p style={{ fontSize: '0.72rem', color: 'rgba(245,245,220,0.65)', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>{creature.desc}</p>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            );
+          })()}
 
           {/* ── FACTIONS TAB ── */}
           {activeTab === 'factions' && (

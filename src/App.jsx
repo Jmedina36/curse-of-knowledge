@@ -7683,6 +7683,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               intelUnlocked={intelUnlocked}
               completedLocationContracts={completedLocationContracts}
               pendingLocationRewards={pendingLocationRewards}
+              highestZoneReached={completedLocationContracts.length > 0 ? Math.max(...LOCATION_CONTRACTS.filter(lc => completedLocationContracts.includes(lc.id) && lc.zone).map(lc => lc.zone)) : 1}
               onClose={() => setActiveTab('quest')}
             />
           )}
@@ -7725,7 +7726,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               huntingChallenges={huntingChallenges}
               onOpenBestiary={() => setActiveTab('bestiary')}
               onHuntingChallenge={({ locationId, zone, faction }) => {
-                const challengeTierWeights = { 1:{1:6,2:4,3:0}, 2:{1:2,2:6,3:2}, 3:{1:0,2:4,3:6}, 4:{1:0,2:2,3:8}, 5:{1:0,2:0,3:10} };
+                const challengeTierWeights = { 1:{1:10,2:0,3:0}, 2:{1:10,2:0,3:0}, 3:{1:3,2:7,3:0}, 4:{1:1,2:9,3:0}, 5:{1:0,2:3,3:7} };
                 contractEncounterRef.current = { tierWeights: challengeTierWeights[zone] || challengeTierWeights[1] };
                 if (faction === 'bandit') {
                   const grunt = BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
@@ -7756,7 +7757,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }}
               onWildEncounter={({ monster, zone }) => {
                 // Use zone-appropriate tier weights so HP/ATK scale correctly
-                const wildTierWeights = { 1:{1:10,2:0,3:0}, 2:{1:5,2:5,3:0}, 3:{1:1,2:5,3:4}, 4:{1:0,2:2,3:8}, 5:{1:0,2:0,3:10} };
+                const wildTierWeights = { 1:{1:10,2:0,3:0}, 2:{1:10,2:0,3:0}, 3:{1:3,2:7,3:0}, 4:{1:1,2:9,3:0}, 5:{1:0,2:3,3:7} };
                 contractEncounterRef.current = { tierWeights: wildTierWeights[zone] || wildTierWeights[1] };
                 // Override display name/img with the specific creature from the map popup
                 wildCreatureOverrideRef.current = { name: monster.name, img: monster.img };

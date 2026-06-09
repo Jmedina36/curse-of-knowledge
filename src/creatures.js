@@ -113,13 +113,13 @@ const ENCOUNTER_POOL = CREATURE_INDEX.filter(c => c.tier <= 3);
 
 // Tier weights per day — harder creatures appear more often as days progress
 const TIER_WEIGHTS_BY_DAY = [
-  { 1: 10, 2: 0,  3: 0  }, // day 1
-  { 1: 8,  2: 2,  3: 0  }, // day 2
-  { 1: 6,  2: 4,  3: 0  }, // day 3
-  { 1: 4,  2: 5,  3: 1  }, // day 4
-  { 1: 2,  2: 5,  3: 3  }, // day 5
-  { 1: 1,  2: 4,  3: 5  }, // day 6
-  { 1: 0,  2: 3,  3: 7  }, // day 7
+  { 1: 10, 2: 0,  3: 0  }, // day 1 — zone 1 (grunts only)
+  { 1: 10, 2: 0,  3: 0  }, // day 2 — zone 2 (grunts only)
+  { 1: 3,  2: 7,  3: 0  }, // day 3 — zone 3 (predators unlock)
+  { 1: 1,  2: 9,  3: 0  }, // day 4 — zone 4 (mostly predators)
+  { 1: 0,  2: 3,  3: 7  }, // day 5 — zone 5 (dire unlock)
+  { 1: 0,  2: 2,  3: 8  }, // day 6
+  { 1: 0,  2: 1,  3: 9  }, // day 7
 ];
 
 export const pickCreatureForZone = (tierWeights) => {
