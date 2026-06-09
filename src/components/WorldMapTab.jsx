@@ -358,6 +358,18 @@ const LOCATIONS = [
 
   // ── THE ORDER — Mythril Contract Locations ──────────────────────────────────
   {
+    id: 'iron_crossing',
+    name: 'The Iron Crossing',
+    subtitle: "The Contingency Point",
+    desc: "After the monolith went dark, the order didn't scatter. They pulled back here. The crossing was the consolidation point — sealed orders, restructured command, a second plan already in motion.",
+    marker: '/worldmap/rock-bridge.png',
+    type: 'contract',
+    contractZone: 4,
+    unlockLevel: 8,
+    position: { left: '28%', top: '10%' },
+    danger: 4, dangerLabel: 'Dire', dangerColor: '#7C3AED',
+  },
+  {
     id: 'stone_cavern',
     name: 'The Stone Cavern',
     subtitle: 'C\'s Intake Point',
