@@ -1587,18 +1587,6 @@ const getDateKey = useCallback((date) => {
           skillUnlocked = { label: 'SKILL UNLOCKED', name: skillName };
           addLog(`SKILL UNLOCKED: ${skillName}!`);
         }
-      } else if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special && hero?.class) {
-        const skillName = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name]?.name;
-        if (skillName) {
-          skillUnlocked = { label: 'SPECIAL ATTACK UNLOCKED', name: skillName };
-          addLog(`SPECIAL ATTACK UNLOCKED: ${skillName}!`);
-        }
-      } else if (newLevel === GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical && hero?.class) {
-        const skillName = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name]?.name;
-        if (skillName) {
-          skillUnlocked = { label: 'TACTICAL SKILL UNLOCKED', name: skillName };
-          addLog(`TACTICAL SKILL UNLOCKED: ${skillName}!`);
-        }
       }
 
       // Trigger level-up cinematic

@@ -1356,51 +1356,6 @@ const BattleModal = ({
                           </button>
                         );
                       })()}
-
-                      {/* Special Attack */}
-                      {hero?.class && GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name] && (() => {
-                        const spec = GAME_CONSTANTS.SPECIAL_ATTACKS[hero.class.name];
-                        const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special;
-                        if (locked) return null;
-                        const cd = (hero.class.name === 'Wizard' && wizardTemporalCooldown) || (hero.class.name === 'Crusader' && crusaderJudgmentCooldown);
-                        const unavail = stamina < spec.cost || (spec.hpCost && hp <= spec.hpCost) || cd;
-                        return (
-                          <button onClick={() => handlePlayerAction(specialAttack, spec.name)} disabled={unavail}
-                            className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
-                            title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.special}` : spec.effect}
-                            style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(13, 116, 142, 0.85), rgba(8, 77, 94, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(13, 116, 142, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
-                            {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
-                            <div className="text-base uppercase tracking-wide">{spec.name}</div>
-                            <div className="text-sm mt-0.5 opacity-70">
-                              {cd ? <span className="text-yellow-300">⏳ On Cooldown</span> : <>{spec.cost} SP{spec.hpCost ? ` · ${spec.hpCost + (recklessStacks * 10)} HP` : ''}</>}
-                            </div>
-                          </button>
-                        );
-                      })()}
-
-                      {/* Tactical Skill */}
-                      {hero?.class && GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name] && (() => {
-                        const tac = GAME_CONSTANTS.TACTICAL_SKILLS[hero.class.name];
-                        const locked = level < GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical;
-                        if (locked) return null;
-                        const cd = (hero.class.name === 'Knight' && knightRallyingRoarCooldown) ||
-                          (hero.class.name === 'Wizard' && wizardEtherealBarrierCooldown) ||
-                          (hero.class.name === 'Assassin' && assassinMarkForDeathCooldown) ||
-                          (hero.class.name === 'Crusader' && crusaderBastionOfFaithCooldown);
-                        const unavail = stamina < tac.cost || cd;
-                        return (
-                          <button onClick={() => handlePlayerAction(useTacticalSkill, tac.name)} disabled={unavail}
-                            className="py-2 px-3 rounded font-bold transition-all border-2 hover:scale-105 active:scale-95 disabled:cursor-not-allowed relative overflow-hidden"
-                            title={locked ? `Unlocks at Level ${GAME_CONSTANTS.SKILL_UNLOCK_LEVELS.tactical}` : tac.effect}
-                            style={{ background: !unavail ? 'linear-gradient(to bottom, rgba(184, 134, 11, 0.85), rgba(120, 87, 7, 0.85))' : 'rgba(30, 40, 55, 0.6)', borderColor: !unavail ? 'rgba(184, 134, 11, 0.6)' : 'rgba(80,80,80,0.3)', color: '#F5F5DC', opacity: unavail ? 0.55 : 1 }}>
-                            {cd && <div className="absolute inset-0 pointer-events-none" style={{ background: 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(0,0,0,0.25) 4px, rgba(0,0,0,0.25) 8px)' }} />}
-                            <div className="text-base uppercase tracking-wide">{tac.name}</div>
-                            <div className="text-sm mt-0.5 opacity-70">
-                              {cd ? <span className="text-yellow-300">⏳ On Cooldown</span> : <>{tac.cost} SP</>}
-                            </div>
-                          </button>
-                        );
-                      })()}
                     </div>
 
                     <button onClick={() => setBattleMenu('main')}
