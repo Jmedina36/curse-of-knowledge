@@ -685,6 +685,38 @@ export const LOCATION_CONTRACTS = [
     ],
   },
 
+  {
+    id: 'lc_iron_crossing',
+    locationId: 'iron_crossing',
+    locationName: 'The Iron Crossing',
+    name: 'The Contingency',
+    contractTier: 'gold',
+    storyContract: true,
+    zone: 4,
+    requiredContracts: ['lc_stone_cavern'],
+    desc: "After the monolith went dark, the order didn't scatter. The Iron Crossing has become a consolidation point — remaining operatives pulling back from across the zone, reorganizing under Cutter's sealed orders. They contracted. They always had a second path.",
+    storyNote: "Vorn had sealed orders from Cutter: after the monolith fails, pull the network back and hold zone 4 until the secondary activation is ready. Sable had the records — every operative position, every asset, every contact still in play. The monolith was the proof of concept. Whatever the order is building toward, the failure at zone 3 only changed the timeline.",
+    journalEntry: {
+      title: 'The Contingency',
+      location: 'The Iron Crossing',
+      zone: 4,
+      text: `The order didn't scatter after the monolith went dark. They consolidated.\n\nVorn had sealed orders. Pull back, hold zone 4, wait for Cutter's signal. Sable had the ledgers — every operative still in play, every asset still active. They weren't retreating. They were reorganizing.\n\nThe monolith wasn't the plan. It was a rehearsal. The order knew the first attempt might not hold. They built a second path before they built the first one.\n\nThe Vault is where the contingency lives. Cutter holds it. I'm going there now.`,
+    },
+    encounter: {
+      enemyType: 'bandit',
+      waveSize: 3,
+      enemyNames: ['Vorn', 'Sable'],
+      dialogue: [
+        "You think the monolith was the plan. It was a rehearsal.",
+      ],
+    },
+    rewards: [
+      { type: 'gold',       amount: 88  },
+      { type: 'healthPots', amount: 2   },
+      { type: 'xp',         amount: 200 },
+    ],
+  },
+
   // ── The Order — Mythril Contracts ─────────────────────────────────────────────
   {
     id: 'order_cutter',
@@ -693,9 +725,9 @@ export const LOCATION_CONTRACTS = [
     name: 'The Bandit Lord',
     contractTier: 'mythril',
     zone: 4,
-    requiredContracts: ['lc_stone_cavern'],
-    desc: "The Vault has been Cutter's base of operations since before you crossed into the first zone. He built the bandit network from here — recruited, organized, deployed. He knew you were coming. He stayed anyway.",
-    storyNote: "Cutter didn't run. He said C told him not to — that holding the Vault was worth more than surviving it. Before the end he said one thing that mattered: C isn't a person. It's a title. The one who holds it changes. The work doesn't.",
+    requiredContracts: ['lc_iron_crossing'],
+    desc: "The Vault has been Cutter's base of operations since before you crossed into the first zone. He built the bandit network from here — recruited, organized, deployed. He knew you were coming. He stayed long enough to say what needed to be said.",
+    storyNote: "Cutter held until the moment it was clear the Vault was lost. Then he withdrew — not running, repositioning. He said C had already accounted for this. That holding the Vault wasn't the point. The point was everything the Vault had already done. Before he pulled back he said one thing that mattered: C isn't a person. It's a title. The one who holds it changes. The work doesn't.",
     encounter: {
       enemyType: 'bandit',
       members: [
@@ -705,7 +737,7 @@ export const LOCATION_CONTRACTS = [
       ],
       dialogue: ["End of the road. Nothing personal."],
       intel: ['/bosses/dark-elf-queen.png'],
-      intelNote: "Before the end, Cutter said one thing that mattered: C isn't a person. It's a title. The one who holds it changes. The work doesn't. Someone else holds it now — and they've been holding the order together between Malachar's deaths for a very long time.",
+      intelNote: "Cutter said one thing before he pulled back: C isn't a person. It's a title. The one who holds it changes. The work doesn't. Someone else holds it now — and they've been holding the order together between Malachar's deaths for a very long time.",
     },
     journalEntry: {
       title: 'Cutter',
@@ -715,7 +747,9 @@ export const LOCATION_CONTRACTS = [
 
 Cutter was the first piece C placed. The harbor, the ledger, the banner at the canopy — all of it ran through him. He didn't ask questions. He built what he was told to build and held what he was told to hold.
 
-He's gone. But not finished.`,
+When the fight turned he withdrew. I let him. I shouldn't have.
+
+He said C isn't a person. It's a title. The work doesn't end when the holder does.`,
     },
     rewards: [
       { type: 'fusionCrystals', amount: 3  },
@@ -864,9 +898,11 @@ One left.`,
       zone: 5,
       text: `He said he had died seventeen times. He was counting on eighteen.
 
-Malachar is C. Or C answers to Malachar. I'm still not sure which. He built the order over decades, placing each piece across the region like a man who had all the time in the world — because he did.
+Malachar created the C title so the order would survive his deaths. He isn't C — he's the reason C exists. Every time he died, someone held the structure together under that title until he came back. Sylvaris held it longest. The order didn't survive because of Malachar. It survived because of what Malachar built around himself.
 
-It's done. Whatever the order was building, it ends here. I don't know if that's true. But he's gone. And for now, that's enough.`,
+He's gone now. But before the end he said the title had already been passed. Someone holds it now who wasn't in any room I've cleared.
+
+I don't know if that's enough. But it's done. For now.`,
     },
     rewards: [
       { type: 'fusionCrystals', amount: 8  },
@@ -915,7 +951,7 @@ It's done. Whatever the order was building, it ends here. I don't know if that's
       title: 'What Was Always Coming',
       location: 'Skull Cavern',
       zone: 5,
-      text: `It didn't speak. It didn't need to.\n\nWhatever the order was — the network, the operatives, the ritual work across five zones — all of it was scaffolding. A way to prepare the ground. This is what the ground was being prepared for.\n\nI don't know what it is. I don't know where it came from. I know the order spent decades making sure nothing would stop it from arriving.\n\nI stopped it anyway.\n\nI don't know if that's enough. But it's done.`,
+      text: `It didn't speak. It didn't need to.\n\nI understand it now — what the order was, what all of it was for. Malachar died seventeen times and came back each time. That doesn't happen without a price. The order was the price. Five zones of ritual work, personnel, logistics, relay nodes — all of it was payment. Not to an employer. To a creditor.\n\nThis was the creditor.\n\nIt predates the order. It predates Malachar. It was here before the first map was drawn, sealed in a cavern no one has been able to explain, waiting for the debt to come due. The order didn't summon it. They prepared the ground for it. Made the path clear. That was the deal Malachar made in his first life — the one that let him return seventeen times.\n\nI stopped it. I don't know if that breaks the deal or just delays it.\n\nMalachar passed the C title before he died. Someone holds it now. The debt has a new manager. The work the order did across five zones — the network, the nodes, the activation — it was documented. It can be rebuilt.\n\nI'm going to find whoever holds the title now. Before they start again.`,
     },
     encounter: {
       enemyType: 'antagonist',
