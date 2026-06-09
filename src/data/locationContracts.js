@@ -891,7 +891,7 @@ One left.`,
     requiredContracts: ['order_sylvaris'],
     desc: "The Void Spire shouldn't exist. It appeared where nothing was built and rises higher than physics allows. Malachar is at the top. He has died seventeen times. He is not afraid of you.",
     storyNote: "He said he had died seventeen times. He was counting on eighteen. He was wrong. But before the end he said the order wasn't his only insurance. C is a title. He had already passed it on.",
-    encounter: { enemyType: 'antagonist', antagonistId: 'malachar' },
+    encounter: { enemyType: 'antagonist', antagonistId: 'malachar', intel: ['/main bad.png'], intelNote: "In his final moments, Malachar spoke of something older than the order — the deal that let him return seventeen times. The entity that made it is still out there. He called it the Omen. He sounded afraid." },
     journalEntry: {
       title: 'Malachar',
       location: 'The Void Spire',

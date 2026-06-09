@@ -47,6 +47,7 @@ const ELITE_ROSTER = [
 const ORDER_ROSTER = [
   { img: '/bosses/dark-elf-queen.png', name: 'Sylvaris, Queen of Ruin',   title: 'The Custodian', lore: "She dismantled an empire from within. Didn't join the order — recognized Malachar as someone doing what she'd been doing, just longer. Every time Malachar died, Sylvaris held the structure together until he returned." },
   { img: '/undead-king.png',           name: 'Malachar, the Eternal Lich', title: 'The Architect', lore: 'Built the order over decades under a title, not a name. Has died seventeen times. His phylactery has never been found. C is not a person. C is what he became. The order was always his.' },
+  { img: '/main bad.png',              name: 'The Omen',                   title: 'The Creditor',  lore: "It was not created by the order. It predates it. The deal Malachar made in his first life — the one that let him return seventeen times — this is who he made it with. The order was the payment. Five zones of preparation, building the path for something sealed and waiting long before any record existed." },
 ];
 
 // ── Cursed member → mercy contract mapping ──────────────────────────────────
@@ -441,9 +442,18 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                         </span>
                         <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${unlocked ? group.border : 'rgba(60,55,45,0.2)'})` }}/>
                       </div>
-                      <p style={{ textAlign: 'center', fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', textTransform: 'uppercase', color: unlocked ? `${group.color}88` : 'rgba(80,70,55,0.35)', margin: '0 0 14px' }}>
+                      <p style={{ textAlign: 'center', fontSize: '0.6rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', textTransform: 'uppercase', color: unlocked ? `${group.color}88` : 'rgba(80,70,55,0.35)', margin: '0 0 4px' }}>
                         {group.tierName}
                       </p>
+                      {unlocked && (() => {
+                        const discoveredCount = entries.filter(c => discoveredCreatures.includes(c.img)).length;
+                        const full = discoveredCount === entries.length;
+                        return (
+                          <p style={{ textAlign: 'center', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', color: full ? `${group.color}bb` : `${group.color}44`, margin: '0 0 14px' }}>
+                            {discoveredCount}/{entries.length} Discovered
+                          </p>
+                        );
+                      })()}
 
                       {!unlocked ? (
                         <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(90,80,65,0.35)', fontStyle: 'italic', margin: '8px 0 0' }}>
