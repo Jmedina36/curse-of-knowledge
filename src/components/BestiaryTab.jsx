@@ -14,6 +14,39 @@ const KAEL_IDLE = [
   "Capture enough and the wilds themselves will fear your name.",
 ];
 
+// ── Elite + Order roster data ────────────────────────────────────────────────
+const ELITE_ROSTER = [
+  { img: '/bosses/orc-warrior.png',         name: 'Korruk the Merciless',           title: 'The Deployed Guard — Zone I', lore: 'Has never offered quarter and never asked for it. His battlefield record spans forty years of war. The order found someone already doing their work for them.' },
+  { img: '/bosses/orc-lady.png',            name: 'Gryvara, Ironblood Matriarch',   title: 'The Deployed Guard — Zone II', lore: 'Commander of a dozen warbands. She leads from the front and leaves nothing standing. Deployed specifically in response to your progress.' },
+  { img: '/bosses/orc-chief.png',           name: 'Grakthar the Unbroken',          title: 'The Ancient Guardian — Zone III', lore: 'No blade has ever drawn his blood. He has crushed every challenger beneath his fists. Not order-made. Older. Found at the nexus, already waiting.' },
+  { img: '/bosses/frozen-zombie.png',       name: 'Morvane, the Frozen Condemned',  title: 'The Inherited Guard — Zone V', lore: 'A warrior executed in winter and cursed to walk forever. His rage has not thawed in three centuries. Not recruited by the order — inherited from what Malachar was before it existed.' },
+  { img: '/bosses/undead-vampire-woman.png',name: 'Seraphine the Bloodless',        title: 'The Inherited Guard — Zone V', lore: 'Once a high priestess, now an undying predator. She drains life with a whisper. Like Morvane, she predates the order. She was here when Malachar arrived.' },
+];
+
+const ORDER_ROSTER = [
+  { img: '/bosses/dark-elf-queen.png', name: 'Sylvaris, Queen of Ruin',   title: 'The Custodian', lore: "She dismantled an empire from within. Didn't join the order — recognized Malachar as someone doing what she'd been doing, just longer. Every time Malachar died, Sylvaris held the structure together until he returned." },
+  { img: '/undead-king.png',           name: 'Malachar, the Eternal Lich', title: 'The Architect', lore: 'Built the order over decades under a title, not a name. Has died seventeen times. His phylactery has never been found. C is not a person. C is what he became. The order was always his.' },
+];
+
+// ── Cursed member → mercy contract mapping ──────────────────────────────────
+const CURSED_MERCY_MAP = {
+  '/cursed/young-paladin.png':       { id: 'mc_aldric_sela',  req: [] },
+  '/cursed/young-princess.png':      { id: 'mc_aldric_sela',  req: [] },
+  '/cursed/elven-girl.png':          { id: 'mc_lysse_kira',   req: ['lc_whisper_forest'] },
+  '/cursed/mongolian-princess.png':  { id: 'mc_lysse_kira',   req: ['lc_whisper_forest'] },
+  '/cursed/mercenary.png':           { id: 'mc_conn_dar',     req: ['lc_ivy_crossing'] },
+  '/cursed/robber.png':              { id: 'mc_conn_dar',     req: ['lc_ivy_crossing'] },
+  '/cursed/warrior-lady.png':        { id: 'mc_bryn_solveig', req: ['mc_maren_sunwen'] },
+  '/cursed/viking-woman.png':        { id: 'mc_bryn_solveig', req: ['mc_maren_sunwen'] },
+  '/cursed/young-lady.png':          { id: 'mc_maren_sunwen', req: ['lc_stonehenge'] },
+  '/cursed/young-korean-prince.png': { id: 'mc_maren_sunwen', req: ['lc_stonehenge'] },
+  '/cursed/viking-warrior.png':      { id: 'mc_sigrun',       req: ['order_cutter'] },
+  '/cursed/viking-noble-man.png':    { id: 'mc_halvard',      req: ['lc_stone_cavern'] },
+  '/cursed/warrior-queen.png':       { id: 'mc_sera_edric',   req: ['lc_the_melt'] },
+  '/cursed/old-noble-man.png':       { id: 'mc_sera_edric',   req: ['lc_the_melt'] },
+  '/cursed/gladiator.png':           { id: 'mc_brek',         req: [] },
+};
+
 const TIER_LABELS = { 1: 'Grunt', 2: 'Predator', 3: 'Dire', 4: 'Elite', 5: 'Legendary' };
 const TIER_COLORS = { 1: '#A8A8A8', 2: '#CD7F32', 3: '#DC2626', 4: '#A855F7', 5: '#F59E0B' };
 const TIER_BORDER = { 1: 'rgba(168,168,168,0.35)', 2: 'rgba(205,127,50,0.45)', 3: 'rgba(220,38,38,0.45)', 4: 'rgba(168,85,247,0.45)', 5: 'rgba(245,158,11,0.55)' };
@@ -235,7 +268,7 @@ const THE_CURSED = [
   },
 ];
 
-const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], onClose }) => {
+const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], completedLocationContracts = [], pendingLocationRewards = [], onClose }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [activeTab, setActiveTab] = useState('index');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -625,6 +658,103 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                   </div>
                 );
               })}
+
+              {/* ── ELITE ENEMIES ── */}
+              {(() => {
+                const anyKnown = ELITE_ROSTER.some(e => intelUnlocked.includes(e.img) || defeatedFactionMembers.includes(e.img));
+                if (!anyKnown) return null;
+                return (
+                  <div style={{ marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(168,85,247,0.35))' }} />
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#A855F7' }}>Elite Enemies</span>
+                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(168,85,247,0.35))' }} />
+                    </div>
+                    <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', margin: '0 0 16px' }}>
+                      Exceptional warriors deployed or awakened against you. Each one is a statement.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
+                      {ELITE_ROSTER.map(e => {
+                        const defeated = defeatedFactionMembers.includes(e.img);
+                        const revealed = intelUnlocked.includes(e.img) || defeated;
+                        if (!revealed) return null;
+                        if (defeated) return (
+                          <div key={e.img} style={{ borderRadius: '10px', padding: '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(80,80,80,0.3)', opacity: 0.6, position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(80,200,80,0.4)', color: 'rgba(100,220,100,0.9)' }}>Defeated</div>
+                            <div style={{ position: 'relative', width: 90, margin: '14px auto 12px' }}>
+                              <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.45)' }} />
+                              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-18deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.35rem', letterSpacing: '0.18em', color: 'rgba(200,30,30,0.92)', border: '3px solid rgba(200,30,30,0.85)', padding: '2px 8px', borderRadius: '3px', textShadow: '0 0 8px rgba(200,30,30,0.6)', boxShadow: '0 0 10px rgba(200,30,30,0.3), inset 0 0 6px rgba(0,0,0,0.4)', background: 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>SLAIN</div>
+                            </div>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(140,130,110,0.6)', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(120,110,90,0.5)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '0.7rem', color: 'rgba(120,110,90,0.45)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
+                          </div>
+                        );
+                        return (
+                          <div key={e.img} style={{ borderRadius: '10px', padding: '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(168,85,247,0.4)', boxShadow: '0 0 16px rgba(168,85,247,0.1)', position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(212,160,30,0.5)', color: 'rgba(230,180,40,0.9)' }}>At Large</div>
+                            <div style={{ width: 90, margin: '14px auto 12px' }}>
+                              <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 10px rgba(168,85,247,0.55))' }} />
+                            </div>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: '#A855F7', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(200,185,150,0.6)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '0.7rem', color: 'rgba(220,210,185,0.6)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* ── THE ORDER ── */}
+              {(() => {
+                const anyKnown = ORDER_ROSTER.some(e => intelUnlocked.includes(e.img) || defeatedFactionMembers.includes(e.img));
+                if (!anyKnown) return null;
+                return (
+                  <div style={{ marginBottom: '40px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
+                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.4))' }} />
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4AF37' }}>The Order</span>
+                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
+                    </div>
+                    <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', margin: '0 0 16px' }}>
+                      The architects behind everything. They move through shadows and speak through others.
+                    </p>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
+                      {ORDER_ROSTER.map(e => {
+                        const defeated = defeatedFactionMembers.includes(e.img);
+                        const revealed = intelUnlocked.includes(e.img) || defeated;
+                        if (!revealed) return null;
+                        if (defeated) return (
+                          <div key={e.img} style={{ borderRadius: '10px', padding: '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(80,80,80,0.3)', opacity: 0.6, position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(80,200,80,0.4)', color: 'rgba(100,220,100,0.9)' }}>Defeated</div>
+                            <div style={{ position: 'relative', width: 90, margin: '14px auto 12px' }}>
+                              <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.45)' }} />
+                              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-18deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.35rem', letterSpacing: '0.18em', color: 'rgba(200,30,30,0.92)', border: '3px solid rgba(200,30,30,0.85)', padding: '2px 8px', borderRadius: '3px', textShadow: '0 0 8px rgba(200,30,30,0.6)', boxShadow: '0 0 10px rgba(200,30,30,0.3), inset 0 0 6px rgba(0,0,0,0.4)', background: 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>SLAIN</div>
+                            </div>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: 'rgba(140,130,110,0.6)', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(120,110,90,0.5)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '0.72rem', color: 'rgba(120,110,90,0.45)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
+                          </div>
+                        );
+                        return (
+                          <div key={e.img} style={{ borderRadius: '10px', padding: '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(212,175,55,0.45)', boxShadow: '0 0 20px rgba(212,175,55,0.08)', position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(212,160,30,0.5)', color: 'rgba(230,180,40,0.9)' }}>At Large</div>
+                            <div style={{ width: 90, margin: '14px auto 12px' }}>
+                              <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.5))' }} />
+                            </div>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#D4AF37', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(200,185,150,0.6)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '0.72rem', color: 'rgba(220,210,185,0.6)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })()}
+
             </div>
           )}
 
@@ -633,87 +763,52 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
             const totalCursed = THE_CURSED.reduce((acc, z) => acc + z.groups.reduce((a, g) => a + g.members.length, 0), 0);
             const restedCount = THE_CURSED.reduce((acc, z) => acc + z.groups.reduce((a, g) => a + g.members.filter(m => restedCursed.includes(m.img)).length, 0), 0);
 
+            // Four-state card: hidden | silhouette | wandering (full) | at rest
             const CursedCard = ({ member, solo }) => {
               const atRest = restedCursed.includes(member.img);
+              const mercyInfo = CURSED_MERCY_MAP[member.img] || { id: null, req: [] };
+              const contractFought = completedLocationContracts.includes(mercyInfo.id) || pendingLocationRewards.includes(mercyInfo.id);
+              const reqMet = mercyInfo.req.every(r => completedLocationContracts.includes(r));
+
+              // Hidden — prerequisites not yet met
+              if (!reqMet && !contractFought && !atRest) return null;
+
+              // Silhouette — req met but mercy contract not yet encountered
+              if (reqMet && !contractFought && !atRest) return (
+                <div style={{ borderRadius: '10px', padding: solo ? '20px 18px' : '16px 14px', textAlign: 'center', background: 'rgba(8,8,10,0.7)', border: '1px solid rgba(80,65,100,0.3)', position: 'relative', maxWidth: solo ? '300px' : undefined, margin: solo ? '0 auto' : undefined }}>
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(80,65,100,0.3)', color: 'rgba(120,100,150,0.5)' }}>Wandering</div>
+                  <div style={{ position: 'relative', width: solo ? 110 : 90, margin: '14px auto 12px' }}>
+                    <img src={member.img} alt="unknown" style={{ width: solo ? 110 : 90, height: solo ? 110 : 90, objectFit: 'contain', display: 'block', filter: 'brightness(0) contrast(0.5)' }} />
+                  </div>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: solo ? '1.05rem' : '0.95rem', color: 'rgba(80,65,100,0.55)', marginBottom: '6px' }}>???</p>
+                  <p style={{ fontSize: '0.68rem', color: 'rgba(80,65,100,0.4)', fontStyle: 'italic', margin: 0 }}>A soul still wandering. Find them.</p>
+                </div>
+              );
+
+              // At Rest — faded card with stamp
+              if (atRest) return (
+                <div style={{ borderRadius: '10px', padding: solo ? '20px 18px' : '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(120,130,160,0.25)', boxShadow: 'none', opacity: 0.65, position: 'relative', transition: 'all 0.2s', maxWidth: solo ? '300px' : undefined, margin: solo ? '0 auto' : undefined }}>
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(150,170,220,0.4)', color: 'rgba(170,190,240,0.85)' }}>At Rest</div>
+                  <div style={{ position: 'relative', width: solo ? 110 : 90, margin: '14px auto 12px' }}>
+                    <img src={member.img} alt={member.name} style={{ width: solo ? 110 : 90, height: solo ? 110 : 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.4)' }} />
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-15deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '0.95rem', letterSpacing: '0.15em', color: 'rgba(160,180,230,0.88)', border: '2px solid rgba(160,180,230,0.75)', padding: '2px 8px', borderRadius: '3px', textShadow: '0 0 8px rgba(140,160,220,0.5)', boxShadow: '0 0 10px rgba(140,160,220,0.2), inset 0 0 6px rgba(0,0,0,0.4)', background: 'rgba(0,0,0,0.4)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>AT REST</div>
+                  </div>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: solo ? '1.05rem' : '0.95rem', color: 'rgba(130,120,150,0.55)', marginBottom: '2px', lineHeight: 1.3 }}>{member.name}</p>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em', color: 'rgba(100,95,115,0.45)', textTransform: 'uppercase', marginBottom: '10px' }}>{member.title}</p>
+                  <p style={{ fontSize: '0.7rem', color: 'rgba(100,95,115,0.4)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{member.lore}</p>
+                </div>
+              );
+
+              // Wandering — mercy contract encountered, soul identified
               return (
-                <div style={{
-                  borderRadius: '10px',
-                  padding: solo ? '20px 18px' : '16px 14px',
-                  textAlign: 'center',
-                  background: VISUAL_STYLES.card.default,
-                  border: `1px solid ${atRest ? 'rgba(120,130,160,0.25)' : 'rgba(160,130,200,0.3)'}`,
-                  boxShadow: atRest ? 'none' : '0 0 18px rgba(140,100,180,0.1)',
-                  opacity: atRest ? 0.65 : 1,
-                  position: 'relative',
-                  transition: 'all 0.2s',
-                  maxWidth: solo ? '300px' : undefined,
-                  margin: solo ? '0 auto' : undefined,
-                }}>
-                  {/* Status badge */}
-                  <div style={{
-                    position: 'absolute', top: '8px', right: '8px',
-                    fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em',
-                    padding: '2px 7px', borderRadius: '3px',
-                    background: 'rgba(0,0,0,0.55)',
-                    border: `1px solid ${atRest ? 'rgba(150,170,220,0.4)' : 'rgba(160,130,200,0.2)'}`,
-                    color: atRest ? 'rgba(170,190,240,0.85)' : 'rgba(160,140,190,0.4)',
-                  }}>
-                    {atRest ? 'At Rest' : 'Wandering'}
+                <div style={{ borderRadius: '10px', padding: solo ? '20px 18px' : '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(140,100,200,0.35)', boxShadow: '0 0 16px rgba(120,80,180,0.12)', position: 'relative', transition: 'all 0.2s', maxWidth: solo ? '300px' : undefined, margin: solo ? '0 auto' : undefined }}>
+                  <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(160,130,200,0.4)', color: 'rgba(190,160,230,0.85)' }}>Wandering</div>
+                  <div style={{ width: solo ? 110 : 90, margin: '14px auto 12px' }}>
+                    <img src={member.img} alt={member.name} style={{ width: solo ? 110 : 90, height: solo ? 110 : 90, objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 10px rgba(150,100,220,0.5))' }} />
                   </div>
-
-                  {/* Portrait + AT REST stamp */}
-                  <div style={{ position: 'relative', width: solo ? 110 : 90, margin: '14px auto 12px', display: 'block' }}>
-                    <img
-                      src={member.img}
-                      alt={member.name}
-                      style={{
-                        width: solo ? 110 : 90,
-                        height: solo ? 110 : 90,
-                        objectFit: 'contain',
-                        display: 'block',
-                        filter: atRest
-                          ? 'grayscale(1) brightness(0.4)'
-                          : 'drop-shadow(0 0 10px rgba(160,120,220,0.5))',
-                      }}
-                    />
-                    {atRest && (
-                      <div style={{
-                        position: 'absolute', top: '50%', left: '50%',
-                        transform: 'translate(-50%, -50%) rotate(-15deg)',
-                        fontFamily: 'Cinzel, serif', fontWeight: 900,
-                        fontSize: '0.95rem', letterSpacing: '0.15em',
-                        color: 'rgba(160,180,230,0.88)',
-                        border: '2px solid rgba(160,180,230,0.75)',
-                        padding: '2px 8px', borderRadius: '3px',
-                        textShadow: '0 0 8px rgba(140,160,220,0.5)',
-                        boxShadow: '0 0 10px rgba(140,160,220,0.2), inset 0 0 6px rgba(0,0,0,0.4)',
-                        background: 'rgba(0,0,0,0.4)',
-                        whiteSpace: 'nowrap', pointerEvents: 'none',
-                      }}>AT REST</div>
-                    )}
-                  </div>
-
-                  {/* Name */}
-                  <p style={{
-                    fontFamily: 'Cinzel, serif', fontWeight: 700,
-                    fontSize: solo ? '1.05rem' : '0.95rem',
-                    color: atRest ? 'rgba(130,120,150,0.55)' : 'rgba(210,190,240,0.9)',
-                    marginBottom: '2px', lineHeight: 1.3,
-                  }}>{member.name}</p>
-
-                  {/* Former title */}
-                  <p style={{
-                    fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em',
-                    color: atRest ? 'rgba(100,95,115,0.45)' : 'rgba(180,160,200,0.5)',
-                    textTransform: 'uppercase', marginBottom: '10px',
-                  }}>{member.title}</p>
-
-                  {/* Lore */}
-                  <p style={{
-                    fontSize: '0.7rem',
-                    color: atRest ? 'rgba(100,95,115,0.4)' : 'rgba(210,200,225,0.6)',
-                    fontStyle: 'italic', lineHeight: 1.55, margin: 0,
-                  }}>{member.lore}</p>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: solo ? '1.05rem' : '0.95rem', color: 'rgba(210,185,240,0.9)', marginBottom: '2px', lineHeight: 1.3 }}>{member.name}</p>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em', color: 'rgba(180,160,200,0.5)', textTransform: 'uppercase', marginBottom: '10px' }}>{member.title}</p>
+                  <p style={{ fontSize: '0.7rem', color: 'rgba(210,200,225,0.6)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{member.lore}</p>
                 </div>
               );
             };
