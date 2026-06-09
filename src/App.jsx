@@ -7681,6 +7681,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               defeatedFactionMembers={defeatedFactionMembers}
               restedCursed={restedCursed}
               intelUnlocked={intelUnlocked}
+              completedLocationContracts={completedLocationContracts}
+              pendingLocationRewards={pendingLocationRewards}
               onClose={() => setActiveTab('quest')}
             />
           )}

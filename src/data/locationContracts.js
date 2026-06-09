@@ -60,8 +60,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "I've been watching you since the road. I wondered when you'd finally arrive.",
       ],
-      intel: ['/daughters-of-dusk/member-5.png', '/daughters-of-dusk/member-1.png'],
-      intelNote: "A manifest found on Briar lists two Daughters still deployed on the island: one called Knell, assigned to Whisper Forest, and another named Vael — no location given.",
+      intel: ['/daughters-of-dusk/member-5.png', '/daughters-of-dusk/member-1.png', '/bosses/orc-warrior.png'],
+      intelNote: "A manifest found on Briar lists two Daughters still deployed on the island: one called Knell, assigned to Whisper Forest, and another named Vael — no location given. Her records also mention a guardian deployed at the canopy outpost — massive, merciless, referred to only as the Merciless.",
     },
     rewards: [
       { type: 'staminaPots', amount: 2  },
@@ -181,8 +181,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You keep finding us. That's going to become a problem for you.",
       ],
-      intel: ['/daughters-of-dusk/member-3.png', '/daughters-of-dusk/member-2.png'],
-      intelNote: "Knell spoke two names before the end: Ash, already moving deeper into the zone, and Zira — described as 'the one who doesn't feel anything anymore.' Both still at large.",
+      intel: ['/daughters-of-dusk/member-3.png', '/daughters-of-dusk/member-2.png', '/bosses/orc-lady.png'],
+      intelNote: "Knell spoke two names before the end: Ash, already moving deeper into the zone, and Zira — described as 'the one who doesn't feel anything anymore.' Her notes also flag an elite commander named Gryvara posted at the Outskirts — sent specifically in response to your progress.",
     },
     rewards: [
       { type: 'staminaPots', amount: 2  },
@@ -412,8 +412,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You're too late. The last transit already went through.",
       ],
-      intel: ['/daughters-of-dusk/captain-2.png', '/daughters-of-dusk/leader.png'],
-      intelNote: "Zira gave two names. An enforcer called Seris — the one even the Daughters fear. And Mira. The leader. The one who believes. Zira said her name like it settled everything.",
+      intel: ['/daughters-of-dusk/captain-2.png', '/daughters-of-dusk/leader.png', '/bosses/orc-chief.png'],
+      intelNote: "Zira gave two names. An enforcer called Seris — the one even the Daughters fear. And Mira. The leader. The one who believes. Zira's transport logs also record an entity guarding the Old Nexus — ancient, not order-made. The notes call it Grakthar. The Unbroken.",
     },
     rewards: [
       { type: 'gold',        amount: 75  },
@@ -702,6 +702,8 @@ export const LOCATION_CONTRACTS = [
         { img: '/bandits/leader.png',    name: 'Cutter', isCapt: false, isLeader: true  },
       ],
       dialogue: ["End of the road. Nothing personal."],
+      intel: ['/bosses/dark-elf-queen.png'],
+      intelNote: "Before the end, Cutter said one thing that mattered: C isn't a person. It's a title. The one who holds it changes. The work doesn't. Someone else holds it now — and they've been holding the order together between Malachar's deaths for a very long time.",
     },
     journalEntry: {
       title: 'Cutter',
@@ -737,6 +739,8 @@ He's gone. But not finished.`,
         { img: '/daughters-of-dusk/leader.png',    name: 'Mira',  isCapt: false, isLeader: true  },
       ],
       dialogue: ["You've come a long way to reach me. That only means I'll remember it."],
+      intel: ['/bosses/dark-elf-queen.png'],
+      intelNote: "Mira said the order wasn't a network. It was a succession plan. Malachar has died seventeen times. Each time, someone held the structure together until he returned. That someone has a name. The order knows it. They don't say it out loud.",
     },
     journalEntry: {
       title: 'Mira',
@@ -824,7 +828,7 @@ Two leaders down. Whatever is above them hasn't moved yet.`,
     requiredContracts: ['lc_lava_wastes'],
     desc: "Sylvaris claimed the Sunken Throne before the order existed. She didn't join Malachar — she recognized him as someone who had been doing what she'd been doing, just longer. Whatever comes after Malachar, Sylvaris intends to be part of it.",
     storyNote: "Before the end, Sylvaris said the order wasn't a network. It was a succession plan. Malachar has died seventeen times. Each time, someone had to hold the structure together until he returned. Sylvaris was that person. The order didn't survive because of C. It survived because of her.",
-    encounter: { enemyType: 'antagonist', antagonistId: 'sylvaris' },
+    encounter: { enemyType: 'antagonist', antagonistId: 'sylvaris', intel: ['/undead-king.png'], intelNote: "Before the end, Sylvaris said the order wasn't her creation. She was its custodian. The architect, the one who designed all of it — he has died seventeen times. He intends to die an eighteenth. He is at the Void Spire. His name is Malachar." },
     journalEntry: {
       title: 'Sylvaris',
       location: 'The Sunken Throne',
