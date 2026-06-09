@@ -1,5 +1,5 @@
 import React from 'react';
-import { HeartPulse, ShieldCheck, Sparkles, Swords } from 'lucide-react';
+import { ShieldCheck, Swords } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
 
@@ -190,14 +190,14 @@ const QuestTab = ({
                     <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
                       <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(139,0,0,0.3)'}}>
                         <div className="flex justify-between items-center mb-1">
-                          <div className="flex items-center gap-1.5"><HeartPulse size={15} style={{color:'#7F0000'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,color:'#000',letterSpacing:'0.1em'}}>HP</span></div>
+                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,color:'#000',letterSpacing:'0.1em'}}>Health</span>
                           <span style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,color:'#000'}}>{hp}/{getMaxHp()}</span>
                         </div>
                         <div className="rounded h-2.5 overflow-hidden" style={{background:'rgba(139,0,0,0.15)'}}><div className="h-full rounded transition-all" style={{width:`${(hp/getMaxHp())*100}%`,background:hp/getMaxHp()<0.25?'#8B0000':'linear-gradient(to right,#7f1d1d,#b91c1c)'}}/></div>
                       </div>
                       <div className="rounded p-2" style={{background:'rgba(180,140,80,0.2)',border:'1px solid rgba(30,58,140,0.3)'}}>
                         <div className="flex justify-between items-center mb-1">
-                          <div className="flex items-center gap-1.5"><Sparkles size={15} style={{color:'#142B6E'}}/><span style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,color:'#000',letterSpacing:'0.1em'}}>SP</span></div>
+                          <span style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,color:'#000',letterSpacing:'0.1em'}}>Mana</span>
                           <span style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,color:'#000'}}>{stamina}/{getMaxStamina()}</span>
                         </div>
                         <div className="rounded h-2.5 overflow-hidden" style={{background:'rgba(30,58,140,0.15)'}}><div className="h-full rounded transition-all" style={{width:`${(stamina/getMaxStamina())*100}%`,background:'linear-gradient(to right,#1e3a8a,#2563eb)'}}/></div>
