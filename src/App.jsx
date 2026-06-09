@@ -4033,6 +4033,7 @@ if (battleType === 'elite') {
   }
 
   // Check if elite wave contract continues (creatures → elite)
+  let skipEliteWaveHandler = false;
   if (isEliteWave) {
     const ew = eliteWaveRef.current;
     const nextCreatureIdx = ew.creatureIdx + 1;
@@ -4052,15 +4053,20 @@ if (battleType === 'elite') {
       setTimeout(() => spawnSpecificElite(ew.eliteId, ew.eliteDialogue), 1500);
       return;
     }
-    // Elite defeated — wave complete
+    // Elite defeated — if location contract fall through, else close normally
     setIsEliteWave(false);
-    setBattling(false);
-    setBattleMode(false);
-    generateVictoryLoot(battleType, false, goldGain, waveGoldTotal + goldGain);
-    return;
+    if (activeContractRef.current?.type === 'location') {
+      skipEliteWaveHandler = true;
+    } else {
+      setBattling(false);
+      setBattleMode(false);
+      generateVictoryLoot(battleType, false, goldGain, waveGoldTotal + goldGain);
+      return;
+    }
   }
 
   // Check if order final wave continues (Cutter → Mira)
+  let skipOrderFinalHandler = false;
   if (isOrderFinal) {
     const nextIdx = orderFinalIdxRef.current + 1;
     const lineup = orderFinalLineupRef.current;
@@ -4079,10 +4085,14 @@ if (battleType === 'elite') {
       const imgs = lineup.map(m => m.img);
       return [...prev, ...imgs.filter(i => !prev.includes(i))];
     });
-    setBattling(false);
-    setBattleMode(false);
-    generateVictoryLoot(battleType, true, goldGain, waveGoldTotal + goldGain);
-    return;
+    if (activeContractRef.current?.type === 'location') {
+      skipOrderFinalHandler = true;
+    } else {
+      setBattling(false);
+      setBattleMode(false);
+      generateVictoryLoot(battleType, true, goldGain, waveGoldTotal + goldGain);
+      return;
+    }
   }
 
   // Check if regular wave continues
