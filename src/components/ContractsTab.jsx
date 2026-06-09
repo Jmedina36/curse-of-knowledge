@@ -456,7 +456,7 @@ const ContractsTab = ({
                     {/* Description */}
                     <p style={{
                       fontSize: '0.72rem', color: 'rgba(180,165,140,0.6)',
-                      lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic',
+                      lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic', textAlign: 'center',
                     }}>{lc.desc}</p>
 
                     {/* Story note — revealed after completion */}
