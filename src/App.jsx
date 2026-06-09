@@ -7744,10 +7744,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   wildCreatureOverrideRef.current = { name: grunt.names[Math.floor(Math.random() * grunt.names.length)], img: grunt.img };
                 } else if (faction === 'daughters') {
                   const member = DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
-                  wildCreatureOverrideRef.current = { name: member.names[Math.floor(Math.random() * member.names.length)], img: member.img };
+                  wildCreatureOverrideRef.current = { name: member.name, img: member.img };
                 }
                 setIsBanditWave(false);
-                setActiveContract({ type: 'challenge', locationId, zone });
+                setActiveContract({ type: 'challenge', locationId, zone, faction });
                 setTimeout(() => { spawnRegularEnemy(false); contractEncounterRef.current = null; }, 1000);
               }}
               onDebugToggleZone={(zone, currentlyDone) => {
@@ -8613,7 +8613,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               fusionCrystals={fusionCrystals} capturedMonsters={capturedMonsters}
               onCapture={captureMonster}
               isBanditWave={isBanditWave || isDaughtersWave || isCursedWave} banditEnemyImg={banditEnemyImg}
-              raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : isCursedWave ? 'cursed' : null}
+              raidFaction={isBanditWave ? 'bandit' : isDaughtersWave ? 'daughters' : isCursedWave ? 'cursed' : activeContract?.faction ?? null}
               enemyGender={enemyGender}
               eliteSfxKey={eliteSfxKey}
               playerStunned={playerStunned} setPlayerStunned={setPlayerStunned}
