@@ -19,9 +19,9 @@ const ZONE_LABELS = {
 // Deductions that unlock progressively as entries are found
 const DEDUCTIONS = [
   // Zone 1–2
-  { requiresId: 'lc_harbor',         text: 'An organization — possibly called "the order" — is operating in the region. Signed only as C. Scope unknown.' },
-  { requiresId: 'lc_holy_tree',      text: 'The order uses multiple factions. Bandits and Daughters of Dusk both bear the same mark. They are not loyal to one group.' },
-  { requiresId: 'lc_canopy',         text: 'They know who I am. They were watching before I found the harbor. They deployed three separate attempts to hold the outpost.' },
+  { requiresId: 'lc_harbor',         text: 'Someone called C is running a coordinated operation. Bandits under orders, not improvising. The mark is a six-pointed sigil I don\'t recognize. Scope unknown.' },
+  { requiresId: 'lc_holy_tree',      text: 'Two factions, one mark. Bandits and Daughters of Dusk both answer to the same sigil. Whatever C is building, it moves through more than one hand.' },
+  { requiresId: 'lc_canopy',         text: 'They know who I am. They were watching before I found the harbor. They sent two others before me. I don\'t know if they were testing me or just underestimating me.' },
   { requiresId: 'lc_ivy_crossing',   text: 'Movement is being controlled. Specific people are being blocked or allowed through. Something is being contained — or protected.' },
   { requiresId: 'lc_whisper_forest', text: 'They have relay nodes distributed across the region. The network is wider than I thought. This is infrastructure.' },
   { requiresId: 'lc_outskirts',      text: 'C is tracking my progress in real time. Gryvara was deployed two days after I cleared the crossing. Every move I make is being answered.' },
@@ -31,8 +31,8 @@ const DEDUCTIONS = [
   { requiresId: 'lc_arcane_monolith', text: "The activation was stopped. C's note said I wouldn't be in time. They were wrong. But C builds systems and leaves. Whatever comes next was already in motion before I reached the monolith." },
   { requiresId: 'lc_old_nexus',      text: "The activation drew something ancient. It said the order had opened a door that was already there — not something C built. Whatever was on the other side was coming regardless. C may have simply accelerated it." },
   // Zone 4
-  { requiresId: 'order_mira',        text: "Mira built the entire ritual network — the relay, the silence, the transit system. She wasn't following orders. She was extending them. She believed in what C was building. Two faction leaders down. Whoever is above them hasn't responded." },
   { requiresId: 'lc_iron_crossing',  text: "The monolith failing didn't end anything. Vorn had sealed contingency orders. The order built a second path before they finished the first. The zone 3 failure only changed the timeline." },
+  { requiresId: 'order_mira',        text: "Mira built the entire ritual network — the relay, the silence, the transit system. She wasn't following orders. She was extending them. She believed in what C was building. Two faction leaders down. Whoever is above them hasn't responded." },
   // Zone 5
   { requiresId: 'order_malachar',    text: "C is not a person. It was a title Malachar created so the order would survive his deaths. He has died seventeen times. Every time, someone held the structure under that name until he returned. The order wasn't his legacy — it was his mechanism. And before he fell, he said he had already passed the title on." },
   { requiresId: 'lc_skull_order',    text: "Cutter and Mira weren't making a last stand. They were the last people C trusted to hold the order together. They're gone. The order's structure is gone. Whatever it was building toward — I don't know if I stopped it or just interrupted it." },
