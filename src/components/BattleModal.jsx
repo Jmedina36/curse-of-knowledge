@@ -975,13 +975,6 @@ const BattleModal = ({
             </div>
           )}
 
-          {/* Weakened notice */}
-          {!isBanditWave && bossEntered && !isFinalBoss && bossHp > 0 && bossHpPct < 40 && (
-            <p className="text-xs text-center uppercase tracking-widest mb-1 animate-pulse" style={{ color: 'rgba(212,175,55,0.8)', fontFamily: 'Cinzel, serif' }}>
-              ✦ The creature is weakened ✦
-            </p>
-          )}
-
           {/* Boss HP Bar */}
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
