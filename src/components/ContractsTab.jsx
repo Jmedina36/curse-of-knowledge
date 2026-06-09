@@ -447,7 +447,7 @@ const ContractsTab = ({
                     {/* Contract title */}
                     <p style={{
                       fontFamily: 'Cinzel,serif', fontSize: '1.0rem', fontWeight: 600,
-                      letterSpacing: '0.04em', lineHeight: 1.4,
+                      letterSpacing: '0.04em', lineHeight: 1.4, textAlign: 'center',
                       color: isCompleted ? 'rgba(180,175,150,0.65)' : '#F5F0E0',
                       textDecoration: isCompleted ? 'line-through' : 'none',
                       marginBottom: '6px',
