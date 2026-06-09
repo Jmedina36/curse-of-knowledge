@@ -675,6 +675,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You made it this far. Cutter said you might. He didn't say what to do about it.",
       ],
+      intel: ['/bosses/frozen-zombie.png', '/bosses/undead-vampire-woman.png'],
+      intelNote: "Vetch's ledger had a restricted section — not zone 4 personnel, zone 5. Two entries, marked 'Inherited Guard.' No recruitment date. No order affiliation. Just names: Morvane, the Frozen Condemned. Seraphine the Bloodless. Whatever they are, they were there before the order found them.",
     },
     rewards: [
       { type: 'gold',          amount: 85  },

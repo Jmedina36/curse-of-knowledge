@@ -826,39 +826,54 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                   </p>
                 </div>
 
-                {THE_CURSED.map(zone => (
-                  <div key={zone.zone} style={{ marginBottom: '36px' }}>
-                    {/* Zone header */}
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(140,110,180,0.3))' }} />
-                      <span style={{
-                        fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700,
-                        letterSpacing: '0.25em', textTransform: 'uppercase',
-                        color: 'rgba(180,150,220,0.7)',
-                      }}>{zone.zoneLabel}</span>
-                      <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(140,110,180,0.3))' }} />
-                    </div>
+                {THE_CURSED.map(zone => {
+                  const isMemberVisible = (member) => {
+                    if (restedCursed.includes(member.img)) return true;
+                    const mi = CURSED_MERCY_MAP[member.img] || { id: null, req: [] };
+                    const fought = completedLocationContracts.includes(mi.id) || pendingLocationRewards.includes(mi.id);
+                    const reqMet = mi.req.every(r => completedLocationContracts.includes(r));
+                    return fought || reqMet;
+                  };
+                  const zoneVisible = zone.groups.some(g => g.members.some(isMemberVisible));
+                  if (!zoneVisible) return null;
 
-                    {zone.groups.map(group => (
-                      <div key={group.groupName} style={{ marginBottom: '24px' }}>
-                        {/* Group label */}
-                        <p style={{
-                          fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em',
-                          color: 'rgba(180,160,210,0.28)', textTransform: 'uppercase',
-                          textAlign: 'center', marginBottom: '10px',
-                        }}>◆ {group.groupName}</p>
-
-                        {group.solo ? (
-                          <CursedCard member={group.members[0]} solo={true} />
-                        ) : (
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                            {group.members.map(m => <CursedCard key={m.img} member={m} solo={false} />)}
-                          </div>
-                        )}
+                  return (
+                    <div key={zone.zone} style={{ marginBottom: '36px' }}>
+                      {/* Zone header */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+                        <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(140,110,180,0.3))' }} />
+                        <span style={{
+                          fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700,
+                          letterSpacing: '0.25em', textTransform: 'uppercase',
+                          color: 'rgba(180,150,220,0.7)',
+                        }}>{zone.zoneLabel}</span>
+                        <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(140,110,180,0.3))' }} />
                       </div>
-                    ))}
-                  </div>
-                ))}
+
+                      {zone.groups.map(group => {
+                        const groupVisible = group.members.some(isMemberVisible);
+                        if (!groupVisible) return null;
+                        return (
+                          <div key={group.groupName} style={{ marginBottom: '24px' }}>
+                            <p style={{
+                              fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.2em',
+                              color: 'rgba(180,160,210,0.28)', textTransform: 'uppercase',
+                              textAlign: 'center', marginBottom: '10px',
+                            }}>◆ {group.groupName}</p>
+
+                            {group.solo ? (
+                              <CursedCard member={group.members[0]} solo={true} />
+                            ) : (
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+                                {group.members.map(m => <CursedCard key={m.img} member={m} solo={false} />)}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })}
               </div>
             );
           })()}
