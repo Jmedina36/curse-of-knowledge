@@ -242,20 +242,20 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); setShowInventoryModal(true); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  backgroundImage:'linear-gradient(160deg,rgba(42,8,8,0.82),rgba(66,13,13,0.82),rgba(26,5,5,0.82)), url(/Stonewall2.png)',
+                  backgroundImage:'linear-gradient(160deg,rgba(10,8,5,0.85),rgba(18,14,8,0.85),rgba(6,5,3,0.85)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
-                  border:'1px solid rgba(180,50,40,0.55)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,120,100,0.06)',
+                  border:'1px solid rgba(212,175,55,0.4)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(160,30,20,0.45), inset 0 1px 0 rgba(255,120,100,0.06)';e.currentTarget.style.borderColor='rgba(220,80,60,0.75)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,120,100,0.06)';e.currentTarget.style.borderColor='rgba(180,50,40,0.55)';}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,120,20,0.3), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.72)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.4)';}}
               >
-                <img src={dwarf.img} alt={dwarf.name} style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,50,40,0.6)',boxShadow:'0 0 12px rgba(200,60,40,0.3)'}}/>
+                <img src={dwarf.img} alt={dwarf.name} style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(212,175,55,0.5)',boxShadow:'0 0 12px rgba(212,175,55,0.2)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(220,130,120,0.8)',marginBottom:'3px'}}>{dwarf.name}</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,185,175,1)',marginBottom:'4px'}}>The Armory</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(180,50,40,0.4)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(200,130,120,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>{dwarf.name}</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Armory</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
                 </div>
               </button>
 
@@ -263,20 +263,20 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); setShowCraftingModal(true); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  backgroundImage:'linear-gradient(160deg,rgba(30,20,0,0.82),rgba(51,34,0,0.82),rgba(21,15,0,0.82)), url(/Stonewall2.png)',
+                  backgroundImage:'linear-gradient(160deg,rgba(10,8,5,0.85),rgba(18,14,8,0.85),rgba(6,5,3,0.85)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
-                  border:'1px solid rgba(180,135,20,0.55)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,200,60,0.06)',
+                  border:'1px solid rgba(212,175,55,0.4)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,110,10,0.4), inset 0 1px 0 rgba(255,200,60,0.06)';e.currentTarget.style.borderColor='rgba(210,165,30,0.75)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,200,60,0.06)';e.currentTarget.style.borderColor='rgba(180,135,20,0.55)';}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,120,20,0.3), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.72)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.4)';}}
               >
-                <img src={elf.img} alt={elf.name} style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(180,135,20,0.6)',boxShadow:'0 0 12px rgba(180,135,10,0.3)'}}/>
+                <img src={elf.img} alt={elf.name} style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(212,175,55,0.5)',boxShadow:'0 0 12px rgba(212,175,55,0.2)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(200,160,70,0.8)',marginBottom:'3px'}}>{elf.name}</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(255,215,80,1)',marginBottom:'4px'}}>The Merchant</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(180,135,20,0.4)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(190,150,60,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>{elf.name}</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Merchant</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
                 </div>
               </button>
 
@@ -284,20 +284,20 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); onOpenHealer && onOpenHealer(); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  backgroundImage:'linear-gradient(160deg,rgba(7,26,18,0.82),rgba(13,43,30,0.82),rgba(4,16,9,0.82)), url(/Stonewall2.png)',
+                  backgroundImage:'linear-gradient(160deg,rgba(10,8,5,0.85),rgba(18,14,8,0.85),rgba(6,5,3,0.85)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
-                  border:'1px solid rgba(40,180,120,0.5)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(52,211,153,0.06)',
+                  border:'1px solid rgba(212,175,55,0.4)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(20,140,80,0.35), inset 0 1px 0 rgba(52,211,153,0.06)';e.currentTarget.style.borderColor='rgba(52,211,153,0.7)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(52,211,153,0.06)';e.currentTarget.style.borderColor='rgba(40,180,120,0.5)';}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,120,20,0.3), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.72)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.4)';}}
               >
-                <img src="/npcs/medic.png" alt="Healer" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(40,180,120,0.6)',boxShadow:'0 0 12px rgba(40,180,120,0.3)'}}/>
+                <img src="/npcs/medic.png" alt="Healer" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(212,175,55,0.5)',boxShadow:'0 0 12px rgba(212,175,55,0.2)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(100,210,160,0.8)',marginBottom:'3px'}}>Sister Mara</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(110,231,183,1)',marginBottom:'4px'}}>The Healer</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(40,180,120,0.4)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(80,190,140,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Restore HP</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Sister Mara</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Healer</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Restore HP</p>
                 </div>
               </button>
 
@@ -310,20 +310,20 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); onOpenBestiary && onOpenBestiary(); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  backgroundImage:'linear-gradient(160deg,rgba(15,8,32,0.82),rgba(26,15,53,0.82),rgba(9,5,20,0.82)), url(/Stonewall2.png)',
+                  backgroundImage:'linear-gradient(160deg,rgba(10,8,5,0.85),rgba(18,14,8,0.85),rgba(6,5,3,0.85)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
-                  border:'1px solid rgba(139,92,246,0.5)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(167,139,250,0.06)',
+                  border:'1px solid rgba(212,175,55,0.4)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(100,60,200,0.4), inset 0 1px 0 rgba(167,139,250,0.06)';e.currentTarget.style.borderColor='rgba(167,139,250,0.75)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(167,139,250,0.06)';e.currentTarget.style.borderColor='rgba(139,92,246,0.5)';}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,120,20,0.3), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.72)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.4)';}}
               >
-                <img src="/npcs/female-warrior.png" alt="Kael" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(139,92,246,0.6)',boxShadow:'0 0 12px rgba(139,92,246,0.3)'}}/>
+                <img src="/npcs/female-warrior.png" alt="Kael" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(212,175,55,0.5)',boxShadow:'0 0 12px rgba(212,175,55,0.2)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(167,139,250,0.8)',marginBottom:'3px'}}>Kael</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(196,181,253,1)',marginBottom:'4px'}}>The Bestiary</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(139,92,246,0.4)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(167,139,250,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Creatures · Factions</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Kael</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Bestiary</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Creatures · Factions</p>
                 </div>
               </button>
 
@@ -331,20 +331,20 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); onOpenForge && onOpenForge(); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',
-                  backgroundImage:'linear-gradient(160deg,rgba(6,14,26,0.82),rgba(12,26,46,0.82),rgba(3,8,16,0.82)), url(/Stonewall2.png)',
+                  backgroundImage:'linear-gradient(160deg,rgba(10,8,5,0.85),rgba(18,14,8,0.85),rgba(6,5,3,0.85)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
-                  border:'1px solid rgba(56,130,210,0.5)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(96,165,250,0.06)',
+                  border:'1px solid rgba(212,175,55,0.4)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(30,90,180,0.4), inset 0 1px 0 rgba(96,165,250,0.06)';e.currentTarget.style.borderColor='rgba(96,165,250,0.75)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(96,165,250,0.06)';e.currentTarget.style.borderColor='rgba(56,130,210,0.5)';}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,120,20,0.3), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.72)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.4)';}}
               >
-                <img src="/npcs/warrior.png" alt="Rylan" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(56,130,210,0.6)',boxShadow:'0 0 12px rgba(56,130,210,0.3)'}}/>
+                <img src="/npcs/warrior.png" alt="Rylan" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(212,175,55,0.5)',boxShadow:'0 0 12px rgba(212,175,55,0.2)'}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(96,165,250,0.8)',marginBottom:'3px'}}>Rylan</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(147,197,253,1)',marginBottom:'4px'}}>The Forge</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(56,130,210,0.4)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(96,165,250,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Study · Flashcards</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Rylan</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Forge</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Study · Flashcards</p>
                 </div>
               </button>
 
@@ -352,26 +352,26 @@ const QuestTab = ({
               <button
                 onClick={() => { sounds.click(); onOpenHero && onOpenHero(); }}
                 style={{padding:'16px 10px 14px',borderRadius:'10px',cursor:'pointer',textAlign:'center',position:'relative',
-                  backgroundImage:'linear-gradient(160deg,rgba(5,18,22,0.82),rgba(10,32,40,0.82),rgba(3,12,16,0.82)), url(/Stonewall2.png)',
+                  backgroundImage:'linear-gradient(160deg,rgba(10,8,5,0.85),rgba(18,14,8,0.85),rgba(6,5,3,0.85)), url(/Stonewall2.png)',
                   backgroundSize:'cover',backgroundPosition:'center',
-                  border:'1px solid rgba(20,180,200,0.45)',
-                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(80,220,240,0.05)',
+                  border:'1px solid rgba(212,175,55,0.4)',
+                  boxShadow:'0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)',
                   transition:'all 0.2s',display:'flex',flexDirection:'column',alignItems:'center',gap:'8px'}}
-                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(10,140,170,0.4), inset 0 1px 0 rgba(80,220,240,0.05)';e.currentTarget.style.borderColor='rgba(60,220,240,0.7)';}}
-                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(80,220,240,0.05)';e.currentTarget.style.borderColor='rgba(20,180,200,0.45)';}}
+                onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-3px)';e.currentTarget.style.boxShadow='0 8px 24px rgba(150,120,20,0.3), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.72)';}}
+                onMouseLeave={e=>{e.currentTarget.style.transform='translateY(0)';e.currentTarget.style.boxShadow='0 4px 16px rgba(0,0,0,0.5), inset 0 1px 0 rgba(212,175,55,0.04)';e.currentTarget.style.borderColor='rgba(212,175,55,0.4)';}}
               >
                 {unspentStatPoints > 0 && (
                   <div style={{position:'absolute',top:'-5px',right:'-5px',minWidth:'20px',height:'20px',borderRadius:'10px',background:'rgba(212,175,55,0.95)',border:'1px solid rgba(255,235,150,0.6)',display:'flex',alignItems:'center',justifyContent:'center',padding:'0 5px',boxShadow:'0 0 10px rgba(212,175,55,0.7)',zIndex:5}}>
                     <span style={{fontFamily:"'Cinzel',serif",fontSize:'0.6rem',fontWeight:900,color:'#1a1200',letterSpacing:'0.05em'}}>{unspentStatPoints}</span>
                   </div>
                 )}
-                <img src="/npcs/elf-warrior.png" alt="Soren" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(20,180,200,0.55)',boxShadow:'0 0 12px rgba(20,180,200,0.25)'}}
+                <img src="/npcs/elf-warrior.png" alt="Soren" style={{width:'96px',height:'96px',objectFit:'cover',objectPosition:'top',borderRadius:'50%',border:'2px solid rgba(212,175,55,0.5)',boxShadow:'0 0 12px rgba(212,175,55,0.2)'}}
                   onError={e=>{e.currentTarget.style.display='none';}}/>
                 <div>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(80,210,230,0.8)',marginBottom:'3px'}}>Soren</p>
-                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(120,235,250,1)',marginBottom:'4px'}}>The Chronicle</p>
-                  <div style={{width:'30px',height:'1px',background:'rgba(20,180,200,0.4)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(80,200,220,0.65)',textTransform:'uppercase',lineHeight:1.4}}>Attributes · Growth</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Soren</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Chronicle</p>
+                  <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Attributes · Growth</p>
                 </div>
               </button>
 
