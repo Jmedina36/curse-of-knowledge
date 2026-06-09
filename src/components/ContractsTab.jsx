@@ -400,8 +400,8 @@ const ContractsTab = ({
                 const isCompleted = completedLocationContracts?.includes(lc.id);
                 const isPending = pendingLocationRewards?.includes(lc.id);
                 const isActive = activeContract?.type === 'location' && activeContract.contract.id === lc.id;
-                const tier = lc.contractTier === 'mythril' ? TIER.mythril : lc.contractTier === 'gold' ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
-                const tierLabel = lc.contractTier === 'mythril' ? 'Mythril' : lc.contractTier === 'gold' ? (lc.mercyContract ? 'Mercy' : 'Gold') : lc.contractTier === 'blood' ? 'Blood' : 'Silver';
+                const tier = lc.contractTier === 'mythril' ? TIER.mythril : lc.mercyContract ? TIER.gold : lc.contractTier === 'blood' ? TIER.platinum : TIER.silver;
+                const tierLabel = lc.contractTier === 'mythril' ? 'Mythril' : lc.mercyContract ? 'Gold' : lc.contractTier === 'blood' ? 'Platinum' : 'Silver';
                 return (
                   <div key={lc.id} style={{
                     position: 'relative',
@@ -409,11 +409,13 @@ const ContractsTab = ({
                       ? 'linear-gradient(160deg,rgba(42,42,48,0.52),rgba(35,35,42,0.52))'
                       : isPending
                         ? 'linear-gradient(160deg,rgba(40,55,20,0.6),rgba(30,45,15,0.6))'
-                        : lc.contractTier === 'gold'
-                          ? 'linear-gradient(160deg,rgba(45,35,5,0.7),rgba(32,24,4,0.7))'
-                          : lc.contractTier === 'blood'
-                            ? 'linear-gradient(160deg,rgba(50,10,10,0.7),rgba(35,5,5,0.7))'
-                            : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
+                        : lc.contractTier === 'mythril'
+                          ? 'linear-gradient(160deg,rgba(0,28,32,0.75),rgba(0,18,22,0.75))'
+                          : lc.mercyContract || lc.contractTier === 'gold'
+                            ? 'linear-gradient(160deg,rgba(45,35,5,0.7),rgba(32,24,4,0.7))'
+                            : lc.contractTier === 'blood'
+                              ? 'linear-gradient(160deg,rgba(38,38,60,0.72),rgba(26,26,48,0.72))'
+                              : 'linear-gradient(160deg,rgba(38,38,45,0.6),rgba(28,28,35,0.6))',
                     border: isCompleted
                       ? '1px solid rgba(80,100,60,0.45)'
                       : isPending
