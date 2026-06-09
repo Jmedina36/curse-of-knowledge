@@ -27,6 +27,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You shouldn't have come looking. I handle problems quietly. You've made that difficult.",
       ],
+      intel: ['/bandits/bandit-3.png', '/bandits/bandit-1.png'],
+      intelNote: "Dray's papers name two others in the Blade: a man called Finn who runs a road checkpoint east of here, and a lookout named Rook. Both still operating.",
     },
     rewards: [
       { type: 'gold',       amount: 40 },
@@ -58,6 +60,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "I've been watching you since the road. I wondered when you'd finally arrive.",
       ],
+      intel: ['/daughters-of-dusk/member-5.png', '/daughters-of-dusk/member-1.png'],
+      intelNote: "A manifest found on Briar lists two Daughters still deployed on the island: one called Knell, assigned to Whisper Forest, and another named Vael — no location given.",
     },
     rewards: [
       { type: 'staminaPots', amount: 2  },
@@ -144,6 +148,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "Nobody gets through without clearance. Those are my orders. I don't write them.",
       ],
+      intel: ['/bandits/bandit-2.png', '/bandits/bandit-4.png'],
+      intelNote: "Finn's route card lists two others: a man called Slag, operating somewhere in the third zone, and a collector named Gorse — described as handling 'physical enforcement' at the pillar site.",
     },
     rewards: [
       { type: 'gold',        amount: 50 },
@@ -175,6 +181,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You keep finding us. That's going to become a problem for you.",
       ],
+      intel: ['/daughters-of-dusk/member-3.png', '/daughters-of-dusk/member-2.png'],
+      intelNote: "Knell spoke two names before the end: Ash, already moving deeper into the zone, and Zira — described as 'the one who doesn't feel anything anymore.' Both still at large.",
     },
     rewards: [
       { type: 'staminaPots', amount: 2  },
@@ -305,6 +313,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "Road's closed. Turn back or we make sure you do.",
       ],
+      intel: ['/bandits/captain-1.png', '/bandits/bandit-5.png'],
+      intelNote: "Rook's shift roster lists a captain named Harrow running the western operation, and a soldier the roster calls 'the wall' — a man named Mace. No further description. None needed.",
     },
     rewards: [
       { type: 'gold',       amount: 60  },
@@ -336,6 +346,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You weren't supposed to think clearly enough to find us. Interesting.",
       ],
+      intel: ['/daughters-of-dusk/captain-1.png', '/daughters-of-dusk/captain-3.png'],
+      intelNote: "A sending from Vael as she fell — two names surfaced: Lyra, a captain who commands field operations, and Vayne, recently elevated. The circumstances of Vayne's promotion were described as 'unclear.' The previous captain disappeared.",
     },
     rewards: [
       { type: 'gold',        amount: 65  },
@@ -367,6 +379,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "The stones aren't for you. Nothing in this zone is for you.",
       ],
+      intel: ['/bandits/captain-2.png', '/bandits/leader.png'],
+      intelNote: "Slag kept a ledger. At the top: a captain named Sable, who manages records for the whole Blade. And the name that has only ever been an initial — Cutter. Not a title. A name. He exists.",
     },
     rewards: [
       { type: 'gold',          amount: 70  },
@@ -398,6 +412,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You're too late. The last transit already went through.",
       ],
+      intel: ['/daughters-of-dusk/captain-2.png', '/daughters-of-dusk/leader.png'],
+      intelNote: "Zira gave two names. An enforcer called Seris — the one even the Daughters fear. And Mira. The leader. The one who believes. Zira said her name like it settled everything.",
     },
     rewards: [
       { type: 'gold',        amount: 75  },
@@ -429,6 +445,8 @@ export const LOCATION_CONTRACTS = [
       dialogue: [
         "You read the pillars. That means you understand what's coming. And you still can't stop it.",
       ],
+      intel: ['/bandits/captain-3.png', '/bandits/bandit-7.png'],
+      intelNote: "Gorse's coat hid a folded message intended for a captain named Vorn. And scratched into the coat lining, a name: Vetch. The one they call the Grudge. Still unaccounted for.",
     },
     rewards: [
       { type: 'gold',          amount: 80  },

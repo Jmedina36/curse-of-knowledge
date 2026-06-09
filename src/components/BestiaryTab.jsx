@@ -235,7 +235,7 @@ const THE_CURSED = [
   },
 ];
 
-const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }) => {
+const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], onClose }) => {
   const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
   const [activeTab, setActiveTab] = useState('index');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -430,33 +430,118 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }
               {Object.values(FACTION_ROSTER).map(faction => {
                 const allEntries = [...faction.members, ...faction.captains, faction.leader];
                 const defeatedCount = allEntries.filter(e => defeatedFactionMembers.includes(e.img)).length;
+                const anyKnown = allEntries.some(e => intelUnlocked.includes(e.img) || defeatedFactionMembers.includes(e.img));
+
+                // Faction entirely unknown — show locked placeholder
+                if (!anyKnown) {
+                  return (
+                    <div key={faction.name} style={{ marginBottom: '40px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                        <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(100,90,70,0.25))' }} />
+                        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(120,110,90,0.4)' }}>
+                          ??? Unknown Faction
+                        </span>
+                        <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(100,90,70,0.25))' }} />
+                      </div>
+                      <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(120,110,90,0.3)', fontStyle: 'italic', margin: 0 }}>
+                        No information recovered. Continue investigating.
+                      </p>
+                    </div>
+                  );
+                }
 
                 const FactionCard = ({ entry, isLeader, isCapt }) => {
                   const defeated = defeatedFactionMembers.includes(entry.img);
+                  const revealed = intelUnlocked.includes(entry.img) || defeated;
                   const rankLabel = isLeader ? 'Leader' : isCapt ? 'Captain' : 'Member';
+
+                  // Unknown — silhouette
+                  if (!revealed) {
+                    return (
+                      <div style={{
+                        borderRadius: '10px', padding: '16px 14px', textAlign: 'center',
+                        background: 'rgba(8,8,10,0.7)',
+                        border: '1px solid rgba(60,55,45,0.3)',
+                        position: 'relative',
+                      }}>
+                        <div style={{
+                          position: 'absolute', top: '8px', left: '8px',
+                          fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em',
+                          padding: '2px 6px', borderRadius: '3px',
+                          background: 'rgba(0,0,0,0.5)',
+                          border: '1px solid rgba(80,70,50,0.3)',
+                          color: 'rgba(100,90,70,0.5)',
+                        }}>{rankLabel}</div>
+                        <div style={{ position: 'relative', width: 90, margin: '14px auto 12px' }}>
+                          <img
+                            src={entry.img} alt="unknown"
+                            style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'brightness(0) contrast(0.6)' }}
+                          />
+                        </div>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(80,75,60,0.6)', marginBottom: '6px' }}>???</p>
+                        <p style={{ fontSize: '0.68rem', color: 'rgba(80,75,60,0.4)', fontStyle: 'italic', margin: 0 }}>No information recovered.</p>
+                      </div>
+                    );
+                  }
+
+                  // At Large — portrait visible, amber badge
+                  if (!defeated) {
+                    return (
+                      <div style={{
+                        borderRadius: '10px', padding: '16px 14px', textAlign: 'center',
+                        background: VISUAL_STYLES.card.default,
+                        border: `1px solid ${faction.border}`,
+                        boxShadow: `0 0 16px ${faction.glow}`,
+                        position: 'relative',
+                        transition: 'all 0.2s',
+                      }}>
+                        <div style={{
+                          position: 'absolute', top: '8px', right: '8px',
+                          fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em',
+                          padding: '2px 7px', borderRadius: '3px',
+                          background: 'rgba(0,0,0,0.6)',
+                          border: '1px solid rgba(212,160,30,0.5)',
+                          color: 'rgba(230,180,40,0.9)',
+                        }}>At Large</div>
+                        <div style={{
+                          position: 'absolute', top: '8px', left: '8px',
+                          fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em',
+                          padding: '2px 6px', borderRadius: '3px',
+                          background: 'rgba(0,0,0,0.5)',
+                          border: `1px solid ${faction.border}`,
+                          color: faction.color,
+                        }}>{rankLabel}</div>
+                        <div style={{ position: 'relative', width: 90, margin: '14px auto 12px' }}>
+                          <img
+                            src={entry.img} alt={entry.name}
+                            style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: `drop-shadow(0 0 10px ${faction.color}66)` }}
+                          />
+                        </div>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: faction.color, marginBottom: '2px', lineHeight: 1.3 }}>{entry.name}</p>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(200,185,150,0.6)', textTransform: 'uppercase', marginBottom: '10px' }}>{entry.title}</p>
+                        <p style={{ fontSize: '0.7rem', color: 'rgba(220,210,185,0.6)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{entry.lore}</p>
+                      </div>
+                    );
+                  }
+
+                  // Defeated — greyed + SLAIN
                   return (
                     <div style={{
                       borderRadius: '10px', padding: '16px 14px', textAlign: 'center',
                       background: VISUAL_STYLES.card.default,
-                      border: `1px solid ${defeated ? 'rgba(80,80,80,0.3)' : faction.border}`,
-                      boxShadow: defeated ? 'none' : `0 0 16px ${faction.glow}`,
-                      opacity: defeated ? 0.6 : 1,
+                      border: '1px solid rgba(80,80,80,0.3)',
+                      opacity: 0.6,
                       position: 'relative',
                       transition: 'all 0.2s',
                     }}>
-                      {/* Status badge */}
                       <div style={{
                         position: 'absolute', top: '8px', right: '8px',
                         fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em',
                         padding: '2px 7px', borderRadius: '3px',
-                        background: defeated ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.5)',
-                        border: `1px solid ${defeated ? 'rgba(80,200,80,0.4)' : 'rgba(200,200,200,0.15)'}`,
-                        color: defeated ? 'rgba(100,220,100,0.9)' : 'rgba(200,200,200,0.4)',
-                      }}>
-                        {defeated ? 'Defeated' : 'At Large'}
-                      </div>
-
-                      {/* Rank badge */}
+                        background: 'rgba(0,0,0,0.6)',
+                        border: '1px solid rgba(80,200,80,0.4)',
+                        color: 'rgba(100,220,100,0.9)',
+                      }}>Defeated</div>
                       <div style={{
                         position: 'absolute', top: '8px', left: '8px',
                         fontSize: '0.55rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em',
@@ -465,54 +550,28 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], onClose }
                         border: `1px solid ${faction.border}`,
                         color: faction.color,
                       }}>{rankLabel}</div>
-
-                      {/* Portrait + SLAIN stamp */}
-                      <div style={{ position: 'relative', width: 90, margin: '14px auto 12px', display: 'block' }}>
+                      <div style={{ position: 'relative', width: 90, margin: '14px auto 12px' }}>
                         <img
                           src={entry.img} alt={entry.name}
-                          style={{
-                            width: 90, height: 90, objectFit: 'contain', display: 'block',
-                            filter: defeated
-                              ? 'grayscale(1) brightness(0.45)'
-                              : `drop-shadow(0 0 10px ${faction.color}66)`,
-                          }}
+                          style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.45)' }}
                         />
-                        {defeated && (
-                          <div style={{
-                            position: 'absolute', top: '50%', left: '50%',
-                            transform: 'translate(-50%, -50%) rotate(-18deg)',
-                            fontFamily: 'Cinzel, serif', fontWeight: 900,
-                            fontSize: '1.35rem', letterSpacing: '0.18em',
-                            color: 'rgba(200, 30, 30, 0.92)',
-                            border: '3px solid rgba(200, 30, 30, 0.85)',
-                            padding: '2px 8px', borderRadius: '3px',
-                            textShadow: '0 0 8px rgba(200,30,30,0.6)',
-                            boxShadow: '0 0 10px rgba(200,30,30,0.3), inset 0 0 6px rgba(0,0,0,0.4)',
-                            background: 'rgba(0,0,0,0.35)',
-                            whiteSpace: 'nowrap', pointerEvents: 'none',
-                          }}>SLAIN</div>
-                        )}
+                        <div style={{
+                          position: 'absolute', top: '50%', left: '50%',
+                          transform: 'translate(-50%, -50%) rotate(-18deg)',
+                          fontFamily: 'Cinzel, serif', fontWeight: 900,
+                          fontSize: '1.35rem', letterSpacing: '0.18em',
+                          color: 'rgba(200,30,30,0.92)',
+                          border: '3px solid rgba(200,30,30,0.85)',
+                          padding: '2px 8px', borderRadius: '3px',
+                          textShadow: '0 0 8px rgba(200,30,30,0.6)',
+                          boxShadow: '0 0 10px rgba(200,30,30,0.3), inset 0 0 6px rgba(0,0,0,0.4)',
+                          background: 'rgba(0,0,0,0.35)',
+                          whiteSpace: 'nowrap', pointerEvents: 'none',
+                        }}>SLAIN</div>
                       </div>
-
-                      {/* Name */}
-                      <p style={{
-                        fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem',
-                        color: defeated ? 'rgba(140,130,110,0.6)' : faction.color,
-                        marginBottom: '2px', lineHeight: 1.3,
-                      }}>{entry.name}</p>
-
-                      {/* Title */}
-                      <p style={{
-                        fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em',
-                        color: defeated ? 'rgba(120,110,90,0.5)' : 'rgba(200,185,150,0.6)',
-                        textTransform: 'uppercase', marginBottom: '10px',
-                      }}>{entry.title}</p>
-
-                      {/* Lore */}
-                      <p style={{
-                        fontSize: '0.7rem', color: defeated ? 'rgba(120,110,90,0.45)' : 'rgba(220,210,185,0.6)',
-                        fontStyle: 'italic', lineHeight: 1.55, margin: 0,
-                      }}>{entry.lore}</p>
+                      <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(140,130,110,0.6)', marginBottom: '2px', lineHeight: 1.3 }}>{entry.name}</p>
+                      <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(120,110,90,0.5)', textTransform: 'uppercase', marginBottom: '10px' }}>{entry.title}</p>
+                      <p style={{ fontSize: '0.7rem', color: 'rgba(120,110,90,0.45)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{entry.lore}</p>
                     </div>
                   );
                 };

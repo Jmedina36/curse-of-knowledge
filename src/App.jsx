@@ -201,6 +201,7 @@ const FantasyStudyQuest = () => {
   const [capturedMonsters, setCapturedMonsters] = useState([]);
   const [defeatedFactionMembers, setDefeatedFactionMembers] = useState([]);
   const [restedCursed, setRestedCursed] = useState([]);
+  const [intelUnlocked, setIntelUnlocked] = useState([]);
   const [weapon, setWeapon] = useState(0);
   const [armor, setArmor] = useState(0);
   
@@ -1148,6 +1149,7 @@ const getDateKey = useCallback((date) => {
         if (data.huntingChallenges) setHuntingChallenges(data.huntingChallenges);
         if (data.defeatedFactionMembers) setDefeatedFactionMembers(data.defeatedFactionMembers);
         if (Array.isArray(data.restedCursed)) setRestedCursed(data.restedCursed);
+        if (Array.isArray(data.intelUnlocked)) setIntelUnlocked(data.intelUnlocked);
         if (data.lastEncounterDay !== undefined) setLastEncounterDay(data.lastEncounterDay);
         if (data.unspentStatPoints !== undefined) setUnspentStatPoints(data.unspentStatPoints);
   }
@@ -1216,7 +1218,7 @@ const getDateKey = useCallback((date) => {
   gauntletMilestone, gauntletUnlocked,
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
   studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
-  restedCursed, lastEncounterDay, gemCounts, unspentStatPoints,
+  restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked,
 };
       writeSave(saveData);
       
@@ -1224,7 +1226,7 @@ const getDateKey = useCallback((date) => {
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -4126,6 +4128,9 @@ if (battleType === 'elite') {
     // Track faction member defeat for bestiary cross-out
     const _contractImg = banditEnemyImg;
     if (_contractImg) setDefeatedFactionMembers(prev => prev.includes(_contractImg) ? prev : [...prev, _contractImg]);
+    // Drop intel from story contract encounter
+    const _intel = _ac.contract.encounter?.intel;
+    if (_intel?.length) setIntelUnlocked(prev => [...new Set([...prev, ..._intel])]);
     setPendingLocationRewards(prev => [...prev, _ac.contract.id]);
     addLog(`Contract fulfilled: "${_ac.contract.name}" — return to the board to collect your reward.`);
     setActiveContract(null);
@@ -7675,6 +7680,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <BestiaryTab
               defeatedFactionMembers={defeatedFactionMembers}
               restedCursed={restedCursed}
+              intelUnlocked={intelUnlocked}
               onClose={() => setActiveTab('quest')}
             />
           )}
@@ -8384,7 +8390,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
                     setIsCursedWave(false); setIsEliteWave(false); setIsOrderFinal(false);
                     setDefeatedFactionMembers([]); setHuntingChallenges({});
-                    setRestedCursed([]); setLastEncounterDay(0);
+                    setRestedCursed([]); setIntelUnlocked([]); setLastEncounterDay(0);
                     setGemCounts({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 }); setUnspentStatPoints(0);
                     setEnemyGender(null); setEliteSfxKey(null);
                     banditLineupRef.current = []; daughtersLineupRef.current = [];

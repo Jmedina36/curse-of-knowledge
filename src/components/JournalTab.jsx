@@ -404,6 +404,29 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               ))}
             </div>
 
+            {/* Intel note — shown if contract dropped faction intel */}
+            {selectedContract.encounter?.intelNote && (
+              <div style={{
+                marginTop: '24px',
+                padding: '14px 16px',
+                borderRadius: '6px',
+                background: 'rgba(212,160,30,0.06)',
+                border: '1px solid rgba(212,160,30,0.2)',
+              }}>
+                <p style={{
+                  fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 700,
+                  letterSpacing: '0.25em', textTransform: 'uppercase',
+                  color: 'rgba(212,160,30,0.6)', margin: '0 0 8px',
+                }}>Intel Recovered</p>
+                <p style={{
+                  fontSize: '0.8rem', lineHeight: 1.7,
+                  color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic',
+                }}>
+                  {selectedContract.encounter.intelNote}
+                </p>
+              </div>
+            )}
+
             {/* Divider + contract name */}
             <div style={{
               marginTop: '32px',
