@@ -220,6 +220,17 @@ const BattleModal = ({
   playerStunned,
   setPlayerStunned,
   currentBattleCreature,
+  unlockedSkillNodes = [],
+  knightWarlordsRoarTurns = 0,
+  knightUnbreakableTurns = 0,
+  knightRampartTurns = 0,
+  knightRetributionStance = false,
+  knightNoQuarterStacks = 0,
+  useWarlordsRoar,
+  useUnbreakable,
+  useRampart,
+  useNoQuarter,
+  useRetribution,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -1358,9 +1369,99 @@ const BattleModal = ({
                       })()}
                     </div>
 
+                    {/* ── Knight Active Skills ── */}
+                    {hero?.class?.name === 'Knight' && (() => {
+                      const knightSkills = [
+                        {
+                          id: 'kn_warlords_roar', name: "Warlord's Roar", spCost: 20,
+                          active: knightWarlordsRoarTurns > 0,
+                          activeTurns: knightWarlordsRoarTurns,
+                          handler: useWarlordsRoar,
+                          color: 'rgba(220,120,30,0.85)', border: 'rgba(220,120,30,0.6)',
+                          desc: '+30% ATK · +15% Crit · 2 turns',
+                        },
+                        {
+                          id: 'kn_unbreakable', name: 'Unbreakable', spCost: 20,
+                          active: knightUnbreakableTurns > 0,
+                          activeTurns: knightUnbreakableTurns,
+                          handler: useUnbreakable,
+                          color: 'rgba(60,130,200,0.85)', border: 'rgba(60,130,200,0.6)',
+                          desc: '+30% DEF · 2 turns',
+                        },
+                        {
+                          id: 'kn_rampart', name: 'Rampart', spCost: 20,
+                          active: knightRampartTurns > 0,
+                          activeTurns: knightRampartTurns,
+                          handler: useRampart,
+                          color: 'rgba(80,160,100,0.85)', border: 'rgba(80,160,100,0.6)',
+                          desc: 'Enemy -30% ATK · 2 turns',
+                        },
+                        {
+                          id: 'kn_no_quarter', name: 'No Quarter', spCost: 25,
+                          active: false,
+                          activeTurns: 0,
+                          handler: useNoQuarter,
+                          color: 'rgba(180,30,30,0.85)', border: 'rgba(220,50,50,0.6)',
+                          desc: knightNoQuarterStacks > 0 ? `×${(1.5 + knightNoQuarterStacks * 0.5).toFixed(1)} dmg (${knightNoQuarterStacks} stack${knightNoQuarterStacks !== 1 ? 's' : ''})` : '+50% dmg · stacks',
+                        },
+                        {
+                          id: 'kn_retribution', name: 'Retribution', spCost: 15,
+                          active: knightRetributionStance,
+                          activeTurns: 0,
+                          handler: useRetribution,
+                          color: 'rgba(160,80,200,0.85)', border: 'rgba(180,100,230,0.6)',
+                          desc: knightRetributionStance ? 'Stance active — ready to counter' : 'Counter 2× next hit',
+                        },
+                      ].filter(s => unlockedSkillNodes.includes(s.id));
+
+                      if (knightSkills.length === 0) return null;
+
+                      return (
+                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.18), transparent)', marginBottom: '2px' }} />
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.35)', textAlign: 'center', marginBottom: '2px' }}>Knight Skills</p>
+                          {knightSkills.map(sk => {
+                            const noSP = stamina < sk.spCost;
+                            const disabled = noSP || sk.active;
+                            return (
+                              <button
+                                key={sk.id}
+                                onClick={() => sk.handler && handlePlayerAction(sk.handler, sk.name)}
+                                disabled={disabled}
+                                className="w-full rounded font-bold transition-all border hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed"
+                                style={{
+                                  padding: '7px 10px',
+                                  background: disabled ? 'rgba(25,25,35,0.6)' : `linear-gradient(to right, ${sk.color}, rgba(10,8,5,0.85))`,
+                                  borderColor: disabled ? 'rgba(80,80,80,0.25)' : sk.border,
+                                  color: disabled ? 'rgba(160,150,130,0.4)' : '#F5F5DC',
+                                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                  opacity: disabled ? 0.55 : 1,
+                                }}>
+                                <div style={{ textAlign: 'left' }}>
+                                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
+                                  {sk.active && sk.activeTurns > 0 && (
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
+                                  )}
+                                  {sk.active && sk.activeTurns === 0 && (
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                  )}
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                    {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+
                     <button onClick={() => setBattleMenu('main')}
                       className="w-full py-3 rounded text-base uppercase tracking-widest transition-all hover:opacity-80"
-                      style={{ background: 'rgba(30, 40, 55, 0.6)', border: '1px solid rgba(80,80,80,0.3)', color: '#9CA3AF' }}>
+                      style={{ marginTop: '8px', background: 'rgba(30, 40, 55, 0.6)', border: '1px solid rgba(80,80,80,0.3)', color: '#9CA3AF' }}>
                       ← Back
                     </button>
                   </motion.div>

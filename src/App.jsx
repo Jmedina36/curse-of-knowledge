@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText, LogIn, LogOut } from 'lucide-react';
-import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY } from './constants';
+import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
@@ -286,8 +286,11 @@ const FantasyStudyQuest = () => {
     }
     
     const strMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.str - 10) / 2)) : 0;
-    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod);
-  }, [hero, equippedWeapon]);
+    // Skill tree: Battle-Forged passive
+    const skillAtk = (unlockedSkillNodes.includes('kn_battle_forged') && hero?.class?.name === 'Knight')
+      ? (KNIGHT_SKILL_TREE.find(n => n.id === 'kn_battle_forged')?.bonus?.atk || 0) : 0;
+    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk);
+  }, [hero, equippedWeapon, unlockedSkillNodes]);
   
   const getBaseDefense = useCallback(() => {
     if (!hero || !hero.class || !hero.class.name) return 5;
@@ -310,8 +313,11 @@ const FantasyStudyQuest = () => {
       }
     });
     
-    return Math.floor(baseDefense + armorDefense + affixBonus);
-  }, [hero, equippedArmor]);
+    // Skill tree: Ironclad passive
+    const skillDef = (unlockedSkillNodes.includes('kn_ironclad') && hero?.class?.name === 'Knight')
+      ? (KNIGHT_SKILL_TREE.find(n => n.id === 'kn_ironclad')?.bonus?.def || 0) : 0;
+    return Math.floor(baseDefense + armorDefense + affixBonus + skillDef);
+  }, [hero, equippedArmor, unlockedSkillNodes]);
   
   // Rarity rolling system
   const rollRarity = useCallback((enemyType = 'normal') => {
@@ -653,6 +659,14 @@ const [customClass, setCustomClass] = useState(null);
 const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
 const [contractFulfilled, setContractFulfilled] = useState(null); // { xpEarned, tier }
 const [guildPoints, setGuildPoints] = useState(0);
+const [skillPoints, setSkillPoints] = useState(0);
+const [unlockedSkillNodes, setUnlockedSkillNodes] = useState([]);
+// Knight skill tree battle states
+const [knightWarlordsRoarTurns, setKnightWarlordsRoarTurns] = useState(0);
+const [knightUnbreakableTurns, setKnightUnbreakableTurns] = useState(0);
+const [knightRampartTurns, setKnightRampartTurns] = useState(0);
+const [knightRetributionStance, setKnightRetributionStance] = useState(false);
+const [knightNoQuarterStacks, setKnightNoQuarterStacks] = useState(0);
 
 const GUILD_RANKS = [
   { name: 'Initiate',  min: 0,   color: 'rgba(180,160,120,0.75)' },
@@ -1154,6 +1168,8 @@ const getDateKey = useCallback((date) => {
         if (Array.isArray(data.intelUnlocked)) setIntelUnlocked(data.intelUnlocked);
         if (data.lastEncounterDay !== undefined) setLastEncounterDay(data.lastEncounterDay);
         if (data.unspentStatPoints !== undefined) setUnspentStatPoints(data.unspentStatPoints);
+        if (data.skillPoints !== undefined) setSkillPoints(data.skillPoints);
+        if (Array.isArray(data.unlockedSkillNodes)) setUnlockedSkillNodes(data.unlockedSkillNodes);
   }
 
     useEffect(() => {
@@ -1221,6 +1237,7 @@ const getDateKey = useCallback((date) => {
   isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
   studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
   restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures,
+skillPoints, unlockedSkillNodes,
 };
       writeSave(saveData);
       
@@ -1228,7 +1245,7 @@ const getDateKey = useCallback((date) => {
       setShowSavedIndicator(true);
       setTimeout(() => setShowSavedIndicator(false), 1500);
     }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures]);
+ }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures, skillPoints, unlockedSkillNodes]);
   
   // ESC key to close modals
   useEffect(() => {
@@ -1577,6 +1594,7 @@ const getDateKey = useCallback((date) => {
         });
         addLog(`${primaryAbility.toUpperCase()} increased!`);
         if (newLevel % 2 === 0) setUnspentStatPoints(p => p + 2);
+        setSkillPoints(p => p + 1);
       }
 
       // Skill unlock notifications
@@ -2807,6 +2825,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(false);
     setCanFlee(true);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -2911,6 +2931,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(false);
     setCanFlee(true);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -2994,6 +3016,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(false);
     setCanFlee(true);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3074,6 +3098,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCanFlee(true);
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null); // Clear previous loot
@@ -3150,6 +3176,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(false);
     setCanFlee(false);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3216,6 +3244,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setCanFlee(false);
     setMiniBossCount(bossNumber);
     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3659,13 +3689,20 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (equippedTome?.affixes?.critChance) {
       critChance += equippedTome.affixes.critChance;
     }
+    // Skill tree: Ravager — +10% crit
+    if (unlockedSkillNodes.includes('kn_ravager') && hero?.class?.name === 'Knight') critChance += 10;
+    // Skill tree: Warlord's Roar active — +15% crit
+    if (knightWarlordsRoarTurns > 0 && hero?.class?.name === 'Knight') critChance += 15;
 
     const critRoll = Math.random() * 100;
     const isCrit = critRoll < critChance;
     const actualCritMultiplier = isCrit ? critMultiplier : 1.0;
 
     // Apply crit and enemy defense
-    const damage = Math.max(1, (rawDamage * actualCritMultiplier) - enemyDef);
+    let rawDamageWithBuffs = rawDamage;
+    // Skill tree: Warlord's Roar active — +30% ATK
+    if (knightWarlordsRoarTurns > 0 && hero?.class?.name === 'Knight') rawDamageWithBuffs = Math.floor(rawDamageWithBuffs * 1.30);
+    const damage = Math.max(1, (rawDamageWithBuffs * actualCritMultiplier) - enemyDef);
     let finalDamage = damage;
     let bonusMessages = [];
     
@@ -4330,6 +4367,14 @@ if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
 if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
   knightDefenseModifier += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus; // +0.40
 }
+// Skill tree: Unbreakable — +30% damage reduction
+if (knightUnbreakableTurns > 0 && hero?.class?.name === 'Knight') {
+  knightDefenseModifier += 0.30;
+}
+// Skill tree: Rampart — enemy -30% ATK
+if (knightRampartTurns > 0 && hero?.class?.name === 'Knight') {
+  bossDamage = Math.max(1, Math.floor(bossDamage * 0.70));
+}
 
 // Apply net modifier (can be positive or negative)
 if (knightDefenseModifier !== 0) {
@@ -4415,7 +4460,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         return newHp;
       });
       addLog(`💥 Boss strikes! -${bossDamage} HP${enragedTurns > 0 ? ' (ENRAGED!)' : ''}`);
-      
+
+      // Skill tree: Retribution — counter 2x damage received
+      if (knightRetributionStance && hero?.class?.name === 'Knight') {
+        const counterDmg = bossDamage * 2;
+        setBossHp(h => Math.max(0, h - counterDmg));
+        addLog(`⚔️ RETRIBUTION! Countered for ${counterDmg} damage!`);
+        setKnightRetributionStance(false);
+      }
+
       // Decrement enraged turns
       if (enragedTurns > 0) {
         setEnragedTurns(prev => {
@@ -4479,7 +4532,17 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           return newTurns;
         });
       }
-      
+      // Skill tree buff tick-downs
+      if (knightWarlordsRoarTurns > 0) {
+        setKnightWarlordsRoarTurns(prev => { const n = prev - 1; if (n === 0) addLog(`⚔️ Warlord's Roar fades...`); return n; });
+      }
+      if (knightUnbreakableTurns > 0) {
+        setKnightUnbreakableTurns(prev => { const n = prev - 1; if (n === 0) addLog(`⚔️ Unbreakable fades...`); return n; });
+      }
+      if (knightRampartTurns > 0) {
+        setKnightRampartTurns(prev => { const n = prev - 1; if (n === 0) addLog(`⚔️ Rampart fades...`); return n; });
+      }
+
       setTimeout(() => {
         if (!battling) return;
         
@@ -5155,6 +5218,14 @@ if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') {
 // Rallying Roar: +40% defense (TANK MODE)
 if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') {
   knightDefenseModifier += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus; // +0.40
+}
+// Skill tree: Unbreakable — +30% damage reduction
+if (knightUnbreakableTurns > 0 && hero?.class?.name === 'Knight') {
+  knightDefenseModifier += 0.30;
+}
+// Skill tree: Rampart — enemy -30% ATK
+if (knightRampartTurns > 0 && hero?.class?.name === 'Knight') {
+  bossDamage = Math.max(1, Math.floor(bossDamage * 0.70));
 }
 
 // Apply net modifier (can be positive or negative)
@@ -6290,9 +6361,92 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     }, enemyDelay); // Delay counter-attack like normal
   };
   
+  // ── Skill Tree ─────────────────────────────────────────────────────────
+  const unlockSkillNode = (nodeId) => {
+    const tree = hero?.class?.name === 'Knight' ? KNIGHT_SKILL_TREE : null;
+    if (!tree) return;
+    const node = tree.find(n => n.id === nodeId);
+    if (!node) return;
+    if (unlockedSkillNodes.includes(nodeId)) return;
+    if (skillPoints < node.cost) { addLog('Not enough skill points.'); return; }
+    const prereqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
+    if (!prereqsMet) { addLog('Prerequisites not met.'); return; }
+    setSkillPoints(p => p - node.cost);
+    setUnlockedSkillNodes(prev => [...prev, nodeId]);
+    addLog(`Skill unlocked: ${node.name}!`);
+  };
+
+  const useWarlordsRoar = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Knight') return;
+    if (!unlockedSkillNodes.includes('kn_warlords_roar')) return;
+    if (stamina < 20) { addLog('Not enough stamina for Warlord\'s Roar! (20 SP)'); return; }
+    setStamina(s => s - 20);
+    setKnightWarlordsRoarTurns(2);
+    addLog(`⚔️ WARLORD'S ROAR! +30% ATK, +15% Crit for 2 turns!`);
+    setTurnPhase('enemy');
+    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+  };
+
+  const useUnbreakable = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Knight') return;
+    if (!unlockedSkillNodes.includes('kn_unbreakable')) return;
+    if (stamina < 20) { addLog('Not enough stamina for Unbreakable! (20 SP)'); return; }
+    setStamina(s => s - 20);
+    setKnightUnbreakableTurns(2);
+    addLog(`🛡️ UNBREAKABLE! +30% damage reduction for 2 turns!`);
+    setTurnPhase('enemy');
+    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+  };
+
+  const useRampart = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Knight') return;
+    if (!unlockedSkillNodes.includes('kn_rampart')) return;
+    if (stamina < 20) { addLog('Not enough stamina for Rampart! (20 SP)'); return; }
+    setStamina(s => s - 20);
+    setKnightRampartTurns(2);
+    addLog(`🛡️ RAMPART! Enemy -30% ATK for 2 turns!`);
+    setTurnPhase('enemy');
+    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+  };
+
+  const useNoQuarter = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Knight') return;
+    if (!unlockedSkillNodes.includes('kn_no_quarter')) return;
+    if (stamina < 25) { addLog('Not enough stamina for No Quarter! (25 SP)'); return; }
+    setStamina(s => s - 25);
+    const stacks = knightNoQuarterStacks;
+    const mult = 1.5 + stacks * 0.5;
+    setKnightNoQuarterStacks(s => s + 1);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
+    const damage = Math.max(1, Math.floor(rawDamage * mult) - enemyDef);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    addLog(`⚔️ NO QUARTER! (${mult.toFixed(1)}x) — ${damage} damage!`);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    setTurnPhase('enemy');
+    setTimeout(() => { if (battling && newBossHp > 0) { enemyAttack(); } }, enemyDelay);
+  };
+
+  const useRetribution = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Knight') return;
+    if (!unlockedSkillNodes.includes('kn_retribution')) return;
+    if (stamina < 15) { addLog('Not enough stamina for Retribution! (15 SP)'); return; }
+    setStamina(s => s - 15);
+    setKnightRetributionStance(true);
+    addLog(`⚔️ RETRIBUTION STANCE — counter 2× the next hit!`);
+    setTurnPhase('enemy');
+    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+  };
+  // ── End Skill Tree ──────────────────────────────────────────────────
+
   const flee = () => {
     if (!canFlee) return;
-    
+
     // Check stamina requirement
     if (stamina < 25) {
       addLog('Warning: Not enough stamina to flee! (Need 25 SP)');
@@ -7440,6 +7594,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       setIsFinalBoss(false);
                       setBossName('');
                       setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
                       setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
                       setRecklessStacks(0);
                       setLog([]);
@@ -7707,6 +7863,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               guildRank={guildRank}
               unspentStatPoints={unspentStatPoints}
               onConfirmStats={handleASIConfirm}
+              skillPoints={skillPoints}
+              unlockedSkillNodes={unlockedSkillNodes}
+              onUnlockSkillNode={unlockSkillNode}
             />
           )}
           {activeTab === 'map' && (
@@ -8384,6 +8543,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setBossHp(0); setBossMax(0); setBattleType('regular'); setBattleMenu('main');
                     setIsFinalBoss(false); setBossName('');
                     setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
+    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
                     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
                     setRecklessStacks(0); setInPhase1(false); setInPhase2(false); setInPhase3(false);
                     setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0); setPhase3TurnCounter(0);
@@ -8596,6 +8757,12 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               attack={attack} useCrushingBlow={useCrushingBlow}
               useSmite={useSmite} specialAttack={specialAttack} chargedStrike={chargedStrike}
               useTacticalSkill={useTacticalSkill} useHealth={useHealth}
+              unlockedSkillNodes={unlockedSkillNodes}
+              knightWarlordsRoarTurns={knightWarlordsRoarTurns} knightUnbreakableTurns={knightUnbreakableTurns}
+              knightRampartTurns={knightRampartTurns} knightRetributionStance={knightRetributionStance}
+              knightNoQuarterStacks={knightNoQuarterStacks}
+              useWarlordsRoar={useWarlordsRoar} useUnbreakable={useUnbreakable}
+              useRampart={useRampart} useNoQuarter={useNoQuarter} useRetribution={useRetribution}
               flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}

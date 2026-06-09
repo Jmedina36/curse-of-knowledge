@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { sounds } from '../sounds';
-import { GAME_CONSTANTS } from '../constants';
+import { GAME_CONSTANTS, KNIGHT_SKILL_TREE } from '../constants';
 
 const SOREN_QUOTES = [
   "The measure of a champion lies not in their victories, but in their relentless pursuit of mastery.",
@@ -103,6 +103,9 @@ const HeroTab = ({
   guildRank,
   unspentStatPoints = 0,
   onConfirmStats,
+  skillPoints = 0,
+  unlockedSkillNodes = [],
+  onUnlockSkillNode,
 }) => {
   const [sorenQuote] = useState(() => SOREN_QUOTES[Math.floor(Math.random() * SOREN_QUOTES.length)]);
   const [showSkillTree, setShowSkillTree] = useState(false);
@@ -503,32 +506,148 @@ const HeroTab = ({
               style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', padding: 0, display: 'flex', alignItems: 'center', gap: '10px' }}
             >
               <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>Skill Tree</span>
+              {skillPoints > 0 && (
+                <span style={{
+                  fontFamily: 'Cinzel, serif', fontSize: '0.56rem', fontWeight: 900,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  color: 'rgba(255,220,80,0.9)',
+                  background: 'rgba(212,175,55,0.15)',
+                  border: '1px solid rgba(212,175,55,0.4)',
+                  borderRadius: '3px', padding: '1px 6px',
+                  animation: 'pulse 2s ease-in-out infinite',
+                }}>
+                  {skillPoints} pt{skillPoints !== 1 ? 's' : ''}
+                </span>
+              )}
               <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(212,175,55,0.15), transparent)' }} />
               <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: 'rgba(212,175,55,0.3)', letterSpacing: '0.1em' }}>{showSkillTree ? '▲ hide' : '▼ show'}</span>
             </button>
 
-            {showSkillTree && (
-              <div style={{ marginTop: '16px' }}>
-                {SKILL_TREE.map((row, ri) => (
-                  <div key={ri} style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginBottom: '10px' }}>
-                    {row.map(node => {
-                      const unlocked = level >= node.reqLevel;
-                      return (
-                        <div key={node.id} style={{ width: '106px', borderRadius: '2px', padding: '9px 10px', textAlign: 'center', background: unlocked ? 'rgba(212,175,55,0.07)' : 'rgba(25,20,12,0.6)', border: `1px solid ${unlocked ? 'rgba(212,175,55,0.38)' : 'rgba(80,70,50,0.2)'}`, opacity: unlocked ? 1 : 0.45, position: 'relative' }}>
-                          {unlocked && <div style={{ position: 'absolute', top: '-2px', right: '-2px', width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(212,175,55,0.9)', boxShadow: '0 0 6px rgba(212,175,55,0.7)' }} />}
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.62rem', fontWeight: 900, color: unlocked ? 'rgba(230,210,165,0.85)' : 'rgba(120,110,85,0.45)', margin: '0 0 2px' }}>{node.label}</p>
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.54rem', color: unlocked ? 'rgba(180,160,118,0.55)' : 'rgba(90,82,62,0.35)', margin: 0 }}>{node.desc}</p>
-                          {!unlocked && <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', color: 'rgba(130,115,85,0.3)', marginTop: '2px', marginBottom: 0 }}>Lv {node.reqLevel}</p>}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.1em', color: 'rgba(150,130,100,0.22)', textAlign: 'center', fontStyle: 'italic', marginTop: '8px' }}>
-                  Paths of power await those who endure
+            {showSkillTree && (() => {
+              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE };
+              const tree = CLASS_TREES[hero.class?.name];
+              if (!tree) return (
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(150,130,100,0.3)', textAlign: 'center', fontStyle: 'italic', marginTop: '16px' }}>
+                  Skill tree coming soon.
                 </p>
-              </div>
-            )}
+              );
+
+              const byTierBranch = {};
+              tree.forEach(n => {
+                const key = `${n.tier}-${n.branch}`;
+                if (!byTierBranch[key]) byTierBranch[key] = [];
+                byTierBranch[key].push(n);
+              });
+
+              return (
+                <div style={{ marginTop: '16px' }}>
+                  {/* Branch labels */}
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(220,120,80,0.45)' }}>Offensive</span>
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'center' }}>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(80,160,220,0.45)' }}>Defensive</span>
+                    </div>
+                  </div>
+
+                  {[1, 2, 3].map(tier => (
+                    <div key={tier} style={{ display: 'flex', gap: '12px', marginBottom: '10px' }}>
+                      {['left', 'right'].map(branch => {
+                        const nodes = byTierBranch[`${tier}-${branch}`] || [];
+                        return (
+                          <div key={branch} style={{ flex: 1, display: 'flex', gap: '6px' }}>
+                            {nodes.map(node => {
+                              const isUnlocked = unlockedSkillNodes.includes(node.id);
+                              const reqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
+                              const canUnlock = !isUnlocked && reqsMet && skillPoints >= node.cost;
+                              const isAvailable = !isUnlocked && reqsMet;
+
+                              return (
+                                <div key={node.id} style={{
+                                  flex: 1, borderRadius: '3px', padding: '8px',
+                                  background: isUnlocked
+                                    ? 'rgba(212,175,55,0.09)'
+                                    : isAvailable ? 'rgba(22,19,11,0.8)' : 'rgba(14,12,7,0.6)',
+                                  border: `1px solid ${isUnlocked
+                                    ? 'rgba(212,175,55,0.45)'
+                                    : isAvailable ? 'rgba(212,175,55,0.18)' : 'rgba(55,50,35,0.2)'}`,
+                                  opacity: isAvailable || isUnlocked ? 1 : 0.4,
+                                  position: 'relative',
+                                  transition: 'all 0.15s',
+                                }}>
+                                  {isUnlocked && (
+                                    <div style={{ position: 'absolute', top: '-3px', right: '-3px', width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(212,175,55,0.9)', boxShadow: '0 0 6px rgba(212,175,55,0.7)' }} />
+                                  )}
+
+                                  {/* Icon placeholder — swap node.icon for an img src when ready */}
+                                  <div style={{
+                                    width: '28px', height: '28px', borderRadius: '2px', margin: '0 auto 5px',
+                                    background: isUnlocked ? 'rgba(212,175,55,0.1)' : 'rgba(35,30,18,0.5)',
+                                    border: `1px solid ${isUnlocked ? 'rgba(212,175,55,0.28)' : 'rgba(70,62,40,0.2)'}`,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                  }}>
+                                    {node.icon
+                                      ? <img src={node.icon} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
+                                      : <span style={{ fontSize: '0.55rem', color: isUnlocked ? 'rgba(212,175,55,0.35)' : 'rgba(70,62,42,0.3)' }}>◆</span>
+                                    }
+                                  </div>
+
+                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.04em', textAlign: 'center', margin: '0 0 2px', color: isUnlocked ? 'rgba(230,215,165,0.9)' : isAvailable ? 'rgba(185,170,132,0.7)' : 'rgba(95,87,62,0.4)' }}>
+                                    {node.name}
+                                  </p>
+
+                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', textAlign: 'center', margin: '0 0 4px', lineHeight: 1.4, color: isUnlocked ? 'rgba(170,152,108,0.6)' : 'rgba(100,92,65,0.4)' }}>
+                                    {node.desc}
+                                  </p>
+
+                                  {node.type === 'active' && (
+                                    <div style={{ textAlign: 'center', marginBottom: '4px' }}>
+                                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.46rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isUnlocked ? 'rgba(100,175,240,0.65)' : 'rgba(60,90,120,0.35)', background: 'rgba(20,50,90,0.2)', borderRadius: '2px', padding: '1px 4px', border: '1px solid rgba(50,90,150,0.15)' }}>
+                                        Active · {node.spCost} SP
+                                      </span>
+                                    </div>
+                                  )}
+
+                                  {!isUnlocked && (
+                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.46rem', textAlign: 'center', margin: '0 0 5px', color: 'rgba(140,125,88,0.38)', letterSpacing: '0.04em' }}>
+                                      {node.cost} pt{node.cost !== 1 ? 's' : ''}
+                                    </p>
+                                  )}
+
+                                  {canUnlock && (
+                                    <button
+                                      onClick={() => onUnlockSkillNode && onUnlockSkillNode(node.id, node.cost)}
+                                      style={{
+                                        display: 'block', width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.5rem',
+                                        letterSpacing: '0.1em', textTransform: 'uppercase', padding: '4px 0',
+                                        borderRadius: '2px', cursor: 'pointer',
+                                        background: 'rgba(212,175,55,0.1)',
+                                        border: '1px solid rgba(212,175,55,0.42)',
+                                        color: 'rgba(255,225,100,0.82)',
+                                        transition: 'all 0.15s',
+                                      }}
+                                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.2)'; }}
+                                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.1)'; }}
+                                    >
+                                      Unlock
+                                    </button>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.54rem', letterSpacing: '0.1em', color: 'rgba(150,130,100,0.22)', textAlign: 'center', fontStyle: 'italic', marginTop: '6px' }}>
+                    {skillPoints > 0 ? `${skillPoints} skill point${skillPoints !== 1 ? 's' : ''} available` : 'Earn points by leveling up'}
+                  </p>
+                </div>
+              );
+            })()}
           </div>
 
         </div>

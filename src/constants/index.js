@@ -805,3 +805,63 @@ export const PRIMARY_ABILITY = {
   Knight: 'str', Wizard: 'int', Assassin: 'dex', Crusader: 'con',
 };
 
+export const KNIGHT_SKILL_TREE = [
+  // ── Tier 1 ──────────────────────────────────────────────────────────
+  {
+    id: 'kn_battle_forged', name: 'Battle-Forged',
+    desc: '+4 Attack', flavor: 'Forged through endless combat.',
+    tier: 1, branch: 'left', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { atk: 4 },
+  },
+  {
+    id: 'kn_ironclad', name: 'Ironclad',
+    desc: '+5 Defense', flavor: 'Your armor is your soul.',
+    tier: 1, branch: 'right', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { def: 5 },
+  },
+  // ── Tier 2 Left ─────────────────────────────────────────────────────
+  {
+    id: 'kn_ravager', name: 'Ravager',
+    desc: '+10% Crit Chance', flavor: 'Strike where it hurts.',
+    tier: 2, branch: 'left', cost: 1, requires: ['kn_battle_forged'],
+    type: 'passive', icon: null, bonus: { critChance: 10 },
+  },
+  {
+    id: 'kn_warlords_roar', name: "Warlord's Roar",
+    desc: '+30% ATK · +15% Crit · 2 turns', flavor: 'Let them hear you.',
+    tier: 2, branch: 'left', cost: 1, requires: ['kn_battle_forged'],
+    type: 'active', spCost: 20, icon: null,
+    effect: { atkBonus: 0.30, critBonus: 15, turns: 2 },
+  },
+  // ── Tier 2 Right ────────────────────────────────────────────────────
+  {
+    id: 'kn_unbreakable', name: 'Unbreakable',
+    desc: '+30% DEF · 2 turns', flavor: 'They cannot break what will not bend.',
+    tier: 2, branch: 'right', cost: 1, requires: ['kn_ironclad'],
+    type: 'active', spCost: 20, icon: null,
+    effect: { defBonus: 0.30, turns: 2 },
+  },
+  {
+    id: 'kn_rampart', name: 'Rampart',
+    desc: 'Enemy -30% ATK · 2 turns', flavor: 'Break their momentum.',
+    tier: 2, branch: 'right', cost: 1, requires: ['kn_ironclad'],
+    type: 'active', spCost: 20, icon: null,
+    effect: { enemyAtkReduction: 0.30, turns: 2 },
+  },
+  // ── Tier 3 ──────────────────────────────────────────────────────────
+  {
+    id: 'kn_no_quarter', name: 'No Quarter',
+    desc: 'Damage +50% each use', flavor: 'Show them nothing.',
+    tier: 3, branch: 'left', cost: 2, requires: ['kn_ravager', 'kn_warlords_roar'],
+    type: 'active', spCost: 25, icon: null,
+    effect: { baseMult: 1.5, stackBonus: 0.5 },
+  },
+  {
+    id: 'kn_retribution', name: 'Retribution',
+    desc: 'Counter 2× the next hit received', flavor: 'Every blow becomes their last mistake.',
+    tier: 3, branch: 'right', cost: 2, requires: ['kn_unbreakable', 'kn_rampart'],
+    type: 'active', spCost: 15, icon: null,
+    effect: { counterMult: 2.0 },
+  },
+];
+
