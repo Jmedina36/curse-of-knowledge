@@ -893,15 +893,22 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                   return (
                     <div key={zone.zone} style={{ marginBottom: '36px' }}>
                       {/* Zone header */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-                        <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(140,110,180,0.3))' }} />
-                        <span style={{
-                          fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700,
-                          letterSpacing: '0.25em', textTransform: 'uppercase',
-                          color: 'rgba(180,150,220,0.7)',
-                        }}>{zone.zoneLabel}</span>
-                        <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(140,110,180,0.3))' }} />
-                      </div>
+                      {(() => {
+                        const zoneTotal = zone.groups.reduce((a, g) => a + g.members.length, 0);
+                        const zoneRested = zone.groups.reduce((a, g) => a + g.members.filter(m => restedCursed.includes(m.img)).length, 0);
+                        return (
+                          <div style={{ marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px' }}>
+                              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(140,110,180,0.3))' }} />
+                              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(180,150,220,0.7)' }}>{zone.zoneLabel}</span>
+                              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(140,110,180,0.3))' }} />
+                            </div>
+                            <p style={{ textAlign: 'center', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.12em', color: zoneRested === zoneTotal ? 'rgba(160,180,230,0.6)' : 'rgba(140,110,180,0.35)', margin: 0 }}>
+                              {zoneRested}/{zoneTotal} At Rest
+                            </p>
+                          </div>
+                        );
+                      })()}
 
                       {zone.groups.map(group => {
                         const groupVisible = group.members.some(isMemberVisible);
