@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { LOCATION_CONTRACTS } from '../data/locationContracts';
 
+const PROLOGUE_ENTRY = {
+  id: '__prologue__',
+  title: 'The Shore. Day One.',
+  location: 'Unnamed Coast',
+  text: `The crossing took longer than it should have. By the time the boat scraped sand I had already counted three reasons to turn back. I didn't.\n\nThe island hit me before I reached the tree line. Something in the undergrowth — fast, low, more than one. I don't know what they were. I know I nearly died in the first hour of a place I came to study.\n\nI had rules going in. Don't fight unless forced. Observe. Learn the terrain before touching it. The creatures didn't care about my rules. I broke two of them in the first ten minutes just to stay alive. The curse doesn't wait for you to be ready. It starts the moment you arrive.\n\nA man pulled me out of it. Said his name was Rylan. Didn't explain much — just moved like someone who had done this before, or watched others fail to. He wasn't fighting for me. He was redirecting things, buying time. There's a difference.\n\nHe brought me to the guild. It's more established than I expected for something this far out. People here know the island, or they're learning it the same way I almost did — badly and fast.\n\nRylan said I'd need a structure. Tasks. A system for when the instinct to just react takes over. He didn't say what the curse was exactly. I didn't ask. I'd felt it already.\n\nI start tomorrow. There's work here. That's what I came for.`,
+};
+
 const ZONE_LABELS = {
   1: 'Zone I — The First Roads',
   2: 'Zone II — The Deepening',
@@ -100,6 +107,40 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               ? 'No entries yet.'
               : `${foundCount} of ${totalCount} entries recorded`}
           </div>
+        </div>
+
+        {/* Prologue — always visible */}
+        <div>
+          <div style={{
+            padding: '10px 16px 6px',
+            fontSize: '0.6rem',
+            fontFamily: 'Cinzel, serif',
+            letterSpacing: '0.1em',
+            textTransform: 'uppercase',
+            color: 'rgba(212,175,55,0.45)',
+          }}>
+            Prologue
+          </div>
+          <button
+            onClick={() => setSelectedId(selectedId === '__prologue__' ? null : '__prologue__')}
+            style={{
+              display: 'block', width: '100%', textAlign: 'left',
+              padding: '9px 16px',
+              background: selectedId === '__prologue__' ? 'rgba(212,175,55,0.12)' : 'transparent',
+              border: 'none',
+              borderLeft: selectedId === '__prologue__' ? '2px solid rgba(212,175,55,0.6)' : '2px solid transparent',
+              cursor: 'pointer', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => { if (selectedId !== '__prologue__') e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; }}
+            onMouseLeave={e => { if (selectedId !== '__prologue__') e.currentTarget.style.background = 'transparent'; }}
+          >
+            <div style={{ fontSize: '0.75rem', color: selectedId === '__prologue__' ? 'rgba(235,220,190,0.95)' : 'rgba(200,185,155,0.85)', lineHeight: 1.35, marginBottom: '2px' }}>
+              {PROLOGUE_ENTRY.title}
+            </div>
+            <div style={{ fontSize: '0.62rem', color: 'rgba(140,125,95,0.7)', fontStyle: 'italic' }}>
+              {PROLOGUE_ENTRY.location}
+            </div>
+          </button>
         </div>
 
         {/* Zone sections */}
@@ -218,55 +259,44 @@ export default function JournalTab({ completedLocationContracts = [] }) {
         overflowY: 'auto',
         padding: '32px 40px',
       }}>
-        {/* Empty state */}
-        {!selectedId && foundCount === 0 && (
+        {/* Empty state — prologue always available so just show select prompt */}
+        {!selectedId && (
           <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            gap: '12px',
-            opacity: 0.4,
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            justifyContent: 'center', height: '100%', gap: '10px', opacity: 0.45,
           }}>
-            <div style={{ fontSize: '2.5rem' }}>📖</div>
-            <p style={{
-              fontFamily: 'Cinzel, serif',
-              fontSize: '0.85rem',
-              color: 'rgba(212,175,55,0.7)',
-              textAlign: 'center',
-              letterSpacing: '0.05em',
-            }}>Nothing written yet.</p>
-            <p style={{
-              fontSize: '0.72rem',
-              color: 'rgba(180,165,135,0.6)',
-              fontStyle: 'italic',
-              textAlign: 'center',
-              maxWidth: '260px',
-              lineHeight: 1.6,
-            }}>
-              Complete story contracts to begin uncovering what moves behind the sigil.
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', color: 'rgba(212,175,55,0.7)', letterSpacing: '0.06em' }}>
+              Select an entry.
             </p>
           </div>
         )}
 
-        {/* Select prompt */}
-        {!selectedId && foundCount > 0 && (
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            gap: '10px',
-            opacity: 0.45,
-          }}>
-            <p style={{
-              fontFamily: 'Cinzel, serif',
-              fontSize: '0.8rem',
-              color: 'rgba(212,175,55,0.7)',
-              letterSpacing: '0.06em',
-            }}>Select an entry.</p>
+        {/* Prologue entry */}
+        {selectedId === '__prologue__' && (
+          <div style={{ maxWidth: '620px' }}>
+            <div style={{
+              fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.14em',
+              color: 'rgba(212,175,55,0.4)', textTransform: 'uppercase', marginBottom: '6px',
+            }}>
+              Prologue · {PROLOGUE_ENTRY.location}
+            </div>
+            <h2 style={{
+              fontFamily: 'Cinzel, serif', fontSize: '1.4rem', color: 'rgba(235,220,190,0.95)',
+              fontWeight: 'normal', margin: '0 0 24px',
+              borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '14px',
+            }}>
+              {PROLOGUE_ENTRY.title}
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {PROLOGUE_ENTRY.text.split('\n\n').map((para, i) => (
+                <p key={i} style={{
+                  fontSize: '0.86rem', lineHeight: 1.85,
+                  color: 'rgba(215,200,170,0.88)', margin: 0, fontStyle: 'italic',
+                }}>
+                  {para}
+                </p>
+              ))}
+            </div>
           </div>
         )}
 
