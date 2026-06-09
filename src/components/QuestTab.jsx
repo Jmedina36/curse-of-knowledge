@@ -146,15 +146,17 @@ const QuestTab = ({
                     </div>
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.85rem,2vw,1.05rem)',letterSpacing:'0.06em',color:'#000',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
-                    {guildRank && (
-                      <div style={{marginTop:'6px',padding:'6px 0',borderTop:'1px solid rgba(60,30,5,0.25)',borderBottom:'1px solid rgba(60,30,5,0.25)',textAlign:'center'}}>
-                        <p style={{fontFamily:'Cinzel,serif',fontSize:'1rem',fontWeight:900,letterSpacing:'0.18em',textTransform:'uppercase',margin:0,color:guildRank.name==='Initiate'?'rgba(60,45,20,0.8)':guildRank.color,textShadow:guildRank.name==='Initiate'?'none':`0 0 12px ${guildRank.color}88, 0 1px 3px rgba(0,0,0,0.3)`}}>{guildRank.name}</p>
-                      </div>
-                    )}
                   </div>
 
-                  {/* RIGHT: HP, Mana, ATK, DEF */}
+                  {/* RIGHT: Rank, HP, Mana, ATK, DEF */}
                   <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:'8px'}}>
+
+                    {/* Guild Rank */}
+                    {guildRank && (
+                      <div style={{textAlign:'center',padding:'4px 0 6px'}}>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'1.3rem',fontWeight:900,letterSpacing:'0.16em',textTransform:'uppercase',margin:0,color:guildRank.name==='Initiate'?'rgba(60,45,20,0.85)':guildRank.color,textShadow:guildRank.name==='Initiate'?'none':`0 0 16px ${guildRank.color}99, 0 2px 4px rgba(0,0,0,0.3)`}}>{guildRank.name}</p>
+                      </div>
+                    )}
 
                     {/* HP + SP */}
                     <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
