@@ -8349,7 +8349,14 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setCurrentWaveEnemy(0); setTotalWaveEnemies(1); setWaveCount(0); setCurrentBattleCreature(null);
                     setIsBanditWave(false); setBanditWaveNumber(0); setBanditCaptainsDefeated([]);
                     setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
-                    setIsEliteWave(false); setIsOrderFinal(false);
+                    setIsCursedWave(false); setIsEliteWave(false); setIsOrderFinal(false);
+                    setDefeatedFactionMembers([]); setHuntingChallenges({});
+                    setRestedCursed([]); setLastEncounterDay(0);
+                    setGemCounts({ gold: 0, blue: 0, green: 0, ruby: 0, purple: 0 }); setUnspentStatPoints(0);
+                    setEnemyGender(null); setEliteSfxKey(null);
+                    banditLineupRef.current = []; daughtersLineupRef.current = [];
+                    cursedLineupRef.current = []; banditLineupIdxRef.current = 0;
+                    daughtersLineupIdxRef.current = 0; cursedLineupIdxRef.current = 0;
                     setChargeStacks(0); setEnemyDialogue(''); setEnragedTurns(0);
                     setLog([]); setGraveyard([]); setSkipCount(0); setConsecutiveDays(0);
                     setLastPlayedDate(null); setMiniBossCount(0); setCurseLevel(0);
