@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Calendar, Plus } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
@@ -55,6 +55,7 @@ const ContractsTab = ({
   onCollectLocationReward,
   debugUnlockedZones = [],
 }) => {
+  const [hideCompletedContracts, setHideCompletedContracts] = useState(false);
   return (
     <div className="space-y-4">
       {!hasStarted ? (
@@ -390,11 +391,15 @@ const ContractsTab = ({
                 if (!lc.requiredContracts?.length) return true;
                 return lc.requiredContracts.every(id => completedLocationContracts?.includes(id));
               });
-              const fieldContracts   = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier !== 'blood' && lc.contractTier !== 'mythril');
-              const storyContracts   = visible.filter(lc => lc.storyContract && lc.contractTier !== 'mythril');
-              const mercyContracts   = visible.filter(lc => lc.mercyContract);
-              const bloodContracts   = visible.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier === 'blood');
-              const mythrilContracts = visible.filter(lc => lc.contractTier === 'mythril');
+              const hasAnyCompleted = visible.some(lc => completedLocationContracts?.includes(lc.id) && !pendingLocationRewards?.includes(lc.id));
+              const displayed = hideCompletedContracts
+                ? visible.filter(lc => !completedLocationContracts?.includes(lc.id) || pendingLocationRewards?.includes(lc.id))
+                : visible;
+              const fieldContracts   = displayed.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier !== 'blood' && lc.contractTier !== 'mythril');
+              const storyContracts   = displayed.filter(lc => lc.storyContract && lc.contractTier !== 'mythril');
+              const mercyContracts   = displayed.filter(lc => lc.mercyContract);
+              const bloodContracts   = displayed.filter(lc => !lc.storyContract && !lc.mercyContract && lc.contractTier === 'blood');
+              const mythrilContracts = displayed.filter(lc => lc.contractTier === 'mythril');
 
               const renderCard = (lc) => {
                 const isCompleted = completedLocationContracts?.includes(lc.id);
@@ -564,6 +569,20 @@ const ContractsTab = ({
 
               return (
                 <>
+                  {hasAnyCompleted && (
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px', marginBottom: '4px' }}>
+                      <input
+                        type="checkbox"
+                        id="hideCompletedContracts"
+                        checked={hideCompletedContracts}
+                        onChange={e => setHideCompletedContracts(e.target.checked)}
+                        style={{ width: '14px', height: '14px', cursor: 'pointer', accentColor: '#D4AF37' }}
+                      />
+                      <label htmlFor="hideCompletedContracts" style={{ fontSize: '0.7rem', color: 'rgba(192,192,192,0.65)', cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em' }}>
+                        Hide sealed
+                      </label>
+                    </div>
+                  )}
                   {fieldContracts.length > 0 && (
                     <>
                       <TierDivider tier="silver" label="Field Contracts" />
