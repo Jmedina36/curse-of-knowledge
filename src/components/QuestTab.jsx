@@ -146,21 +146,15 @@ const QuestTab = ({
                     </div>
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.85rem,2vw,1.05rem)',letterSpacing:'0.06em',color:'#000',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
                     <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
+                    {guildRank && (
+                      <div style={{marginTop:'4px',padding:'3px 10px',borderRadius:'4px',background:'rgba(30,20,10,0.1)',border:`1px solid ${guildRank.name==='Initiate'?'rgba(100,80,40,0.25)':guildRank.color+'44'}`}}>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.62rem',fontWeight:900,letterSpacing:'0.2em',textTransform:'uppercase',textAlign:'center',margin:0,color:guildRank.name==='Initiate'?'rgba(60,45,20,0.75)':guildRank.color,textShadow:guildRank.name==='Initiate'?'none':'0 0 8px rgba(0,0,0,0.2)'}}>{guildRank.name}</p>
+                      </div>
+                    )}
                   </div>
 
-                  {/* RIGHT: XP, HP, SP, ATK, DEF */}
+                  {/* RIGHT: HP, Mana, ATK, DEF */}
                   <div style={{flex:1,minWidth:0,display:'flex',flexDirection:'column',gap:'8px'}}>
-
-                    {/* XP bar — compact strip */}
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span style={{fontFamily:'Cinzel,serif',fontWeight:900,letterSpacing:'0.08em',color:'#000',textTransform:'uppercase',fontSize:'0.72rem'}}>Experience</span>
-                        <span style={{fontFamily:'Cinzel,serif',fontWeight:900,color:'#000',fontSize:'0.72rem'}}>{(()=>{let s=0;for(let i=1;i<level;i++)s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));const cur=xp-s;const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));return`${cur} / ${need}`;})()}</span>
-                      </div>
-                      <div className="rounded-full h-2 overflow-hidden" style={{background:'rgba(80,45,15,0.2)'}}>
-                        <div className="h-full rounded-full transition-all duration-300" style={{background:(()=>{const g={red:'linear-gradient(90deg,#7F0000,#C41C1C)',blue:'linear-gradient(90deg,#1E3A8A,#2563EB)',green:'linear-gradient(90deg,#064E3B,#059669)',white:'linear-gradient(90deg,#9CA3AF,#D1D5DB)',purple:'linear-gradient(90deg,#4B0082,#7C3AED)',yellow:'linear-gradient(90deg,#92400E,#B45309)',amber:'linear-gradient(90deg,#14532D,#15803D)'};return g[hero.class.color]||g.yellow;})(),width:`${(()=>{let s=0;for(let i=1;i<level;i++)s+=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,i-1));const cur=xp-s;const need=Math.floor(GAME_CONSTANTS.XP_PER_LEVEL*Math.pow(1.3,level-1));return(cur/need)*100;})()}%`}}/>
-                      </div>
-                    </div>
 
                     {/* HP + SP */}
                     <div style={{display:'flex',flexDirection:'column',gap:'5px'}}>
