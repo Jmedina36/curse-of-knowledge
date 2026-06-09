@@ -3870,7 +3870,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   }
 
   // Elite boss defeated - set daily flag (curse cleared at midnight)
-if (battleType === 'elite') {
+  // Only fires for the actual Platinum Contract, not location contracts that use elite enemies
+if (battleType === 'elite' && activeContractRef.current?.type === 'elite') {
   setEliteBossDefeatedToday(true);
   setGuildPoints(p => p + 15);
   setContractFulfilled({ xpEarned: GAME_CONSTANTS.XP_REWARDS.miniBoss, tier: 'platinum' });
