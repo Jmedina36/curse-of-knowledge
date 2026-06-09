@@ -20,7 +20,7 @@ const ZONE_LABELS = {
 const DEDUCTIONS = [
   // Zone 1–2
   { requiresId: 'lc_harbor',         text: 'Someone called C is running a coordinated operation. Bandits under orders, not improvising. The mark is a six-pointed sigil I don\'t recognize. Scope unknown.' },
-  { requiresId: 'lc_holy_tree',      text: 'Two factions, one mark. Bandits and Daughters of Dusk both answer to the same sigil. Whatever C is building, it moves through more than one hand.' },
+  { requiresId: 'lc_holy_tree',      text: 'Two factions, one mark. Armed men at the harbor, robed women at the grove — both bearing the same sigil. Whatever C is building, it moves through more than one hand.' },
   { requiresId: 'lc_canopy',         text: 'They know who I am. They were watching before I found the harbor. They sent two others before me. I don\'t know if they were testing me or just underestimating me.' },
   { requiresId: 'lc_ivy_crossing',   text: 'Movement is being controlled. Specific people are being blocked or allowed through. Something is being contained — or protected.' },
   { requiresId: 'lc_whisper_forest', text: 'They have relay nodes distributed across the region. The network is wider than I thought. This is infrastructure.' },
