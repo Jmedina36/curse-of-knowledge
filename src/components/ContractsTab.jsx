@@ -475,7 +475,7 @@ const ContractsTab = ({
 
                     {/* Rewards */}
                     {!isCompleted && (
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px', justifyContent: 'center' }}>
                         {lc.rewards.map((r, i) => (
                           <span key={i} style={{
                             fontFamily: 'Cinzel,serif', fontSize: '0.7rem',
