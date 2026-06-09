@@ -4,15 +4,36 @@ import { COLORS, VISUAL_STYLES } from '../constants';
 import { CREATURE_INDEX } from '../creatures';
 import { sounds } from '../sounds';
 
-const KAEL_IDLE = [
-  "Every beast in here was defeated by your hand. Remember that.",
-  "Study them well. A hunter who knows her prey never loses.",
-  "They're contained... for now. Don't get sentimental.",
-  "Each one tells a story. Most of them end with you winning.",
-  "I've tracked creatures across a hundred realms. These are worthy trophies.",
-  "The weak hunter fears the monster. The strong one collects it.",
-  "Capture enough and the wilds themselves will fear your name.",
-];
+const KAEL_QUOTES = {
+  early: [
+    "Every beast in here was defeated by your hand. Remember that.",
+    "Study them well. A hunter who knows her prey never loses.",
+    "They're contained... for now. Don't get sentimental.",
+    "Each one tells a story. Most of them end with you winning.",
+    "I've tracked creatures across a hundred realms. These are worthy trophies.",
+    "The weak hunter fears the monster. The strong one collects it.",
+    "Capture enough and the wilds themselves will fear your name.",
+  ],
+  mid: [
+    "These aren't animals. They're weapons. Someone left them here.",
+    "You're past the point where most expeditions turned back. Keep going.",
+    "The deeper you go, the less the creatures fight like animals. Notice that.",
+    "Half of tracking is knowing what not to fight. You're still learning that half.",
+    "Every creature past zone two is someone's insurance policy. Ask yourself who's paying.",
+    "Don't let the pattern comfort you. The pattern is what they want you to see.",
+    "Something in zone three isn't hunting for food. It's hunting for a reason.",
+  ],
+  late: [
+    "This is where the records stop. Every tracker I knew who came this far didn't come back.",
+    "These aren't creatures. They're guardians. There's a difference.",
+    "You're in the part of the map that used to say 'here there be nothing.' That was a lie.",
+    "The order didn't leave these things here by accident. Everything in zone five has a purpose.",
+    "Most things this deep don't have names in any record I've found. You're the record now.",
+    "Whatever's at the end of this — it knows you're coming. It's been waiting.",
+    "I've seen what these do to unprepared hunters. You're not unprepared. Be careful anyway.",
+  ],
+};
+const _getKaelPool = (zone) => zone >= 5 ? KAEL_QUOTES.late : zone >= 3 ? KAEL_QUOTES.mid : KAEL_QUOTES.early;
 
 // ── Elite + Order roster data ────────────────────────────────────────────────
 const ELITE_ROSTER = [
@@ -269,7 +290,7 @@ const THE_CURSED = [
 ];
 
 const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlocked = [], completedLocationContracts = [], pendingLocationRewards = [], highestZoneReached = 1, discoveredCreatures = [], onClose }) => {
-  const [kaelQuote, setKaelQuote] = useState(() => KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
+  const [kaelQuote, setKaelQuote] = useState(() => { const p = _getKaelPool(highestZoneReached); return p[Math.floor(Math.random() * p.length)]; });
   const [activeTab, setActiveTab] = useState('index');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -280,11 +301,13 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
   }, []);
 
   useEffect(() => {
+    const pool = _getKaelPool(highestZoneReached);
+    setKaelQuote(pool[Math.floor(Math.random() * pool.length)]);
     const t = setInterval(() => {
-      setKaelQuote(KAEL_IDLE[Math.floor(Math.random() * KAEL_IDLE.length)]);
+      setKaelQuote(pool[Math.floor(Math.random() * pool.length)]);
     }, 8000);
     return () => clearInterval(t);
-  }, []);
+  }, [highestZoneReached]);
 
   const showNPC = windowWidth >= 1150;
 
@@ -746,7 +769,17 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                       {ORDER_ROSTER.map(e => {
                         const defeated = defeatedFactionMembers.includes(e.img);
                         const revealed = intelUnlocked.includes(e.img) || defeated;
-                        if (!revealed) return null;
+                        if (!revealed) return (
+                          <div key={e.img} style={{ borderRadius: '10px', padding: '16px 14px', textAlign: 'center', background: 'rgba(8,8,10,0.7)', border: '1px solid rgba(100,85,40,0.2)', position: 'relative' }}>
+                            <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(100,85,40,0.25)', color: 'rgba(140,120,60,0.5)' }}>Unknown</div>
+                            <div style={{ width: 90, margin: '14px auto 12px' }}>
+                              <img src={e.img} alt="unknown" style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'brightness(0) contrast(0.5)' }} />
+                            </div>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: 'rgba(100,85,40,0.45)', marginBottom: '2px', lineHeight: 1.3 }}>???</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.12em', color: 'rgba(100,85,40,0.3)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '0.72rem', color: 'rgba(100,85,40,0.3)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>The order keeps its own hidden. Find out more.</p>
+                          </div>
+                        );
                         if (defeated) return (
                           <div key={e.img} style={{ borderRadius: '10px', padding: '16px 14px', textAlign: 'center', background: VISUAL_STYLES.card.default, border: '1px solid rgba(80,80,80,0.3)', opacity: 0.6, position: 'relative' }}>
                             <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.58rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(80,200,80,0.4)', color: 'rgba(100,220,100,0.9)' }}>Defeated</div>
