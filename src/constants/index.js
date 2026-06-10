@@ -924,6 +924,65 @@ export const KNIGHT_SKILL_TREE = [
   },
 ];
 
+export const CRUSADER_SKILL_TREE = [
+  // ── Tier 1 (mutually exclusive) ──────────────────────────────────────
+  {
+    id: 'cr_storm_blessed', name: 'Storm Blessed',
+    desc: '+5 ATK · 25% Shock on hit (Shocked: +15% vuln · 25% turn-skip · 2 turns)', flavor: 'Lightning answers to conviction.',
+    tier: 1, branch: 'left', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { atk: 5 },
+  },
+  {
+    id: 'cr_bulwark', name: 'Bulwark',
+    desc: '+8 DEF · all healing +20%', flavor: 'The shield is as sacred as the sword.',
+    tier: 1, branch: 'right', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { def: 8 },
+  },
+  // ── Tier 2 Left ─────────────────────────────────────────────────────
+  {
+    id: 'cr_galvanize', name: 'Galvanize',
+    desc: 'Shocked: vuln +25% · skip chance 35% · lightning DoT each turn', flavor: 'Hold the current. Let it build.',
+    tier: 2, branch: 'left', cost: 1, requires: ['cr_storm_blessed'],
+    type: 'passive', icon: null,
+  },
+  {
+    id: 'cr_thunder_strike', name: 'Thunder Strike',
+    desc: '1.8× damage · guaranteed Shock 3 turns', flavor: 'Call it down.',
+    tier: 2, branch: 'left', cost: 1, requires: ['cr_storm_blessed'],
+    type: 'active', spCost: 25, icon: null,
+    effect: { damageMult: 1.8, shockTurns: 3 },
+  },
+  // ── Tier 2 Right ────────────────────────────────────────────────────
+  {
+    id: 'cr_blessed_armor', name: 'Blessed Armor',
+    desc: '20% chance to block attacks entirely', flavor: 'Faith is its own armor.',
+    tier: 2, branch: 'right', cost: 1, requires: ['cr_bulwark'],
+    type: 'passive', icon: null,
+  },
+  {
+    id: 'cr_consecration', name: 'Consecration',
+    desc: '1.5× damage · heal 20% max HP · cleanse all player debuffs', flavor: 'Purify the ground you stand on.',
+    tier: 2, branch: 'right', cost: 1, requires: ['cr_bulwark'],
+    type: 'active', spCost: 25, icon: null,
+    effect: { damageMult: 1.5 },
+  },
+  // ── Tier 3 ──────────────────────────────────────────────────────────
+  {
+    id: 'cr_lightning_judgment', name: 'Lightning Judgment',
+    desc: '3.5× damage · if Shocked: 5× and detonates Shock', flavor: 'Not wrath. Verdict.',
+    tier: 3, branch: 'left', cost: 2, requires: ['cr_galvanize', 'cr_thunder_strike'],
+    type: 'active', spCost: 40, icon: null,
+    effect: { damageMult: 3.5, shockedMult: 5.0 },
+  },
+  {
+    id: 'cr_aegis_of_light', name: 'Aegis of Light',
+    desc: '2× burst on cast · then 3 turns: 30% dmg reduction · +8 HP/turn', flavor: 'Become the wall.',
+    tier: 3, branch: 'right', cost: 2, requires: ['cr_blessed_armor', 'cr_consecration'],
+    type: 'active', spCost: 35, icon: null,
+    effect: { damageMult: 2.0, duration: 3, damageReduction: 0.30, regenPerTurn: 8 },
+  },
+];
+
 export const ASSASSIN_SKILL_TREE = [
   // ── Tier 1 (mutually exclusive — picking one locks the other) ────────
   {

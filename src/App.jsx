@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText, LogIn, LogOut } from 'lucide-react';
-import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE } from './constants';
+import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE, CRUSADER_SKILL_TREE } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
@@ -240,6 +240,10 @@ const FantasyStudyQuest = () => {
   const [bossBleedDamage, setBossBleedDamage] = useState(0);
   const [assassinShadowStacks, setAssassinShadowStacks] = useState(0);
   const [assassinSmokeVeilActive, setAssassinSmokeVeilActive] = useState(false);
+  // Crusader skill tree battle states
+  const [bossShockedTurns, setBossShockedTurns] = useState(0);
+  const [bossShockDamage, setBossShockDamage] = useState(0);
+  const [crusaderAegisTurns, setCrusaderAegisTurns] = useState(0);
 
   const getMaxHp = useCallback(() => {
     const pendantBonus = equippedGrimoire ? equippedGrimoire.hp : 0;
@@ -297,7 +301,8 @@ const FantasyStudyQuest = () => {
     const skillAtk = (unlockedSkillNodes.includes('kn_battle_forged') && hero?.class?.name === 'Knight')
       ? (KNIGHT_SKILL_TREE.find(n => n.id === 'kn_battle_forged')?.bonus?.atk || 0) : 0;
     const wizSkillAtk = (unlockedSkillNodes.includes('wz_spellfire') && hero?.class?.name === 'Wizard') ? 5 : 0;
-    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk + wizSkillAtk);
+    const crusSkillAtk = (unlockedSkillNodes.includes('cr_storm_blessed') && hero?.class?.name === 'Crusader') ? 5 : 0;
+    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk + wizSkillAtk + crusSkillAtk);
   }, [hero, equippedWeapon, unlockedSkillNodes]);
   
   const getBaseDefense = useCallback(() => {
@@ -324,7 +329,9 @@ const FantasyStudyQuest = () => {
     // Skill tree: Ironclad passive
     const skillDef = (unlockedSkillNodes.includes('kn_ironclad') && hero?.class?.name === 'Knight')
       ? (KNIGHT_SKILL_TREE.find(n => n.id === 'kn_ironclad')?.bonus?.def || 0) : 0;
-    return Math.floor(baseDefense + armorDefense + affixBonus + skillDef);
+    // Skill tree: Bulwark passive
+    const bulwarkDef = (unlockedSkillNodes.includes('cr_bulwark') && hero?.class?.name === 'Crusader') ? 8 : 0;
+    return Math.floor(baseDefense + armorDefense + affixBonus + skillDef + bulwarkDef);
   }, [hero, equippedArmor, unlockedSkillNodes]);
   
   // Rarity rolling system
@@ -2766,6 +2773,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setVictoryChest(null); // Clear previous loot
   setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
   setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
 
   // Reset charges at start of each battle
   setChargeStacks(0);
@@ -2843,6 +2851,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
   setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -2951,6 +2960,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
   setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3038,6 +3048,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
   setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3122,6 +3133,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
     setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null); // Clear previous loot
@@ -3202,6 +3214,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
     setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3272,6 +3285,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
     setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
+  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3791,6 +3805,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       finalDamage += stackBonus;
       bonusMessages.push(`🌑 +${stackBonus} from ${assassinShadowStacks} Shadow Stack${assassinShadowStacks !== 1 ? 's' : ''}`);
     }
+    // Skill tree: Shock vulnerability — +15% (or +25% with Galvanize)
+    if (bossShockedTurns > 0 && hero?.class?.name === 'Crusader') {
+      const vulnPct = unlockedSkillNodes.includes('cr_galvanize') ? 0.25 : 0.15;
+      const shockVulnBonus = Math.floor(finalDamage * vulnPct);
+      finalDamage += shockVulnBonus;
+      bonusMessages.push(`⚡ +${shockVulnBonus} from Shock vulnerability`);
+    }
 
     // AOE Warning - Boss vulnerable but will counter-attack
     if (aoeWarning && inPhase3) {
@@ -3843,12 +3864,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Crusader Holy Empowerment: heal on hit
     if (crusaderHolyEmpowerment > 0 && hero?.class?.name === 'Crusader') {
       let empowermentHeal = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentHeal;
-      
-      // Bastion synergy: double the heal
-      if (crusaderBastionOfFaith > 0) {
-        empowermentHeal = Math.floor(empowermentHeal * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.empowermentHealBonus);
-      }
-      
+      if (crusaderBastionOfFaith > 0) empowermentHeal = Math.floor(empowermentHeal * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.empowermentHealBonus);
+      if (unlockedSkillNodes.includes('cr_bulwark')) empowermentHeal = Math.floor(empowermentHeal * 1.20);
       setHp(h => Math.min(getMaxHp(), h + empowermentHeal));
       bonusMessages.push(`✙ +${empowermentHeal} HP from Holy Empowerment`);
     }
@@ -3922,6 +3939,15 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         setBossBleedTurns(t => Math.max(t, 3));
         setBossBleedDamage(d => Math.max(d, bleedDmg));
         addLog(`🩸 Serrated Edge! Enemy bleeds for ${bleedDmg}/turn (3 turns)`);
+      }
+    }
+    // Crusader Storm Blessed: 25% chance to Shock on hit
+    if (unlockedSkillNodes.includes('cr_storm_blessed') && hero?.class?.name === 'Crusader' && newBossHp > 0) {
+      if (Math.random() < 0.25) {
+        const shockDmg = unlockedSkillNodes.includes('cr_galvanize') ? Math.max(3, Math.floor(finalDamage * 0.08)) : 0;
+        setBossShockedTurns(t => Math.max(t, 2));
+        if (shockDmg > 0) setBossShockDamage(d => Math.max(d, shockDmg));
+        addLog(`⚡ Storm Blessed! Enemy SHOCKED (${unlockedSkillNodes.includes('cr_galvanize') ? `+25% vuln, 35% skip, ${shockDmg} DoT` : '+15% vuln, 25% skip'}, 2 turns)`);
       }
     }
 
@@ -4982,8 +5008,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       }
       
       // NEW: Judgment of Light mechanics
-      const healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
-      
+      let healAmount = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.healAmount;
+      if (unlockedSkillNodes.includes('cr_bulwark')) healAmount = Math.floor(healAmount * 1.20);
       setHp(h => Math.min(getMaxHp(), h + healAmount));
       
       // Apply Holy Empowerment buff (3 turns)
@@ -6148,7 +6174,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossHp(newBossHp);
     
     // Heal from Smite
-    const healAmount = skill.healAmount;
+    let healAmount = skill.healAmount;
+    if (unlockedSkillNodes.includes('cr_bulwark')) healAmount = Math.floor(healAmount * 1.20);
     setHp(h => Math.min(getMaxHp(), h + healAmount));
     addLog(`✙ SMITE! Dealt ${finalDamage} damage and healed ${healAmount} HP!`);
     bonusMessages.forEach(msg => addLog(msg));
@@ -6156,12 +6183,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     // Holy Empowerment: heal on hit
     if (crusaderHolyEmpowerment > 0) {
       let empowermentHeal = GAME_CONSTANTS.SPECIAL_ATTACKS.Crusader.empowermentHeal;
-      
-      // Bastion synergy: double the heal
-      if (crusaderBastionOfFaith > 0) {
-        empowermentHeal = Math.floor(empowermentHeal * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.empowermentHealBonus);
-      }
-      
+      if (crusaderBastionOfFaith > 0) empowermentHeal = Math.floor(empowermentHeal * GAME_CONSTANTS.TACTICAL_SKILLS.Crusader.empowermentHealBonus);
+      if (unlockedSkillNodes.includes('cr_bulwark')) empowermentHeal = Math.floor(empowermentHeal * 1.20);
       setHp(h => Math.min(getMaxHp(), h + empowermentHeal));
       addLog(`✙ Holy Empowerment: +${empowermentHeal} HP`);
     }
@@ -6477,6 +6500,20 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         addLog(`❄️ Enemy is FROZEN and cannot act!`);
         return;
       }
+      // Shocked: chance to skip turn
+      if (bossShockedTurns > 0) {
+        const skipChance = unlockedSkillNodes.includes('cr_galvanize') ? 0.35 : 0.25;
+        if (Math.random() < skipChance) {
+          addLog(`⚡ Enemy is PARALYZED by lightning and loses their turn!`);
+          setBossShockedTurns(t => t - 1);
+          // Still tick shock DoT
+          if (bossShockDamage > 0 && unlockedSkillNodes.includes('cr_galvanize')) {
+            setBossHp(h => godMode ? h : Math.max(0, h - bossShockDamage));
+            addLog(`⚡ Lightning crackles! -${bossShockDamage} HP`);
+          }
+          return;
+        }
+      }
       // Chill: accumulate DEF shred
       if (bossChilledTurns > 0) {
         setBossChillDefStacks(s => s + 5);
@@ -6513,6 +6550,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         bDmg = Math.max(1, bDmg - Math.floor(bDmg * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReduction));
         if (ref > 0) { setBossHp(h => Math.max(0, h - ref)); addLog(`✨ Ethereal Barrier reflects ${ref} damage!`); }
       }
+      // Blessed Armor: 20% chance to block entirely
+      if (unlockedSkillNodes.includes('cr_blessed_armor') && hero?.class?.name === 'Crusader' && Math.random() < 0.20) {
+        addLog(`✙ Blessed Armor blocked the attack!`);
+        // Still do end-of-turn ticks below, but skip damage
+        if (crusaderAegisTurns > 0) { setHp(h => Math.min(getMaxHp(), h + 8)); setCrusaderAegisTurns(t => t - 1); }
+        if (bossShockedTurns > 0) { if (bossShockDamage > 0) { setBossHp(h => godMode ? h : Math.max(0, h - bossShockDamage)); addLog(`⚡ -${bossShockDamage} shock DoT`); } setBossShockedTurns(t => t - 1); }
+        if (bossBleedTurns > 0) { setBossHp(h => godMode ? h : Math.max(0, h - bossBleedDamage)); addLog(`🩸 Enemy bleeds! -${bossBleedDamage} HP`); setBossBleedTurns(t => t - 1); }
+        if (bossDebuffs.burnTurns > 0) { setBossHp(h => godMode ? h : Math.max(0, h - bossDebuffs.burnDamage)); addLog(`🔥 Enemy burns! -${bossDebuffs.burnDamage} HP`); setBossDebuffs(prev => ({ ...prev, burnTurns: prev.burnTurns - 1 })); }
+        if (knightWarlordsRoarTurns > 0) setKnightWarlordsRoarTurns(p => { const n = p-1; if (n===0) addLog(`⚔️ Warlord's Roar fades...`); return n; });
+        if (knightUnbreakableTurns > 0) setKnightUnbreakableTurns(p => { const n = p-1; if (n===0) addLog(`⚔️ Unbreakable fades...`); return n; });
+        if (knightRampartTurns > 0) setKnightRampartTurns(p => { const n = p-1; if (n===0) addLog(`⚔️ Rampart fades...`); return n; });
+        return;
+      }
+      // Aegis of Light: 30% damage reduction
+      if (crusaderAegisTurns > 0 && hero?.class?.name === 'Crusader') {
+        bDmg = Math.max(1, Math.floor(bDmg * 0.70));
+      }
       setPlayerFlash(true);
       sounds.playerDamage();
       setTimeout(() => setPlayerFlash(false), 200);
@@ -6543,6 +6597,20 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         setBossHp(h => godMode ? h : Math.max(0, h - bleedDmg));
         addLog(`🩸 Enemy bleeds! -${bleedDmg} HP (${bossBleedTurns - 1} turns left)`);
         setBossBleedTurns(t => t - 1);
+      }
+      // Shock DoT tick (Galvanize)
+      if (bossShockedTurns > 0) {
+        if (bossShockDamage > 0 && unlockedSkillNodes.includes('cr_galvanize')) {
+          setBossHp(h => godMode ? h : Math.max(0, h - bossShockDamage));
+          addLog(`⚡ Lightning crackles! -${bossShockDamage} HP (${bossShockedTurns - 1} turns left)`);
+        }
+        setBossShockedTurns(t => t - 1);
+      }
+      // Aegis of Light: +8 HP/turn regen + tick down
+      if (crusaderAegisTurns > 0 && hero?.class?.name === 'Crusader') {
+        setHp(h => Math.min(getMaxHp(), h + 8));
+        addLog(`✙ Aegis of Light: +8 HP (${crusaderAegisTurns - 1} turns left)`);
+        setCrusaderAegisTurns(t => t - 1);
       }
     }, enemyDelay);
   };
@@ -6681,6 +6749,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       Knight:   { left: 'kn_battle_forged', right: 'kn_ironclad' },
       Wizard:   { left: 'wz_spellfire',     right: 'wz_arcane_veil' },
       Assassin: { left: 'as_serrated_edge', right: 'as_shadowstep' },
+      Crusader: { left: 'cr_storm_blessed', right: 'cr_bulwark' },
     };
     const roots = BRANCH_ROOTS[hero?.class?.name];
     if (roots) {
@@ -6692,6 +6761,111 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setSkillPoints(p => p - node.cost);
     setUnlockedSkillNodes(prev => [...prev, nodeId]);
     addLog(`Skill unlocked: ${node.name}!`);
+  };
+
+  // ── Crusader Skill Tree Handlers ─────────────────────────────────────
+  const useThunderStrike = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Crusader') return;
+    if (!unlockedSkillNodes.includes('cr_thunder_strike')) return;
+    if (stamina < 25) { addLog('Not enough stamina for Thunder Strike! (25 SP)'); return; }
+    setStamina(s => s - 25);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage = Math.max(1, Math.floor(rawDamage * 1.8) - enemyDef);
+    if (bossShockedTurns > 0) {
+      const vulnPct = unlockedSkillNodes.includes('cr_galvanize') ? 0.25 : 0.15;
+      damage += Math.floor(damage * vulnPct);
+    }
+    const shockDmg = unlockedSkillNodes.includes('cr_galvanize') ? Math.max(3, Math.floor(damage * 0.08)) : 0;
+    setBossShockedTurns(Math.max(bossShockedTurns, 3));
+    if (shockDmg > 0) setBossShockDamage(Math.max(bossShockDamage, shockDmg));
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`⚡ THUNDER STRIKE! ${damage} damage + SHOCKED (3 turns)!`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useLightningJudgment = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Crusader') return;
+    if (!unlockedSkillNodes.includes('cr_lightning_judgment')) return;
+    if (stamina < 40) { addLog('Not enough stamina for Lightning Judgment! (40 SP)'); return; }
+    setStamina(s => s - 40);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    const isShocked = bossShockedTurns > 0;
+    const mult = isShocked ? 5.0 : 3.5;
+    let damage = Math.max(1, Math.floor(rawDamage * mult) - enemyDef);
+    if (isShocked) {
+      setBossShockedTurns(0);
+      setBossShockDamage(0);
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`⚡ LIGHTNING JUDGMENT! ${damage} damage${isShocked ? ` (5× DETONATION — Shock consumed!)` : ' (3.5×)'}`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useConsecration = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Crusader') return;
+    if (!unlockedSkillNodes.includes('cr_consecration')) return;
+    if (stamina < 25) { addLog('Not enough stamina for Consecration! (25 SP)'); return; }
+    setStamina(s => s - 25);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    const damage = Math.max(1, Math.floor(rawDamage * 1.5) - enemyDef);
+    const maxHp = getMaxHp();
+    let healAmt = Math.floor(maxHp * 0.20);
+    if (unlockedSkillNodes.includes('cr_bulwark')) healAmt = Math.floor(healAmt * 1.20);
+    setHp(h => Math.min(maxHp, h + healAmt));
+    // Cleanse player debuffs
+    setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`✙ CONSECRATION! ${damage} damage · +${healAmt} HP · debuffs cleansed!`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useAegisOfLight = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Crusader') return;
+    if (!unlockedSkillNodes.includes('cr_aegis_of_light')) return;
+    if (stamina < 35) { addLog('Not enough stamina for Aegis of Light! (35 SP)'); return; }
+    setStamina(s => s - 35);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    const damage = Math.max(1, Math.floor(rawDamage * 2.0) - enemyDef);
+    setCrusaderAegisTurns(3);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`✙ AEGIS OF LIGHT! ${damage} damage · 30% dmg reduction · +8 HP/turn for 3 turns!`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
   };
 
   // ── Assassin Skill Tree Handlers ─────────────────────────────────────
@@ -9219,6 +9393,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               useManaSurge={useManaSurge} useIceLance={useIceLance} useCataclysm={useCataclysm} useAbsoluteZero={useAbsoluteZero}
               bossBleedTurns={bossBleedTurns} assassinShadowStacks={assassinShadowStacks} assassinSmokeVeilActive={assassinSmokeVeilActive}
               useEviscerate={useEviscerate} useCoupDeGrace={useCoupDeGrace} useSmokeVeil={useSmokeVeil} useAmbush={useAmbush} usePhantomStrike={usePhantomStrike}
+              bossShockedTurns={bossShockedTurns} crusaderAegisTurns={crusaderAegisTurns}
+              useThunderStrike={useThunderStrike} useLightningJudgment={useLightningJudgment} useConsecration={useConsecration} useAegisOfLight={useAegisOfLight}
               flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}

@@ -246,6 +246,12 @@ const BattleModal = ({
   useSmokeVeil,
   useAmbush,
   usePhantomStrike,
+  bossShockedTurns = 0,
+  crusaderAegisTurns = 0,
+  useThunderStrike,
+  useLightningJudgment,
+  useConsecration,
+  useAegisOfLight,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -981,7 +987,7 @@ const BattleModal = ({
           )}
 
           {/* Debuff badges */}
-          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0 || bossDebuffs.burnTurns > 0 || bossChilledTurns > 0 || bossFrozenTurns > 0 || bossBleedTurns > 0) && (
+          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0 || bossDebuffs.burnTurns > 0 || bossChilledTurns > 0 || bossFrozenTurns > 0 || bossBleedTurns > 0 || bossShockedTurns > 0) && (
             <div className="flex justify-center gap-2 mb-3 flex-wrap">
               {bossDebuffs.poisonTurns > 0 && (
                 <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ADE80' }}>
@@ -1006,6 +1012,11 @@ const BattleModal = ({
               {bossBleedTurns > 0 && (
                 <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(220, 38, 38, 0.2)', border: '1px solid rgba(220, 38, 38, 0.5)', color: '#FCA5A5' }}>
                   🩸 BLEEDING ({bossBleedTurns})
+                </span>
+              )}
+              {bossShockedTurns > 0 && (
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(234, 179, 8, 0.2)', border: '1px solid rgba(234, 179, 8, 0.5)', color: '#FDE68A' }}>
+                  ⚡ SHOCKED ({bossShockedTurns})
                 </span>
               )}
               {bossFrozenTurns > 0 ? (
@@ -1637,6 +1648,82 @@ const BattleModal = ({
                                   <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
                                   {sk.active && (
                                     <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                  )}
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                    {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+
+                    {/* ── Crusader Active Skills ── */}
+                    {hero?.class?.name === 'Crusader' && (() => {
+                      const crusaderSkills = [
+                        {
+                          id: 'cr_thunder_strike', name: 'Thunder Strike', spCost: 25,
+                          active: false, activeTurns: 0,
+                          handler: useThunderStrike,
+                          color: 'rgba(180, 140, 10, 0.85)', border: 'rgba(234, 179, 8, 0.6)',
+                          desc: bossShockedTurns > 0 ? '1.8× dmg · refresh Shock (+vuln)' : '1.8× dmg · guaranteed Shock 3t',
+                        },
+                        {
+                          id: 'cr_lightning_judgment', name: 'Lightning Judgment', spCost: 40,
+                          active: false, activeTurns: 0,
+                          handler: useLightningJudgment,
+                          color: 'rgba(160, 120, 0, 0.85)', border: 'rgba(250, 204, 21, 0.6)',
+                          desc: bossShockedTurns > 0 ? '5× DETONATE Shock!' : '3.5× dmg · 5× if Shocked',
+                        },
+                        {
+                          id: 'cr_consecration', name: 'Consecration', spCost: 25,
+                          active: false, activeTurns: 0,
+                          handler: useConsecration,
+                          color: 'rgba(180, 160, 220, 0.85)', border: 'rgba(200, 185, 255, 0.6)',
+                          desc: '1.5× dmg · heal 20% HP · cleanse debuffs',
+                        },
+                        {
+                          id: 'cr_aegis_of_light', name: 'Aegis of Light', spCost: 35,
+                          active: crusaderAegisTurns > 0,
+                          activeTurns: crusaderAegisTurns,
+                          handler: useAegisOfLight,
+                          color: 'rgba(140, 120, 200, 0.85)', border: 'rgba(167, 139, 250, 0.6)',
+                          desc: crusaderAegisTurns > 0 ? `30% reduction · +8 HP/turn` : '2× burst · 30% dmg red · +8 HP/t',
+                        },
+                      ].filter(s => unlockedSkillNodes.includes(s.id));
+
+                      if (crusaderSkills.length === 0) return null;
+
+                      return (
+                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(234,179,8,0.18), transparent)', marginBottom: '2px' }} />
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(234,179,8,0.35)', textAlign: 'center', marginBottom: '2px' }}>Crusader Skills</p>
+                          {crusaderSkills.map(sk => {
+                            const noSP = stamina < sk.spCost;
+                            const disabled = noSP || sk.active;
+                            return (
+                              <button
+                                key={sk.id}
+                                onClick={() => sk.handler && handlePlayerAction(sk.handler, sk.name)}
+                                disabled={disabled}
+                                className="w-full rounded font-bold transition-all border hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed"
+                                style={{
+                                  padding: '7px 10px',
+                                  background: disabled ? 'rgba(25,25,35,0.6)' : `linear-gradient(to right, ${sk.color}, rgba(10,8,5,0.85))`,
+                                  borderColor: disabled ? 'rgba(80,80,80,0.25)' : sk.border,
+                                  color: disabled ? 'rgba(160,150,130,0.4)' : '#F5F5DC',
+                                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                  opacity: disabled ? 0.55 : 1,
+                                }}>
+                                <div style={{ textAlign: 'left' }}>
+                                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
+                                  {sk.active && sk.activeTurns > 0 && (
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>

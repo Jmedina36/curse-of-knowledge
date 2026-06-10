@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { sounds } from '../sounds';
-import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE } from '../constants';
+import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE, CRUSADER_SKILL_TREE } from '../constants';
 
 const SOREN_QUOTES = [
   "The measure of a champion lies not in their victories, but in their relentless pursuit of mastery.",
@@ -524,7 +524,7 @@ const HeroTab = ({
             </button>
 
             {showSkillTree && (() => {
-              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE, Assassin: ASSASSIN_SKILL_TREE };
+              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE, Assassin: ASSASSIN_SKILL_TREE, Crusader: CRUSADER_SKILL_TREE };
               const tree = CLASS_TREES[hero.class?.name];
               if (!tree) return (
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(150,130,100,0.3)', textAlign: 'center', fontStyle: 'italic', marginTop: '16px' }}>
@@ -545,8 +545,9 @@ const HeroTab = ({
                   {(() => {
                     const cls = hero.class?.name;
                     const labels = {
-                      Wizard:   { left: 'Fire / Burn',   right: 'Ice / Control', lc: 'rgba(240,120,60,0.45)',  rc: 'rgba(80,190,240,0.45)' },
-                      Assassin: { left: 'Blade / Blood', right: 'Shadow / Crit', lc: 'rgba(220,60,60,0.45)',   rc: 'rgba(140,100,220,0.45)' },
+                      Wizard:   { left: 'Fire / Burn',       right: 'Ice / Control',  lc: 'rgba(240,120,60,0.45)',  rc: 'rgba(80,190,240,0.45)' },
+                      Assassin: { left: 'Blade / Blood',     right: 'Shadow / Crit',  lc: 'rgba(220,60,60,0.45)',   rc: 'rgba(140,100,220,0.45)' },
+                      Crusader: { left: 'Lightning / Wrath', right: 'Shield / Faith', lc: 'rgba(240,210,60,0.45)',  rc: 'rgba(200,200,255,0.45)' },
                     };
                     const l = labels[cls] || { left: 'Offensive', right: 'Defensive', lc: 'rgba(220,120,80,0.45)', rc: 'rgba(80,160,220,0.45)' };
                     return (
@@ -575,6 +576,7 @@ const HeroTab = ({
                                 Knight:   { left: 'kn_battle_forged', right: 'kn_ironclad' },
                                 Wizard:   { left: 'wz_spellfire',     right: 'wz_arcane_veil' },
                                 Assassin: { left: 'as_serrated_edge', right: 'as_shadowstep' },
+                                Crusader: { left: 'cr_storm_blessed', right: 'cr_bulwark' },
                               };
                               let branchLocked = false;
                               const roots = BRANCH_ROOTS[hero.class?.name];
