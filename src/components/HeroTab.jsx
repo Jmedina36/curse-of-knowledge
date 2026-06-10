@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { sounds } from '../sounds';
-import { GAME_CONSTANTS, KNIGHT_SKILL_TREE } from '../constants';
+import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE } from '../constants';
 
 const SOREN_QUOTES = [
   "The measure of a champion lies not in their victories, but in their relentless pursuit of mastery.",
@@ -524,7 +524,7 @@ const HeroTab = ({
             </button>
 
             {showSkillTree && (() => {
-              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE };
+              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE };
               const tree = CLASS_TREES[hero.class?.name];
               if (!tree) return (
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(150,130,100,0.3)', textAlign: 'center', fontStyle: 'italic', marginTop: '16px' }}>
@@ -542,14 +542,23 @@ const HeroTab = ({
               return (
                 <div style={{ marginTop: '16px' }}>
                   {/* Branch labels */}
-                  <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
-                    <div style={{ flex: 1, textAlign: 'center' }}>
-                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(220,120,80,0.45)' }}>Offensive</span>
-                    </div>
-                    <div style={{ flex: 1, textAlign: 'center' }}>
-                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(80,160,220,0.45)' }}>Defensive</span>
-                    </div>
-                  </div>
+                  {(() => {
+                    const isWizard = hero.class?.name === 'Wizard';
+                    return (
+                      <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                        <div style={{ flex: 1, textAlign: 'center' }}>
+                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: isWizard ? 'rgba(240,120,60,0.45)' : 'rgba(220,120,80,0.45)' }}>
+                            {isWizard ? 'Fire / Burn' : 'Offensive'}
+                          </span>
+                        </div>
+                        <div style={{ flex: 1, textAlign: 'center' }}>
+                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: isWizard ? 'rgba(80,190,240,0.45)' : 'rgba(80,160,220,0.45)' }}>
+                            {isWizard ? 'Ice / Control' : 'Defensive'}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {[1, 2, 3].map(tier => (
                     <div key={tier} style={{ display: 'flex', gap: '12px', marginBottom: '10px' }}>

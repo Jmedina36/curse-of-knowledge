@@ -805,6 +805,65 @@ export const PRIMARY_ABILITY = {
   Knight: 'str', Wizard: 'int', Assassin: 'dex', Crusader: 'con',
 };
 
+export const WIZARD_SKILL_TREE = [
+  // ── Tier 1 ──────────────────────────────────────────────────────────
+  {
+    id: 'wz_spellfire', name: 'Spellfire',
+    desc: '+5 ATK · 25% chance to Burn on hit', flavor: 'Where your spell touches, the world ignites.',
+    tier: 1, branch: 'left', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { atk: 5 },
+  },
+  {
+    id: 'wz_arcane_veil', name: 'Arcane Veil',
+    desc: '+15 Max SP', flavor: 'Mana is the wall between you and ruin.',
+    tier: 1, branch: 'right', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { maxSp: 15 },
+  },
+  // ── Tier 2 Left ─────────────────────────────────────────────────────
+  {
+    id: 'wz_hex_mastery', name: 'Hex Mastery',
+    desc: '+12% Crit · Burning enemies take +25% damage', flavor: 'Every curse is a blade in waiting.',
+    tier: 2, branch: 'left', cost: 1, requires: ['wz_spellfire'],
+    type: 'passive', icon: null, bonus: { critChance: 12 },
+  },
+  {
+    id: 'wz_mana_surge', name: 'Mana Surge',
+    desc: '2.5× damage · guaranteed Burn · 3 turns', flavor: 'Flood the spell until it breaks.',
+    tier: 2, branch: 'left', cost: 1, requires: ['wz_spellfire'],
+    type: 'active', spCost: 30, icon: null,
+    effect: { damageMult: 2.5, burnTurns: 3 },
+  },
+  // ── Tier 2 Right ────────────────────────────────────────────────────
+  {
+    id: 'wz_frostbite', name: 'Frostbite',
+    desc: '20% Chill on hit · Chilled: −DEF each turn', flavor: 'Cold finds every crack in your defenses.',
+    tier: 2, branch: 'right', cost: 1, requires: ['wz_arcane_veil'],
+    type: 'passive', icon: null,
+  },
+  {
+    id: 'wz_ice_lance', name: 'Ice Lance',
+    desc: 'Ice attack · 30% Freeze · Frozen: 2–3 turns', flavor: 'One strike of absolute cold.',
+    tier: 2, branch: 'right', cost: 1, requires: ['wz_arcane_veil'],
+    type: 'active', spCost: 25, icon: null,
+    effect: { freezeChance: 30, minFreeze: 2, maxFreeze: 3 },
+  },
+  // ── Tier 3 ──────────────────────────────────────────────────────────
+  {
+    id: 'wz_cataclysm', name: 'Cataclysm',
+    desc: '4× ATK · guaranteed crit · detonates Burn', flavor: 'This is what the end of something sounds like.',
+    tier: 3, branch: 'left', cost: 2, requires: ['wz_hex_mastery', 'wz_mana_surge'],
+    type: 'active', spCost: 40, icon: null,
+    effect: { damageMult: 4.0, guaranteedCrit: true, detonateBurn: true },
+  },
+  {
+    id: 'wz_absolute_zero', name: 'Absolute Zero',
+    desc: '3× damage if Frozen · normal if not', flavor: 'Nothing moves at the end of all cold.',
+    tier: 3, branch: 'right', cost: 2, requires: ['wz_frostbite', 'wz_ice_lance'],
+    type: 'active', spCost: 35, icon: null,
+    effect: { frozenMult: 3.0 },
+  },
+];
+
 export const KNIGHT_SKILL_TREE = [
   // ── Tier 1 ──────────────────────────────────────────────────────────
   {

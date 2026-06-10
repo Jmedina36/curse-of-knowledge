@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText, LogIn, LogOut } from 'lucide-react';
-import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE } from './constants';
+import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
@@ -255,9 +255,10 @@ const FantasyStudyQuest = () => {
   const getMaxStamina = useCallback(() => {
     const ringBonus = equippedTome ? equippedTome.stamina : 0;
     const ringFlatStamina = Math.floor(equippedTome?.affixes?.flatStamina || 0);
-    const base = GAME_CONSTANTS.MAX_STAMINA + ringBonus + ringFlatStamina;
+    const arcaneVeilBonus = (unlockedSkillNodes.includes('wz_arcane_veil') && hero?.class?.name === 'Wizard') ? 15 : 0;
+    const base = GAME_CONSTANTS.MAX_STAMINA + ringBonus + ringFlatStamina + arcaneVeilBonus;
     return Math.floor(base * (sapphireGemActive ? 1.15 : 1));
-  }, [equippedTome, sapphireGemActive]);
+  }, [equippedTome, sapphireGemActive, unlockedSkillNodes, hero]);
   
   const getBaseAttack = useCallback(() => {
     if (!hero || !hero.class || !hero.class.name) return 10;
@@ -286,10 +287,11 @@ const FantasyStudyQuest = () => {
     }
     
     const strMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.str - 10) / 2)) : 0;
-    // Skill tree: Battle-Forged passive
+    // Skill tree passives
     const skillAtk = (unlockedSkillNodes.includes('kn_battle_forged') && hero?.class?.name === 'Knight')
       ? (KNIGHT_SKILL_TREE.find(n => n.id === 'kn_battle_forged')?.bonus?.atk || 0) : 0;
-    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk);
+    const wizSkillAtk = (unlockedSkillNodes.includes('wz_spellfire') && hero?.class?.name === 'Wizard') ? 5 : 0;
+    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk + wizSkillAtk);
   }, [hero, equippedWeapon, unlockedSkillNodes]);
   
   const getBaseDefense = useCallback(() => {
@@ -580,7 +582,9 @@ const orderFinalIdxRef = useRef(0);
     poisonTurns: 0,
     poisonDamage: 0,
     poisonedVulnerability: 0,
-    stunned: false
+    stunned: false,
+    burnTurns: 0,
+    burnDamage: 0
   });
   const [playerDebuffs, setPlayerDebuffs] = useState({
     bleedTurns: 0,
@@ -667,6 +671,10 @@ const [knightUnbreakableTurns, setKnightUnbreakableTurns] = useState(0);
 const [knightRampartTurns, setKnightRampartTurns] = useState(0);
 const [knightRetributionStance, setKnightRetributionStance] = useState(false);
 const [knightNoQuarterStacks, setKnightNoQuarterStacks] = useState(0);
+// Wizard skill tree battle states
+const [bossChilledTurns, setBossChilledTurns] = useState(0);
+const [bossChillDefStacks, setBossChillDefStacks] = useState(0); // accumulated def shred
+const [bossFrozenTurns, setBossFrozenTurns] = useState(0);
 
 const GUILD_RANKS = [
   { name: 'Initiate',  min: 0,   color: 'rgba(180,160,120,0.75)' },
@@ -2748,11 +2756,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setBattleMode(true);
   setIsFinalBoss(false);
   setCanFlee(true); // Allow fleeing from regular and wave enemies
-  setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+  setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
   setVictoryLoot([]);
     setVictoryChest(null); // Clear previous loot
-  
+  setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+
   // Reset charges at start of each battle
   setChargeStacks(0);
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
@@ -2824,9 +2833,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleMode(true);
     setIsFinalBoss(false);
     setCanFlee(true);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
+    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -2930,9 +2940,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleMode(true);
     setIsFinalBoss(false);
     setCanFlee(true);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
+    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3015,9 +3026,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleMode(true);
     setIsFinalBoss(false);
     setCanFlee(true);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
+    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3656,7 +3668,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (assassinMarkForDeath > 0 && hero?.class?.name === 'Assassin') {
       enemyDef = Math.floor(enemyDef * (1 - GAME_CONSTANTS.TACTICAL_SKILLS.Assassin.defenseReduction));
     }
-    
+    // Skill tree: Frostbite — accumulated chill def shred
+    if (bossChillDefStacks > 0 && hero?.class?.name === 'Wizard') {
+      enemyDef = Math.max(0, enemyDef - bossChillDefStacks);
+    }
+
     // Calculate base damage
     const rawDamage = getBaseAttack() + (weaponOilActive ? 5 : 0) + Math.floor(Math.random() * 10);
     
@@ -3693,6 +3709,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (unlockedSkillNodes.includes('kn_ravager') && hero?.class?.name === 'Knight') critChance += 10;
     // Skill tree: Warlord's Roar active — +15% crit
     if (knightWarlordsRoarTurns > 0 && hero?.class?.name === 'Knight') critChance += 15;
+    // Skill tree: Hex Mastery — +12% crit
+    if (unlockedSkillNodes.includes('wz_hex_mastery') && hero?.class?.name === 'Wizard') critChance += 12;
 
     const critRoll = Math.random() * 100;
     const isCrit = critRoll < critChance;
@@ -3731,7 +3749,13 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       finalDamage += poisonBonus;
       bonusMessages.push(`☠️ +${poisonBonus} from poison vulnerability`);
     }
-    
+    // Skill tree: Hex Mastery — burning enemies take +25% damage
+    if (bossDebuffs.burnTurns > 0 && unlockedSkillNodes.includes('wz_hex_mastery') && hero?.class?.name === 'Wizard') {
+      const burnVulnBonus = Math.floor(finalDamage * 0.25);
+      finalDamage += burnVulnBonus;
+      bonusMessages.push(`🔥 +${burnVulnBonus} from Hex Mastery (burn vulnerability)`);
+    }
+
     // AOE Warning - Boss vulnerable but will counter-attack
     if (aoeWarning && inPhase3) {
       const vulnerableBonus = Math.floor(finalDamage * 0.5);
@@ -3839,7 +3863,23 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBossFlash(true);
     sounds.bossDamage();
     setTimeout(() => setBossFlash(false), 200);
-    
+
+    // Wizard Spellfire: 25% chance to Burn on hit
+    if (unlockedSkillNodes.includes('wz_spellfire') && hero?.class?.name === 'Wizard' && newBossHp > 0) {
+      if (Math.random() < 0.25) {
+        const burnDmg = Math.max(3, Math.floor(finalDamage * 0.15));
+        setBossDebuffs(prev => ({ ...prev, burnTurns: Math.max(prev.burnTurns, 3), burnDamage: Math.max(prev.burnDamage, burnDmg) }));
+        addLog(`🔥 Spellfire ignites the enemy! ${burnDmg}/turn for 3 turns`);
+      }
+    }
+    // Wizard Frostbite: 20% chance to Chill on hit
+    if (unlockedSkillNodes.includes('wz_frostbite') && hero?.class?.name === 'Wizard' && newBossHp > 0) {
+      if (Math.random() < 0.20) {
+        setBossChilledTurns(t => Math.max(t, 3));
+        addLog(`❄️ The enemy is CHILLED! Defense shreds each turn.`);
+      }
+    }
+
     if (newBossHp <= 0) {
       if (advanceFinalBossPhase()) return;
       sounds.victory();
@@ -4217,7 +4257,20 @@ if (battleType === 'elite' && activeContractRef.current?.type === 'elite') {
     
     setTimeout(() => {
       if (!battling || hp <= 0) return;
-      
+
+      // Wizard freeze check: frozen enemies skip their attack
+      if (bossFrozenTurns > 0) {
+        setBossFrozenTurns(t => t - 1);
+        addLog(`❄️ Enemy is FROZEN and cannot act!`);
+        return;
+      }
+      // Wizard chill: accumulate DEF shred each chilled turn
+      if (bossChilledTurns > 0) {
+        setBossChillDefStacks(s => s + 5);
+        setBossChilledTurns(t => t - 1);
+        addLog(`❄️ Enemy is CHILLED — defense crumbles further.`);
+      }
+
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
 
@@ -4616,8 +4669,16 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             setAssassinPoisonStacks(0);
           }
         }
-        
-        
+
+        // Wizard burn tick
+        if (bossDebuffs.burnTurns > 0) {
+          const burnDmg = bossDebuffs.burnDamage;
+          setBossHp(h => godMode ? h : Math.max(0, h - burnDmg));
+          addLog(`🔥 Enemy burns! -${burnDmg} HP (${bossDebuffs.burnTurns - 1} turns left)`);
+          setBossDebuffs(prev => ({ ...prev, burnTurns: prev.burnTurns - 1 }));
+        }
+
+
         // Phase 1 mechanics for Gauntlet boss
         if (inPhase1 && battleType === 'final' && bossHp > 0 && !inPhase2 && !inPhase3) {
           setPhase1TurnCounter(prev => prev + 1);
@@ -6361,9 +6422,198 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     }, enemyDelay); // Delay counter-attack like normal
   };
   
+  // ── Standalone enemy counter-attack (used by skill tree handlers) ───────
+  const enemyAttack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
+    setTimeout(() => {
+      if (!battling || hp <= 0) return;
+      // Frozen: skip turn
+      if (bossFrozenTurns > 0) {
+        setBossFrozenTurns(t => t - 1);
+        addLog(`❄️ Enemy is FROZEN and cannot act!`);
+        return;
+      }
+      // Chill: accumulate DEF shred
+      if (bossChilledTurns > 0) {
+        setBossChillDefStacks(s => s + 5);
+        setBossChilledTurns(t => t - 1);
+      }
+      setCurrentAnimation('battle-shake');
+      setTimeout(() => setCurrentAnimation(null), 250);
+      const dayScaling = Math.floor(Math.sqrt(currentDay) * 5);
+      let baseAtk = GAME_CONSTANTS.BOSS_ATTACK_BASE + dayScaling;
+      if (battleType === 'elite') {
+        const eliteDay = ((currentDay - 1) % 7) + 1;
+        baseAtk = Math.floor(GAME_CONSTANTS.MINI_BOSS_ATK_BASE + (eliteDay * GAME_CONSTANTS.MINI_BOSS_ATK_SCALING));
+      } else if (battleType === 'final' || isFinalBoss) {
+        baseAtk = Math.floor(GAME_CONSTANTS.BOSS_ATTACK_BASE + (currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING));
+      }
+      let bDmg = Math.max(1, Math.floor(baseAtk - getBaseDefense()));
+      const _wm = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
+      if (_wm > 0) bDmg = Math.max(1, Math.floor(bDmg * (1 - _wm * 0.02)));
+      const _dm = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
+      if (_dm > 0 && Math.random() < Math.min(0.20, _dm * 0.03)) { addLog(`⚡ You dodge the attack! (DEX)`); return; }
+      if (curseLevel === 2) bDmg = Math.floor(bDmg * 1.2);
+      else if (curseLevel === 3) bDmg = Math.floor(bDmg * 1.4);
+      // Knight defense modifiers
+      let kDef = 0;
+      if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') kDef -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction;
+      if (knightRallyingRoar > 0 && hero?.class?.name === 'Knight') kDef += GAME_CONSTANTS.TACTICAL_SKILLS.Knight.defenseBonus;
+      if (knightUnbreakableTurns > 0 && hero?.class?.name === 'Knight') kDef += 0.30;
+      if (knightRampartTurns > 0 && hero?.class?.name === 'Knight') bDmg = Math.max(1, Math.floor(bDmg * 0.70));
+      if (kDef > 0) bDmg = Math.max(1, bDmg - Math.floor(bDmg * kDef));
+      else if (kDef < 0) bDmg += Math.floor(bDmg * Math.abs(kDef));
+      // Wizard Ethereal Barrier
+      if (wizardEtherealBarrier > 0 && hero?.class?.name === 'Wizard') {
+        const ref = Math.floor(bDmg * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReflect);
+        bDmg = Math.max(1, bDmg - Math.floor(bDmg * GAME_CONSTANTS.TACTICAL_SKILLS.Wizard.damageReduction));
+        if (ref > 0) { setBossHp(h => Math.max(0, h - ref)); addLog(`✨ Ethereal Barrier reflects ${ref} damage!`); }
+      }
+      setPlayerFlash(true);
+      sounds.playerDamage();
+      setTimeout(() => setPlayerFlash(false), 200);
+      setHp(cur => { const n = godMode ? cur : Math.max(0, cur - bDmg); if (n <= 0) setTimeout(() => { addLog('💀 You fall! Roll for death!'); enterDyingState(); }, 500); return n; });
+      addLog(`💥 Boss strikes! -${bDmg} HP`);
+      // Knight Retribution counter
+      if (knightRetributionStance && hero?.class?.name === 'Knight') {
+        const ctr = bDmg * 2;
+        setBossHp(h => Math.max(0, h - ctr));
+        addLog(`⚔️ RETRIBUTION! Countered for ${ctr} damage!`);
+        setKnightRetributionStance(false);
+      }
+      // Buff tick-downs
+      if (knightWarlordsRoarTurns > 0) setKnightWarlordsRoarTurns(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Warlord's Roar fades...`); return n; });
+      if (knightUnbreakableTurns > 0) setKnightUnbreakableTurns(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Unbreakable fades...`); return n; });
+      if (knightRampartTurns > 0) setKnightRampartTurns(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Rampart fades...`); return n; });
+      if (wizardEtherealBarrier > 0) setWizardEtherealBarrier(p => { const n = p - 1; if (n === 0) addLog(`✨ Ethereal Barrier fades...`); return n; });
+      // Burn tick
+      if (bossDebuffs.burnTurns > 0) {
+        const burnDmg = bossDebuffs.burnDamage;
+        setBossHp(h => godMode ? h : Math.max(0, h - burnDmg));
+        addLog(`🔥 Enemy burns! -${burnDmg} HP (${bossDebuffs.burnTurns - 1} turns left)`);
+        setBossDebuffs(prev => ({ ...prev, burnTurns: prev.burnTurns - 1 }));
+      }
+    }, enemyDelay);
+  };
+
+  // ── Wizard Skill Tree Handlers ────────────────────────────────────────
+  const useManaSurge = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Wizard') return;
+    if (!unlockedSkillNodes.includes('wz_mana_surge')) return;
+    if (stamina < 30) { addLog('Not enough stamina for Mana Surge! (30 SP)'); return; }
+    setStamina(s => s - 30);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    if (bossChillDefStacks > 0) enemyDef = Math.max(0, enemyDef - bossChillDefStacks);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage = Math.max(1, Math.floor(rawDamage * 2.5) - enemyDef);
+    if (bossDebuffs.burnTurns > 0 && unlockedSkillNodes.includes('wz_hex_mastery')) {
+      damage += Math.floor(damage * 0.25);
+    }
+    const burnDmg = Math.max(3, Math.floor(damage * 0.15));
+    setBossDebuffs(prev => ({ ...prev, burnTurns: Math.max(prev.burnTurns, 3), burnDamage: Math.max(prev.burnDamage, burnDmg) }));
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`✨ MANA SURGE! ${damage} damage + BURNED (${burnDmg}/turn, 3 turns)!`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useIceLance = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Wizard') return;
+    if (!unlockedSkillNodes.includes('wz_ice_lance')) return;
+    if (stamina < 25) { addLog('Not enough stamina for Ice Lance! (25 SP)'); return; }
+    setStamina(s => s - 25);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    if (bossChillDefStacks > 0) enemyDef = Math.max(0, enemyDef - bossChillDefStacks);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage = Math.max(1, rawDamage - enemyDef);
+    setBossChilledTurns(t => Math.max(t, 3));
+    let frozeMsg = '';
+    if (Math.random() < 0.30) {
+      const freezeTurns = 2 + Math.floor(Math.random() * 2);
+      setBossFrozenTurns(t => Math.max(t, freezeTurns));
+      frozeMsg = ` + FROZEN (${freezeTurns} turns)!`;
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`❄️ ICE LANCE! ${damage} damage, enemy chilled!${frozeMsg}`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useCataclysm = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Wizard') return;
+    if (!unlockedSkillNodes.includes('wz_cataclysm')) return;
+    if (stamina < 40) { addLog('Not enough stamina for Cataclysm! (40 SP)'); return; }
+    setStamina(s => s - 40);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    if (bossChillDefStacks > 0) enemyDef = Math.max(0, enemyDef - bossChillDefStacks);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    const critMult = GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier;
+    let damage = Math.max(1, Math.floor(rawDamage * 4.0 * critMult) - enemyDef);
+    let detonateMsg = '';
+    if (bossDebuffs.burnTurns > 0) {
+      const bonus = Math.floor(damage * 0.50);
+      damage += bonus;
+      detonateMsg = ` + DETONATED burn (+${bonus})!`;
+      setBossDebuffs(prev => ({ ...prev, burnTurns: 0, burnDamage: 0 }));
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`💥 CATACLYSM! GUARANTEED CRIT! ${damage} damage!${detonateMsg}`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useAbsoluteZero = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Wizard') return;
+    if (!unlockedSkillNodes.includes('wz_absolute_zero')) return;
+    if (stamina < 35) { addLog('Not enough stamina for Absolute Zero! (35 SP)'); return; }
+    setStamina(s => s - 35);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    if (bossChillDefStacks > 0) enemyDef = Math.max(0, enemyDef - bossChillDefStacks);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage, frozenMsg;
+    if (bossFrozenTurns > 0) {
+      damage = Math.max(1, Math.floor(rawDamage * 3.0) - enemyDef);
+      frozenMsg = '3× (FROZEN)';
+    } else {
+      damage = Math.max(1, rawDamage - enemyDef);
+      frozenMsg = '1× (not frozen)';
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`❄️ ABSOLUTE ZERO! ${frozenMsg} — ${damage} damage!`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
   // ── Skill Tree ─────────────────────────────────────────────────────────
   const unlockSkillNode = (nodeId) => {
-    const tree = hero?.class?.name === 'Knight' ? KNIGHT_SKILL_TREE : null;
+    const tree = hero?.class?.name === 'Knight' ? KNIGHT_SKILL_TREE : hero?.class?.name === 'Wizard' ? WIZARD_SKILL_TREE : null;
     if (!tree) return;
     const node = tree.find(n => n.id === nodeId);
     if (!node) return;
@@ -8763,6 +9013,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               knightNoQuarterStacks={knightNoQuarterStacks}
               useWarlordsRoar={useWarlordsRoar} useUnbreakable={useUnbreakable}
               useRampart={useRampart} useNoQuarter={useNoQuarter} useRetribution={useRetribution}
+              bossChilledTurns={bossChilledTurns} bossChillDefStacks={bossChillDefStacks} bossFrozenTurns={bossFrozenTurns}
+              useManaSurge={useManaSurge} useIceLance={useIceLance} useCataclysm={useCataclysm} useAbsoluteZero={useAbsoluteZero}
               flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}

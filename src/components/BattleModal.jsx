@@ -231,6 +231,13 @@ const BattleModal = ({
   useRampart,
   useNoQuarter,
   useRetribution,
+  bossChilledTurns = 0,
+  bossChillDefStacks = 0,
+  bossFrozenTurns = 0,
+  useManaSurge,
+  useIceLance,
+  useCataclysm,
+  useAbsoluteZero,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -966,7 +973,7 @@ const BattleModal = ({
           )}
 
           {/* Debuff badges */}
-          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0) && (
+          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0 || bossDebuffs.burnTurns > 0 || bossChilledTurns > 0 || bossFrozenTurns > 0) && (
             <div className="flex justify-center gap-2 mb-3 flex-wrap">
               {bossDebuffs.poisonTurns > 0 && (
                 <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ADE80' }}>
@@ -981,6 +988,20 @@ const BattleModal = ({
               {enragedTurns > 0 && (
                 <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)', border: '1px solid rgba(249, 115, 22, 0.5)', color: '#FB923C' }}>
                   ⚡ ENRAGED ({enragedTurns})
+                </span>
+              )}
+              {bossDebuffs.burnTurns > 0 && (
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#FCA5A5' }}>
+                  🔥 BURNING ({bossDebuffs.burnTurns})
+                </span>
+              )}
+              {bossFrozenTurns > 0 ? (
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(96, 165, 250, 0.2)', border: '1px solid rgba(96, 165, 250, 0.5)', color: '#BAE6FD' }}>
+                  ❄ FROZEN ({bossFrozenTurns})
+                </span>
+              ) : bossChilledTurns > 0 && (
+                <span className="px-3 py-1 rounded text-sm font-bold" style={{ backgroundColor: 'rgba(147, 197, 253, 0.15)', border: '1px solid rgba(147, 197, 253, 0.4)', color: '#93C5FD' }}>
+                  ❄ CHILLED ({bossChilledTurns}){bossChillDefStacks > 0 ? ` -${bossChillDefStacks * 5}% DEF` : ''}
                 </span>
               )}
             </div>
@@ -1443,6 +1464,82 @@ const BattleModal = ({
                                     <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
                                   )}
                                   {sk.active && sk.activeTurns === 0 && (
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                  )}
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                    {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+
+                    {/* ── Wizard Active Skills ── */}
+                    {hero?.class?.name === 'Wizard' && (() => {
+                      const wizardSkills = [
+                        {
+                          id: 'wz_mana_surge', name: 'Mana Surge', spCost: 30,
+                          active: false, activeTurns: 0,
+                          handler: useManaSurge,
+                          color: 'rgba(220, 80, 40, 0.85)', border: 'rgba(239, 68, 68, 0.6)',
+                          desc: bossDebuffs?.burnTurns > 0 ? '2.5× dmg · +25% (Burning)' : '2.5× dmg · applies Burn',
+                        },
+                        {
+                          id: 'wz_ice_lance', name: 'Ice Lance', spCost: 25,
+                          active: bossFrozenTurns > 0,
+                          activeTurns: 0,
+                          handler: useIceLance,
+                          color: 'rgba(56, 130, 220, 0.85)', border: 'rgba(96, 165, 250, 0.6)',
+                          desc: bossFrozenTurns > 0 ? 'Enemy is Frozen' : bossChilledTurns > 0 ? '1× dmg · 30% Freeze' : '1× dmg · Chill 3t',
+                        },
+                        {
+                          id: 'wz_cataclysm', name: 'Cataclysm', spCost: 40,
+                          active: false, activeTurns: 0,
+                          handler: useCataclysm,
+                          color: 'rgba(180, 50, 200, 0.85)', border: 'rgba(192, 132, 252, 0.6)',
+                          desc: bossDebuffs?.burnTurns > 0 ? '4× dmg · Detonate Burn' : '4× dmg · Crit',
+                        },
+                        {
+                          id: 'wz_absolute_zero', name: 'Absolute Zero', spCost: 35,
+                          active: false, activeTurns: 0,
+                          handler: useAbsoluteZero,
+                          color: 'rgba(30, 90, 180, 0.85)', border: 'rgba(147, 197, 253, 0.6)',
+                          desc: bossFrozenTurns > 0 ? '3× dmg (Frozen bonus!)' : '1× dmg · 3× if Frozen',
+                        },
+                      ].filter(s => unlockedSkillNodes.includes(s.id));
+
+                      if (wizardSkills.length === 0) return null;
+
+                      return (
+                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(147,197,253,0.18), transparent)', marginBottom: '2px' }} />
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(147,197,253,0.35)', textAlign: 'center', marginBottom: '2px' }}>Wizard Skills</p>
+                          {wizardSkills.map(sk => {
+                            const noSP = stamina < sk.spCost;
+                            const disabled = noSP || sk.active;
+                            return (
+                              <button
+                                key={sk.id}
+                                onClick={() => sk.handler && handlePlayerAction(sk.handler, sk.name)}
+                                disabled={disabled}
+                                className="w-full rounded font-bold transition-all border hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed"
+                                style={{
+                                  padding: '7px 10px',
+                                  background: disabled ? 'rgba(25,25,35,0.6)' : `linear-gradient(to right, ${sk.color}, rgba(10,8,5,0.85))`,
+                                  borderColor: disabled ? 'rgba(80,80,80,0.25)' : sk.border,
+                                  color: disabled ? 'rgba(160,150,130,0.4)' : '#F5F5DC',
+                                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                  opacity: disabled ? 0.55 : 1,
+                                }}>
+                                <div style={{ textAlign: 'left' }}>
+                                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
+                                  {sk.active && (
                                     <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
                                   )}
                                 </div>
