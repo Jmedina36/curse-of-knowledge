@@ -570,13 +570,19 @@ const HeroTab = ({
                             {nodes.map(node => {
                               const isUnlocked = unlockedSkillNodes.includes(node.id);
                               const reqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
-                              // Assassin branch lock: if opposite branch root is unlocked, this branch is locked
+                              // Branch lock: once a T1 root is chosen, the opposite branch is locked
+                              const BRANCH_ROOTS = {
+                                Knight:   { left: 'kn_battle_forged', right: 'kn_ironclad' },
+                                Wizard:   { left: 'wz_spellfire',     right: 'wz_arcane_veil' },
+                                Assassin: { left: 'as_serrated_edge', right: 'as_shadowstep' },
+                              };
                               let branchLocked = false;
-                              if (hero.class?.name === 'Assassin') {
-                                const hasLeft = unlockedSkillNodes.includes('as_serrated_edge');
-                                const hasRight = unlockedSkillNodes.includes('as_shadowstep');
-                                if (node.branch === 'left' && hasRight && !isUnlocked) branchLocked = true;
-                                if (node.branch === 'right' && hasLeft && !isUnlocked) branchLocked = true;
+                              const roots = BRANCH_ROOTS[hero.class?.name];
+                              if (roots && !isUnlocked) {
+                                const hasLeft = unlockedSkillNodes.includes(roots.left);
+                                const hasRight = unlockedSkillNodes.includes(roots.right);
+                                if (node.branch === 'left' && hasRight) branchLocked = true;
+                                if (node.branch === 'right' && hasLeft) branchLocked = true;
                               }
                               const canUnlock = !isUnlocked && reqsMet && skillPoints >= node.cost && !branchLocked;
                               const isAvailable = !isUnlocked && reqsMet && !branchLocked;

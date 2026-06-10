@@ -6676,14 +6676,18 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     if (skillPoints < node.cost) { addLog('Not enough skill points.'); return; }
     const prereqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
     if (!prereqsMet) { addLog('Prerequisites not met.'); return; }
-    // Assassin: branch locking — left (Blade) and right (Shadow) are mutually exclusive
-    if (hero?.class?.name === 'Assassin') {
-      const leftRoot = 'as_serrated_edge';
-      const rightRoot = 'as_shadowstep';
-      const hasLeft = unlockedSkillNodes.includes(leftRoot);
-      const hasRight = unlockedSkillNodes.includes(rightRoot);
-      if (node.branch === 'left' && hasRight) { addLog('You have chosen the Shadow path — Blade branch is locked.'); return; }
-      if (node.branch === 'right' && hasLeft) { addLog('You have chosen the Blade path — Shadow branch is locked.'); return; }
+    // Branch locking — once a Tier 1 branch root is unlocked, the opposite branch is locked
+    const BRANCH_ROOTS = {
+      Knight:   { left: 'kn_battle_forged', right: 'kn_ironclad' },
+      Wizard:   { left: 'wz_spellfire',     right: 'wz_arcane_veil' },
+      Assassin: { left: 'as_serrated_edge', right: 'as_shadowstep' },
+    };
+    const roots = BRANCH_ROOTS[hero?.class?.name];
+    if (roots) {
+      const hasLeft = unlockedSkillNodes.includes(roots.left);
+      const hasRight = unlockedSkillNodes.includes(roots.right);
+      if (node.branch === 'left' && hasRight) { addLog('You have committed to the right path — left branch is locked.'); return; }
+      if (node.branch === 'right' && hasLeft) { addLog('You have committed to the left path — right branch is locked.'); return; }
     }
     setSkillPoints(p => p - node.cost);
     setUnlockedSkillNodes(prev => [...prev, nodeId]);
