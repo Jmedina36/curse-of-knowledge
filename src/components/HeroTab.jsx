@@ -108,7 +108,7 @@ const HeroTab = ({
   onUnlockSkillNode,
 }) => {
   const [sorenQuote] = useState(() => SOREN_QUOTES[Math.floor(Math.random() * SOREN_QUOTES.length)]);
-  const [showSkillTree, setShowSkillTree] = useState(false);
+  const [activePanel, setActivePanel] = useState('chronicle');
   const [pendingAlloc, setPendingAlloc] = useState({ ...EMPTY_ALLOC });
 
   // Reset pending alloc when we get fresh points
@@ -382,207 +382,269 @@ const HeroTab = ({
 
         </div>
 
-        {/* RIGHT: Stats column */}
-        <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto' }}>
+        {/* RIGHT: Content column */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-          {/* Header row */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>
-              The Chronicle
-            </span>
-            {guildRank && (
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: guildRank.name === 'Initiate' ? 'rgba(180,160,120,0.4)' : guildRank.color, opacity: 0.75 }}>
-                {guildRank.name}
-              </span>
-            )}
-          </div>
-          <Divider gold />
-
-          <StatRowStatic label="Level"    value={level}              highlight />
-          <StatRowStatic label="Day"      value={currentDay} />
-          <StatRowStatic label="Total XP" value={xp.toLocaleString()} />
-
-          {/* ── ATTRIBUTES ── */}
-          <SectionHeader
-            label="Attributes"
-            badge={isAllocating ? `${remaining} point${remaining !== 1 ? 's' : ''} to spend` : null}
-          />
-          <Divider />
-
-          {isAllocating ? (
-            /* Allocation mode */
-            <>
-              {['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => (
-                <AbilityAllocRow key={key} statKey={key} />
-              ))}
-
-              {/* Confirm button */}
-              <div style={{ marginTop: '12px' }}>
-                <button
-                  onClick={confirmAlloc}
-                  disabled={!allAllocated}
-                  style={{
-                    width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.68rem',
-                    letterSpacing: '0.22em', textTransform: 'uppercase', padding: '10px',
-                    borderRadius: '3px', cursor: allAllocated ? 'pointer' : 'not-allowed',
-                    background: allAllocated ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.03)',
-                    border: `1px solid ${allAllocated ? 'rgba(212,175,55,0.6)' : 'rgba(255,255,255,0.07)'}`,
-                    color: allAllocated ? 'rgba(255,225,100,0.9)' : 'rgba(255,255,255,0.18)',
-                    boxShadow: allAllocated ? '0 0 14px rgba(212,175,55,0.2)' : 'none',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={e => { if (allAllocated) { e.currentTarget.style.background = 'rgba(212,175,55,0.25)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(212,175,55,0.35)'; } }}
-                  onMouseLeave={e => { if (allAllocated) { e.currentTarget.style.background = 'rgba(212,175,55,0.15)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(212,175,55,0.2)'; } }}
-                >
-                  {allAllocated ? 'Confirm Advancement' : `Distribute ${remaining} remaining point${remaining !== 1 ? 's' : ''}`}
-                </button>
-              </div>
-            </>
-          ) : (
-            /* Read-only mode */
-            ['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => {
-              const score = ab[key] || 10;
-              const mod   = Math.floor((score - 10) / 2);
-              const isPrimary = key === primaryKey;
-              return (
-                <StatRowStatic
-                  key={key}
-                  label={`${ABILITY_LABEL[key]}${isPrimary ? ' ★' : ''}`}
-                  value={`${score}  (${mod >= 0 ? '+' : ''}${mod})`}
-                  highlight={isPrimary}
-                />
-              );
-            })
-          )}
-
-          {/* ── DERIVED STATS ── */}
-          <SectionHeader label="Derived Stats" />
-          <Divider />
-
-          <StatRowStatic label="Max HP"  value={maxHp}       highlight />
-          <StatRowStatic label="Max SP"  value={maxSp}       highlight />
-          <StatRowStatic label="Attack"  value={atk}         highlight />
-          <StatRowStatic label="Defense" value={`${defPct}%`} highlight />
-
-          <StatRowStatic label="Base HP"     value={GAME_CONSTANTS.MAX_HP}  dim indent />
-          {conMod > 0 && <StatRowStatic label="CON Bonus"  value={`+${conMod * 5}`} dim indent />}
-          {equippedGrimoire?.hp && <StatRowStatic label="Pendant"   value={`+${equippedGrimoire.hp}`} dim indent />}
-          <StatRowStatic label="Base ATK"    value={classBaseAtk}           dim indent />
-          {strMod > 0 && <StatRowStatic label="STR Bonus"  value={`+${strMod}`}     dim indent />}
-          {equippedWeapon && <StatRowStatic label={equippedWeapon.name || 'Weapon'} value={`+${equippedWeapon.attack}`} dim indent />}
-          <StatRowStatic label="Base DEF"    value={classBaseDef}           dim indent />
-          {armorDef > 0 && <StatRowStatic label="Armor"    value={`+${armorDef}`}   dim indent />}
-
-          {/* ── STATUS ── */}
-          <SectionHeader label="Status" />
-          <Divider />
-
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0' }}>
-            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(190,175,148,0.65)' }}>Curse</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '50px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1))' }} />
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 900, letterSpacing: '0.05em', color: curseLevel > 0 ? CURSE_COLORS[curseLevel] : 'rgba(180,165,138,0.4)', minWidth: '50px', textAlign: 'right' }}>
-                {curseLevel > 0 ? `${CURSE_NAMES[curseLevel]}  (${curseLevel}/3)` : 'None'}
-              </span>
-            </div>
+          {/* ── Tab bar ── */}
+          <div style={{ display: 'flex', borderBottom: '1px solid rgba(212,175,55,0.12)', flexShrink: 0 }}>
+            {[
+              { id: 'chronicle', label: 'Chronicle' },
+              { id: 'skills',    label: 'Skills', badge: skillPoints > 0 ? skillPoints : null },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActivePanel(tab.id)}
+                style={{
+                  fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900,
+                  letterSpacing: '0.22em', textTransform: 'uppercase',
+                  padding: '12px 22px', border: 'none', cursor: 'pointer',
+                  background: 'none',
+                  color: activePanel === tab.id ? 'rgba(212,175,55,0.9)' : 'rgba(160,145,110,0.35)',
+                  borderBottom: activePanel === tab.id ? '2px solid rgba(212,175,55,0.6)' : '2px solid transparent',
+                  transition: 'all 0.15s',
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                }}
+                onMouseEnter={e => { if (activePanel !== tab.id) e.currentTarget.style.color = 'rgba(212,175,55,0.55)'; }}
+                onMouseLeave={e => { if (activePanel !== tab.id) e.currentTarget.style.color = 'rgba(160,145,110,0.35)'; }}
+              >
+                {tab.label}
+                {tab.badge && (
+                  <span style={{
+                    fontFamily: 'Cinzel, serif', fontSize: '0.52rem', fontWeight: 900,
+                    color: 'rgba(255,220,80,0.9)', background: 'rgba(212,175,55,0.15)',
+                    border: '1px solid rgba(212,175,55,0.4)', borderRadius: '3px', padding: '1px 5px',
+                    animation: 'pulse 2s ease-in-out infinite',
+                  }}>{tab.badge}</span>
+                )}
+              </button>
+            ))}
           </div>
 
-          {/* ── EQUIPMENT ── */}
-          {(equippedWeapon || Object.values(equippedArmor || {}).some(a => a)) && (
-            <>
-              <SectionHeader label="Equipment" />
-              <Divider />
-              {equippedWeapon && <StatRowStatic label="Weapon" value={equippedWeapon.name || 'Equipped'} />}
-              {Object.entries(equippedArmor || {}).map(([slot, piece]) =>
-                piece ? <StatRowStatic key={slot} label={slot.charAt(0).toUpperCase() + slot.slice(1)} value={piece.name || 'Equipped'} dim /> : null
-              )}
-            </>
-          )}
+          {/* ── Chronicle panel ── */}
+          {activePanel === 'chronicle' && (
+            <div style={{ flex: 1, padding: '24px 28px', overflowY: 'auto' }}>
 
-          {/* ── SKILL TREE ── */}
-          <div style={{ marginTop: '20px' }}>
-            <button
-              onClick={() => setShowSkillTree(v => !v)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', width: '100%', padding: 0, display: 'flex', alignItems: 'center', gap: '10px' }}
-            >
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>Skill Tree</span>
-              {skillPoints > 0 && (
-                <span style={{
-                  fontFamily: 'Cinzel, serif', fontSize: '0.56rem', fontWeight: 900,
-                  letterSpacing: '0.12em', textTransform: 'uppercase',
-                  color: 'rgba(255,220,80,0.9)',
-                  background: 'rgba(212,175,55,0.15)',
-                  border: '1px solid rgba(212,175,55,0.4)',
-                  borderRadius: '3px', padding: '1px 6px',
-                  animation: 'pulse 2s ease-in-out infinite',
-                }}>
-                  {skillPoints} pt{skillPoints !== 1 ? 's' : ''}
+              {/* Header row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>
+                  The Chronicle
                 </span>
-              )}
-              <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, rgba(212,175,55,0.15), transparent)' }} />
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: 'rgba(212,175,55,0.3)', letterSpacing: '0.1em' }}>{showSkillTree ? '▲ hide' : '▼ show'}</span>
-            </button>
+                {guildRank && (
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.18em', textTransform: 'uppercase', color: guildRank.name === 'Initiate' ? 'rgba(180,160,120,0.4)' : guildRank.color, opacity: 0.75 }}>
+                    {guildRank.name}
+                  </span>
+                )}
+              </div>
+              <Divider gold />
 
-            {showSkillTree && (() => {
-              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE, Assassin: ASSASSIN_SKILL_TREE, Crusader: CRUSADER_SKILL_TREE };
-              const tree = CLASS_TREES[hero.class?.name];
-              if (!tree) return (
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(150,130,100,0.3)', textAlign: 'center', fontStyle: 'italic', marginTop: '16px' }}>
+              <StatRowStatic label="Level"    value={level}              highlight />
+              <StatRowStatic label="Day"      value={currentDay} />
+              <StatRowStatic label="Total XP" value={xp.toLocaleString()} />
+
+              {/* ── ATTRIBUTES ── */}
+              <SectionHeader
+                label="Attributes"
+                badge={isAllocating ? `${remaining} point${remaining !== 1 ? 's' : ''} to spend` : null}
+              />
+              <Divider />
+
+              {isAllocating ? (
+                <>
+                  {['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => (
+                    <AbilityAllocRow key={key} statKey={key} />
+                  ))}
+                  <div style={{ marginTop: '12px' }}>
+                    <button
+                      onClick={confirmAlloc}
+                      disabled={!allAllocated}
+                      style={{
+                        width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.68rem',
+                        letterSpacing: '0.22em', textTransform: 'uppercase', padding: '10px',
+                        borderRadius: '3px', cursor: allAllocated ? 'pointer' : 'not-allowed',
+                        background: allAllocated ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.03)',
+                        border: `1px solid ${allAllocated ? 'rgba(212,175,55,0.6)' : 'rgba(255,255,255,0.07)'}`,
+                        color: allAllocated ? 'rgba(255,225,100,0.9)' : 'rgba(255,255,255,0.18)',
+                        boxShadow: allAllocated ? '0 0 14px rgba(212,175,55,0.2)' : 'none',
+                        transition: 'all 0.2s',
+                      }}
+                      onMouseEnter={e => { if (allAllocated) { e.currentTarget.style.background = 'rgba(212,175,55,0.25)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(212,175,55,0.35)'; } }}
+                      onMouseLeave={e => { if (allAllocated) { e.currentTarget.style.background = 'rgba(212,175,55,0.15)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(212,175,55,0.2)'; } }}
+                    >
+                      {allAllocated ? 'Confirm Advancement' : `Distribute ${remaining} remaining point${remaining !== 1 ? 's' : ''}`}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                ['str', 'dex', 'con', 'int', 'wis', 'cha'].map(key => {
+                  const score = ab[key] || 10;
+                  const mod   = Math.floor((score - 10) / 2);
+                  const isPrimary = key === primaryKey;
+                  return (
+                    <StatRowStatic
+                      key={key}
+                      label={`${ABILITY_LABEL[key]}${isPrimary ? ' ★' : ''}`}
+                      value={`${score}  (${mod >= 0 ? '+' : ''}${mod})`}
+                      highlight={isPrimary}
+                    />
+                  );
+                })
+              )}
+
+              {/* ── DERIVED STATS ── */}
+              <SectionHeader label="Derived Stats" />
+              <Divider />
+
+              <StatRowStatic label="Max HP"  value={maxHp}        highlight />
+              <StatRowStatic label="Max SP"  value={maxSp}        highlight />
+              <StatRowStatic label="Attack"  value={atk}          highlight />
+              <StatRowStatic label="Defense" value={`${defPct}%`} highlight />
+
+              <StatRowStatic label="Base HP"  value={GAME_CONSTANTS.MAX_HP} dim indent />
+              {conMod > 0 && <StatRowStatic label="CON Bonus" value={`+${conMod * 5}`} dim indent />}
+              {equippedGrimoire?.hp && <StatRowStatic label="Pendant" value={`+${equippedGrimoire.hp}`} dim indent />}
+              <StatRowStatic label="Base ATK" value={classBaseAtk} dim indent />
+              {strMod > 0 && <StatRowStatic label="STR Bonus" value={`+${strMod}`} dim indent />}
+              {equippedWeapon && <StatRowStatic label={equippedWeapon.name || 'Weapon'} value={`+${equippedWeapon.attack}`} dim indent />}
+              <StatRowStatic label="Base DEF" value={classBaseDef} dim indent />
+              {armorDef > 0 && <StatRowStatic label="Armor" value={`+${armorDef}`} dim indent />}
+
+              {/* ── STATUS ── */}
+              <SectionHeader label="Status" />
+              <Divider />
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0' }}>
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(190,175,148,0.65)' }}>Curse</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ width: '50px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1))' }} />
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 900, letterSpacing: '0.05em', color: curseLevel > 0 ? CURSE_COLORS[curseLevel] : 'rgba(180,165,138,0.4)', minWidth: '50px', textAlign: 'right' }}>
+                    {curseLevel > 0 ? `${CURSE_NAMES[curseLevel]}  (${curseLevel}/3)` : 'None'}
+                  </span>
+                </div>
+              </div>
+
+              {/* ── EQUIPMENT ── */}
+              {(equippedWeapon || Object.values(equippedArmor || {}).some(a => a)) && (
+                <>
+                  <SectionHeader label="Equipment" />
+                  <Divider />
+                  {equippedWeapon && <StatRowStatic label="Weapon" value={equippedWeapon.name || 'Equipped'} />}
+                  {Object.entries(equippedArmor || {}).map(([slot, piece]) =>
+                    piece ? <StatRowStatic key={slot} label={slot.charAt(0).toUpperCase() + slot.slice(1)} value={piece.name || 'Equipped'} dim /> : null
+                  )}
+                </>
+              )}
+
+            </div>
+          )}
+
+          {/* ── Skills panel ── */}
+          {activePanel === 'skills' && (() => {
+            const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE, Assassin: ASSASSIN_SKILL_TREE, Crusader: CRUSADER_SKILL_TREE };
+            const tree = CLASS_TREES[hero.class?.name];
+
+            if (!tree) return (
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.62rem', color: 'rgba(150,130,100,0.3)', fontStyle: 'italic' }}>
                   Skill tree coming soon.
                 </p>
-              );
+              </div>
+            );
 
-              const byTierBranch = {};
-              tree.forEach(n => {
-                const key = `${n.tier}-${n.branch}`;
-                if (!byTierBranch[key]) byTierBranch[key] = [];
-                byTierBranch[key].push(n);
-              });
+            const BRANCH_ROOTS = {
+              Knight:   { left: 'kn_battle_forged', right: 'kn_ironclad' },
+              Wizard:   { left: 'wz_spellfire',     right: 'wz_arcane_veil' },
+              Assassin: { left: 'as_serrated_edge', right: 'as_shadowstep' },
+              Crusader: { left: 'cr_storm_blessed', right: 'cr_bulwark' },
+            };
+            const roots = BRANCH_ROOTS[hero.class?.name] || {};
+            const hasLeft  = unlockedSkillNodes.includes(roots.left);
+            const hasRight = unlockedSkillNodes.includes(roots.right);
 
-              return (
-                <div style={{ marginTop: '16px' }}>
-                  {/* Branch labels */}
-                  {(() => {
-                    const cls = hero.class?.name;
-                    const labels = {
-                      Wizard:   { left: 'Fire / Burn',       right: 'Ice / Control',  lc: 'rgba(240,120,60,0.45)',  rc: 'rgba(80,190,240,0.45)' },
-                      Assassin: { left: 'Blade / Blood',     right: 'Shadow / Crit',  lc: 'rgba(220,60,60,0.45)',   rc: 'rgba(140,100,220,0.45)' },
-                      Crusader: { left: 'Lightning / Wrath', right: 'Shield / Faith', lc: 'rgba(240,210,60,0.45)',  rc: 'rgba(200,200,255,0.45)' },
-                    };
-                    const l = labels[cls] || { left: 'Offensive', right: 'Defensive', lc: 'rgba(220,120,80,0.45)', rc: 'rgba(80,160,220,0.45)' };
-                    return (
-                      <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: l.lc }}>{l.left}</span>
-                        </div>
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: l.rc }}>{l.right}</span>
-                        </div>
-                      </div>
-                    );
-                  })()}
+            const cls = hero.class?.name;
+            const branchMeta = {
+              Wizard:   { left: 'Fire / Burn',       right: 'Ice / Control',  lc: 'rgba(240,120,60,0.6)',  rc: 'rgba(80,190,240,0.6)' },
+              Assassin: { left: 'Blade / Blood',     right: 'Shadow / Crit',  lc: 'rgba(220,60,60,0.6)',   rc: 'rgba(140,100,220,0.6)' },
+              Crusader: { left: 'Lightning / Wrath', right: 'Shield / Faith', lc: 'rgba(240,210,60,0.6)',  rc: 'rgba(200,200,255,0.6)' },
+              Knight:   { left: 'Offense',           right: 'Defense',        lc: 'rgba(220,120,80,0.6)',  rc: 'rgba(80,160,220,0.6)'  },
+            };
+            const bm = branchMeta[cls] || branchMeta.Knight;
 
-                  {[1, 2, 3].map(tier => (
-                    <div key={tier} style={{ display: 'flex', gap: '12px', marginBottom: '10px' }}>
+            const byTierBranch = {};
+            tree.forEach(n => {
+              const key = `${n.tier}-${n.branch}`;
+              if (!byTierBranch[key]) byTierBranch[key] = [];
+              byTierBranch[key].push(n);
+            });
+
+            const unlockedCount = tree.filter(n => unlockedSkillNodes.includes(n.id)).length;
+
+            return (
+              <div style={{ flex: 1, padding: '20px 24px', overflowY: 'auto' }}>
+
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.4)' }}>
+                    {cls} Mastery
+                  </span>
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(160,145,110,0.4)', letterSpacing: '0.1em' }}>
+                    {unlockedCount} / {tree.length} unlocked
+                  </span>
+                </div>
+                <Divider gold />
+
+                {/* Skill points available */}
+                <div style={{ marginBottom: '16px', marginTop: '8px', textAlign: 'center' }}>
+                  {skillPoints > 0 ? (
+                    <span style={{
+                      fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.16em',
+                      textTransform: 'uppercase', color: 'rgba(255,220,80,0.9)',
+                      background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.35)',
+                      borderRadius: '3px', padding: '4px 12px',
+                    }}>
+                      {skillPoints} skill point{skillPoints !== 1 ? 's' : ''} available
+                    </span>
+                  ) : (
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.54rem', color: 'rgba(130,115,85,0.3)', fontStyle: 'italic', letterSpacing: '0.1em' }}>
+                      Earn points by leveling up
+                    </span>
+                  )}
+                </div>
+
+                {/* Branch labels */}
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '10px' }}>
+                  <div style={{ flex: 1, textAlign: 'center', paddingBottom: '6px', borderBottom: `1px solid ${hasRight ? 'rgba(100,90,70,0.2)' : bm.lc.replace('0.6', '0.3')}` }}>
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: hasRight ? 'rgba(100,90,70,0.3)' : bm.lc }}>
+                      {bm.left}
+                    </span>
+                    {hasRight && <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.48rem', color: 'rgba(120,100,70,0.35)', marginLeft: '6px' }}>locked</span>}
+                  </div>
+                  <div style={{ flex: 1, textAlign: 'center', paddingBottom: '6px', borderBottom: `1px solid ${hasLeft ? 'rgba(100,90,70,0.2)' : bm.rc.replace('0.6', '0.3')}` }}>
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: hasLeft ? 'rgba(100,90,70,0.3)' : bm.rc }}>
+                      {bm.right}
+                    </span>
+                    {hasLeft && <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.48rem', color: 'rgba(120,100,70,0.35)', marginLeft: '6px' }}>locked</span>}
+                  </div>
+                </div>
+
+                {/* Tier rows */}
+                {[1, 2, 3].map(tier => (
+                  <div key={tier}>
+                    {/* Tier label */}
+                    <div style={{ textAlign: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.48rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(130,115,85,0.25)' }}>
+                        Tier {tier}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
                       {['left', 'right'].map(branch => {
                         const nodes = byTierBranch[`${tier}-${branch}`] || [];
                         return (
-                          <div key={branch} style={{ flex: 1, display: 'flex', gap: '6px' }}>
+                          <div key={branch} style={{ flex: 1, display: 'flex', gap: '8px' }}>
                             {nodes.map(node => {
                               const isUnlocked = unlockedSkillNodes.includes(node.id);
                               const reqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
-                              // Branch lock: once a T1 root is chosen, the opposite branch is locked
-                              const BRANCH_ROOTS = {
-                                Knight:   { left: 'kn_battle_forged', right: 'kn_ironclad' },
-                                Wizard:   { left: 'wz_spellfire',     right: 'wz_arcane_veil' },
-                                Assassin: { left: 'as_serrated_edge', right: 'as_shadowstep' },
-                                Crusader: { left: 'cr_storm_blessed', right: 'cr_bulwark' },
-                              };
                               let branchLocked = false;
-                              const roots = BRANCH_ROOTS[hero.class?.name];
-                              if (roots && !isUnlocked) {
-                                const hasLeft = unlockedSkillNodes.includes(roots.left);
-                                const hasRight = unlockedSkillNodes.includes(roots.right);
+                              if (!isUnlocked) {
                                 if (node.branch === 'left' && hasRight) branchLocked = true;
                                 if (node.branch === 'right' && hasLeft) branchLocked = true;
                               }
@@ -591,66 +653,78 @@ const HeroTab = ({
 
                               return (
                                 <div key={node.id} style={{
-                                  flex: 1, borderRadius: '3px', padding: '8px',
+                                  flex: 1, borderRadius: '4px', padding: '12px 10px',
                                   background: isUnlocked
-                                    ? 'rgba(212,175,55,0.09)'
-                                    : isAvailable ? 'rgba(22,19,11,0.8)' : 'rgba(14,12,7,0.6)',
+                                    ? 'rgba(212,175,55,0.08)'
+                                    : isAvailable ? 'rgba(22,19,11,0.85)' : 'rgba(14,12,7,0.55)',
                                   border: `1px solid ${isUnlocked
-                                    ? 'rgba(212,175,55,0.45)'
-                                    : isAvailable ? 'rgba(212,175,55,0.18)' : 'rgba(55,50,35,0.2)'}`,
-                                  opacity: isAvailable || isUnlocked ? 1 : 0.4,
+                                    ? 'rgba(212,175,55,0.42)'
+                                    : isAvailable ? 'rgba(212,175,55,0.16)' : 'rgba(50,45,30,0.2)'}`,
+                                  opacity: isAvailable || isUnlocked ? 1 : 0.38,
                                   position: 'relative',
                                   transition: 'all 0.15s',
                                 }}>
                                   {isUnlocked && (
-                                    <div style={{ position: 'absolute', top: '-3px', right: '-3px', width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(212,175,55,0.9)', boxShadow: '0 0 6px rgba(212,175,55,0.7)' }} />
+                                    <div style={{ position: 'absolute', top: '-4px', right: '-4px', width: '9px', height: '9px', borderRadius: '50%', background: 'rgba(212,175,55,0.9)', boxShadow: '0 0 8px rgba(212,175,55,0.7)' }} />
                                   )}
 
-                                  {/* Icon placeholder — swap node.icon for an img src when ready */}
+                                  {/* Icon */}
                                   <div style={{
-                                    width: '28px', height: '28px', borderRadius: '2px', margin: '0 auto 5px',
+                                    width: '44px', height: '44px', borderRadius: '3px', margin: '0 auto 8px',
                                     background: isUnlocked ? 'rgba(212,175,55,0.1)' : 'rgba(35,30,18,0.5)',
-                                    border: `1px solid ${isUnlocked ? 'rgba(212,175,55,0.28)' : 'rgba(70,62,40,0.2)'}`,
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                                    border: `1px solid ${isUnlocked ? 'rgba(212,175,55,0.3)' : 'rgba(70,62,40,0.2)'}`,
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                                   }}>
                                     {node.icon
-                                      ? <img src={node.icon} alt="" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
-                                      : <span style={{ fontSize: '0.55rem', color: isUnlocked ? 'rgba(212,175,55,0.35)' : 'rgba(70,62,42,0.3)' }}>◆</span>
+                                      ? <img src={node.icon} alt="" style={{ width: '34px', height: '34px', objectFit: 'contain' }} />
+                                      : <span style={{ fontSize: '0.9rem', color: isUnlocked ? 'rgba(212,175,55,0.5)' : 'rgba(70,62,42,0.25)' }}>◆</span>
                                     }
                                   </div>
 
-                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', fontWeight: 900, letterSpacing: '0.04em', textAlign: 'center', margin: '0 0 2px', color: isUnlocked ? 'rgba(230,215,165,0.9)' : isAvailable ? 'rgba(185,170,132,0.7)' : 'rgba(95,87,62,0.4)' }}>
+                                  {/* Name */}
+                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.66rem', fontWeight: 900, letterSpacing: '0.04em', textAlign: 'center', margin: '0 0 5px', color: isUnlocked ? 'rgba(230,215,165,0.92)' : isAvailable ? 'rgba(185,170,132,0.75)' : 'rgba(90,82,58,0.45)' }}>
                                     {node.name}
                                   </p>
 
-                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', textAlign: 'center', margin: '0 0 4px', lineHeight: 1.4, color: isUnlocked ? 'rgba(170,152,108,0.6)' : 'rgba(100,92,65,0.4)' }}>
+                                  {/* Desc */}
+                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.54rem', textAlign: 'center', margin: '0 0 6px', lineHeight: 1.5, color: isUnlocked ? 'rgba(175,158,115,0.7)' : isAvailable ? 'rgba(140,128,96,0.5)' : 'rgba(85,78,55,0.35)' }}>
                                     {node.desc}
                                   </p>
 
+                                  {/* Flavor */}
+                                  {node.flavor && (
+                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.48rem', textAlign: 'center', margin: '0 0 7px', lineHeight: 1.5, fontStyle: 'italic', color: isUnlocked ? 'rgba(140,125,90,0.45)' : 'rgba(90,82,60,0.28)' }}>
+                                      "{node.flavor}"
+                                    </p>
+                                  )}
+
+                                  {/* Active badge */}
                                   {node.type === 'active' && (
-                                    <div style={{ textAlign: 'center', marginBottom: '4px' }}>
-                                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.46rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isUnlocked ? 'rgba(100,175,240,0.65)' : 'rgba(60,90,120,0.35)', background: 'rgba(20,50,90,0.2)', borderRadius: '2px', padding: '1px 4px', border: '1px solid rgba(50,90,150,0.15)' }}>
+                                    <div style={{ textAlign: 'center', marginBottom: '7px' }}>
+                                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isUnlocked ? 'rgba(100,175,240,0.7)' : 'rgba(55,85,115,0.35)', background: 'rgba(20,50,90,0.2)', borderRadius: '2px', padding: '2px 6px', border: '1px solid rgba(50,90,150,0.15)' }}>
                                         Active · {node.spCost} SP
                                       </span>
                                     </div>
                                   )}
 
-                                  {!isUnlocked && (
-                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.46rem', textAlign: 'center', margin: '0 0 5px', color: 'rgba(140,125,88,0.38)', letterSpacing: '0.04em' }}>
+                                  {/* Cost */}
+                                  {!isUnlocked && !branchLocked && (
+                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', textAlign: 'center', margin: '0 0 6px', color: 'rgba(140,125,88,0.4)', letterSpacing: '0.06em' }}>
                                       {node.cost} pt{node.cost !== 1 ? 's' : ''}
                                     </p>
                                   )}
 
+                                  {/* Unlock button */}
                                   {canUnlock && (
                                     <button
                                       onClick={() => onUnlockSkillNode && onUnlockSkillNode(node.id, node.cost)}
                                       style={{
-                                        display: 'block', width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.5rem',
-                                        letterSpacing: '0.1em', textTransform: 'uppercase', padding: '4px 0',
+                                        display: 'block', width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.54rem',
+                                        letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 0',
                                         borderRadius: '2px', cursor: 'pointer',
                                         background: 'rgba(212,175,55,0.1)',
-                                        border: '1px solid rgba(212,175,55,0.42)',
-                                        color: 'rgba(255,225,100,0.82)',
+                                        border: '1px solid rgba(212,175,55,0.45)',
+                                        color: 'rgba(255,225,100,0.85)',
                                         transition: 'all 0.15s',
                                       }}
                                       onMouseEnter={e => { e.currentTarget.style.background = 'rgba(212,175,55,0.2)'; }}
@@ -666,15 +740,12 @@ const HeroTab = ({
                         );
                       })}
                     </div>
-                  ))}
+                  </div>
+                ))}
 
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.54rem', letterSpacing: '0.1em', color: 'rgba(150,130,100,0.22)', textAlign: 'center', fontStyle: 'italic', marginTop: '6px' }}>
-                    {skillPoints > 0 ? `${skillPoints} skill point${skillPoints !== 1 ? 's' : ''} available` : 'Earn points by leveling up'}
-                  </p>
-                </div>
-              );
-            })()}
-          </div>
+              </div>
+            );
+          })()}
 
         </div>
       </div>
