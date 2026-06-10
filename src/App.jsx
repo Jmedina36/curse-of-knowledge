@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText, LogIn, LogOut } from 'lucide-react';
-import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE } from './constants';
+import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
 import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
@@ -235,6 +235,11 @@ const FantasyStudyQuest = () => {
   const [rubyGemActive, setRubyGemActive] = useState(false);
   const [sapphireGemActive, setSapphireGemActive] = useState(false);
   const [unlockedSkillNodes, setUnlockedSkillNodes] = useState([]);
+  // Assassin skill tree battle states
+  const [bossBleedTurns, setBossBleedTurns] = useState(0);
+  const [bossBleedDamage, setBossBleedDamage] = useState(0);
+  const [assassinShadowStacks, setAssassinShadowStacks] = useState(0);
+  const [assassinSmokeVeilActive, setAssassinSmokeVeilActive] = useState(false);
 
   const getMaxHp = useCallback(() => {
     const pendantBonus = equippedGrimoire ? equippedGrimoire.hp : 0;
@@ -2760,6 +2765,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
   setVictoryLoot([]);
     setVictoryChest(null); // Clear previous loot
   setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+  setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
 
   // Reset charges at start of each battle
   setChargeStacks(0);
@@ -2836,6 +2842,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+  setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -2943,6 +2950,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+  setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3029,6 +3037,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
     setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+  setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3108,16 +3117,18 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(false);
     setCanFlee(true);
     setMiniBossCount(bossNumber);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
+    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+    setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
   setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null); // Clear previous loot
-    
+
     // Reset charges at start of each battle
     setChargeStacks(0);
-    
+
     setEnragedTurns(0);
     setHasFled(false); // Reset fled status
     
@@ -3186,9 +3197,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setBattleMode(true);
     setIsFinalBoss(false);
     setCanFlee(false);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
+    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+    setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3254,9 +3267,11 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setIsFinalBoss(false);
     setCanFlee(false);
     setMiniBossCount(bossNumber);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false });
+    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
     setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
     setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
+    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
+    setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
     setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
     setVictoryLoot([]);
     setVictoryChest(null);
@@ -3710,6 +3725,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (knightWarlordsRoarTurns > 0 && hero?.class?.name === 'Knight') critChance += 15;
     // Skill tree: Hex Mastery — +12% crit
     if (unlockedSkillNodes.includes('wz_hex_mastery') && hero?.class?.name === 'Wizard') critChance += 12;
+    // Skill tree: Shadowstep — +12% crit
+    if (unlockedSkillNodes.includes('as_shadowstep') && hero?.class?.name === 'Assassin') critChance += 12;
+    // Smoke Veil: guaranteed crit on next attack
+    if (assassinSmokeVeilActive && hero?.class?.name === 'Assassin') critChance = 100;
 
     const critRoll = Math.random() * 100;
     const isCrit = critRoll < critChance;
@@ -3726,6 +3745,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (isCrit) {
       bonusMessages.push(`💥 CRITICAL HIT! (${actualCritMultiplier.toFixed(1)}x damage)`);
       sounds.critHit();
+      // Shadowstep: gain a Shadow Stack on crit (max 3)
+      if (unlockedSkillNodes.includes('as_shadowstep') && hero?.class?.name === 'Assassin') {
+        setAssassinShadowStacks(s => Math.min(3, s + 1));
+      }
+      // Smoke Veil: consumed on attack
+      if (assassinSmokeVeilActive) setAssassinSmokeVeilActive(false);
     }
 
     // Check for poison proc from weapon affixes
@@ -3753,6 +3778,18 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       const burnVulnBonus = Math.floor(finalDamage * 0.25);
       finalDamage += burnVulnBonus;
       bonusMessages.push(`🔥 +${burnVulnBonus} from Hex Mastery (burn vulnerability)`);
+    }
+    // Skill tree: Mark for Death — bleeding enemies take +20% damage
+    if (bossBleedTurns > 0 && unlockedSkillNodes.includes('as_mark_for_death') && hero?.class?.name === 'Assassin') {
+      const bleedVulnBonus = Math.floor(finalDamage * 0.20);
+      finalDamage += bleedVulnBonus;
+      bonusMessages.push(`🩸 +${bleedVulnBonus} from Mark for Death (bleed vulnerability)`);
+    }
+    // Skill tree: Shadowstep — Shadow Stacks add +8% damage each (basic attack only)
+    if (assassinShadowStacks > 0 && unlockedSkillNodes.includes('as_shadowstep') && hero?.class?.name === 'Assassin') {
+      const stackBonus = Math.floor(finalDamage * (assassinShadowStacks * 0.08));
+      finalDamage += stackBonus;
+      bonusMessages.push(`🌑 +${stackBonus} from ${assassinShadowStacks} Shadow Stack${assassinShadowStacks !== 1 ? 's' : ''}`);
     }
 
     // AOE Warning - Boss vulnerable but will counter-attack
@@ -3876,6 +3913,15 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       if (Math.random() < 0.20) {
         setBossChilledTurns(t => Math.max(t, 3));
         addLog(`❄️ The enemy is CHILLED! Defense shreds each turn.`);
+      }
+    }
+    // Assassin Serrated Edge: 20% chance to Bleed on hit
+    if (unlockedSkillNodes.includes('as_serrated_edge') && hero?.class?.name === 'Assassin' && newBossHp > 0) {
+      if (Math.random() < 0.20) {
+        const bleedDmg = Math.max(3, Math.floor(finalDamage * 0.08));
+        setBossBleedTurns(t => Math.max(t, 3));
+        setBossBleedDamage(d => Math.max(d, bleedDmg));
+        addLog(`🩸 Serrated Edge! Enemy bleeds for ${bleedDmg}/turn (3 turns)`);
       }
     }
 
@@ -6491,6 +6537,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         addLog(`🔥 Enemy burns! -${burnDmg} HP (${bossDebuffs.burnTurns - 1} turns left)`);
         setBossDebuffs(prev => ({ ...prev, burnTurns: prev.burnTurns - 1 }));
       }
+      // Bleed tick
+      if (bossBleedTurns > 0) {
+        const bleedDmg = bossBleedDamage;
+        setBossHp(h => godMode ? h : Math.max(0, h - bleedDmg));
+        addLog(`🩸 Enemy bleeds! -${bleedDmg} HP (${bossBleedTurns - 1} turns left)`);
+        setBossBleedTurns(t => t - 1);
+      }
     }, enemyDelay);
   };
 
@@ -6612,7 +6665,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
   // ── Skill Tree ─────────────────────────────────────────────────────────
   const unlockSkillNode = (nodeId) => {
-    const tree = hero?.class?.name === 'Knight' ? KNIGHT_SKILL_TREE : hero?.class?.name === 'Wizard' ? WIZARD_SKILL_TREE : null;
+    const tree = hero?.class?.name === 'Knight' ? KNIGHT_SKILL_TREE
+      : hero?.class?.name === 'Wizard' ? WIZARD_SKILL_TREE
+      : hero?.class?.name === 'Assassin' ? ASSASSIN_SKILL_TREE
+      : null;
     if (!tree) return;
     const node = tree.find(n => n.id === nodeId);
     if (!node) return;
@@ -6620,9 +6676,152 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     if (skillPoints < node.cost) { addLog('Not enough skill points.'); return; }
     const prereqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
     if (!prereqsMet) { addLog('Prerequisites not met.'); return; }
+    // Assassin: branch locking — left (Blade) and right (Shadow) are mutually exclusive
+    if (hero?.class?.name === 'Assassin') {
+      const leftRoot = 'as_serrated_edge';
+      const rightRoot = 'as_shadowstep';
+      const hasLeft = unlockedSkillNodes.includes(leftRoot);
+      const hasRight = unlockedSkillNodes.includes(rightRoot);
+      if (node.branch === 'left' && hasRight) { addLog('You have chosen the Shadow path — Blade branch is locked.'); return; }
+      if (node.branch === 'right' && hasLeft) { addLog('You have chosen the Blade path — Shadow branch is locked.'); return; }
+    }
     setSkillPoints(p => p - node.cost);
     setUnlockedSkillNodes(prev => [...prev, nodeId]);
     addLog(`Skill unlocked: ${node.name}!`);
+  };
+
+  // ── Assassin Skill Tree Handlers ─────────────────────────────────────
+  const useEviscerate = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Assassin') return;
+    if (!unlockedSkillNodes.includes('as_eviscerate')) return;
+    if (stamina < 25) { addLog('Not enough stamina for Eviscerate! (25 SP)'); return; }
+    setStamina(s => s - 25);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage = Math.max(1, Math.floor(rawDamage * 1.8) - enemyDef);
+    const alreadyBleeding = bossBleedTurns > 0;
+    if (alreadyBleeding) damage = Math.floor(damage * 1.40);
+    const bleedDmg = Math.max(3, Math.floor(damage * 0.08));
+    setBossBleedTurns(Math.max(bossBleedTurns, 3));
+    setBossBleedDamage(Math.max(bossBleedDamage, bleedDmg));
+    if (unlockedSkillNodes.includes('as_mark_for_death') && alreadyBleeding) {
+      damage += Math.floor(damage * 0.20);
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`🗡️ EVISCERATE! ${damage} damage${alreadyBleeding ? ' (+40% open wound!)' : ''} + BLEED (${bleedDmg}/turn)`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useCoupDeGrace = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Assassin') return;
+    if (!unlockedSkillNodes.includes('as_coup_de_grace')) return;
+    if (stamina < 35) { addLog('Not enough stamina for Coup de Grâce! (35 SP)'); return; }
+    setStamina(s => s - 35);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    const bossHpPct = bossHp / bossMax;
+    const isExecute = bossHpPct < 0.35;
+    const mult = isExecute ? 3.5 : 2.0;
+    let damage = Math.max(1, Math.floor(rawDamage * mult) - enemyDef);
+    // Detonate remaining bleed turns as burst damage
+    let bleedBurst = 0;
+    if (bossBleedTurns > 0) {
+      bleedBurst = bossBleedTurns * bossBleedDamage;
+      damage += bleedBurst;
+      setBossBleedTurns(0);
+      setBossBleedDamage(0);
+    }
+    if (unlockedSkillNodes.includes('as_mark_for_death') && bossBleedTurns > 0) {
+      damage += Math.floor(damage * 0.20);
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    const parts = [`⚔️ COUP DE GRÂCE! ${damage} damage`];
+    if (isExecute) parts.push(`(EXECUTE — ${mult}×!)`);
+    if (bleedBurst > 0) parts.push(`+${bleedBurst} bleed detonated`);
+    addLog(parts.join(' '));
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const useSmokeVeil = () => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Assassin') return;
+    if (!unlockedSkillNodes.includes('as_smoke_veil')) return;
+    if (stamina < 20) { addLog('Not enough stamina for Smoke Veil! (20 SP)'); return; }
+    setStamina(s => s - 20);
+    setAssassinSmokeVeilActive(true);
+    addLog(`🌑 SMOKE VEIL! Next attack: guaranteed crit, enemy counter skipped.`);
+    // No enemy counter-attack — this is a positioning move
+  };
+
+  const useAmbush = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Assassin') return;
+    if (!unlockedSkillNodes.includes('as_ambush')) return;
+    if (stamina < 30) { addLog('Not enough stamina for Ambush! (30 SP)'); return; }
+    setStamina(s => s - 30);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    const stackMult = 1 + (assassinShadowStacks * 0.15);
+    let damage = Math.max(1, Math.floor(rawDamage * 2.5 * stackMult) - enemyDef);
+    const stacksUsed = assassinShadowStacks;
+    setAssassinShadowStacks(0);
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    addLog(`🌑 AMBUSH! ${damage} damage (2.5× × ${stackMult.toFixed(2)} — ${stacksUsed} stack${stacksUsed !== 1 ? 's' : ''} consumed)`);
+    setTurnPhase('enemy');
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+  };
+
+  const usePhantomStrike = (enemyDelay = 1000) => {
+    if (!battling || bossHp <= 0 || hero?.class?.name !== 'Assassin') return;
+    if (!unlockedSkillNodes.includes('as_phantom_strike')) return;
+    if (stamina < 40) { addLog('Not enough stamina for Phantom Strike! (40 SP)'); return; }
+    setStamina(s => s - 40);
+    setCurrentAnimation('battle-shake');
+    setTimeout(() => setCurrentAnimation(null), 250);
+    let enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.regular;
+    if (battleType === 'elite') enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.elite;
+    else if (battleType === 'final' || isFinalBoss) enemyDef = GAME_CONSTANTS.ENEMY_DEFENSE.gauntlet;
+    enemyDef += Math.floor((currentDay - 1) * GAME_CONSTANTS.ENEMY_DEFENSE_DAY_SCALE);
+    const smokeActive = assassinSmokeVeilActive;
+    const critRoll = smokeActive || Math.random() * 100 < (GAME_CONSTANTS.CRIT_SYSTEM.baseCritChance + 12);
+    const critMult = critRoll ? GAME_CONSTANTS.CRIT_SYSTEM.baseCritMultiplier : 1.0;
+    const rawDamage = getBaseAttack() + Math.floor(Math.random() * 10);
+    let damage = Math.max(1, Math.floor(rawDamage * 2.0 * critMult) - enemyDef);
+    if (smokeActive) {
+      setAssassinSmokeVeilActive(false);
+      setAssassinShadowStacks(s => Math.min(3, s + 1));
+    }
+    const newBossHp = godMode ? 0 : Math.max(0, bossHp - damage);
+    setBossHp(newBossHp);
+    setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
+    const parts = [`👻 PHANTOM STRIKE! ${damage} damage`];
+    if (critRoll) parts.push(`(CRIT!)`);
+    if (smokeActive) parts.push(`— Smoke Veil: +1 free Stack`);
+    addLog(parts.join(' '));
+    setTurnPhase('enemy');
+    // No counter-attack
+    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
   };
 
   const useWarlordsRoar = (enemyDelay = 1000) => {
@@ -9014,6 +9213,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               useRampart={useRampart} useNoQuarter={useNoQuarter} useRetribution={useRetribution}
               bossChilledTurns={bossChilledTurns} bossChillDefStacks={bossChillDefStacks} bossFrozenTurns={bossFrozenTurns}
               useManaSurge={useManaSurge} useIceLance={useIceLance} useCataclysm={useCataclysm} useAbsoluteZero={useAbsoluteZero}
+              bossBleedTurns={bossBleedTurns} assassinShadowStacks={assassinShadowStacks} assassinSmokeVeilActive={assassinSmokeVeilActive}
+              useEviscerate={useEviscerate} useCoupDeGrace={useCoupDeGrace} useSmokeVeil={useSmokeVeil} useAmbush={useAmbush} usePhantomStrike={usePhantomStrike}
               flee={flee} dodge={dodge} advance={advance} die={die}
               addLog={addLog} setStamina={setStamina} setStaminaPots={setStaminaPots}
               getRarityColor={getRarityColor}

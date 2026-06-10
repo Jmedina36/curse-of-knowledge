@@ -924,3 +924,62 @@ export const KNIGHT_SKILL_TREE = [
   },
 ];
 
+export const ASSASSIN_SKILL_TREE = [
+  // ── Tier 1 (mutually exclusive — picking one locks the other) ────────
+  {
+    id: 'as_serrated_edge', name: 'Serrated Edge',
+    desc: '20% chance to Bleed on hit · 3 turns · 8% dmg/turn', flavor: 'Every wound is just another opening.',
+    tier: 1, branch: 'left', cost: 1, requires: [],
+    type: 'passive', icon: null,
+  },
+  {
+    id: 'as_shadowstep', name: 'Shadowstep',
+    desc: '+12% Crit · Crits grant a Shadow Stack (max 3, +8% dmg each)', flavor: 'Strike before they know you\'re there.',
+    tier: 1, branch: 'right', cost: 1, requires: [],
+    type: 'passive', icon: null, bonus: { critChance: 12 },
+  },
+  // ── Tier 2 Left ─────────────────────────────────────────────────────
+  {
+    id: 'as_mark_for_death', name: 'Mark for Death',
+    desc: 'Bleeding enemies take +20% damage', flavor: 'The mark is a promise.',
+    tier: 2, branch: 'left', cost: 1, requires: ['as_serrated_edge'],
+    type: 'passive', icon: null,
+  },
+  {
+    id: 'as_eviscerate', name: 'Eviscerate',
+    desc: '1.8× damage · guaranteed Bleed · +40% if already Bleeding', flavor: 'Tear it open.',
+    tier: 2, branch: 'left', cost: 1, requires: ['as_serrated_edge'],
+    type: 'active', spCost: 25, icon: null,
+    effect: { damageMult: 1.8, bleedTurns: 3 },
+  },
+  // ── Tier 2 Right ────────────────────────────────────────────────────
+  {
+    id: 'as_smoke_veil', name: 'Smoke Veil',
+    desc: 'Next attack: guaranteed crit · enemy counter skipped', flavor: 'Disappear. Reappear. Win.',
+    tier: 2, branch: 'right', cost: 1, requires: ['as_shadowstep'],
+    type: 'active', spCost: 20, icon: null,
+  },
+  {
+    id: 'as_ambush', name: 'Ambush',
+    desc: '2.5× damage · ×(1 + 0.15 per Shadow Stack) · consumes stacks', flavor: 'Patience is its own weapon.',
+    tier: 2, branch: 'right', cost: 1, requires: ['as_shadowstep'],
+    type: 'active', spCost: 30, icon: null,
+    effect: { damageMult: 2.5, stackBonus: 0.15 },
+  },
+  // ── Tier 3 ──────────────────────────────────────────────────────────
+  {
+    id: 'as_coup_de_grace', name: 'Coup de Grâce',
+    desc: '2× damage · 3.5× below 35% HP · detonates Bleed turns as burst', flavor: 'End it.',
+    tier: 3, branch: 'left', cost: 2, requires: ['as_mark_for_death', 'as_eviscerate'],
+    type: 'active', spCost: 35, icon: null,
+    effect: { damageMult: 2.0, executeMult: 3.5, executeThreshold: 0.35 },
+  },
+  {
+    id: 'as_phantom_strike', name: 'Phantom Strike',
+    desc: '2× damage · no counter-attack · if Smoke Veil: guaranteed crit + free Stack', flavor: 'They never saw you leave.',
+    tier: 3, branch: 'right', cost: 2, requires: ['as_smoke_veil', 'as_ambush'],
+    type: 'active', spCost: 40, icon: null,
+    effect: { damageMult: 2.0 },
+  },
+];
+

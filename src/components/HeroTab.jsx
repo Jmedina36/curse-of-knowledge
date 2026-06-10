@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { sounds } from '../sounds';
-import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE } from '../constants';
+import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE } from '../constants';
 
 const SOREN_QUOTES = [
   "The measure of a champion lies not in their victories, but in their relentless pursuit of mastery.",
@@ -524,7 +524,7 @@ const HeroTab = ({
             </button>
 
             {showSkillTree && (() => {
-              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE };
+              const CLASS_TREES = { Knight: KNIGHT_SKILL_TREE, Wizard: WIZARD_SKILL_TREE, Assassin: ASSASSIN_SKILL_TREE };
               const tree = CLASS_TREES[hero.class?.name];
               if (!tree) return (
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(150,130,100,0.3)', textAlign: 'center', fontStyle: 'italic', marginTop: '16px' }}>
@@ -543,18 +543,19 @@ const HeroTab = ({
                 <div style={{ marginTop: '16px' }}>
                   {/* Branch labels */}
                   {(() => {
-                    const isWizard = hero.class?.name === 'Wizard';
+                    const cls = hero.class?.name;
+                    const labels = {
+                      Wizard:   { left: 'Fire / Burn',   right: 'Ice / Control', lc: 'rgba(240,120,60,0.45)',  rc: 'rgba(80,190,240,0.45)' },
+                      Assassin: { left: 'Blade / Blood', right: 'Shadow / Crit', lc: 'rgba(220,60,60,0.45)',   rc: 'rgba(140,100,220,0.45)' },
+                    };
+                    const l = labels[cls] || { left: 'Offensive', right: 'Defensive', lc: 'rgba(220,120,80,0.45)', rc: 'rgba(80,160,220,0.45)' };
                     return (
                       <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
                         <div style={{ flex: 1, textAlign: 'center' }}>
-                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: isWizard ? 'rgba(240,120,60,0.45)' : 'rgba(220,120,80,0.45)' }}>
-                            {isWizard ? 'Fire / Burn' : 'Offensive'}
-                          </span>
+                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: l.lc }}>{l.left}</span>
                         </div>
                         <div style={{ flex: 1, textAlign: 'center' }}>
-                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: isWizard ? 'rgba(80,190,240,0.45)' : 'rgba(80,160,220,0.45)' }}>
-                            {isWizard ? 'Ice / Control' : 'Defensive'}
-                          </span>
+                          <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: l.rc }}>{l.right}</span>
                         </div>
                       </div>
                     );
@@ -569,8 +570,16 @@ const HeroTab = ({
                             {nodes.map(node => {
                               const isUnlocked = unlockedSkillNodes.includes(node.id);
                               const reqsMet = node.requires.every(r => unlockedSkillNodes.includes(r));
-                              const canUnlock = !isUnlocked && reqsMet && skillPoints >= node.cost;
-                              const isAvailable = !isUnlocked && reqsMet;
+                              // Assassin branch lock: if opposite branch root is unlocked, this branch is locked
+                              let branchLocked = false;
+                              if (hero.class?.name === 'Assassin') {
+                                const hasLeft = unlockedSkillNodes.includes('as_serrated_edge');
+                                const hasRight = unlockedSkillNodes.includes('as_shadowstep');
+                                if (node.branch === 'left' && hasRight && !isUnlocked) branchLocked = true;
+                                if (node.branch === 'right' && hasLeft && !isUnlocked) branchLocked = true;
+                              }
+                              const canUnlock = !isUnlocked && reqsMet && skillPoints >= node.cost && !branchLocked;
+                              const isAvailable = !isUnlocked && reqsMet && !branchLocked;
 
                               return (
                                 <div key={node.id} style={{

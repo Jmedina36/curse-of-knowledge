@@ -238,6 +238,14 @@ const BattleModal = ({
   useIceLance,
   useCataclysm,
   useAbsoluteZero,
+  bossBleedTurns = 0,
+  assassinShadowStacks = 0,
+  assassinSmokeVeilActive = false,
+  useEviscerate,
+  useCoupDeGrace,
+  useSmokeVeil,
+  useAmbush,
+  usePhantomStrike,
 }) => {
   // ── Elite boss pool ────────────────────────────────────────────────────────
   const ELITE_BOSSES = [
@@ -973,7 +981,7 @@ const BattleModal = ({
           )}
 
           {/* Debuff badges */}
-          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0 || bossDebuffs.burnTurns > 0 || bossChilledTurns > 0 || bossFrozenTurns > 0) && (
+          {(bossDebuffs.poisonTurns > 0 || bossDebuffs.stunned || enragedTurns > 0 || bossDebuffs.burnTurns > 0 || bossChilledTurns > 0 || bossFrozenTurns > 0 || bossBleedTurns > 0) && (
             <div className="flex justify-center gap-2 mb-3 flex-wrap">
               {bossDebuffs.poisonTurns > 0 && (
                 <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', border: '1px solid rgba(34, 197, 94, 0.5)', color: '#4ADE80' }}>
@@ -993,6 +1001,11 @@ const BattleModal = ({
               {bossDebuffs.burnTurns > 0 && (
                 <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', border: '1px solid rgba(239, 68, 68, 0.5)', color: '#FCA5A5' }}>
                   🔥 BURNING ({bossDebuffs.burnTurns})
+                </span>
+              )}
+              {bossBleedTurns > 0 && (
+                <span className="px-3 py-1 rounded text-sm font-bold animate-pulse" style={{ backgroundColor: 'rgba(220, 38, 38, 0.2)', border: '1px solid rgba(220, 38, 38, 0.5)', color: '#FCA5A5' }}>
+                  🩸 BLEEDING ({bossBleedTurns})
                 </span>
               )}
               {bossFrozenTurns > 0 ? (
@@ -1521,6 +1534,89 @@ const BattleModal = ({
                           <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(147,197,253,0.18), transparent)', marginBottom: '2px' }} />
                           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(147,197,253,0.35)', textAlign: 'center', marginBottom: '2px' }}>Wizard Skills</p>
                           {wizardSkills.map(sk => {
+                            const noSP = stamina < sk.spCost;
+                            const disabled = noSP || sk.active;
+                            return (
+                              <button
+                                key={sk.id}
+                                onClick={() => sk.handler && handlePlayerAction(sk.handler, sk.name)}
+                                disabled={disabled}
+                                className="w-full rounded font-bold transition-all border hover:scale-[1.02] active:scale-95 disabled:cursor-not-allowed"
+                                style={{
+                                  padding: '7px 10px',
+                                  background: disabled ? 'rgba(25,25,35,0.6)' : `linear-gradient(to right, ${sk.color}, rgba(10,8,5,0.85))`,
+                                  borderColor: disabled ? 'rgba(80,80,80,0.25)' : sk.border,
+                                  color: disabled ? 'rgba(160,150,130,0.4)' : '#F5F5DC',
+                                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                  opacity: disabled ? 0.55 : 1,
+                                }}>
+                                <div style={{ textAlign: 'left' }}>
+                                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
+                                  {sk.active && (
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                  )}
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                    {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      );
+                    })()}
+
+                    {/* ── Assassin Active Skills ── */}
+                    {hero?.class?.name === 'Assassin' && (() => {
+                      const assassinSkills = [
+                        {
+                          id: 'as_eviscerate', name: 'Eviscerate', spCost: 25,
+                          active: false, activeTurns: 0,
+                          handler: useEviscerate,
+                          color: 'rgba(180, 30, 30, 0.85)', border: 'rgba(220, 50, 50, 0.6)',
+                          desc: bossBleedTurns > 0 ? '1.8× dmg · +40% open wound' : '1.8× dmg · guaranteed Bleed',
+                        },
+                        {
+                          id: 'as_coup_de_grace', name: 'Coup de Grâce', spCost: 35,
+                          active: false, activeTurns: 0,
+                          handler: useCoupDeGrace,
+                          color: 'rgba(140, 10, 10, 0.85)', border: 'rgba(200, 30, 30, 0.6)',
+                          desc: bossBleedTurns > 0 ? `2× · 3.5×<35% · detonate ${bossBleedTurns}t bleed` : '2× dmg · 3.5× execute <35% HP',
+                        },
+                        {
+                          id: 'as_smoke_veil', name: 'Smoke Veil', spCost: 20,
+                          active: assassinSmokeVeilActive,
+                          activeTurns: 0,
+                          handler: useSmokeVeil,
+                          color: 'rgba(80, 50, 140, 0.85)', border: 'rgba(140, 100, 200, 0.6)',
+                          desc: assassinSmokeVeilActive ? 'Active — next hit crits, no counter' : 'Next attack: crit + skip counter',
+                        },
+                        {
+                          id: 'as_ambush', name: 'Ambush', spCost: 30,
+                          active: false, activeTurns: 0,
+                          handler: useAmbush,
+                          color: 'rgba(50, 30, 100, 0.85)', border: 'rgba(120, 80, 180, 0.6)',
+                          desc: assassinShadowStacks > 0 ? `2.5× × ${(1 + assassinShadowStacks * 0.15).toFixed(2)} (${assassinShadowStacks} stack${assassinShadowStacks !== 1 ? 's' : ''})` : '2.5× dmg · stack multiplier',
+                        },
+                        {
+                          id: 'as_phantom_strike', name: 'Phantom Strike', spCost: 40,
+                          active: false, activeTurns: 0,
+                          handler: usePhantomStrike,
+                          color: 'rgba(30, 10, 70, 0.85)', border: 'rgba(100, 60, 160, 0.6)',
+                          desc: assassinSmokeVeilActive ? '2× dmg · crit · +1 Stack · no counter' : '2× dmg · no counter-attack',
+                        },
+                      ].filter(s => unlockedSkillNodes.includes(s.id));
+
+                      if (assassinSkills.length === 0) return null;
+
+                      return (
+                        <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(220,50,50,0.18), transparent)', marginBottom: '2px' }} />
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(220,80,80,0.35)', textAlign: 'center', marginBottom: '2px' }}>Assassin Skills</p>
+                          {assassinSkills.map(sk => {
                             const noSP = stamina < sk.spCost;
                             const disabled = noSP || sk.active;
                             return (
