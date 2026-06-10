@@ -987,7 +987,7 @@ export const ASSASSIN_SKILL_TREE = [
   // ── Tier 1 (mutually exclusive — picking one locks the other) ────────
   {
     id: 'as_serrated_edge', name: 'Serrated Edge',
-    desc: '20% chance to Bleed on hit · 3 turns · 8% dmg/turn', flavor: 'Every wound is just another opening.',
+    desc: '+5 ATK · 20% chance to Bleed on hit · 3 turns · 8% dmg/turn', flavor: 'Every wound is just another opening.',
     tier: 1, branch: 'left', cost: 1, requires: [],
     type: 'passive', icon: null,
   },

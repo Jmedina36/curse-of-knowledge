@@ -302,7 +302,8 @@ const FantasyStudyQuest = () => {
       ? (KNIGHT_SKILL_TREE.find(n => n.id === 'kn_battle_forged')?.bonus?.atk || 0) : 0;
     const wizSkillAtk = (unlockedSkillNodes.includes('wz_spellfire') && hero?.class?.name === 'Wizard') ? 5 : 0;
     const crusSkillAtk = (unlockedSkillNodes.includes('cr_storm_blessed') && hero?.class?.name === 'Crusader') ? 5 : 0;
-    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk + wizSkillAtk + crusSkillAtk);
+    const assSkillAtk = (unlockedSkillNodes.includes('as_serrated_edge') && hero?.class?.name === 'Assassin') ? 5 : 0;
+    return Math.floor(baseAttack + weaponAttack + affixBonus + strMod + skillAtk + wizSkillAtk + crusSkillAtk + assSkillAtk);
   }, [hero, equippedWeapon, unlockedSkillNodes]);
   
   const getBaseDefense = useCallback(() => {
@@ -6561,6 +6562,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         if (knightWarlordsRoarTurns > 0) setKnightWarlordsRoarTurns(p => { const n = p-1; if (n===0) addLog(`⚔️ Warlord's Roar fades...`); return n; });
         if (knightUnbreakableTurns > 0) setKnightUnbreakableTurns(p => { const n = p-1; if (n===0) addLog(`⚔️ Unbreakable fades...`); return n; });
         if (knightRampartTurns > 0) setKnightRampartTurns(p => { const n = p-1; if (n===0) addLog(`⚔️ Rampart fades...`); return n; });
+        if (knightRallyingRoar > 0) setKnightRallyingRoar(p => { const n = p-1; if (n===0) addLog(`⚔️ Rallying Roar fades...`); return n; });
+        if (knightBloodOathTurns > 0) setKnightBloodOathTurns(p => { const n = p-1; if (n===0) { addLog(`⚔️ Blood Oath fades...`); setKnightConsecutiveUses(0); } return n; });
+        if (crusaderHolyEmpowerment > 0) setCrusaderHolyEmpowerment(p => { const n = p-1; if (n===0) addLog(`✙ Holy Empowerment fades...`); return n; });
+        if (crusaderBastionOfFaith > 0) setCrusaderBastionOfFaith(p => { const n = p-1; if (n===0) addLog(`✙ Bastion of Faith fades...`); return n; });
+        if (assassinMarkForDeath > 0) setAssassinMarkForDeath(p => { const n = p-1; if (n===0) addLog(`☠️ Mark for Death fades...`); return n; });
         return;
       }
       // Aegis of Light: 30% damage reduction
@@ -6583,6 +6589,11 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       if (knightWarlordsRoarTurns > 0) setKnightWarlordsRoarTurns(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Warlord's Roar fades...`); return n; });
       if (knightUnbreakableTurns > 0) setKnightUnbreakableTurns(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Unbreakable fades...`); return n; });
       if (knightRampartTurns > 0) setKnightRampartTurns(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Rampart fades...`); return n; });
+      if (knightRallyingRoar > 0) setKnightRallyingRoar(p => { const n = p - 1; if (n === 0) addLog(`⚔️ Rallying Roar fades...`); return n; });
+      if (knightBloodOathTurns > 0) setKnightBloodOathTurns(p => { const n = p - 1; if (n === 0) { addLog(`⚔️ Blood Oath fades...`); setKnightConsecutiveUses(0); } return n; });
+      if (crusaderHolyEmpowerment > 0) setCrusaderHolyEmpowerment(p => { const n = p - 1; if (n === 0) addLog(`✙ Holy Empowerment fades...`); return n; });
+      if (crusaderBastionOfFaith > 0) setCrusaderBastionOfFaith(p => { const n = p - 1; if (n === 0) addLog(`✙ Bastion of Faith fades...`); return n; });
+      if (assassinMarkForDeath > 0) setAssassinMarkForDeath(p => { const n = p - 1; if (n === 0) addLog(`☠️ Mark for Death fades...`); return n; });
       if (wizardEtherealBarrier > 0) setWizardEtherealBarrier(p => { const n = p - 1; if (n === 0) addLog(`✨ Ethereal Barrier fades...`); return n; });
       // Burn tick
       if (bossDebuffs.burnTurns > 0) {
