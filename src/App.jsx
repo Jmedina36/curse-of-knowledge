@@ -234,6 +234,7 @@ const FantasyStudyQuest = () => {
   const [emeraldGemActive, setEmeraldGemActive] = useState(false);
   const [rubyGemActive, setRubyGemActive] = useState(false);
   const [sapphireGemActive, setSapphireGemActive] = useState(false);
+  const [unlockedSkillNodes, setUnlockedSkillNodes] = useState([]);
 
   const getMaxHp = useCallback(() => {
     const pendantBonus = equippedGrimoire ? equippedGrimoire.hp : 0;
@@ -664,8 +665,6 @@ const [eliteBossDefeatedToday, setEliteBossDefeatedToday] = useState(false);
 const [contractFulfilled, setContractFulfilled] = useState(null); // { xpEarned, tier }
 const [guildPoints, setGuildPoints] = useState(0);
 const [skillPoints, setSkillPoints] = useState(0);
-const [unlockedSkillNodes, setUnlockedSkillNodes] = useState([]);
-// Knight skill tree battle states
 const [knightWarlordsRoarTurns, setKnightWarlordsRoarTurns] = useState(0);
 const [knightUnbreakableTurns, setKnightUnbreakableTurns] = useState(0);
 const [knightRampartTurns, setKnightRampartTurns] = useState(0);
