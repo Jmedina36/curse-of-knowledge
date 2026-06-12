@@ -242,7 +242,7 @@ const CraftingModal = ({
           <img src={elf.img} alt={elf.name}
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>{elf.name}</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>{elf.name}</p>
           <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{elf.title}</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
@@ -255,14 +255,14 @@ const CraftingModal = ({
           className="relative flex flex-col rounded-xl border-2 overflow-hidden"
           initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.18, ease: 'easeOut' }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           style={{ width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))', maxWidth: '1200px', height: '90vh', backgroundImage: "url('/Stonewall1.png')", backgroundSize: 'cover', backgroundPosition: 'center', borderColor: 'rgba(212,175,55,0.6)', boxShadow: VISUAL_STYLES.shadow.elevated }}
           onClick={e => e.stopPropagation()}
         >
           {/* ── HEADER ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
+              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
               <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
             </div>
             <button
@@ -488,13 +488,13 @@ const CraftingModal = ({
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => { sounds.click(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
               >
                 Cancel
               </button>
               <button
                 onClick={() => { sounds.click(); sellConfirm.onConfirm(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
               >
                 Sell
               </button>

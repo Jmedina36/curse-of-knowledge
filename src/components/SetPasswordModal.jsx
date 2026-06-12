@@ -81,7 +81,7 @@ export default function SetPasswordModal({ onClose }) {
             {mismatch && <p style={{ fontSize: '0.7rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.6 }}>Passwords do not match.</p>}
             {status && <p style={{ fontSize: '0.82rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.6 }}>{status.msg}</p>}
 
-            <button type="submit" disabled={loading || issues.length > 0 || mismatch} style={{ marginTop: '4px', padding: '13px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: loading || issues.length ? 'rgba(212,175,55,0.06)' : 'rgba(212,175,55,0.14)', color: issues.length ? 'rgba(212,175,55,0.4)' : 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.12em', cursor: loading || issues.length > 0 ? 'not-allowed' : 'pointer' }}>
+            <button type="submit" disabled={loading || issues.length > 0 || mismatch} style={{ marginTop: '4px', padding: '13px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: loading || issues.length ? 'rgba(212,175,55,0.06)' : 'rgba(212,175,55,0.14)', color: issues.length ? 'rgba(212,175,55,0.4)' : 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.1em', cursor: loading || issues.length > 0 ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Saving...' : 'Update Password'}
             </button>
           </form>

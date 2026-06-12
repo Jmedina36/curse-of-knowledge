@@ -90,7 +90,7 @@ const ForgeTab = ({
           <img src="/npcs/warrior.png" alt="Rylan"
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(220,38,38,0.5), 0 0 100px rgba(220,38,38,0.15)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>RYLAN</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>RYLAN</p>
           <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Drill Master</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
             background: 'rgba(20,15,5,0.85)', border: '1px solid rgba(212,175,55,0.35)',
@@ -595,7 +595,7 @@ const ForgeTab = ({
                       <p className="font-bold group-hover:underline mb-1 flex items-center gap-2" style={{
                         color: '#D4AF37',
                         fontSize: '15px',
-                        letterSpacing: '0.03em',
+                        letterSpacing: '0.05em',
                         textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                       }}>
                         {site.name}

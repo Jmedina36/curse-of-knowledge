@@ -7702,7 +7702,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   fontFamily: "'Cinzel', serif",
                   fontSize: 'clamp(0.9rem, 2.2vw, 1.1rem)',
                   lineHeight: 2,
-                  letterSpacing: '0.04em',
+                  letterSpacing: '0.05em',
                   color: 'rgba(210,190,170,0.82)',
                   whiteSpace: 'pre-line',
                   textShadow: 'none',
@@ -7747,7 +7747,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '28px' }}>
                     ✶ The Narrator Speaks ✶
                   </p>
-                  <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', lineHeight: 1.9, letterSpacing: '0.04em', color: 'rgba(210,190,170,0.88)', whiteSpace: 'pre-line', marginBottom: '40px' }}>
+                  <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', lineHeight: 1.9, letterSpacing: '0.05em', color: 'rgba(210,190,170,0.88)', whiteSpace: 'pre-line', marginBottom: '40px' }}>
                     {"Before you step into the darkness,\n\nI must know your name.\n\nWhat shall history remember you as?"}
                   </p>
                   <input
@@ -7806,7 +7806,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '20px' }}>
                       ✶ The Narrator Speaks ✶
                     </p>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.04em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.05em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
                       {charCreateName.trim()}, the flame needs a wielder.<br />What is your profession?
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
@@ -7825,9 +7825,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                           onMouseLeave={e => { if (!charCreateClass || charCreateClass.name !== cls.name) { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(0,0,0,0.4)'; } }}
                         >
                           <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                            <span style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.12em', color: '#F5F5DC' }}>{cls.name}</span>
+                            <span style={{ fontWeight: 700, fontSize: '0.95rem', letterSpacing: '0.1em', color: '#F5F5DC' }}>{cls.name}</span>
                           </div>
-                          <p style={{ fontSize: '0.7rem', lineHeight: 1.6, color: 'rgba(180,165,150,0.7)', letterSpacing: '0.02em', margin: 0, textAlign: 'center' }}>
+                          <p style={{ fontSize: '0.7rem', lineHeight: 1.6, color: 'rgba(180,165,150,0.7)', letterSpacing: '0.05em', margin: 0, textAlign: 'center' }}>
                             {CLASS_LORE[cls.name]}
                           </p>
                         </button>
@@ -7866,7 +7866,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '20px' }}>
                       ✶ The Narrator Speaks ✶
                     </p>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.04em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.05em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
                       Who steps forward to carry the flame?
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
@@ -7934,7 +7934,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '28px' }}>
                       ✶ The Narrator Speaks ✶
                     </p>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.4vw, 1.2rem)', lineHeight: 2, letterSpacing: '0.04em', color: 'rgba(245,245,220,0.93)', whiteSpace: 'pre-line', marginBottom: '12px', textShadow: '0 0 30px rgba(200,30,30,0.35)' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.4vw, 1.2rem)', lineHeight: 2, letterSpacing: '0.05em', color: 'rgba(245,245,220,0.93)', whiteSpace: 'pre-line', marginBottom: '12px', textShadow: '0 0 30px rgba(200,30,30,0.35)' }}>
                       {charCreateName.trim() + ".\n\n" + sendoff + "\n\nHave faith when the darkness is absolute.\nHave hope when every champion before you has failed.\nHave perseverance — because the Abyss is counting on you to stop.\n\nYour chronicle begins now."}
                     </p>
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: '0.7rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.3)', marginTop: '40px', animation: 'intro-hint-pulse 2.5s ease-in-out 1s infinite' }}>
@@ -7956,7 +7956,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               fontFamily: "'Cinzel', serif",
               fontWeight: 900,
               fontSize: 'clamp(3.5rem, 12vw, 8rem)',
-              letterSpacing: '0.12em',
+              letterSpacing: '0.1em',
               lineHeight: 1,
               color: '#F5F5DC',
               textShadow: '0 0 20px rgba(200,30,30,0.95), 0 0 55px rgba(180,0,0,0.75), 0 0 110px rgba(140,0,0,0.45), 0 3px 6px rgba(0,0,0,1)',
@@ -7967,7 +7967,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {/* Ornament lines */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0 16px', animation: 'intro-fade-up 0.6s ease-out 1.1s both' }}>
             <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(255,60,60,0.7))' }} />
-            <span style={{ color: 'rgba(255,60,60,0.7)', fontSize: '10px', letterSpacing: '0.4em' }}>✦ ✦ ✦</span>
+            <span style={{ color: 'rgba(255,60,60,0.7)', fontSize: '10px', letterSpacing: '0.35em' }}>✦ ✦ ✦</span>
             <div style={{ width: '180px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(255,60,60,0.7))' }} />
           </div>
 
@@ -8002,7 +8002,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 <p style={{
                   fontFamily: "'Cinzel', serif",
                   fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)',
-                  letterSpacing: '0.28em',
+                  letterSpacing: '0.3em',
                   textTransform: 'uppercase',
                   color: 'rgba(212,175,55,0.4)',
                   marginBottom: '8px',
@@ -8661,7 +8661,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     background: godMode ? 'rgba(212,175,55,0.2)' : 'rgba(35,25,10,0.6)',
                     borderColor: godMode ? 'rgba(212,175,55,0.75)' : 'rgba(90,70,35,0.45)',
                     color: godMode ? '#FFD700' : 'rgba(160,140,90,0.7)',
-                    fontSize: '0.85rem', fontWeight: 'bold', letterSpacing: '0.14em',
+                    fontSize: '0.85rem', fontWeight: 'bold', letterSpacing: '0.15em',
                     boxShadow: godMode ? '0 0 24px rgba(212,175,55,0.25), inset 0 0 12px rgba(212,175,55,0.08)' : 'none',
                   }}
                 >
@@ -9550,7 +9550,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               <p style={{
                 fontFamily: "'Cinzel', serif", fontWeight: 700,
                 fontSize: lootFanfare.rarity === 'legendary' ? '0.9rem' : '0.72rem',
-                letterSpacing: '0.55em', textTransform: 'uppercase',
+                letterSpacing: '0.5em', textTransform: 'uppercase',
                 color: col,
                 textShadow: `0 0 12px rgba(${colRgb},0.9)`,
                 marginBottom: '12px',
@@ -9560,7 +9560,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               <p style={{
                 fontFamily: "'Cinzel', serif", fontWeight: 900,
                 fontSize: 'clamp(1.2rem, 4vw, 2rem)',
-                letterSpacing: '0.06em',
+                letterSpacing: '0.05em',
                 color: '#F5F5DC',
                 textShadow: `0 0 20px rgba(${colRgb},0.7), 0 2px 6px rgba(0,0,0,1)`,
                 animation: `loot-fanfare-card ${dur} cubic-bezier(0.16,1,0.3,1) forwards`,
@@ -9598,7 +9598,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             {/* LEVEL UP label */}
             <p style={{
               fontFamily: "'Cinzel', serif", fontWeight: 700,
-              fontSize: '0.85rem', letterSpacing: '0.55em', textTransform: 'uppercase',
+              fontSize: '0.85rem', letterSpacing: '0.5em', textTransform: 'uppercase',
               color: 'rgba(212,175,55,0.85)', marginBottom: '10px',
               animation: `levelup-label ${dur} ease-out forwards`,
             }}>LEVEL UP</p>
@@ -9606,7 +9606,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <div style={{
               fontFamily: "'Cinzel', serif", fontWeight: 900,
               fontSize: 'clamp(5rem, 18vw, 10rem)',
-              letterSpacing: '0.06em', lineHeight: 1,
+              letterSpacing: '0.05em', lineHeight: 1,
               color: '#F5F5DC',
               textShadow: '0 0 30px rgba(212,175,55,1), 0 0 80px rgba(180,130,0,0.7), 0 0 140px rgba(140,100,0,0.35), 0 4px 10px rgba(0,0,0,1)',
               animation: `levelup-number ${dur} cubic-bezier(0.16,1,0.3,1) forwards`,
@@ -9635,7 +9635,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               }}>
                 <p style={{
                   fontFamily: "'Cinzel', serif", fontSize: '0.6rem',
-                  letterSpacing: '0.45em', textTransform: 'uppercase',
+                  letterSpacing: '0.5em', textTransform: 'uppercase',
                   color: 'rgba(212,175,55,0.65)', marginBottom: '4px',
                 }}>{levelUpOverlay.skillUnlocked.label}</p>
                 <p style={{

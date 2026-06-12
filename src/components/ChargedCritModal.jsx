@@ -52,7 +52,7 @@ const ChargedCritModal = ({ data, onClose }) => {
           transition={{ delay: 0.45 }}
           style={{
             fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 900,
-            letterSpacing: '0.12em', color: tier.color,
+            letterSpacing: '0.1em', color: tier.color,
             textShadow: `0 0 16px ${tier.glow}`, marginBottom: '6px',
           }}
         >{tier.label}</motion.p>

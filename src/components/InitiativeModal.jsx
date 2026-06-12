@@ -59,7 +59,7 @@ const InitiativeModal = ({ data, onClose }) => {
       <motion.div
         initial={{ opacity: 0, y: -32, scale: 0.88 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl text-center w-full max-w-sm overflow-hidden"
         style={{
           background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
@@ -144,12 +144,12 @@ const InitiativeModal = ({ data, onClose }) => {
         >
           <p style={{
             fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1rem',
-            letterSpacing: '0.06em', color: config.color, margin: '0 0 5px',
+            letterSpacing: '0.05em', color: config.color, margin: '0 0 5px',
             textShadow: `0 0 18px ${config.glow}`,
           }}>
             {config.label}
           </p>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', color: 'rgba(245,245,220,0.4)', margin: 0, letterSpacing: '0.04em' }}>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', color: 'rgba(245,245,220,0.4)', margin: 0, letterSpacing: '0.05em' }}>
             {config.sub}
           </p>
         </motion.div>
@@ -166,7 +166,7 @@ const InitiativeModal = ({ data, onClose }) => {
             style={{
               width: '100%',
               fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
-              letterSpacing: '0.28em', textTransform: 'uppercase',
+              letterSpacing: '0.3em', textTransform: 'uppercase',
               color: config.color, background: 'rgba(0,0,0,0.3)',
               border: `1px solid ${config.border}`,
               padding: '10px 0', borderRadius: '6px', cursor: 'pointer',

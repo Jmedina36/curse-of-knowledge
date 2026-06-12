@@ -87,7 +87,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
           <p style={{
             fontFamily: 'Cinzel, serif',
             fontSize: '0.72rem',
-            letterSpacing: '0.12em',
+            letterSpacing: '0.1em',
             color: 'rgba(212,175,55,0.55)',
             textTransform: 'uppercase',
             margin: '0 0 4px',
@@ -266,7 +266,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', height: '100%', gap: '10px', opacity: 0.45,
           }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', color: 'rgba(212,175,55,0.7)', letterSpacing: '0.06em' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', color: 'rgba(212,175,55,0.7)', letterSpacing: '0.05em' }}>
               Select an entry.
             </p>
           </div>
@@ -276,7 +276,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
         {selectedId === '__prologue__' && (
           <div style={{ maxWidth: '620px' }}>
             <div style={{
-              fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.14em',
+              fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.15em',
               color: 'rgba(212,175,55,0.4)', textTransform: 'uppercase', marginBottom: '6px',
             }}>
               Prologue · {PROLOGUE_ENTRY.location}
@@ -307,7 +307,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             <div style={{
               fontFamily: 'Cinzel, serif',
               fontSize: '0.6rem',
-              letterSpacing: '0.14em',
+              letterSpacing: '0.15em',
               color: 'rgba(212,175,55,0.45)',
               textTransform: 'uppercase',
               marginBottom: '6px',
@@ -369,7 +369,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             <div style={{
               fontFamily: 'Cinzel, serif',
               fontSize: '0.6rem',
-              letterSpacing: '0.14em',
+              letterSpacing: '0.15em',
               color: 'rgba(212,175,55,0.4)',
               textTransform: 'uppercase',
               marginBottom: '6px',

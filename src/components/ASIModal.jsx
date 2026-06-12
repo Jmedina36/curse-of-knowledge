@@ -54,7 +54,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.88, y: -16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl p-6 w-full max-w-sm"
         style={{
           background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
@@ -64,7 +64,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
       >
         <p style={{
           fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '0.85rem',
-          letterSpacing: '0.22em', color: '#D4AF37',
+          letterSpacing: '0.2em', color: '#D4AF37',
           textShadow: '0 0 14px rgba(212,175,55,0.6)', textAlign: 'center', marginBottom: '4px',
         }}>ABILITY SCORE IMPROVEMENT</p>
         <p style={{
@@ -142,7 +142,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
           disabled={!canConfirm}
           style={{
             width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.82rem',
-            letterSpacing: '0.22em', textTransform: 'uppercase',
+            letterSpacing: '0.2em', textTransform: 'uppercase',
             padding: '11px', borderRadius: '8px', cursor: canConfirm ? 'pointer' : 'not-allowed',
             background: canConfirm ? 'rgba(212,175,55,0.18)' : 'rgba(0,0,0,0.2)',
             border: `1px solid ${canConfirm ? 'rgba(212,175,55,0.7)' : 'rgba(245,245,220,0.1)'}`,

@@ -260,7 +260,7 @@ const HealerModal = ({
               boxShadow: '0 0 40px rgba(212,175,55,0.5), 0 0 100px rgba(212,175,55,0.2)',
             }}
           />
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: green, letterSpacing: '0.12em', textAlign: 'center' }}>SISTER MARA</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: green, letterSpacing: '0.1em', textAlign: 'center' }}>SISTER MARA</p>
           <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.6)', fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
           <div style={{
             marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
@@ -290,7 +290,7 @@ const HealerModal = ({
         }}
         initial={{ opacity: 0, scale: 0.97, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -301,7 +301,7 @@ const HealerModal = ({
           background: 'rgba(10,9,6,0.65)', position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(212,175,55,0.5)' }}>THE APOTHECARY</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(212,175,55,0.5)' }}>THE APOTHECARY</p>
             <p style={{ fontSize: '11px', color: greenDim, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>Sister Mara · Apothecary & Healer</p>
           </div>
           <button
@@ -605,11 +605,11 @@ const HealerModal = ({
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => { sounds.click(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
               >Cancel</button>
               <button
                 onClick={() => { sounds.click(); sellConfirm.onConfirm(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.12em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
               >Sell</button>
             </div>
           </motion.div>

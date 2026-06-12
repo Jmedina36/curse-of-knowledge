@@ -638,7 +638,7 @@ const BattleModal = ({
               style={{
                 fontFamily: 'Cinzel, serif', fontWeight: 900,
                 fontSize: 'clamp(2.2rem, 7vw, 4.5rem)',
-                letterSpacing: '0.12em',
+                letterSpacing: '0.1em',
                 color: '#F59E0B',
                 textShadow: '0 0 50px rgba(245,158,11,1), 0 0 100px rgba(245,158,11,0.5), 0 4px 0 rgba(0,0,0,0.9)',
                 whiteSpace: 'nowrap',
@@ -668,12 +668,12 @@ const BattleModal = ({
               initial={{ scale: 1.4, opacity: 0, y: -12 }}
               animate={{ scale: [1.4, 1.0, 0.96], opacity: [0, 1, 0] }}
               transition={{ duration: 1.1, times: [0, 0.22, 1], ease: 'easeOut' }}
-              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.8rem, 5.5vw, 3.2rem)', letterSpacing: '0.14em', color: '#F87171', textShadow: '0 0 40px rgba(248,113,113,0.9), 0 3px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
+              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.8rem, 5.5vw, 3.2rem)', letterSpacing: '0.15em', color: '#F87171', textShadow: '0 0 40px rgba(248,113,113,0.9), 0 3px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
             >DEEP WOUND</motion.p>
             <motion.p
               initial={{ opacity: 0, y: 4 }} animate={{ opacity: [0, 0.85, 0] }}
               transition={{ duration: 1.0, delay: 0.18, times: [0, 0.2, 1] }}
-              style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.75rem, 2vw, 1rem)', letterSpacing: '0.22em', color: '#FCA5A5', marginTop: '0.5rem', zIndex: 1 }}
+              style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.75rem, 2vw, 1rem)', letterSpacing: '0.2em', color: '#FCA5A5', marginTop: '0.5rem', zIndex: 1 }}
             >BLEEDING — 3 TURNS</motion.p>
           </motion.div>
         )}
@@ -695,12 +695,12 @@ const BattleModal = ({
               initial={{ scale: 2.2, opacity: 0, y: 0 }}
               animate={{ scale: [2.2, 1.0, 0.95], opacity: [0, 1, 0] }}
               transition={{ duration: 0.95, times: [0, 0.25, 1], ease: 'easeOut' }}
-              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.5rem, 4.5vw, 2.8rem)', letterSpacing: '0.12em', color: '#FB923C', textShadow: '0 0 40px rgba(251,146,60,0.9), 0 3px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
+              style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(1.5rem, 4.5vw, 2.8rem)', letterSpacing: '0.1em', color: '#FB923C', textShadow: '0 0 40px rgba(251,146,60,0.9), 0 3px 0 rgba(0,0,0,0.9)', whiteSpace: 'nowrap', zIndex: 1 }}
             >ARMOR SHATTERED</motion.p>
             <motion.p
               initial={{ opacity: 0, y: 4 }} animate={{ opacity: [0, 0.85, 0] }}
               transition={{ duration: 0.85, delay: 0.15, times: [0, 0.22, 1] }}
-              style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.75rem, 2vw, 1rem)', letterSpacing: '0.22em', color: '#FED7AA', marginTop: '0.5rem', zIndex: 1 }}
+              style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.75rem, 2vw, 1rem)', letterSpacing: '0.2em', color: '#FED7AA', marginTop: '0.5rem', zIndex: 1 }}
             >DEFENSE −35% — 2 TURNS</motion.p>
           </motion.div>
         )}
@@ -1030,7 +1030,7 @@ const BattleModal = ({
                   const parts = [meta?.label, quality?.label].filter(Boolean).join(' · ');
                   return (
                     <span style={{
-                      fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.12em',
+                      fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.1em',
                       textTransform: 'uppercase', color: displayColor,
                       lineHeight: 1.2,
                     }}>{parts}</span>
@@ -1284,7 +1284,7 @@ const BattleModal = ({
                         <button
                           onClick={() => handlePlayerAction(chargedStrike, GAME_CONSTANTS.CHARGED_ATTACK_NAMES[hero?.class?.name] || 'Charged Strike')}
                           className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
-                          style={{ background: 'linear-gradient(to bottom, rgba(212,175,55,0.92), rgba(155,110,5,0.96))', border: '2px solid #D4AF37', color: '#120d00', boxShadow: '0 0 24px rgba(212,175,55,0.55)', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', animation: 'intro-hint-pulse 1.6s ease-in-out infinite' }}>
+                          style={{ background: 'linear-gradient(to bottom, rgba(212,175,55,0.92), rgba(155,110,5,0.96))', border: '2px solid #D4AF37', color: '#120d00', boxShadow: '0 0 24px rgba(212,175,55,0.55)', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em', animation: 'intro-hint-pulse 1.6s ease-in-out infinite' }}>
                           ⚡ {GAME_CONSTANTS.CHARGED_ATTACK_NAMES[hero?.class?.name] || 'Charged Strike'}
                           <div className="text-xs font-normal mt-0.5 opacity-75" style={{ letterSpacing: '0.08em' }}>D20 Crit Roll</div>
                         </button>
@@ -1471,7 +1471,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.05em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
@@ -1547,7 +1547,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.05em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
@@ -1630,7 +1630,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.05em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
@@ -1706,7 +1706,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.05em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>

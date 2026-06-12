@@ -75,7 +75,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.88, y: -16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl text-center w-full max-w-sm overflow-hidden"
         style={{
           background: 'linear-gradient(to bottom, rgba(10,0,0,0.99), rgba(4,3,10,0.99))',
@@ -98,7 +98,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
             Death Saves
           </p>
           <p style={{
-            fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.12em',
+            fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em',
             color: 'rgba(245,245,220,0.3)', margin: 0,
           }}>
             {conMod !== 0
@@ -127,7 +127,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
                 key={i}
                 initial={{ opacity: 0, scale: 0.7, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}
               >
                 <DiceD20 roll={r.roll} color={dieColor(r)} glow={dieGlow(r)} size={72} rolling={false} />
@@ -153,7 +153,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
               <p style={{
                 fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.05rem',
-                letterSpacing: '0.12em', textTransform: 'uppercase',
+                letterSpacing: '0.1em', textTransform: 'uppercase',
                 color: outcomeColor, textShadow: `0 0 20px ${outcomeGlow}`,
                 margin: '0 0 6px',
               }}>
@@ -161,7 +161,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
               </p>
               <p style={{
                 fontFamily: 'Cinzel, serif', fontSize: '0.75rem',
-                color: 'rgba(245,245,220,0.35)', margin: '0 0 18px', letterSpacing: '0.04em',
+                color: 'rgba(245,245,220,0.35)', margin: '0 0 18px', letterSpacing: '0.05em',
               }}>
                 {survived ? 'Restored to 1 HP. The fight is not over.' : 'The curse claims what remains.'}
               </p>
@@ -170,7 +170,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
                 style={{
                   width: '100%',
                   fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
-                  letterSpacing: '0.28em', textTransform: 'uppercase',
+                  letterSpacing: '0.3em', textTransform: 'uppercase',
                   color: outcomeColor, background: 'rgba(0,0,0,0.3)',
                   border: `1px solid ${survived ? 'rgba(52,211,153,0.35)' : 'rgba(239,68,68,0.35)'}`,
                   padding: '10px 0', borderRadius: '6px', cursor: 'pointer',

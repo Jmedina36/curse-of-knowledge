@@ -375,7 +375,7 @@ const InventoryModal = ({
         <img src={dwarf.img} alt={dwarf.name}
           style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>{dwarf.name}</p>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>{dwarf.name}</p>
         <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{dwarf.title}</p>
         {/* Dialogue bubble */}
         <div style={{
@@ -403,7 +403,7 @@ const InventoryModal = ({
           boxShadow: VISUAL_STYLES.shadow.elevated,
         }}
         initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.18, ease: 'easeOut' }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         onClick={e => e.stopPropagation()}
       >
         {/* ── HEADER ── */}
@@ -415,7 +415,7 @@ const InventoryModal = ({
           position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
             <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{dwarf.name.charAt(0) + dwarf.name.slice(1).toLowerCase()} · {dwarf.title}</p>
           </div>
           <button
@@ -462,11 +462,11 @@ const InventoryModal = ({
           {/* RIGHT — Equipped gear */}
           <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(15,13,8,0.65)', flexShrink: 0 }}>
 
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.18em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.2em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
             {/* Weapon slot */}
             <div style={{ ...slotBox(equippedWeapon), marginBottom: '10px', minHeight: '100px', gap: '6px' }}>
-              <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.12em' }}>WEAPON</p>
+              <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.1em' }}>WEAPON</p>
               {equippedWeapon ? (
                 <>
                   <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}

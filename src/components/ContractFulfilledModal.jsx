@@ -45,7 +45,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: -12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.36, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl text-center w-full max-w-sm overflow-hidden"
         style={{
           background: cfg.bg,
@@ -113,7 +113,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
           >
             <p style={{
               fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.1rem',
-              letterSpacing: '0.18em', textTransform: 'uppercase',
+              letterSpacing: '0.2em', textTransform: 'uppercase',
               color: cfg.color, textShadow: `0 0 22px ${cfg.glow}`,
               margin: '0 0 4px',
             }}>
@@ -180,7 +180,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
             style={{
               width: '100%',
               fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
-              letterSpacing: '0.28em', textTransform: 'uppercase',
+              letterSpacing: '0.3em', textTransform: 'uppercase',
               color: cfg.color, background: 'rgba(0,0,0,0.3)',
               border: `1px solid ${cfg.border}`,
               padding: '10px 0', borderRadius: '6px', cursor: 'pointer',

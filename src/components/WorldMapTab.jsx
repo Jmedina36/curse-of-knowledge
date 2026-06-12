@@ -741,7 +741,7 @@ const WorldMapTab = ({
               key={f}
               onClick={() => setTypeFilter(f)}
               style={{
-                fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+                fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
                 padding: '3px 8px', borderRadius: '3px', cursor: 'pointer',
                 background: typeFilter === f ? 'rgba(212,175,55,0.15)' : 'transparent',
                 border: `1px solid ${typeFilter === f ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.08)'}`,
@@ -879,7 +879,7 @@ const WorldMapTab = ({
                       }}
                     >
                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#DC2626', boxShadow: '0 0 6px #DC2626' }} />
-                      <span style={{ fontSize: '0.65rem', color: 'rgba(255,140,140,0.9)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.65rem', color: 'rgba(255,140,140,0.9)', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }}>
                         {activeDecos.length} creature{activeDecos.length > 1 ? 's' : ''} nearby
                       </span>
                     </motion.div>
@@ -924,7 +924,7 @@ const WorldMapTab = ({
                   }}
                 >
                   <span style={{ fontSize: '10px' }}>🌙</span>
-                  <span style={{ fontSize: '0.65rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.2em', textTransform: 'uppercase', fontWeight: 700 }}>
                     Night — Dawn approaches
                   </span>
                 </motion.div>
@@ -1374,7 +1374,7 @@ const WorldMapTab = ({
                     }}
                     style={{
                       flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.85rem',
-                      letterSpacing: '0.12em', padding: '7px 10px', borderRadius: '3px',
+                      letterSpacing: '0.1em', padding: '7px 10px', borderRadius: '3px',
                       background: 'rgba(160,30,30,0.7)',
                       border: '1px solid rgba(220,60,60,0.6)',
                       color: 'rgba(255,180,180,0.95)', cursor: 'pointer',
@@ -1386,7 +1386,7 @@ const WorldMapTab = ({
                     onClick={() => setDecoPopup(null)}
                     style={{
                       flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.85rem',
-                      letterSpacing: '0.12em', padding: '7px 10px', borderRadius: '3px',
+                      letterSpacing: '0.1em', padding: '7px 10px', borderRadius: '3px',
                       background: 'rgba(30,20,15,0.7)',
                       border: '1px solid rgba(120,100,80,0.35)',
                       color: 'rgba(160,140,110,0.7)', cursor: 'pointer',
@@ -1442,7 +1442,7 @@ const WorldMapTab = ({
                     <div style={{
                       display: 'inline-block',
                       fontSize: '0.65rem', fontWeight: 700,
-                      letterSpacing: '0.14em', textTransform: 'uppercase',
+                      letterSpacing: '0.15em', textTransform: 'uppercase',
                       color: isActive ? 'rgba(220,80,80,0.9)' : 'rgba(180,160,140,0.5)',
                       background: isActive ? 'rgba(220,40,40,0.1)' : 'rgba(180,160,140,0.06)',
                       border: `1px solid ${isActive ? 'rgba(220,80,80,0.3)' : 'rgba(180,160,140,0.15)'}`,
@@ -1454,7 +1454,7 @@ const WorldMapTab = ({
 
                   {/* Name */}
                   <div style={{ marginBottom: '10px' }}>
-                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.07em', lineHeight: 1.2 }}>
+                    <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.08em', lineHeight: 1.2 }}>
                       {d.name}
                     </div>
                   </div>
@@ -1499,7 +1499,7 @@ const WorldMapTab = ({
                         background: 'rgba(220,40,40,0.05)',
                         border: '1px solid rgba(220,80,80,0.15)',
                         borderRadius: '4px', padding: '6px 8px',
-                        textAlign: 'center', letterSpacing: '0.06em', fontStyle: 'italic', lineHeight: 1.6,
+                        textAlign: 'center', letterSpacing: '0.05em', fontStyle: 'italic', lineHeight: 1.6,
                       }}>Something stirs nearby — finish your contract first.</div>
                     ) : (
                       <button
@@ -1563,7 +1563,7 @@ const WorldMapTab = ({
                 <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <div style={{
                     fontSize: '0.65rem', fontWeight: 700,
-                    letterSpacing: '0.14em', textTransform: 'uppercase',
+                    letterSpacing: '0.15em', textTransform: 'uppercase',
                     color: displayed.type === 'hunting' ? displayed.dangerColor : displayed.type === 'landmark' ? 'rgba(180,160,140,0.5)' : '#D4AF37',
                     background: displayed.type === 'hunting' ? `${displayed.dangerColor}14` : displayed.type === 'landmark' ? 'rgba(180,160,140,0.06)' : 'rgba(212,175,55,0.08)',
                     border: `1px solid ${displayed.type === 'hunting' ? displayed.dangerColor + '30' : displayed.type === 'landmark' ? 'rgba(180,160,140,0.15)' : 'rgba(212,175,55,0.2)'}`,
@@ -1578,7 +1578,7 @@ const WorldMapTab = ({
                   <div style={{ fontSize: '0.5rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '3px' }}>
                     {displayed.subtitle}
                   </div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.07em', lineHeight: 1.2 }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#F5F5DC', letterSpacing: '0.08em', lineHeight: 1.2 }}>
                     {displayed.name}
                   </div>
                 </div>
@@ -1665,7 +1665,7 @@ const WorldMapTab = ({
                         border: '1px solid rgba(168,85,247,0.5)',
                         borderRadius: '4px', padding: '8px',
                         cursor: isDayActive ? 'pointer' : 'not-allowed',
-                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        letterSpacing: '0.1em', textTransform: 'uppercase',
                         boxShadow: isDayActive ? '0 0 16px rgba(168,85,247,0.4)' : 'none',
                         animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                       }}
@@ -1696,7 +1696,7 @@ const WorldMapTab = ({
                         border: '1px solid rgba(245,158,11,0.5)',
                         borderRadius: '4px', padding: '8px',
                         cursor: isDayActive ? 'pointer' : 'not-allowed',
-                        letterSpacing: '0.12em', textTransform: 'uppercase',
+                        letterSpacing: '0.1em', textTransform: 'uppercase',
                         boxShadow: isDayActive ? '0 0 20px rgba(245,158,11,0.5)' : 'none',
                         animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                       }}
@@ -1737,7 +1737,7 @@ const WorldMapTab = ({
                             border: `1px solid ${displayed.dangerColor}50`,
                             borderRadius: '4px', padding: '7px 8px',
                             cursor: isDayActive ? 'pointer' : 'not-allowed',
-                            letterSpacing: '0.12em', textTransform: 'uppercase',
+                            letterSpacing: '0.1em', textTransform: 'uppercase',
                             boxShadow: isDayActive ? `0 0 12px ${displayed.dangerColor}55` : 'none',
                             transition: 'all 0.15s',
                           }}
@@ -1761,7 +1761,7 @@ const WorldMapTab = ({
                           background: `${displayed.dangerColor}14`,
                           border: `1px solid ${displayed.dangerColor}50`,
                           borderRadius: '4px', padding: '7px 8px',
-                          cursor: 'pointer', letterSpacing: '0.12em', textTransform: 'uppercase',
+                          cursor: 'pointer', letterSpacing: '0.1em', textTransform: 'uppercase',
                           transition: 'all 0.15s',
                         }}
                       >Travel Here</button>
@@ -1790,7 +1790,7 @@ const WorldMapTab = ({
                             borderRadius: '4px', padding: '8px',
                             textAlign: 'center', lineHeight: 1.6,
                           }}>
-                            <div style={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '3px', opacity: 0.6 }}>Regrouping</div>
+                            <div style={{ fontSize: '0.62rem', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '3px', opacity: 0.6 }}>Regrouping</div>
                             {hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`} remaining
                           </div>
                         ) : (
@@ -1804,7 +1804,7 @@ const WorldMapTab = ({
                               border: `1px solid ${factionColor}50`,
                               borderRadius: '4px', padding: '7px 8px',
                               cursor: (!isDayActive || activeContract) ? 'not-allowed' : 'pointer',
-                              letterSpacing: '0.12em', textTransform: 'uppercase',
+                              letterSpacing: '0.1em', textTransform: 'uppercase',
                               boxShadow: (!isDayActive || activeContract) ? 'none' : `0 0 12px ${factionColor}55`,
                               transition: 'all 0.15s',
                             }}
@@ -1824,7 +1824,7 @@ const WorldMapTab = ({
                       border: '1px solid rgba(212,175,55,0.5)',
                       borderRadius: '4px', padding: '8px',
                       cursor: isDayActive ? 'pointer' : 'not-allowed',
-                      letterSpacing: '0.12em', textTransform: 'uppercase',
+                      letterSpacing: '0.1em', textTransform: 'uppercase',
                       boxShadow: isDayActive ? '0 0 16px rgba(212,175,55,0.4)' : 'none',
                       animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
                     }}
@@ -1839,7 +1839,7 @@ const WorldMapTab = ({
                     lineHeight: 1.7,
                   }}>
                     Point of Interest<br />
-                    <span style={{ fontSize: '0.65rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', lineHeight: 1.6, opacity: 0.75 }}>
+                    <span style={{ fontSize: '0.65rem', textTransform: 'none', letterSpacing: '0.05em', fontStyle: 'italic', lineHeight: 1.6, opacity: 0.75 }}>
                       No contracts originate here
                     </span>
                   </div>
@@ -1943,14 +1943,14 @@ const WorldMapTab = ({
                 borderRadius: '6px', padding: '10px 12px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Locations Unlocked</span>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.05em' }}>Locations Unlocked</span>
                   <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)' }}>{unlockedCount}<span style={{ fontSize: '0.72rem', color: 'rgba(180,160,130,0.35)' }}>/{LOCATIONS.length}</span></span>
                 </div>
                 <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', marginBottom: '8px', overflow: 'hidden' }}>
                   <div style={{ width: `${(unlockedCount / LOCATIONS.length) * 100}%`, height: '100%', background: 'rgba(212,175,55,0.5)', borderRadius: '2px', transition: 'width 0.4s' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Contracts Done</span>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.05em' }}>Contracts Done</span>
                   <span style={{ fontSize: '0.7rem', fontWeight: 700, color: completedCount === totalContracts ? 'rgba(74,222,128,0.8)' : 'rgba(212,175,55,0.7)' }}>
                     {completedCount}<span style={{ fontSize: '0.72rem', color: 'rgba(180,160,130,0.35)' }}>/{totalContracts}</span>
                   </span>
