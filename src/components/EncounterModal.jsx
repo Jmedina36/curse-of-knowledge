@@ -24,7 +24,7 @@ const EncounterModal = ({ encounter, onAccept }) => {
         className="rounded-xl max-w-sm w-full overflow-hidden"
         style={{
           background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
-          border: `2px solid ${rarity.color}`,
+          border: `1px solid ${rarity.color}`,
           boxShadow: `0 0 30px ${rarity.glow}, 0 0 80px ${rarity.glow.replace(/[\d.]+\)$/, '0.15)')}`,
         }}
       >

@@ -22,7 +22,7 @@ const ChargedCritModal = ({ data, onClose }) => {
   return (
     <div
       className="fixed inset-0 z-[65] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.80)' }}
+      style={{ background: 'rgba(0,0,0,0.88)' }}
       onClick={onClose}
     >
       <motion.div
@@ -32,7 +32,7 @@ const ChargedCritModal = ({ data, onClose }) => {
         className="rounded-xl p-6 text-center max-w-xs w-full"
         style={{
           background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
-          border: `2px solid ${tier.color}`,
+          border: `1px solid ${tier.color}`,
           boxShadow: `0 0 30px ${tier.glow}, 0 0 70px ${tier.glow.replace(/[\d.]+\)$/, '0.18)')}`,
         }}
         onClick={e => e.stopPropagation()}

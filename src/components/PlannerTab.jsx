@@ -44,22 +44,26 @@ const PlannerTab = ({
         <div className="flex gap-2 justify-center mb-4">
           <button
             onClick={() => { sounds.click(); setPlannerSubTab('weekly'); }}
-            className="px-4 py-2 rounded-lg transition-all border-2"
+            className="px-6 py-2 rounded-lg transition-all border-2 font-bold uppercase text-sm"
             style={{
               backgroundColor: plannerSubTab === 'weekly' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
               borderColor: plannerSubTab === 'weekly' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
-              color: '#F5F5DC'
+              color: '#F5F5DC',
+              fontFamily: 'Cinzel, serif',
+              letterSpacing: '0.08em'
             }}
           >
             Weekly Plan
           </button>
           <button
             onClick={() => { sounds.click(); setPlannerSubTab('calendar'); }}
-            className="px-4 py-2 rounded-lg transition-all border-2"
+            className="px-6 py-2 rounded-lg transition-all border-2 font-bold uppercase text-sm"
             style={{
               backgroundColor: plannerSubTab === 'calendar' ? 'rgba(184, 134, 11, 0.5)' : 'rgba(30, 30, 30, 0.5)',
               borderColor: plannerSubTab === 'calendar' ? '#D4AF37' : 'rgba(100, 100, 100, 0.5)',
-              color: '#F5F5DC'
+              color: '#F5F5DC',
+              fontFamily: 'Cinzel, serif',
+              letterSpacing: '0.08em'
             }}
           >
             Calendar

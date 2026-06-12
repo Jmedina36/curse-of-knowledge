@@ -39,7 +39,7 @@ export default function SetPasswordModal({ onClose }) {
   };
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
       <div style={{
         width: '100%', maxWidth: '380px', margin: '0 16px',
         background: 'linear-gradient(to bottom, rgba(28,16,6,0.98), rgba(14,8,3,0.98))',

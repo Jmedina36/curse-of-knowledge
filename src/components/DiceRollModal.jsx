@@ -89,7 +89,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank,
   return (
     <div
       className="fixed inset-0 flex items-center justify-center z-50 p-4"
-      style={{ background: 'rgba(0,0,0,0.85)' }}
+      style={{ background: 'rgba(0,0,0,0.88)' }}
       onClick={onClose}
     >
       <motion.div
@@ -100,7 +100,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank,
         className="rounded-xl p-8 text-center max-w-xs w-full"
         style={{
           background: `linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))`,
-          border: `2px solid ${config.color}`,
+          border: `1px solid ${config.color}`,
           boxShadow: `0 0 25px ${config.glow}, 0 0 60px ${config.glow.replace(/[\d.]+\)$/, '0.25)')}`,
         }}
       >

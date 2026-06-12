@@ -333,7 +333,8 @@
       "Bash(ls C:/Users/johny/curse-of-knowledge/public/skills)",
       "Bash(grep -v \"//\\\\|className=\\\\\"\\\\\"\")",
       "Bash(grep -v \"opacity\\\\|//\\\\|text-\")",
-      "Bash(grep -v \"//\\\\|text-\\\\|className.*border-\")"
+      "Bash(grep -v \"//\\\\|text-\\\\|className.*border-\")",
+      "Bash(grep -n \"border: \\\\`2px solid\\\\|border: '2px solid\" src/components/ASIModal.jsx src/components/ChargedCritModal.jsx src/components/DiceRollModal.jsx src/components/EncounterModal.jsx)"
     ]
   }
 }
