@@ -253,27 +253,6 @@ const BattleModal = ({
   useConsecration,
   useAegisOfLight,
 }) => {
-  // ── Elite boss pool ────────────────────────────────────────────────────────
-  const ELITE_BOSSES = [
-    { img: '/bosses/frozen-zombie.png',        name: 'Rotgar the Frozen'      }, // male
-    { img: '/bosses/undead-vampire-woman.png',  name: 'Lady Seraphine'         }, // female
-    { img: '/bosses/orc-chief.png',             name: 'Warchief Thrakk'        }, // male
-    { img: '/bosses/orc-lady.png',              name: 'Varka the Fierce'       }, // female
-    { img: '/bosses/orc-warrior.png',           name: 'Krag Stonefist'         }, // male
-  ];
-
-  // ── Creature sprite helper ─────────────────────────────────────────────────
-  const getCreatureImg = (name, battleType, isFinalBoss) => {
-    const seed = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    if (isFinalBoss)            return '/undead-king.png';
-    if (battleType === 'elite') return ELITE_BOSSES[seed % ELITE_BOSSES.length].img;
-    return                             `/creatures/creature${1  + (seed % 8)}.png`;
-  };
-
-  const getEliteName = (name) => {
-    const seed = (name || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-    return ELITE_BOSSES[seed % ELITE_BOSSES.length].name;
-  };
   // ── Local effect state ──────────────────────────────────────────────────────
   const [floatingNumbers, setFloatingNumbers] = useState([]);
   const [shaking, setShaking] = useState(false);
@@ -830,7 +809,7 @@ const BattleModal = ({
                   : '0 0 60px rgba(255,60,60,1), 0 0 120px rgba(200,0,0,0.5)',
               }}
             >
-              {raidFaction === 'bandit' ? 'BANDIT RAID' : raidFaction === 'daughters' ? 'DAUGHTERS OF DUSK' : raidFaction === 'cursed' ? 'THE CURSED' : battleType === 'wave' ? 'WAVE ASSAULT' : battleType === 'elite' ? getEliteName(bossName) : bossName}
+              {raidFaction === 'bandit' ? 'BANDIT RAID' : raidFaction === 'daughters' ? 'DAUGHTERS OF DUSK' : raidFaction === 'cursed' ? 'THE CURSED' : battleType === 'wave' ? 'WAVE ASSAULT' : bossName}
             </motion.h1>
 
             {/* Battle type subtitle */}
@@ -959,7 +938,7 @@ const BattleModal = ({
                     style={{ display: 'flex', justifyContent: 'center' }}
                   >
                     <img
-                      src={banditEnemyImg ? banditEnemyImg : getCreatureImg(bossName, battleType, isFinalBoss)}
+                      src={banditEnemyImg}
                       alt={bossName}
                       style={{
                         height: isBanditWave ? 'clamp(150px, 22vh, 250px)' : 'clamp(130px, 19vh, 215px)',
@@ -1035,7 +1014,7 @@ const BattleModal = ({
           <div className="mb-1">
             <div className="flex justify-between items-baseline mb-1">
               <div className="flex flex-col gap-0">
-                <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#FFFFFF' }}>{battleType === 'elite' ? getEliteName(bossName) : bossName}</span>
+                <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#FFFFFF' }}>{bossName}</span>
                 {currentBattleCreature && (() => {
                   const TIER_META = {
                     1: { label: 'Grunt',     color: '#A8A8A8' },
@@ -1347,7 +1326,7 @@ const BattleModal = ({
                         <button
                           onClick={() => {
                             sounds.click();
-                            onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, getCreatureImg(bossName, battleType, isFinalBoss), bossStats);
+                            onCapture(bossName, bossHpPct / 100, battleType, isFinalBoss, banditEnemyImg, bossStats);
                           }}
                           className="py-2 rounded font-black text-base uppercase tracking-widest transition-all hover:scale-105 active:scale-95 animate-pulse"
                           style={{ background: 'linear-gradient(to bottom, rgba(80, 30, 120, 0.9), rgba(50, 15, 80, 0.9))', border: '2px solid rgba(168, 85, 247, 0.7)', color: '#E9D5FF', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', boxShadow: '0 4px 15px rgba(168, 85, 247, 0.3)' }}>

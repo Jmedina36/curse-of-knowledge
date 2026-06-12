@@ -755,12 +755,6 @@ const [godMode, setGodMode] = useState(false);
     };
   }, []);
   
-  const makeBossName = () => {
-    const first = ['Malakar', 'Zarathos', 'Lilith', 'Nyxen', 'Azazel', 'Alastor', 'Barbatos', 'Furcas', 'Moloch', 'Xaphan'];
-    const last = ['the Kind', 'the Blind', 'Deathbringer', 'the Wretched', 'the Fallen Angel', 'Rotten', 'Void Walker', 'the Forgotten', 'the Holy', 'Dread Lord', 'the Forsaken', 'the Tormentor'];
-    return `${first[Math.floor(Math.random() * first.length)]} ${last[Math.floor(Math.random() * last.length)]}`;
-  };
-  
 // FIXED: Helper function to get next occurrence of a day of week
 const getNextDayOfWeek = useCallback((dayName) => {
   const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -3118,8 +3112,16 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setTimeout(() => setCurrentAnimation(null), 500);
     sounds.bossEntrance();
 
-    const bossNameGenerated = makeBossName();
-    setBossName(bossNameGenerated);
+    const ELITE_POOL = [
+      { name: 'Korruk the Merciless',          img: '/bosses/orc-warrior.png'         },
+      { name: 'Gryvara, Ironblood Matriarch',  img: '/bosses/orc-lady.png'            },
+      { name: 'Grakthar the Unbroken',         img: '/bosses/orc-chief.png'           },
+      { name: 'Morvane, the Frozen Condemned', img: '/bosses/frozen-zombie.png'       },
+      { name: 'Seraphine the Bloodless',       img: '/bosses/undead-vampire-woman.png'},
+    ];
+    const elite = ELITE_POOL[Math.floor(Math.random() * ELITE_POOL.length)];
+    setBossName(elite.name);
+    setBanditEnemyImg(elite.img);
     setBossHp(bossHealth);
     setBossMax(bossHealth);
     setShowBoss(true);
@@ -3152,7 +3154,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       setEnemyDialogue(bossDialogue.START);
     }
     
-    addLog(`AMBUSH! ${bossNameGenerated} emerges from the shadows!`);
+    addLog(`AMBUSH! ${elite.name} emerges from the shadows!`);
   // Initiative — player D20+DEX vs elite D20+2
   const _dexMod_mb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
   const _wis_mb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
