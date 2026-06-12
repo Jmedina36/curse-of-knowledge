@@ -9148,7 +9148,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
                   <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
                   <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
-                  <button onClick={() => { if (window.confirm('Clear save data from localStorage?')) { localStorage.removeItem('fantasyStudyQuestSave'); addLog('Debug: Save cleared — refresh to apply'); } }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Clear Save Data</button>
+                  <button onClick={() => { if (window.confirm('Clear save data from localStorage?')) { localStorage.removeItem('fantasyStudyQuest'); addLog('Debug: Save cleared — refresh to apply'); } }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Clear Save Data</button>
                 </div>
               </div>
 
