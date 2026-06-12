@@ -6673,6 +6673,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     const tree = hero?.class?.name === 'Knight' ? KNIGHT_SKILL_TREE
       : hero?.class?.name === 'Wizard' ? WIZARD_SKILL_TREE
       : hero?.class?.name === 'Assassin' ? ASSASSIN_SKILL_TREE
+      : hero?.class?.name === 'Crusader' ? CRUSADER_SKILL_TREE
       : null;
     if (!tree) return;
     const node = tree.find(n => n.id === nodeId);

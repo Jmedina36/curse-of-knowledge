@@ -27,7 +27,7 @@ function sanitizeSave(data) {
   if (d.cleansePots    !== undefined) d.cleansePots    = clamp(d.cleansePots,   0,         999,       0);
   if (d.fusionCrystals !== undefined) d.fusionCrystals = clamp(d.fusionCrystals,0,         9999,      0);
   if (d.guildPoints    !== undefined) d.guildPoints    = clamp(d.guildPoints,   0,         9_999_999, 0);
-  if (d.gauntletMilestone!==undefined)d.gauntletMilestone=clamp(d.gauntletMilestone,0,    999,       0);
+  if (d.gauntletMilestone!==undefined)d.gauntletMilestone=clamp(d.gauntletMilestone,0,    9_999_999, 1500);
   if (d.weapon         !== undefined) d.weapon         = clamp(d.weapon,        0,         9999,      0);
   if (d.armor          !== undefined) d.armor          = clamp(d.armor,         0,         9999,      0);
   if (d.daysSinceShop  !== undefined) d.daysSinceShop  = clamp(d.daysSinceShop, 0,         9999,      0);
@@ -91,7 +91,13 @@ export async function loadSave() {
   }
   // Fall back to localStorage (offline or not signed in)
   const local = localStorage.getItem(LOCAL_KEY);
-  return local ? sanitizeSave(JSON.parse(local)) : null;
+  if (!local) return null;
+  try {
+    return sanitizeSave(JSON.parse(local));
+  } catch {
+    localStorage.removeItem(LOCAL_KEY);
+    return null;
+  }
 }
 
 export function writeSave(saveData) {
