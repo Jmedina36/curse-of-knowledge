@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { sounds } from '../sounds';
 
@@ -112,23 +112,23 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '3px' }}>
                   <span style={{
-                    fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
+                    fontFamily: 'Cinzel, serif', fontSize: '0.82rem', fontWeight: 700,
                     color: isSelected ? '#D4AF37' : 'rgba(245,245,220,0.85)',
                   }}>{info.short}</span>
                   <span style={{
-                    fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 900,
+                    fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 900,
                     color: isSelected ? '#D4AF37' : 'rgba(245,245,220,0.9)',
                   }}>
                     {preview
-                      ? <>{score}<span style={{ color: '#34D399', fontSize: '0.68rem' }}>→{preview}</span></>
+                      ? <>{score}<span style={{ color: '#34D399', fontSize: '0.78rem' }}>→{preview}</span></>
                       : score}
-                    <span style={{ fontSize: '0.58rem', marginLeft: '3px', color: 'rgba(245,245,220,0.4)', fontWeight: 400 }}>
+                    <span style={{ fontSize: '0.7rem', marginLeft: '3px', color: 'rgba(245,245,220,0.4)', fontWeight: 400 }}>
                       ({modStr(preview ?? score)})
                     </span>
                   </span>
                 </div>
                 <p style={{
-                  fontFamily: 'Cinzel, serif', fontSize: '0.55rem',
+                  fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
                   color: 'rgba(245,245,220,0.38)', lineHeight: 1.3, margin: 0,
                 }}>{info.desc}</p>
               </motion.button>
@@ -141,7 +141,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
           onClick={() => { sounds.click(); handleConfirm(); }}
           disabled={!canConfirm}
           style={{
-            width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.72rem',
+            width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.82rem',
             letterSpacing: '0.22em', textTransform: 'uppercase',
             padding: '11px', borderRadius: '8px', cursor: canConfirm ? 'pointer' : 'not-allowed',
             background: canConfirm ? 'rgba(212,175,55,0.18)' : 'rgba(0,0,0,0.2)',

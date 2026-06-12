@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 import { sounds } from '../sounds';
@@ -75,7 +75,7 @@ const InitiativeModal = ({ data, onClose }) => {
           background: config.bg,
         }}>
           <p style={{
-            fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.5em',
+            fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.5em',
             textTransform: 'uppercase', color: 'rgba(245,245,220,0.3)', margin: 0,
           }}>
             Initiative
@@ -87,7 +87,7 @@ const InitiativeModal = ({ data, onClose }) => {
 
           {/* Player */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.3)', textTransform: 'uppercase', margin: 0 }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.3)', textTransform: 'uppercase', margin: 0 }}>
               You
             </p>
             <DiceD20 roll={playerRoll} color={playerColor} glow={playerGlow} size={82} rolling />
@@ -107,14 +107,14 @@ const InitiativeModal = ({ data, onClose }) => {
           {/* VS divider */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
             <div style={{ width: '1px', height: '36px', background: 'rgba(245,245,220,0.07)' }} />
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 900, letterSpacing: '0.2em',
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.2em',
               color: 'rgba(245,245,220,0.18)', margin: 0 }}>VS</p>
             <div style={{ width: '1px', height: '36px', background: 'rgba(245,245,220,0.07)' }} />
           </div>
 
           {/* Enemy */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.3)', textTransform: 'uppercase', margin: 0 }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.3)', textTransform: 'uppercase', margin: 0 }}>
               Enemy
             </p>
             <DiceD20 roll={enemyRoll} color={enemyColor} glow={enemyGlow} size={82} rolling />
@@ -149,7 +149,7 @@ const InitiativeModal = ({ data, onClose }) => {
           }}>
             {config.label}
           </p>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: 'rgba(245,245,220,0.4)', margin: 0, letterSpacing: '0.04em' }}>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', color: 'rgba(245,245,220,0.4)', margin: 0, letterSpacing: '0.04em' }}>
             {config.sub}
           </p>
         </motion.div>
@@ -165,7 +165,7 @@ const InitiativeModal = ({ data, onClose }) => {
             onClick={() => { sounds.click(); onClose(); }}
             style={{
               width: '100%',
-              fontFamily: 'Cinzel, serif', fontSize: '0.62rem', fontWeight: 700,
+              fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
               letterSpacing: '0.28em', textTransform: 'uppercase',
               color: config.color, background: 'rgba(0,0,0,0.3)',
               border: `1px solid ${config.border}`,

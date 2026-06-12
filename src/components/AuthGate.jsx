@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 function passwordIssues(pass) {
@@ -81,7 +81,7 @@ export default function AuthGate({ onEnter }) {
     border: 'none',
     borderBottom: active ? '1px solid rgba(212,175,55,0.6)' : '1px solid rgba(212,175,55,0.1)',
     color: active ? 'rgba(212,175,55,0.9)' : 'rgba(160,140,100,0.45)',
-    fontSize: '0.65rem',
+    fontSize: '0.75rem',
     fontFamily: 'Cinzel, serif',
     letterSpacing: '0.12em',
     cursor: 'pointer',
@@ -164,7 +164,7 @@ export default function AuthGate({ onEnter }) {
               {['At least 8 characters', 'One uppercase letter', 'One number'].map(req => {
                 const pass = !issues.includes(req);
                 return (
-                  <div key={req} style={{ fontSize: '0.68rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <div key={req} style={{ fontSize: '0.78rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <span>{pass ? '✓' : '○'}</span> {req}
                   </div>
                 );
@@ -176,14 +176,14 @@ export default function AuthGate({ onEnter }) {
           {showResetPrompt && !resetSent && (
             <div style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '6px', padding: '10px 12px' }}>
               <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic' }}>Having trouble signing in?</p>
-              <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.72rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
+              <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.82rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
                 Send password reset email →
               </button>
             </div>
           )}
 
           {status && (
-            <p style={{ fontSize: '0.75rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', margin: 0, lineHeight: 1.5 }}>
               {status.msg}
             </p>
           )}
@@ -230,7 +230,7 @@ export default function AuthGate({ onEnter }) {
               background: 'none',
               border: 'none',
               color: 'rgba(140,125,95,0.5)',
-              fontSize: '0.72rem',
+              fontSize: '0.82rem',
               fontStyle: 'italic',
               cursor: 'pointer',
               fontFamily: 'Georgia, serif',

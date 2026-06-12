@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 import { sounds } from '../sounds';
@@ -115,7 +115,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
               return (
                 <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <GhostDie />
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.15)', margin: 0 }}>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.15)', margin: 0 }}>
                     —
                   </p>
                 </div>
@@ -132,7 +132,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
               >
                 <DiceD20 roll={r.roll} color={dieColor(r)} glow={dieGlow(r)} size={72} rolling={false} />
                 <p style={{
-                  fontFamily: 'Cinzel, serif', fontSize: '0.55rem', fontWeight: 700,
+                  fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 700,
                   letterSpacing: '0.1em', textTransform: 'uppercase',
                   color: label.color, margin: 0,
                   textShadow: `0 0 8px ${dieGlow(r)}`,
@@ -160,7 +160,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
                 {survived ? 'You Stabilize' : 'Fallen'}
               </p>
               <p style={{
-                fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
+                fontFamily: 'Cinzel, serif', fontSize: '0.75rem',
                 color: 'rgba(245,245,220,0.35)', margin: '0 0 18px', letterSpacing: '0.04em',
               }}>
                 {survived ? 'Restored to 1 HP. The fight is not over.' : 'The curse claims what remains.'}
@@ -169,7 +169,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
                 onClick={() => { sounds.click(); onClose(survived); }}
                 style={{
                   width: '100%',
-                  fontFamily: 'Cinzel, serif', fontSize: '0.62rem', fontWeight: 700,
+                  fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
                   letterSpacing: '0.28em', textTransform: 'uppercase',
                   color: outcomeColor, background: 'rgba(0,0,0,0.3)',
                   border: `1px solid ${survived ? 'rgba(52,211,153,0.35)' : 'rgba(239,68,68,0.35)'}`,
@@ -182,7 +182,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
             </motion.div>
           ) : (
             <p style={{
-              fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.15em',
+              fontFamily: 'Cinzel, serif', fontSize: '0.75rem', letterSpacing: '0.15em',
               color: 'rgba(245,245,220,0.22)',
               animation: 'intro-hint-pulse 1.5s ease-in-out infinite',
               margin: 0,

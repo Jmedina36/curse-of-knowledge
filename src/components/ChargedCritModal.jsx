@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 
@@ -38,7 +38,7 @@ const ChargedCritModal = ({ data, onClose }) => {
         onClick={e => e.stopPropagation()}
       >
         <p style={{
-          fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.35em',
+          fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em',
           textTransform: 'uppercase', color: 'rgba(245,245,220,0.35)', marginBottom: '12px',
         }}>⚡ Charged {attackName}</p>
 
@@ -62,7 +62,7 @@ const ChargedCritModal = ({ data, onClose }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.55 }}
           style={{
-            fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
+            fontFamily: 'Cinzel, serif', fontSize: '0.82rem', fontWeight: 700,
             color: tier.color, marginBottom: '6px',
           }}
         >{multiplier}x damage</motion.p>
@@ -78,7 +78,7 @@ const ChargedCritModal = ({ data, onClose }) => {
         >"{tier.sub}"</motion.p>
 
         <p style={{
-          fontFamily: 'Cinzel, serif', fontSize: '0.55rem',
+          fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
           color: 'rgba(245,245,220,0.18)', letterSpacing: '0.15em',
         }}>click to dismiss</p>
       </motion.div>

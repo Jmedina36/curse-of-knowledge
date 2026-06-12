@@ -1,4 +1,4 @@
-// FANTASY STUDY QUEST - v4.15.1
+﻿// FANTASY STUDY QUEST - v4.15.1
 // Refactored: App.jsx split into components
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
@@ -7682,7 +7682,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 }}
                 style={{
                   position: 'absolute', top: '24px', right: '28px',
-                  fontFamily: "'Cinzel', serif", fontSize: '0.65rem',
+                  fontFamily: "'Cinzel', serif", fontSize: '0.75rem',
                   letterSpacing: '0.25em', textTransform: 'uppercase',
                   color: 'rgba(180,180,180,0.3)', background: 'none', border: 'none',
                   cursor: 'pointer', transition: 'color 0.2s',
@@ -7727,7 +7727,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* Continue hint */}
               <p style={{
                 position: 'absolute', bottom: '28px',
-                fontFamily: "'Cinzel', serif", fontSize: '0.58rem',
+                fontFamily: "'Cinzel', serif", fontSize: '0.7rem',
                 letterSpacing: '0.3em', textTransform: 'uppercase',
                 color: 'rgba(212,175,55,0.3)',
                 animation: 'intro-hint-pulse 2.5s ease-in-out 1.2s infinite',
@@ -7937,7 +7937,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.4vw, 1.2rem)', lineHeight: 2, letterSpacing: '0.04em', color: 'rgba(245,245,220,0.93)', whiteSpace: 'pre-line', marginBottom: '12px', textShadow: '0 0 30px rgba(200,30,30,0.35)' }}>
                       {charCreateName.trim() + ".\n\n" + sendoff + "\n\nHave faith when the darkness is absolute.\nHave hope when every champion before you has failed.\nHave perseverance — because the Abyss is counting on you to stop.\n\nYour chronicle begins now."}
                     </p>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '0.58rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.3)', marginTop: '40px', animation: 'intro-hint-pulse 2.5s ease-in-out 1s infinite' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '0.7rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.3)', marginTop: '40px', animation: 'intro-hint-pulse 2.5s ease-in-out 1s infinite' }}>
                       ✶ click to enter the world ✶
                     </p>
                   </div>
@@ -8768,7 +8768,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         audioManager.play(TRACKS.malicious);
                         spawnBanditEnemy(enemy, 0, 1);
                         addLog('Debug: Bandit captain ' + capt.name);
-                      }} className="bg-red-800 hover:bg-red-700 px-2 py-2 rounded text-xs border border-red-600 transition-all" style={{color: '#FFD700'}}>{capt.name}<br/><span style={{fontSize:'0.55rem', opacity:0.65}}>{capt.title}</span></button>
+                      }} className="bg-red-800 hover:bg-red-700 px-2 py-2 rounded text-xs border border-red-600 transition-all" style={{color: '#FFD700'}}>{capt.name}<br/><span style={{fontSize:'0.65rem', opacity:0.65}}>{capt.title}</span></button>
                     ))}
                     <button onClick={() => {
                       const leader = { ...BANDIT_POOL.leader, isCapt: false, isLeader: true };
@@ -8778,7 +8778,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       audioManager.play(TRACKS.malicious);
                       spawnBanditEnemy(leader, 0, 1);
                       addLog('Debug: Bandit Lord Cutter');
-                    }} className="bg-red-700 hover:bg-red-600 px-2 py-2 rounded text-xs border-2 border-red-400 transition-all font-bold" style={{color: '#FFD700'}}>Cutter<br/><span style={{fontSize:'0.55rem', fontWeight:'normal'}}>Bandit Lord</span></button>
+                    }} className="bg-red-700 hover:bg-red-600 px-2 py-2 rounded text-xs border-2 border-red-400 transition-all font-bold" style={{color: '#FFD700'}}>Cutter<br/><span style={{fontSize:'0.65rem', fontWeight:'normal'}}>Bandit Lord</span></button>
                   </div>
                 </div>
               </div>
@@ -8814,7 +8814,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         audioManager.play(TRACKS.malicious);
                         spawnDaughtersEnemy(enemy, 0, 1);
                         addLog('Debug: Daughters captain ' + capt.name);
-                      }} className="bg-purple-800 hover:bg-purple-700 px-2 py-2 rounded text-xs border border-purple-600 transition-all" style={{color: '#FFD700'}}>{capt.name}<br/><span style={{fontSize:'0.55rem', opacity:0.65}}>{capt.title}</span></button>
+                      }} className="bg-purple-800 hover:bg-purple-700 px-2 py-2 rounded text-xs border border-purple-600 transition-all" style={{color: '#FFD700'}}>{capt.name}<br/><span style={{fontSize:'0.65rem', opacity:0.65}}>{capt.title}</span></button>
                     ))}
                     <button onClick={() => {
                       const leader = { ...DAUGHTERS_POOL.leader, isCapt: false, isLeader: true };
@@ -8824,7 +8824,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       audioManager.play(TRACKS.malicious);
                       spawnDaughtersEnemy(leader, 0, 1);
                       addLog('Debug: Dusk Queen Mira');
-                    }} className="bg-purple-700 hover:bg-purple-600 px-2 py-2 rounded text-xs border-2 border-purple-400 transition-all font-bold" style={{color: '#FFD700'}}>Mira<br/><span style={{fontSize:'0.55rem', fontWeight:'normal'}}>Dusk Queen</span></button>
+                    }} className="bg-purple-700 hover:bg-purple-600 px-2 py-2 rounded text-xs border-2 border-purple-400 transition-all font-bold" style={{color: '#FFD700'}}>Mira<br/><span style={{fontSize:'0.65rem', fontWeight:'normal'}}>Dusk Queen</span></button>
                   </div>
                 </div>
               </div>
@@ -8871,13 +8871,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         }} style={{
                           background: 'rgba(40,30,60,0.5)', borderColor: 'rgba(120,100,180,0.4)',
                           border: '1px solid', borderRadius: '6px', padding: '8px 6px', cursor: 'pointer',
-                          color: '#C8B8E8', fontSize: '0.72rem', textAlign: 'center', transition: 'filter 0.15s',
+                          color: '#C8B8E8', fontSize: '0.82rem', textAlign: 'center', transition: 'filter 0.15s',
                         }}
                         onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.3)'}
                         onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
                         >
                           <div style={{fontWeight: 'bold'}}>{soul.name}</div>
-                          <div style={{fontSize: '0.55rem', opacity: 0.55, marginTop: '2px'}}>{soul.hp} HP</div>
+                          <div style={{fontSize: '0.65rem', opacity: 0.55, marginTop: '2px'}}>{soul.hp} HP</div>
                         </button>
                       ))}
                     </div>
@@ -8903,7 +8903,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     >
                       <div style={{fontSize: '0.8rem', fontWeight: 'bold'}}>{label}</div>
                       <div style={{fontSize: '0.6rem', opacity: 0.7, fontStyle: 'italic', marginTop: '2px'}}>{subtitle}</div>
-                      <div style={{fontSize: '0.55rem', opacity: 0.5, marginTop: '4px', letterSpacing: '0.05em'}}>{tier} · Mythril</div>
+                      <div style={{fontSize: '0.65rem', opacity: 0.5, marginTop: '4px', letterSpacing: '0.05em'}}>{tier} · Mythril</div>
                     </button>
                   ))}
                 </div>
@@ -8962,7 +8962,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       onMouseEnter={e => e.currentTarget.style.filter = 'brightness(1.2)'}
                       onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
                       >
-                        Zone {z}<br/><span style={{fontSize:'0.55rem', opacity: 0.55}}>{doneCount}/{zoneIds.length}</span>
+                        Zone {z}<br/><span style={{fontSize:'0.65rem', opacity: 0.55}}>{doneCount}/{zoneIds.length}</span>
                       </button>
                     );
                   })}
@@ -9598,7 +9598,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             {/* LEVEL UP label */}
             <p style={{
               fontFamily: "'Cinzel', serif", fontWeight: 700,
-              fontSize: '0.75rem', letterSpacing: '0.55em', textTransform: 'uppercase',
+              fontSize: '0.85rem', letterSpacing: '0.55em', textTransform: 'uppercase',
               color: 'rgba(212,175,55,0.85)', marginBottom: '10px',
               animation: `levelup-label ${dur} ease-out forwards`,
             }}>LEVEL UP</p>
@@ -9615,7 +9615,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             </div>
             {/* Class + stat line */}
             <p style={{
-              fontFamily: "'Cinzel', serif", fontSize: '0.78rem',
+              fontFamily: "'Cinzel', serif", fontSize: '0.88rem',
               letterSpacing: '0.3em', textTransform: 'uppercase',
               color: 'rgba(210,175,90,0.75)', marginTop: '18px',
               animation: `levelup-sub ${dur} ease-out forwards`,
@@ -9685,7 +9685,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           </div>
           {/* Subtitle */}
           <p style={{
-            fontFamily: "'Cinzel', serif", fontSize: '0.72rem', letterSpacing: '0.3em',
+            fontFamily: "'Cinzel', serif", fontSize: '0.82rem', letterSpacing: '0.3em',
             textTransform: 'uppercase', marginTop: '20px', textAlign: 'center',
             color: curseOverlay.isFinal ? 'rgba(192,132,252,0.6)' : 'rgba(239,68,68,0.55)',
             animation: `curse-sub ${curseOverlay.isFinal ? '3s' : '2.6s'} ease-in-out forwards`,

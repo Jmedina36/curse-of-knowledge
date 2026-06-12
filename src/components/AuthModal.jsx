@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 function passwordIssues(pass) {
@@ -80,7 +80,7 @@ export default function AuthModal({ onClose, onSignIn }) {
     flex: 1, padding: '7px 0', background: active ? 'rgba(212,175,55,0.12)' : 'transparent',
     border: 'none', borderBottom: active ? '1px solid rgba(212,175,55,0.5)' : '1px solid rgba(212,175,55,0.1)',
     color: active ? 'rgba(212,175,55,0.9)' : 'rgba(160,140,100,0.5)',
-    fontSize: '0.65rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em',
+    fontSize: '0.75rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em',
     cursor: 'pointer', textTransform: 'uppercase',
   });
 
@@ -90,9 +90,9 @@ export default function AuthModal({ onClose, onSignIn }) {
 
         {/* Header */}
         <div style={{ padding: '24px 24px 16px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', margin: '0 0 6px' }}>Cloud Sync</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', margin: '0 0 6px' }}>Cloud Sync</p>
           <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: 'rgba(212,175,55,0.9)', fontWeight: 'normal', margin: 0 }}>Bind Your Chronicle</h2>
-          <p style={{ fontSize: '0.72rem', color: 'rgba(160,140,110,0.6)', fontStyle: 'italic', marginTop: '8px' }}>
+          <p style={{ fontSize: '0.82rem', color: 'rgba(160,140,110,0.6)', fontStyle: 'italic', marginTop: '8px' }}>
             Sign in to carry your progress across devices.
           </p>
         </div>
@@ -117,7 +117,7 @@ export default function AuthModal({ onClose, onSignIn }) {
               {['At least 8 characters', 'One uppercase letter', 'One number'].map(req => {
                 const pass = !issues.includes(req);
                 return (
-                  <div key={req} style={{ fontSize: '0.68rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <div key={req} style={{ fontSize: '0.78rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
                     <span>{pass ? '✓' : '○'}</span> {req}
                   </div>
                 );
@@ -131,14 +131,14 @@ export default function AuthModal({ onClose, onSignIn }) {
               <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic' }}>
                 Having trouble signing in?
               </p>
-              <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.72rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
+              <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.82rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
                 Send password reset email →
               </button>
             </div>
           )}
 
           {status && (
-            <div style={{ fontSize: '0.72rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: '0.82rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', lineHeight: 1.5 }}>
               {status.msg}
             </div>
           )}
@@ -147,7 +147,7 @@ export default function AuthModal({ onClose, onSignIn }) {
             {loading ? 'Working...' : mode === 'signin' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Magic Link'}
           </button>
 
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(140,125,95,0.5)', fontSize: '0.68rem', fontStyle: 'italic', cursor: 'pointer', fontFamily: 'Georgia, serif', padding: '4px 0' }}>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(140,125,95,0.5)', fontSize: '0.78rem', fontStyle: 'italic', cursor: 'pointer', fontFamily: 'Georgia, serif', padding: '4px 0' }}>
             Continue without signing in
           </button>
         </form>

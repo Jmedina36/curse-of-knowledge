@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { LOCATION_CONTRACTS } from '../data/locationContracts';
 
 const PROLOGUE_ENTRY = {
@@ -86,7 +86,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
         }}>
           <p style={{
             fontFamily: 'Cinzel, serif',
-            fontSize: '0.62rem',
+            fontSize: '0.72rem',
             letterSpacing: '0.12em',
             color: 'rgba(212,175,55,0.55)',
             textTransform: 'uppercase',
@@ -100,7 +100,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             fontWeight: 'normal',
           }}>The Order</h2>
           <div style={{
-            fontSize: '0.68rem',
+            fontSize: '0.78rem',
             color: foundCount === 0 ? 'rgba(160,140,110,0.45)' : 'rgba(160,140,110,0.7)',
             fontStyle: 'italic',
           }}>
@@ -135,10 +135,10 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             onMouseEnter={e => { if (selectedId !== '__prologue__') e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; }}
             onMouseLeave={e => { if (selectedId !== '__prologue__') e.currentTarget.style.background = 'transparent'; }}
           >
-            <div style={{ fontSize: '0.75rem', color: selectedId === '__prologue__' ? 'rgba(235,220,190,0.95)' : 'rgba(200,185,155,0.85)', lineHeight: 1.35, marginBottom: '2px' }}>
+            <div style={{ fontSize: '0.85rem', color: selectedId === '__prologue__' ? 'rgba(235,220,190,0.95)' : 'rgba(200,185,155,0.85)', lineHeight: 1.35, marginBottom: '2px' }}>
               {PROLOGUE_ENTRY.title}
             </div>
-            <div style={{ fontSize: '0.62rem', color: 'rgba(140,125,95,0.7)', fontStyle: 'italic' }}>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(140,125,95,0.7)', fontStyle: 'italic' }}>
               {PROLOGUE_ENTRY.location}
             </div>
           </button>
@@ -188,7 +188,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                     {unlocked ? (
                       <>
                         <div style={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.85rem',
                           color: isSelected ? 'rgba(235,220,190,0.95)' : 'rgba(200,185,155,0.85)',
                           lineHeight: 1.35,
                           marginBottom: '2px',
@@ -196,7 +196,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                           {lc.journalEntry.title}
                         </div>
                         <div style={{
-                          fontSize: '0.62rem',
+                          fontSize: '0.72rem',
                           color: 'rgba(140,125,95,0.7)',
                           fontStyle: 'italic',
                         }}>
@@ -205,7 +205,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                       </>
                     ) : (
                       <div style={{
-                        fontSize: '0.72rem',
+                        fontSize: '0.82rem',
                         color: 'rgba(100,90,70,0.4)',
                         fontStyle: 'italic',
                         letterSpacing: '0.05em',
@@ -242,7 +242,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             >
               <div style={{
                 fontFamily: 'Cinzel, serif',
-                fontSize: '0.65rem',
+                fontSize: '0.75rem',
                 letterSpacing: '0.1em',
                 color: 'rgba(212,175,55,0.6)',
                 textTransform: 'uppercase',
@@ -433,7 +433,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               marginTop: '32px',
               paddingTop: '16px',
               borderTop: '1px solid rgba(212,175,55,0.12)',
-              fontSize: '0.65rem',
+              fontSize: '0.75rem',
               color: 'rgba(140,125,95,0.5)',
               fontFamily: 'Cinzel, serif',
               letterSpacing: '0.08em',

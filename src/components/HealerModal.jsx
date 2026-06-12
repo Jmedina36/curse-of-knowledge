@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { GAME_CONSTANTS, COLORS, VISUAL_STYLES } from '../constants';
@@ -195,7 +195,7 @@ const HealerModal = ({
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.05rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
         <p style={{ fontSize: '0.88rem', color: effectColor }}>{effect}</p>
-        {soldOut && <p style={{ fontSize: '0.75rem', color: 'rgba(200,100,100,0.8)', marginTop: '2px', fontStyle: 'italic' }}>Limit reached today</p>}
+        {soldOut && <p style={{ fontSize: '0.85rem', color: 'rgba(200,100,100,0.8)', marginTop: '2px', fontStyle: 'italic' }}>Limit reached today</p>}
       </div>
       <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '24px', textAlign: 'center' }}>{count}</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>
@@ -341,7 +341,7 @@ const HealerModal = ({
                     borderRadius: '3px', transition: 'width 0.3s ease',
                   }}/>
                 </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', color: 'rgba(212,175,55,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: 'rgba(212,175,55,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
               </div>
 
               {missing > 0 ? (
@@ -361,7 +361,7 @@ const HealerModal = ({
                     onMouseLeave={e => { if (gold >= halfCost) e.currentTarget.style.background = 'rgba(212,175,55,0.12)'; }}
                   >
                     Heal Half — {halfCost} gold
-                    <span style={{ display: 'block', fontSize: '0.65rem', color: greenDim, fontWeight: 400, marginTop: '3px' }}>Restores {halfMissing} HP</span>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: greenDim, fontWeight: 400, marginTop: '3px' }}>Restores {halfMissing} HP</span>
                   </button>
                   <button
                     onClick={handleHealFull}
@@ -379,7 +379,7 @@ const HealerModal = ({
                     onMouseLeave={e => { if (gold >= fullCost) e.currentTarget.style.background = 'rgba(212,175,55,0.22)'; }}
                   >
                     Full Heal — {fullCost} gold
-                    <span style={{ display: 'block', fontSize: '0.65rem', color: greenDim, fontWeight: 400, marginTop: '3px' }}>Restores {missing} HP</span>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: greenDim, fontWeight: 400, marginTop: '3px' }}>Restores {missing} HP</span>
                   </button>
                 </div>
               ) : (
@@ -415,7 +415,7 @@ const HealerModal = ({
                   );
                 })}
               </div>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)', marginBottom: '16px', textAlign: 'center' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)', marginBottom: '16px', textAlign: 'center' }}>
                 Gold on hand: <span style={{ color: '#D4AF37', fontWeight: 700 }}>{gold}</span>
               </p>
 
@@ -459,7 +459,7 @@ const HealerModal = ({
 
               {/* ── GEMS (BUY) ── */}
               {suppliesMode === 'buy' && <div style={{ marginTop: '24px', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '20px' }}>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.82rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
                 {[
                   { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     effect: '+15% max HP for today',           effectColor: '#FF6B6B', border: 'rgba(180,35,35,0.5)',    price: 200, activeFlag: rubyGemActive },
                   { type: 'blue',   img: '/items/GEM-2.png', name: 'Sapphire Shard', effect: '+15% max Stamina for today',      effectColor: '#6BB6FF', border: 'rgba(59,130,246,0.5)',   price: 150, activeFlag: sapphireGemActive },
@@ -481,7 +481,7 @@ const HealerModal = ({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
                         <p style={{ fontSize: '0.85rem', color: effectColor }}>{effect}</p>
-                        {isActive && <p style={{ fontSize: '0.72rem', color: '#D4AF37', fontStyle: 'italic', marginTop: '2px' }}>Active — awaiting next chest</p>}
+                        {isActive && <p style={{ fontSize: '0.82rem', color: '#D4AF37', fontStyle: 'italic', marginTop: '2px' }}>Active — awaiting next chest</p>}
                       </div>
                       <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '20px', textAlign: 'center' }}>{count}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>
@@ -593,7 +593,7 @@ const HealerModal = ({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
               CONFIRM SALE
             </p>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: '#F5F5DC', marginBottom: '4px' }}>

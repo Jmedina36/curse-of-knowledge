@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ShieldCheck, Swords } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
@@ -145,7 +145,7 @@ const QuestTab = ({
                       )}
                     </div>
                     <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'clamp(0.85rem,2vw,1.05rem)',letterSpacing:'0.06em',color:'#000',textAlign:'center',lineHeight:1.2,wordBreak:'break-word'}}>{hero.name}</p>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
+                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',textAlign:'center',textTransform:'uppercase',marginTop:'-2px'}}>{hero.class.name}</p>
                   </div>
 
                   {/* RIGHT: Rank, HP, Mana, ATK, DEF */}
@@ -182,12 +182,12 @@ const QuestTab = ({
                         <div className="rounded text-center" style={{padding:'12px 10px',background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.3)'}}>
                           <Swords size={15} style={{color:ic,margin:'0 auto 4px'}}/>
                           <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.4rem',color:'#000',lineHeight:1}}>{getBaseAttack()}</p>
-                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',marginTop:'4px',textTransform:'uppercase'}}>Attack</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',marginTop:'4px',textTransform:'uppercase'}}>Attack</p>
                         </div>
                         <div className="rounded text-center" style={{padding:'12px 10px',background:'rgba(180,140,80,0.2)',border:'1px solid rgba(80,45,15,0.3)'}}>
                           <ShieldCheck size={15} style={{color:ic,margin:'0 auto 4px'}}/>
                           <p style={{fontFamily:'Cinzel,serif',fontWeight:900,fontSize:'1.4rem',color:'#000',lineHeight:1}}>{Math.floor((getBaseDefense()/(getBaseDefense()+50))*100)}%</p>
-                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',marginTop:'4px',textTransform:'uppercase'}}>Defense</p>
+                          <p style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:700,letterSpacing:'0.1em',color:'#000',marginTop:'4px',textTransform:'uppercase'}}>Defense</p>
                         </div>
                       </>);})()}
                     </div>
@@ -199,16 +199,16 @@ const QuestTab = ({
                 {(()=>{const ab=hero.abilities||{str:10,dex:10,con:10,int:10,wis:10,cha:10};const pMap={Knight:'str',Wizard:'int',Assassin:'dex',Crusader:'con'};const primary=pMap[hero.class.name]||'str';const ic=(()=>{const m={red:'#7F0000',blue:'#142B6E',green:'#063B28',white:'#1F2937',purple:'#3B006A',yellow:'#6B2E00',amber:'#0E3D1E'};return m[hero.class.color]||m.yellow;})();const fullNames={str:'Strength',dex:'Dexterity',con:'Constitution',int:'Intelligence',wis:'Wisdom',cha:'Charisma'};return(<>
                   <div className="flex items-center gap-2 mb-2">
                     <div style={{flex:'1',height:'1px',background:'rgba(60,30,5,0.4)'}}/>
-                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.75rem',fontWeight:900,letterSpacing:'0.15em',color:'#000',textTransform:'uppercase',whiteSpace:'nowrap'}}>Ability Scores</p>
+                    <p style={{fontFamily:'Cinzel,serif',fontSize:'0.85rem',fontWeight:900,letterSpacing:'0.15em',color:'#000',textTransform:'uppercase',whiteSpace:'nowrap'}}>Ability Scores</p>
                     <div style={{flex:'1',height:'1px',background:'rgba(60,30,5,0.4)'}}/>
                   </div>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'6px'}}>
                     {['str','dex','con','int','wis','cha'].map(key=>{
                       const score=ab[key]||10;const mod=Math.floor((score-10)/2);const ip=key===primary;
                       return(<div key={key} className="rounded text-center" style={{padding:'8px 6px',background:ip?'rgba(140,90,30,0.25)':'rgba(180,140,80,0.15)',border:`1px solid ${ip?'rgba(60,30,5,0.5)':'rgba(60,30,5,0.2)'}`}}>
-                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.72rem',letterSpacing:'0.04em',color:'#000',marginBottom:'3px',fontWeight:900}}>{fullNames[key]}</p>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.82rem',letterSpacing:'0.04em',color:'#000',marginBottom:'3px',fontWeight:900}}>{fullNames[key]}</p>
                         <p style={{fontFamily:'Cinzel,serif',fontSize:'1.5rem',fontWeight:900,color:'#000',lineHeight:1}}>{score}</p>
-                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.72rem',color:'#000',marginTop:'3px',fontWeight:900}}>{mod>=0?'+':''}{mod}</p>
+                        <p style={{fontFamily:'Cinzel,serif',fontSize:'0.82rem',color:'#000',marginTop:'3px',fontWeight:900}}>{mod>=0?'+':''}{mod}</p>
                       </div>);
                     })}
                   </div>
@@ -224,7 +224,7 @@ const QuestTab = ({
               <div style={{flex:1,height:'1px',background:'rgba(212,175,55,0.4)'}}/>
               <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
                 <span style={{color:'rgba(212,175,55,0.6)',fontSize:'0.7rem'}}>✦</span>
-                <p style={{fontFamily:'Cinzel,serif',fontSize:'0.72rem',fontWeight:900,letterSpacing:'0.28em',textTransform:'uppercase',color:'rgba(212,175,55,0.85)',whiteSpace:'nowrap',margin:0}}>Guild Services</p>
+                <p style={{fontFamily:'Cinzel,serif',fontSize:'0.82rem',fontWeight:900,letterSpacing:'0.28em',textTransform:'uppercase',color:'rgba(212,175,55,0.85)',whiteSpace:'nowrap',margin:0}}>Guild Services</p>
                 <span style={{color:'rgba(212,175,55,0.6)',fontSize:'0.7rem'}}>✦</span>
               </div>
               <div style={{flex:1,height:'1px',background:'rgba(212,175,55,0.4)'}}/>
@@ -255,7 +255,7 @@ const QuestTab = ({
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>{dwarf.name}</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Armory</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.88rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Potions · Gear</p>
                 </div>
               </button>
 
@@ -276,7 +276,7 @@ const QuestTab = ({
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>{elf.name}</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Merchant</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.88rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Craft · Trade</p>
                 </div>
               </button>
 
@@ -297,7 +297,7 @@ const QuestTab = ({
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Sister Mara</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Healer</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Restore HP</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.88rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Restore HP</p>
                 </div>
               </button>
 
@@ -323,7 +323,7 @@ const QuestTab = ({
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Kael</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Bestiary</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Creatures · Factions</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.88rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Creatures · Factions</p>
                 </div>
               </button>
 
@@ -344,7 +344,7 @@ const QuestTab = ({
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Rylan</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Forge</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Study · Flashcards</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.88rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Study · Flashcards</p>
                 </div>
               </button>
 
@@ -371,7 +371,7 @@ const QuestTab = ({
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'0.9rem',letterSpacing:'0.16em',textTransform:'uppercase',color:'rgba(212,175,55,0.75)',marginBottom:'3px'}}>Soren</p>
                   <p style={{fontFamily:"'Cinzel',serif",fontWeight:900,fontSize:'clamp(1rem,2vw,1.15rem)',letterSpacing:'0.12em',textTransform:'uppercase',color:'rgba(235,210,110,1)',marginBottom:'4px'}}>The Chronicle</p>
                   <div style={{width:'30px',height:'1px',background:'rgba(212,175,55,0.35)',margin:'0 auto 5px'}}/>
-                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.78rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Attributes · Growth</p>
+                  <p style={{fontFamily:"'Cinzel',serif",fontSize:'0.88rem',letterSpacing:'0.1em',color:'rgba(180,148,50,0.6)',textTransform:'uppercase',lineHeight:1.4}}>Attributes · Growth</p>
                 </div>
               </button>
 

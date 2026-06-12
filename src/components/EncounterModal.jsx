@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { sounds } from '../sounds';
 
@@ -37,7 +37,7 @@ const EncounterModal = ({ encounter, onAccept }) => {
         }}>
           <p style={{
             fontFamily: 'Cinzel, serif',
-            fontSize: '0.65rem',
+            fontSize: '0.75rem',
             letterSpacing: '0.35em',
             textTransform: 'uppercase',
             color: rarity.color,
@@ -71,7 +71,7 @@ const EncounterModal = ({ encounter, onAccept }) => {
           {/* Description */}
           <p style={{
             fontFamily: 'Cinzel, serif',
-            fontSize: '0.78rem',
+            fontSize: '0.88rem',
             color: 'rgba(245,245,220,0.75)',
             lineHeight: 1.7,
             marginBottom: '12px',
@@ -81,7 +81,7 @@ const EncounterModal = ({ encounter, onAccept }) => {
           {/* Flavor text */}
           <p style={{
             fontFamily: 'Cinzel, serif',
-            fontSize: '0.72rem',
+            fontSize: '0.82rem',
             color: `${rarity.color}`,
             fontStyle: 'italic',
             textAlign: 'center',

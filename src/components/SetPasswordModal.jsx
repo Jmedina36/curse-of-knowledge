@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
 
 function passwordIssues(pass) {
@@ -47,7 +47,7 @@ export default function SetPasswordModal({ onClose }) {
         boxShadow: '0 20px 60px rgba(0,0,0,0.8)', overflow: 'hidden',
       }}>
         <div style={{ padding: '28px 28px 8px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', margin: '0 0 6px' }}>Account Security</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', margin: '0 0 6px' }}>Account Security</p>
           <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: 'rgba(212,175,55,0.9)', fontWeight: 'normal', margin: 0 }}>Set New Password</h2>
         </div>
 
@@ -56,7 +56,7 @@ export default function SetPasswordModal({ onClose }) {
             <p style={{ color: 'rgba(120,200,120,0.9)', fontSize: '0.85rem', fontStyle: 'italic', marginBottom: '20px' }}>
               Password updated successfully.
             </p>
-            <button onClick={onClose} style={{ padding: '11px 32px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: 'rgba(212,175,55,0.14)', color: 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.78rem', letterSpacing: '0.1em', cursor: 'pointer' }}>
+            <button onClick={onClose} style={{ padding: '11px 32px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: 'rgba(212,175,55,0.14)', color: 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', cursor: 'pointer' }}>
               Continue
             </button>
           </div>
@@ -71,7 +71,7 @@ export default function SetPasswordModal({ onClose }) {
                 {['At least 8 characters', 'One uppercase letter', 'One number'].map(req => {
                   const pass = !issues.includes(req);
                   return (
-                    <div key={req} style={{ fontSize: '0.68rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                    <div key={req} style={{ fontSize: '0.78rem', color: pass ? 'rgba(120,200,120,0.8)' : 'rgba(200,160,100,0.7)', display: 'flex', gap: '6px', alignItems: 'center' }}>
                       <span>{pass ? '✓' : '○'}</span> {req}
                     </div>
                   );
@@ -79,7 +79,7 @@ export default function SetPasswordModal({ onClose }) {
               </div>
             )}
             {mismatch && <p style={{ fontSize: '0.7rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic' }}>Passwords do not match.</p>}
-            {status && <p style={{ fontSize: '0.72rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic' }}>{status.msg}</p>}
+            {status && <p style={{ fontSize: '0.82rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic' }}>{status.msg}</p>}
 
             <button type="submit" disabled={loading || issues.length > 0 || mismatch} style={{ marginTop: '4px', padding: '13px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: loading || issues.length ? 'rgba(212,175,55,0.06)' : 'rgba(212,175,55,0.14)', color: issues.length ? 'rgba(212,175,55,0.4)' : 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.12em', cursor: loading || issues.length > 0 ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Saving...' : 'Update Password'}

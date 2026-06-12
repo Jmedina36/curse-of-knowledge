@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { sounds } from '../sounds';
 
@@ -55,7 +55,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
       >
         {/* Header stripe */}
         <div style={{ borderBottom: `1px solid ${cfg.border.replace('0.4', '0.12')}`, padding: '14px 24px 12px', background: cfg.headerBg }}>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: cfg.color, margin: 0, opacity: 0.6 }}>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: cfg.color, margin: 0, opacity: 0.6 }}>
             {cfg.label}
           </p>
         </div>
@@ -179,7 +179,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
             onClick={() => { sounds.click(); onClose(); }}
             style={{
               width: '100%',
-              fontFamily: 'Cinzel, serif', fontSize: '0.62rem', fontWeight: 700,
+              fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700,
               letterSpacing: '0.28em', textTransform: 'uppercase',
               color: cfg.color, background: 'rgba(0,0,0,0.3)',
               border: `1px solid ${cfg.border}`,

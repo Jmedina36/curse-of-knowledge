@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -476,7 +476,7 @@ const CraftingModal = ({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
               CONFIRM SALE
             </p>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: sellConfirm.rarityColor || '#F5F5DC', marginBottom: '4px' }}>

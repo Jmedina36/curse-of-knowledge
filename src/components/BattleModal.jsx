@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { getCreatureQuality } from '../creatures';
@@ -1030,7 +1030,7 @@ const BattleModal = ({
                   const parts = [meta?.label, quality?.label].filter(Boolean).join(' · ');
                   return (
                     <span style={{
-                      fontSize: '0.65rem', fontWeight: 600, letterSpacing: '0.12em',
+                      fontSize: '0.75rem', fontWeight: 600, letterSpacing: '0.12em',
                       textTransform: 'uppercase', color: displayColor,
                       lineHeight: 1.2,
                     }}>{parts}</span>
@@ -1257,7 +1257,7 @@ const BattleModal = ({
                 <p className="text-base italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'Cinzel, serif' }}>
                   "<TypewriterText key={heroDialogue} text={heroDialogue} speed={22} />"
                 </p>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', letterSpacing: '0.15em', color: 'rgba(104,211,145,0.55)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.15em', color: 'rgba(104,211,145,0.55)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
                   — {hero?.name}
                 </p>
               </motion.div>
@@ -1443,7 +1443,7 @@ const BattleModal = ({
                       return (
                         <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.18), transparent)', marginBottom: '2px' }} />
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.35)', textAlign: 'center', marginBottom: '2px' }}>Knight Skills</p>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.35)', textAlign: 'center', marginBottom: '2px' }}>Knight Skills</p>
                           {knightSkills.map(sk => {
                             const noSP = stamina < sk.spCost;
                             const disabled = noSP || sk.active;
@@ -1464,15 +1464,15 @@ const BattleModal = ({
                                 <div style={{ textAlign: 'left' }}>
                                   <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
                                   {sk.active && sk.activeTurns > 0 && (
-                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
                                   )}
                                   {sk.active && sk.activeTurns === 0 && (
-                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
                                 </div>
@@ -1522,7 +1522,7 @@ const BattleModal = ({
                       return (
                         <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(147,197,253,0.18), transparent)', marginBottom: '2px' }} />
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(147,197,253,0.35)', textAlign: 'center', marginBottom: '2px' }}>Wizard Skills</p>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(147,197,253,0.35)', textAlign: 'center', marginBottom: '2px' }}>Wizard Skills</p>
                           {wizardSkills.map(sk => {
                             const noSP = stamina < sk.spCost;
                             const disabled = noSP || sk.active;
@@ -1543,12 +1543,12 @@ const BattleModal = ({
                                 <div style={{ textAlign: 'left' }}>
                                   <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
                                   {sk.active && (
-                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
                                 </div>
@@ -1605,7 +1605,7 @@ const BattleModal = ({
                       return (
                         <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(220,50,50,0.18), transparent)', marginBottom: '2px' }} />
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(220,80,80,0.35)', textAlign: 'center', marginBottom: '2px' }}>Assassin Skills</p>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(220,80,80,0.35)', textAlign: 'center', marginBottom: '2px' }}>Assassin Skills</p>
                           {assassinSkills.map(sk => {
                             const noSP = stamina < sk.spCost;
                             const disabled = noSP || sk.active;
@@ -1626,12 +1626,12 @@ const BattleModal = ({
                                 <div style={{ textAlign: 'left' }}>
                                   <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
                                   {sk.active && (
-                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,150,240,0.8)', letterSpacing: '0.1em' }}>▶ Active</span>
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
                                 </div>
@@ -1681,7 +1681,7 @@ const BattleModal = ({
                       return (
                         <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                           <div style={{ height: '1px', background: 'linear-gradient(to right, transparent, rgba(234,179,8,0.18), transparent)', marginBottom: '2px' }} />
-                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.52rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(234,179,8,0.35)', textAlign: 'center', marginBottom: '2px' }}>Crusader Skills</p>
+                          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(234,179,8,0.35)', textAlign: 'center', marginBottom: '2px' }}>Crusader Skills</p>
                           {crusaderSkills.map(sk => {
                             const noSP = stamina < sk.spCost;
                             const disabled = noSP || sk.active;
@@ -1702,12 +1702,12 @@ const BattleModal = ({
                                 <div style={{ textAlign: 'left' }}>
                                   <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{sk.name}</span>
                                   {sk.active && sk.activeTurns > 0 && (
-                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
+                                    <span style={{ marginLeft: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(120,220,120,0.8)', letterSpacing: '0.1em' }}>▶ {sk.activeTurns}t</span>
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.58rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.55rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.55)', letterSpacing: '0.06em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
                                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 import { sounds } from '../sounds';
@@ -140,7 +140,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank,
           transition={{ delay: 0.55 }}
           style={{
             fontFamily: 'Cinzel, serif',
-            fontSize: '0.75rem',
+            fontSize: '0.85rem',
             color: 'rgba(245,245,220,0.7)',
             fontStyle: 'italic',
             lineHeight: 1.6,

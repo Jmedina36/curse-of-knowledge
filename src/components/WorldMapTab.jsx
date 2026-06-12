@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+﻿import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LOCATION_CONTRACTS } from '../data/locationContracts';
 
@@ -715,8 +715,8 @@ const WorldMapTab = ({
             { label: 'Day', value: currentDay ?? 1, color: 'rgba(180,165,150,0.7)' },
           ].map(({ label, value, color }) => (
             <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1px' }}>
-              <span style={{ fontSize: '0.42rem', color: 'rgba(180,160,130,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</span>
-              <span style={{ fontSize: '0.62rem', fontWeight: 700, color, letterSpacing: '0.05em' }}>{value}</span>
+              <span style={{ fontSize: '0.6rem', color: 'rgba(180,160,130,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color, letterSpacing: '0.05em' }}>{value}</span>
             </div>
           ))}
           {/* HP with bar */}
@@ -725,8 +725,8 @@ const WorldMapTab = ({
             const hpColor = hpPct > 0.5 ? '#4ade80' : hpPct > 0.25 ? '#fbbf24' : '#f87171';
             return (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                <span style={{ fontSize: '0.42rem', color: 'rgba(180,160,130,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>HP</span>
-                <span style={{ fontSize: '0.58rem', fontWeight: 700, color: hpColor }}>{hp ?? 0}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{maxHp ?? 0}</span></span>
+                <span style={{ fontSize: '0.6rem', color: 'rgba(180,160,130,0.4)', letterSpacing: '0.15em', textTransform: 'uppercase' }}>HP</span>
+                <span style={{ fontSize: '0.7rem', fontWeight: 700, color: hpColor }}>{hp ?? 0}<span style={{ fontSize: '0.72rem', color: 'rgba(180,160,130,0.35)' }}>/{maxHp ?? 0}</span></span>
                 <div style={{ width: '44px', height: '3px', background: 'rgba(255,255,255,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
                   <div style={{ width: `${hpPct * 100}%`, height: '100%', background: hpColor, borderRadius: '2px', transition: 'width 0.4s, background 0.4s' }} />
                 </div>
@@ -741,7 +741,7 @@ const WorldMapTab = ({
               key={f}
               onClick={() => setTypeFilter(f)}
               style={{
-                fontSize: '0.44rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+                fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
                 padding: '3px 8px', borderRadius: '3px', cursor: 'pointer',
                 background: typeFilter === f ? 'rgba(212,175,55,0.15)' : 'transparent',
                 border: `1px solid ${typeFilter === f ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.08)'}`,
@@ -810,7 +810,7 @@ const WorldMapTab = ({
                     }}
                   >
                     <div style={{
-                      fontSize: '0.52rem', fontWeight: 700,
+                      fontSize: '0.65rem', fontWeight: 700,
                       color: 'rgba(210,185,140,0.85)',
                       letterSpacing: '0.1em', textTransform: 'uppercase',
                       textShadow: '0 1px 6px rgba(0,0,0,1), 0 0 12px rgba(0,0,0,0.9)',
@@ -879,7 +879,7 @@ const WorldMapTab = ({
                       }}
                     >
                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#DC2626', boxShadow: '0 0 6px #DC2626' }} />
-                      <span style={{ fontSize: '0.48rem', color: 'rgba(255,140,140,0.9)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
+                      <span style={{ fontSize: '0.65rem', color: 'rgba(255,140,140,0.9)', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 700 }}>
                         {activeDecos.length} creature{activeDecos.length > 1 ? 's' : ''} nearby
                       </span>
                     </motion.div>
@@ -899,7 +899,7 @@ const WorldMapTab = ({
                           transition: 'width 1s linear',
                         }} />
                       </div>
-                      <span style={{ fontSize: '0.44rem', color: 'rgba(180,160,120,0.55)', letterSpacing: '0.1em' }}>
+                      <span style={{ fontSize: '0.72rem', color: 'rgba(180,160,120,0.55)', letterSpacing: '0.1em' }}>
                         {spawnCountdown > 0 ? `${spawnCountdown}s` : '...'}
                       </span>
                     </div>
@@ -924,7 +924,7 @@ const WorldMapTab = ({
                   }}
                 >
                   <span style={{ fontSize: '10px' }}>🌙</span>
-                  <span style={{ fontSize: '0.52rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(160,180,255,0.8)', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700 }}>
                     Night — Dawn approaches
                   </span>
                 </motion.div>
@@ -1027,7 +1027,7 @@ const WorldMapTab = ({
                             whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 25, marginBottom: '4px',
                             background: 'rgba(30,5,5,0.92)', border: '1px solid rgba(220,60,60,0.5)',
                             borderRadius: '3px', padding: '3px 7px',
-                            fontSize: '0.46rem', color: 'rgba(255,120,120,0.9)', letterSpacing: '0.08em',
+                            fontSize: '0.62rem', color: 'rgba(255,120,120,0.9)', letterSpacing: '0.08em',
                           }}
                         >Finish your contract first</motion.div>
                       )}
@@ -1040,7 +1040,7 @@ const WorldMapTab = ({
                         whiteSpace: 'nowrap', pointerEvents: 'none', zIndex: 20,
                       }}>
                         <div style={{
-                          fontSize: '0.48rem', fontWeight: 700,
+                          fontSize: '0.65rem', fontWeight: 700,
                           color: hasCreature ? 'rgba(255,140,140,0.9)' : 'rgba(210,195,170,0.8)',
                           textShadow: '0 1px 4px rgba(0,0,0,1)',
                           background: 'rgba(0,0,0,0.82)',
@@ -1048,7 +1048,7 @@ const WorldMapTab = ({
                           padding: '2px 6px', borderRadius: '3px', letterSpacing: '0.05em', textAlign: 'center',
                         }}>
                           {d.name}
-                          {hasCreature && <div style={{ fontSize: '0.42rem', color: 'rgba(255,100,100,0.7)', marginTop: '1px' }}>Creature nearby</div>}
+                          {hasCreature && <div style={{ fontSize: '0.6rem', color: 'rgba(255,100,100,0.7)', marginTop: '1px' }}>Creature nearby</div>}
                         </div>
                       </div>
                     )}
@@ -1235,7 +1235,7 @@ const WorldMapTab = ({
                           {loc.name}
                           {hoveredLocation === loc.id && (
                             <div style={{
-                              fontSize: '0.44rem', fontWeight: 400,
+                              fontSize: '0.72rem', fontWeight: 400,
                               color: 'rgba(180,160,130,0.7)',
                               letterSpacing: '0.08em', marginTop: '2px',
                               textTransform: 'uppercase',
@@ -1268,11 +1268,11 @@ const WorldMapTab = ({
               ].map(({ color, label }) => (
                 <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: color, boxShadow: `0 0 4px ${color}` }} />
-                  <span style={{ fontSize: '0.46rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</span>
+                  <span style={{ fontSize: '0.62rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{label}</span>
                 </div>
               ))}
             </div>
-            <span style={{ fontSize: '0.46rem', color: 'rgba(180,160,140,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.62rem', color: 'rgba(180,160,140,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               Day {currentDay} · scroll to explore
             </span>
           </div>
@@ -1317,18 +1317,18 @@ const WorldMapTab = ({
                 {/* Location name + zone badge */}
                 <div style={{ marginBottom: '10px' }}>
                   <p style={{
-                    fontFamily: 'Cinzel,serif', fontSize: '0.72rem', fontWeight: 600,
+                    fontFamily: 'Cinzel,serif', fontSize: '0.82rem', fontWeight: 600,
                     color: 'rgba(200,180,140,0.9)', letterSpacing: '0.08em', marginBottom: '3px',
                   }}>{decoPopup.location}</p>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                     <div style={{
-                      fontSize: '0.52rem', letterSpacing: '0.15em', textTransform: 'uppercase',
+                      fontSize: '0.65rem', letterSpacing: '0.15em', textTransform: 'uppercase',
                       color: 'rgba(220,80,80,0.7)',
                     }}>Wild · Zone {decoPopup.zone}</div>
                     <div style={{ display: 'flex', gap: '2px' }}>
                       {Array.from({ length: 5 }, (_, i) => (
                         <span key={i} style={{
-                          fontSize: '0.44rem',
+                          fontSize: '0.72rem',
                           color: i < decoPopup.zone
                             ? ['#9CA3AF','#CD7F32','#DC2626','#B91C1C','#7F1D1D'][decoPopup.zone - 1]
                             : 'rgba(255,255,255,0.08)',
@@ -1336,7 +1336,7 @@ const WorldMapTab = ({
                       ))}
                     </div>
                     <div style={{
-                      fontSize: '0.48rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
+                      fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
                       color: ['#9CA3AF','#CD7F32','#DC2626','#B91C1C','#7F1D1D'][decoPopup.zone - 1],
                     }}>{['Tame','Moderate','Dangerous','Dire','Lethal'][decoPopup.zone - 1]}</div>
                   </div>
@@ -1345,7 +1345,7 @@ const WorldMapTab = ({
                 {/* Level vs zone feedback */}
                 {(level ?? 1) >= ZONE_MIN_LEVEL[decoPopup.zone] + 4 && (
                   <div style={{
-                    fontSize: '0.46rem', color: 'rgba(180,200,180,0.5)',
+                    fontSize: '0.62rem', color: 'rgba(180,200,180,0.5)',
                     letterSpacing: '0.1em', textTransform: 'uppercase',
                     marginBottom: '8px', fontStyle: 'italic',
                   }}>Trivial for your level</div>
@@ -1373,7 +1373,7 @@ const WorldMapTab = ({
                       setDecoPopup(null);
                     }}
                     style={{
-                      flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.75rem',
+                      flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.85rem',
                       letterSpacing: '0.12em', padding: '7px 10px', borderRadius: '3px',
                       background: 'rgba(160,30,30,0.7)',
                       border: '1px solid rgba(220,60,60,0.6)',
@@ -1385,7 +1385,7 @@ const WorldMapTab = ({
                   <button
                     onClick={() => setDecoPopup(null)}
                     style={{
-                      flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.75rem',
+                      flex: 1, fontFamily: 'Cinzel,serif', fontSize: '0.85rem',
                       letterSpacing: '0.12em', padding: '7px 10px', borderRadius: '3px',
                       background: 'rgba(30,20,15,0.7)',
                       border: '1px solid rgba(120,100,80,0.35)',
@@ -1441,7 +1441,7 @@ const WorldMapTab = ({
                   <div style={{ marginBottom: '10px' }}>
                     <div style={{
                       display: 'inline-block',
-                      fontSize: '0.48rem', fontWeight: 700,
+                      fontSize: '0.65rem', fontWeight: 700,
                       letterSpacing: '0.14em', textTransform: 'uppercase',
                       color: isActive ? 'rgba(220,80,80,0.9)' : 'rgba(180,160,140,0.5)',
                       background: isActive ? 'rgba(220,40,40,0.1)' : 'rgba(180,160,140,0.06)',
@@ -1463,17 +1463,17 @@ const WorldMapTab = ({
                   <div style={{ height: '1px', background: 'rgba(180,150,90,0.12)', marginBottom: '10px' }} />
 
                   {/* Description */}
-                  <p style={{ fontSize: '0.68rem', color: 'rgba(180,165,140,0.7)', lineHeight: 1.6, fontStyle: 'italic', marginBottom: '12px' }}>
+                  <p style={{ fontSize: '0.78rem', color: 'rgba(180,165,140,0.7)', lineHeight: 1.6, fontStyle: 'italic', marginBottom: '12px' }}>
                     {d.desc}
                   </p>
 
                   {/* Zone info */}
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '0.52rem', color: 'rgba(160,140,110,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    <span style={{ fontSize: '0.65rem', color: 'rgba(160,140,110,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                       Zone {d.zone}
                     </span>
                     {!zoneUnlocked && (
-                      <span style={{ fontSize: '0.52rem', color: 'rgba(180,80,80,0.7)', letterSpacing: '0.08em' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'rgba(180,80,80,0.7)', letterSpacing: '0.08em' }}>
                         Locked
                       </span>
                     )}
@@ -1482,7 +1482,7 @@ const WorldMapTab = ({
                   {/* Status message */}
                   {!zoneUnlocked ? (
                     <div style={{
-                      fontSize: '0.56rem', color: '#555',
+                      fontSize: '0.68rem', color: '#555',
                       background: 'rgba(255,255,255,0.02)',
                       border: '1px solid rgba(255,255,255,0.06)',
                       borderRadius: '4px', padding: '6px 8px',
@@ -1495,7 +1495,7 @@ const WorldMapTab = ({
                   ) : isActive ? (
                     activeContract ? (
                       <div style={{
-                        fontSize: '0.56rem', color: 'rgba(220,100,100,0.5)',
+                        fontSize: '0.68rem', color: 'rgba(220,100,100,0.5)',
                         background: 'rgba(220,40,40,0.05)',
                         border: '1px solid rgba(220,80,80,0.15)',
                         borderRadius: '4px', padding: '6px 8px',
@@ -1522,7 +1522,7 @@ const WorldMapTab = ({
                       >Investigate</button>
                     )
                   ) : (
-                    <div style={{ fontSize: '0.56rem', color: 'rgba(180,150,90,0.35)', textAlign: 'center', letterSpacing: '0.08em' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(180,150,90,0.35)', textAlign: 'center', letterSpacing: '0.08em' }}>
                       No activity detected
                     </div>
                   )}
@@ -1562,7 +1562,7 @@ const WorldMapTab = ({
                 {/* Type pill */}
                 <div style={{ marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <div style={{
-                    fontSize: '0.48rem', fontWeight: 700,
+                    fontSize: '0.65rem', fontWeight: 700,
                     letterSpacing: '0.14em', textTransform: 'uppercase',
                     color: displayed.type === 'hunting' ? displayed.dangerColor : displayed.type === 'landmark' ? 'rgba(180,160,140,0.5)' : '#D4AF37',
                     background: displayed.type === 'hunting' ? `${displayed.dangerColor}14` : displayed.type === 'landmark' ? 'rgba(180,160,140,0.06)' : 'rgba(212,175,55,0.08)',
@@ -1585,12 +1585,12 @@ const WorldMapTab = ({
 
                 {/* Danger */}
                 <div style={{ marginBottom: '10px' }}>
-                  <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '4px' }}>Danger</div>
+                  <div style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '4px' }}>Danger</div>
                   <div style={{ display: 'flex', gap: '3px', alignItems: 'center' }}>
                     {Array.from({ length: 5 }, (_, i) => (
-                      <span key={i} style={{ fontSize: '0.48rem', color: i < displayed.danger ? displayed.dangerColor : 'rgba(255,255,255,0.08)' }}>◆</span>
+                      <span key={i} style={{ fontSize: '0.65rem', color: i < displayed.danger ? displayed.dangerColor : 'rgba(255,255,255,0.08)' }}>◆</span>
                     ))}
-                    <span style={{ fontSize: '0.58rem', fontWeight: 700, color: displayed.dangerColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginLeft: '4px' }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: displayed.dangerColor, letterSpacing: '0.1em', textTransform: 'uppercase', marginLeft: '4px' }}>
                       {displayed.dangerLabel}
                     </span>
                   </div>
@@ -1599,7 +1599,7 @@ const WorldMapTab = ({
                 {/* Creature tiers for hunting grounds */}
                 {displayed.tierWeights && (
                   <div style={{ marginBottom: '10px' }}>
-                    <div style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '6px' }}>Creatures</div>
+                    <div style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '6px' }}>Creatures</div>
                     {[1, 2, 3].map(tier => {
                       const w = displayed.tierWeights[tier] || 0;
                       const total = Object.values(displayed.tierWeights).reduce((a, b) => a + b, 0);
@@ -1609,8 +1609,8 @@ const WorldMapTab = ({
                       return (
                         <div key={tier} style={{ marginBottom: '5px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '2px' }}>
-                            <span style={{ fontSize: '0.56rem', color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
-                            <span style={{ fontSize: '0.56rem', color: 'rgba(180,160,140,0.45)' }}>{pct}%</span>
+                            <span style={{ fontSize: '0.68rem', color, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{label}</span>
+                            <span style={{ fontSize: '0.68rem', color: 'rgba(180,160,140,0.45)' }}>{pct}%</span>
                           </div>
                           <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px' }}>
                             <div style={{ width: `${pct}%`, height: '100%', background: color, borderRadius: '2px', opacity: 0.6 }} />
@@ -1626,8 +1626,8 @@ const WorldMapTab = ({
                   const base = 4 + (currentDay ?? 1) * 2;
                   return (
                     <div style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.48rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Est. Reward</span>
-                      <span style={{ fontSize: '0.56rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)', letterSpacing: '0.05em' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.4)', letterSpacing: '0.2em', textTransform: 'uppercase' }}>Est. Reward</span>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)', letterSpacing: '0.05em' }}>
                         ~{base}–{Math.floor(base * 1.6)} gold
                       </span>
                     </div>
@@ -1641,8 +1641,8 @@ const WorldMapTab = ({
                   (activeContract?.type === 'location' && activeContract.contract.locationId === displayed.id)
                 ) && (
                   <div style={{ marginBottom: '10px' }}>
-                    <div style={{ fontSize: '0.48rem', color: 'rgba(212,175,55,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '3px' }}>Active Contract</div>
-                    <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#D4AF37', letterSpacing: '0.08em' }}>"{displayed.contract}"</div>
+                    <div style={{ fontSize: '0.65rem', color: 'rgba(212,175,55,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '3px' }}>Active Contract</div>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 700, color: '#D4AF37', letterSpacing: '0.08em' }}>"{displayed.contract}"</div>
                   </div>
                 )}
 
@@ -1659,7 +1659,7 @@ const WorldMapTab = ({
                       onClick={() => { onEliteBoss(); setActiveContract(null); }}
                       disabled={!isDayActive}
                       style={{
-                        width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                        width: '100%', fontSize: '0.68rem', fontWeight: 700,
                         color: isDayActive ? '#000' : 'rgba(168,85,247,0.3)',
                         background: isDayActive ? '#A855F7' : 'rgba(20,10,30,0.5)',
                         border: '1px solid rgba(168,85,247,0.5)',
@@ -1671,7 +1671,7 @@ const WorldMapTab = ({
                       }}
                     >Begin Blood Contract</button>
                   ) : (
-                    <div style={{ fontSize: '0.56rem', color: 'rgba(168,85,247,0.45)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(168,85,247,0.45)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                       Accept on Contracts Board
                     </div>
                   )
@@ -1679,7 +1679,7 @@ const WorldMapTab = ({
                   // Legendary boss location
                   !isUnlocked(displayed) ? (
                     <div style={{
-                      fontSize: '0.56rem', color: '#555',
+                      fontSize: '0.68rem', color: '#555',
                       background: 'rgba(255,255,255,0.02)',
                       border: '1px solid rgba(255,255,255,0.06)',
                       borderRadius: '4px', padding: '6px 8px',
@@ -1690,7 +1690,7 @@ const WorldMapTab = ({
                       onClick={() => { onFinalBoss(); setActiveContract(null); }}
                       disabled={!isDayActive}
                       style={{
-                        width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                        width: '100%', fontSize: '0.68rem', fontWeight: 700,
                         color: isDayActive ? '#000' : 'rgba(245,158,11,0.3)',
                         background: isDayActive ? '#F59E0B' : 'rgba(20,12,0,0.5)',
                         border: '1px solid rgba(245,158,11,0.5)',
@@ -1702,13 +1702,13 @@ const WorldMapTab = ({
                       }}
                     >Enter the Gauntlet</button>
                   ) : (
-                    <div style={{ fontSize: '0.56rem', color: 'rgba(245,158,11,0.4)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(245,158,11,0.4)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
                       Accept on Contracts Board
                     </div>
                   )
                 ) : !isUnlocked(displayed) ? (
                   <div style={{
-                    fontSize: '0.56rem', color: '#555',
+                    fontSize: '0.68rem', color: '#555',
                     background: 'rgba(255,255,255,0.02)',
                     border: '1px solid rgba(255,255,255,0.06)',
                     borderRadius: '4px', padding: '6px 8px',
@@ -1721,7 +1721,7 @@ const WorldMapTab = ({
                     selectedZone?.id === displayed.id ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div style={{
-                          fontSize: '0.52rem', color: '#D4AF37',
+                          fontSize: '0.65rem', color: '#D4AF37',
                           background: 'rgba(212,175,55,0.08)',
                           border: '1px solid rgba(212,175,55,0.25)',
                           borderRadius: '3px', padding: '5px 8px',
@@ -1731,7 +1731,7 @@ const WorldMapTab = ({
                           onClick={() => isDayActive && onBeginContract()}
                           disabled={!isDayActive}
                           style={{
-                            width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                            width: '100%', fontSize: '0.68rem', fontWeight: 700,
                             color: isDayActive ? '#000' : 'rgba(220,38,38,0.3)',
                             background: isDayActive ? displayed.dangerColor : 'rgba(10,5,5,0.5)',
                             border: `1px solid ${displayed.dangerColor}50`,
@@ -1756,7 +1756,7 @@ const WorldMapTab = ({
                           }, 50);
                         }}
                         style={{
-                          width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                          width: '100%', fontSize: '0.68rem', fontWeight: 700,
                           color: displayed.dangerColor,
                           background: `${displayed.dangerColor}14`,
                           border: `1px solid ${displayed.dangerColor}50`,
@@ -1776,7 +1776,7 @@ const WorldMapTab = ({
                     return (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                         <div style={{
-                          fontSize: '0.48rem', color: factionColor,
+                          fontSize: '0.65rem', color: factionColor,
                           background: `${factionColor}10`,
                           border: `1px solid ${factionColor}25`,
                           borderRadius: '3px', padding: '4px 8px',
@@ -1784,13 +1784,13 @@ const WorldMapTab = ({
                         }}>{factionLabel}</div>
                         {onCooldown ? (
                           <div style={{
-                            fontSize: '0.54rem', color: 'rgba(180,160,130,0.45)',
+                            fontSize: '0.65rem', color: 'rgba(180,160,130,0.45)',
                             background: 'rgba(255,255,255,0.02)',
                             border: '1px solid rgba(255,255,255,0.06)',
                             borderRadius: '4px', padding: '8px',
                             textAlign: 'center', lineHeight: 1.6,
                           }}>
-                            <div style={{ fontSize: '0.46rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '3px', opacity: 0.6 }}>Regrouping</div>
+                            <div style={{ fontSize: '0.62rem', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '3px', opacity: 0.6 }}>Regrouping</div>
                             {hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`} remaining
                           </div>
                         ) : (
@@ -1798,7 +1798,7 @@ const WorldMapTab = ({
                             onClick={() => isDayActive && onHuntingChallenge({ locationId: displayed.id, zone: displayed.zone, faction: displayed.faction })}
                             disabled={!isDayActive || !!activeContract}
                             style={{
-                              width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                              width: '100%', fontSize: '0.68rem', fontWeight: 700,
                               color: (!isDayActive || activeContract) ? 'rgba(180,80,80,0.3)' : '#000',
                               background: (!isDayActive || activeContract) ? 'rgba(10,5,5,0.5)' : factionColor,
                               border: `1px solid ${factionColor}50`,
@@ -1818,7 +1818,7 @@ const WorldMapTab = ({
                     onClick={() => isDayActive && onBeginContract()}
                     disabled={!isDayActive}
                     style={{
-                      width: '100%', fontSize: '0.56rem', fontWeight: 700,
+                      width: '100%', fontSize: '0.68rem', fontWeight: 700,
                       color: isDayActive ? '#000' : 'rgba(212,175,55,0.3)',
                       background: isDayActive ? '#D4AF37' : 'rgba(20,15,0,0.5)',
                       border: '1px solid rgba(212,175,55,0.5)',
@@ -1831,7 +1831,7 @@ const WorldMapTab = ({
                   >Begin Contract</button>
                 ) : displayed.type === 'landmark' ? (
                   <div style={{
-                    fontSize: '0.52rem', color: 'rgba(180,160,140,0.35)',
+                    fontSize: '0.65rem', color: 'rgba(180,160,140,0.35)',
                     background: 'rgba(180,160,140,0.04)',
                     border: '1px solid rgba(180,160,140,0.1)',
                     borderRadius: '4px', padding: '7px 10px',
@@ -1839,7 +1839,7 @@ const WorldMapTab = ({
                     lineHeight: 1.7,
                   }}>
                     Point of Interest<br />
-                    <span style={{ fontSize: '0.48rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', opacity: 0.75 }}>
+                    <span style={{ fontSize: '0.65rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', opacity: 0.75 }}>
                       No contracts originate here
                     </span>
                   </div>
@@ -1848,7 +1848,7 @@ const WorldMapTab = ({
                   const completed = lc && completedLocationContracts?.includes(lc.id);
                   return completed ? (
                     <div style={{
-                      fontSize: '0.54rem', fontWeight: 700,
+                      fontSize: '0.65rem', fontWeight: 700,
                       color: 'rgba(74,222,128,0.7)',
                       background: 'rgba(16,185,129,0.07)',
                       border: '1px solid rgba(74,222,128,0.2)',
@@ -1857,7 +1857,7 @@ const WorldMapTab = ({
                     }}>✓ Contract Complete</div>
                   ) : (
                     <div style={{
-                      fontSize: '0.52rem', color: 'rgba(212,175,55,0.45)',
+                      fontSize: '0.65rem', color: 'rgba(212,175,55,0.45)',
                       background: 'rgba(212,175,55,0.05)',
                       border: '1px solid rgba(212,175,55,0.15)',
                       borderRadius: '4px', padding: '6px 8px',
@@ -1879,7 +1879,7 @@ const WorldMapTab = ({
               >
                 {lastWildCreature ? (
                   <>
-                    <div style={{ fontSize: '0.46rem', color: 'rgba(180,80,80,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>
+                    <div style={{ fontSize: '0.62rem', color: 'rgba(180,80,80,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: '10px' }}>
                       Last Encounter
                     </div>
                     <img
@@ -1887,10 +1887,10 @@ const WorldMapTab = ({
                       alt={lastWildCreature.monster.name}
                       style={{ width: '56px', height: '56px', objectFit: 'contain', opacity: 0.55, filter: 'grayscale(0.3)', marginBottom: '8px' }}
                     />
-                    <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'rgba(220,150,150,0.6)', letterSpacing: '0.08em', marginBottom: '4px' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'rgba(220,150,150,0.6)', letterSpacing: '0.08em', marginBottom: '4px' }}>
                       {lastWildCreature.monster.name}
                     </div>
-                    <div style={{ fontSize: '0.48rem', color: 'rgba(180,140,120,0.4)', marginBottom: '8px' }}>
+                    <div style={{ fontSize: '0.65rem', color: 'rgba(180,140,120,0.4)', marginBottom: '8px' }}>
                       {lastWildCreature.location} · Zone {lastWildCreature.zone}
                     </div>
                     <div style={{ height: '1px', background: 'rgba(180,150,90,0.08)', marginBottom: '10px' }} />
@@ -1910,7 +1910,7 @@ const WorldMapTab = ({
                         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.06)'; e.currentTarget.style.color = 'rgba(168,85,247,0.7)'; }}
                       >→ View in Bestiary</button>
                     )}
-                    <p style={{ fontSize: '0.54rem', color: 'rgba(180,165,150,0.25)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                    <p style={{ fontSize: '0.65rem', color: 'rgba(180,165,150,0.25)', lineHeight: 1.6, fontStyle: 'italic' }}>
                       Click any location to view details.
                     </p>
                   </>
@@ -1920,7 +1920,7 @@ const WorldMapTab = ({
                     <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.3)', lineHeight: 1.7, marginBottom: '10px' }}>
                       Click any location to view details and begin contracts.
                     </p>
-                    <p style={{ fontSize: '0.54rem', color: 'rgba(220,80,80,0.3)', lineHeight: 1.6, fontStyle: 'italic' }}>
+                    <p style={{ fontSize: '0.65rem', color: 'rgba(220,80,80,0.3)', lineHeight: 1.6, fontStyle: 'italic' }}>
                       Terrain markers glow red when a creature is nearby — click to investigate.
                     </p>
                   </>
@@ -1943,16 +1943,16 @@ const WorldMapTab = ({
                 borderRadius: '6px', padding: '10px 12px',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Locations Unlocked</span>
-                  <span style={{ fontSize: '0.58rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)' }}>{unlockedCount}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{LOCATIONS.length}</span></span>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Locations Unlocked</span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'rgba(212,175,55,0.7)' }}>{unlockedCount}<span style={{ fontSize: '0.72rem', color: 'rgba(180,160,130,0.35)' }}>/{LOCATIONS.length}</span></span>
                 </div>
                 <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', marginBottom: '8px', overflow: 'hidden' }}>
                   <div style={{ width: `${(unlockedCount / LOCATIONS.length) * 100}%`, height: '100%', background: 'rgba(212,175,55,0.5)', borderRadius: '2px', transition: 'width 0.4s' }} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px', alignItems: 'center' }}>
-                  <span style={{ fontSize: '0.52rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Contracts Done</span>
-                  <span style={{ fontSize: '0.58rem', fontWeight: 700, color: completedCount === totalContracts ? 'rgba(74,222,128,0.8)' : 'rgba(212,175,55,0.7)' }}>
-                    {completedCount}<span style={{ fontSize: '0.44rem', color: 'rgba(180,160,130,0.35)' }}>/{totalContracts}</span>
+                  <span style={{ fontSize: '0.65rem', color: 'rgba(180,160,140,0.5)', letterSpacing: '0.06em' }}>Contracts Done</span>
+                  <span style={{ fontSize: '0.7rem', fontWeight: 700, color: completedCount === totalContracts ? 'rgba(74,222,128,0.8)' : 'rgba(212,175,55,0.7)' }}>
+                    {completedCount}<span style={{ fontSize: '0.72rem', color: 'rgba(180,160,130,0.35)' }}>/{totalContracts}</span>
                   </span>
                 </div>
                 <div style={{ height: '3px', background: 'rgba(255,255,255,0.06)', borderRadius: '2px', overflow: 'hidden' }}>
@@ -1973,7 +1973,7 @@ const WorldMapTab = ({
           border: '1px solid rgba(255,80,80,0.15)',
           borderRadius: '6px',
         }}>
-          <span style={{ fontSize: '0.46rem', color: 'rgba(255,100,100,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', width: '100%', textAlign: 'center', marginBottom: '4px' }}>
+          <span style={{ fontSize: '0.62rem', color: 'rgba(255,100,100,0.5)', letterSpacing: '0.2em', textTransform: 'uppercase', width: '100%', textAlign: 'center', marginBottom: '4px' }}>
             ⚠ Debug — Toggle Zone Contracts
           </span>
           {[1, 2, 3, 4, 5].map(zone => {
