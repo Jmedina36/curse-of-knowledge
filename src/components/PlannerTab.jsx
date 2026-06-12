@@ -92,7 +92,7 @@ const PlannerTab = ({
 
               if (isToday) {
                 if (weeklyPlan[day].length > 0) {
-                  cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.88) 100%)';
+                  cardStyle = 'linear-gradient(135deg, rgba(37, 33, 24, 0.92) 0%, rgba(26, 22, 18, 0.92) 100%)';
                   titleColor = '#D4AF37';
                   titleShadow = 'none';
                   themeColor = '#DAA520';
@@ -110,7 +110,7 @@ const PlannerTab = ({
                 }
                 dividerColor = 'rgba(212, 175, 55, 0.5)';
               } else if (isFuture) {
-                cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.88) 100%)';
+                cardStyle = 'linear-gradient(135deg, rgba(37, 33, 24, 0.92) 0%, rgba(26, 22, 18, 0.92) 100%)';
                 titleColor = 'rgba(192, 192, 192, 0.75)';
                 titleShadow = 'none';
                 themeColor = 'rgba(156, 163, 175, 0.6)';
@@ -119,7 +119,7 @@ const PlannerTab = ({
                 shadowStyle = '0 2px 4px rgba(0, 0, 0, 0.2)';
                 dividerColor = 'rgba(156, 163, 175, 0.25)';
               } else {
-                cardStyle = 'linear-gradient(135deg, rgba(15, 23, 42, 0.82) 0%, rgba(30, 41, 59, 0.82) 100%)';
+                cardStyle = 'linear-gradient(135deg, rgba(22, 19, 13, 0.82) 0%, rgba(15, 13, 10, 0.82) 100%)';
                 titleColor = 'rgba(156, 163, 175, 0.55)';
                 titleShadow = 'none';
                 themeColor = 'rgba(156, 163, 175, 0.4)';
@@ -253,15 +253,15 @@ const PlannerTab = ({
                           className={`rounded-lg p-4 transition-all duration-300 ${item.completed ? 'opacity-60' : ''}`}
                           style={{
                             background: item.completed
-                              ? 'rgba(30, 41, 59, 0.4)'
+                              ? 'rgba(22, 19, 13, 0.5)'
                               : item.priority === 'important'
-                                ? 'linear-gradient(to right, rgba(184, 134, 11, 0.15), rgba(31, 41, 55, 0.6))'
-                                : 'linear-gradient(to right, rgba(30, 58, 95, 0.2), rgba(31, 41, 55, 0.6))',
+                                ? 'linear-gradient(to right, rgba(184, 134, 11, 0.15), rgba(26, 22, 18, 0.6))'
+                                : 'linear-gradient(to right, rgba(37, 33, 24, 0.3), rgba(26, 22, 18, 0.6))',
                             borderColor: item.completed
                               ? 'rgba(34, 197, 94, 0.6)'
                               : item.priority === 'important'
                                 ? COLORS.gold
-                                : 'rgba(59, 130, 246, 0.5)',
+                                : 'rgba(155, 139, 126, 0.45)',
                             borderWidth: isToday ? '2px' : '1px',
                             borderStyle: 'solid',
                             position: 'relative',
@@ -374,30 +374,30 @@ const PlannerTab = ({
           <div>
           <div className="flex justify-between items-center mb-6">
             <button onClick={() => { sounds.click(); if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(currentYear - 1); } else { setCurrentMonth(currentMonth - 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
-              background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))',
+              background: 'linear-gradient(to bottom, rgba(37, 33, 24, 0.7), rgba(26, 22, 18, 0.8))',
               borderColor: 'rgba(100, 116, 139, 0.6)',
               color: '#F5F5DC',
               cursor: 'pointer'
             }} onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(71, 85, 105, 0.8), rgba(51, 65, 85, 0.9))';
+              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(47, 43, 34, 0.8), rgba(37, 33, 24, 0.9))';
               e.currentTarget.style.transform = 'translateY(-1px)';
             }} onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))';
+              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(37, 33, 24, 0.7), rgba(26, 22, 18, 0.8))';
               e.currentTarget.style.transform = 'translateY(0)';
             }}>
               ← PREV
             </button>
             <h3 className="text-2xl font-bold uppercase tracking-wider" style={{color: '#F5F5DC'}}>{new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' }).toUpperCase()} {currentYear}</h3>
             <button onClick={() => { sounds.click(); if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(currentYear + 1); } else { setCurrentMonth(currentMonth + 1); } }} className="px-4 py-2 rounded-lg transition-all border-2 font-bold" style={{
-              background: 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))',
+              background: 'linear-gradient(to bottom, rgba(37, 33, 24, 0.7), rgba(26, 22, 18, 0.8))',
               borderColor: 'rgba(100, 116, 139, 0.6)',
               color: '#F5F5DC',
               cursor: 'pointer'
             }} onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(71, 85, 105, 0.8), rgba(51, 65, 85, 0.9))';
+              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(47, 43, 34, 0.8), rgba(37, 33, 24, 0.9))';
               e.currentTarget.style.transform = 'translateY(-1px)';
             }} onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(51, 65, 85, 0.7), rgba(30, 41, 59, 0.8))';
+              e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(37, 33, 24, 0.7), rgba(26, 22, 18, 0.8))';
               e.currentTarget.style.transform = 'translateY(0)';
             }}>
               NEXT →
@@ -434,20 +434,20 @@ const PlannerTab = ({
                     textColor = '#E8C547';
                     shadowStyle = '0 0 12px rgba(234, 179, 8, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)';
                   } else if (isFuture) {
-                    bgColor = 'rgba(30, 41, 59, 0.5)';
-                    borderColor = 'rgba(100, 116, 139, 0.4)';
+                    bgColor = 'rgba(37, 33, 24, 0.5)';
+                    borderColor = 'rgba(120, 108, 90, 0.35)';
                     borderWidth = '1px';
                     textColor = 'rgba(245, 245, 220, 0.85)';
                     shadowStyle = '0 1px 3px rgba(0, 0, 0, 0.15)';
                   } else if (isPast) {
-                    bgColor = 'rgba(30, 41, 59, 0.3)';
-                    borderColor = 'rgba(100, 116, 139, 0.25)';
+                    bgColor = 'rgba(22, 19, 13, 0.4)';
+                    borderColor = 'rgba(120, 108, 90, 0.2)';
                     borderWidth = '1px';
                     textColor = 'rgba(156, 163, 175, 0.65)';
                     shadowStyle = '0 1px 2px rgba(0, 0, 0, 0.1)';
                   } else {
-                    bgColor = 'rgba(30, 41, 59, 0.3)';
-                    borderColor = 'rgba(51, 65, 85, 0.3)';
+                    bgColor = 'rgba(22, 19, 13, 0.35)';
+                    borderColor = 'rgba(60, 54, 40, 0.3)';
                     borderWidth = '1px';
                     textColor = 'rgba(156, 163, 175, 0.5)';
                     shadowStyle = '0 1px 2px rgba(0, 0, 0, 0.1)';

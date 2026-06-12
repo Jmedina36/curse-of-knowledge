@@ -31,7 +31,7 @@ const ChargedCritModal = ({ data, onClose }) => {
         transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl p-6 text-center max-w-xs w-full"
         style={{
-          background: 'linear-gradient(to bottom, rgba(8,8,18,0.98), rgba(4,4,12,0.98))',
+          background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
           border: `2px solid ${tier.color}`,
           boxShadow: `0 0 30px ${tier.glow}, 0 0 70px ${tier.glow.replace(/[\d.]+\)$/, '0.18)')}`,
         }}

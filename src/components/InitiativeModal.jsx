@@ -62,7 +62,7 @@ const InitiativeModal = ({ data, onClose }) => {
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl text-center w-full max-w-sm overflow-hidden"
         style={{
-          background: 'linear-gradient(to bottom, rgba(6,4,14,0.99), rgba(3,2,8,0.99))',
+          background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
           border: `1px solid ${config.border}`,
           boxShadow: `0 0 40px ${config.glow.replace(/[\d.]+\)$/, '0.22)')}, 0 0 80px ${config.glow.replace(/[\d.]+\)$/, '0.08)')}`,
         }}

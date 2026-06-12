@@ -81,7 +81,7 @@ const FlashcardModals = ({
 {showDeckModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowDeckModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
+      background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
@@ -165,7 +165,7 @@ const FlashcardModals = ({
 {showCardModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCardModal(false)}>
     <div className="rounded-xl p-6 max-w-md w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
+      background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }} onClick={e => e.stopPropagation()}>
@@ -273,7 +273,7 @@ const FlashcardModals = ({
 {showStudyModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
+      background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -457,7 +457,7 @@ const FlashcardModals = ({
 {showQuizModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-2xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))',
+      background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -752,7 +752,7 @@ const FlashcardModals = ({
 {showMatchModal && selectedDeck !== null && flashcardDecks[selectedDeck] && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto">
     <div className="rounded-xl p-8 max-w-4xl w-full border-2 relative my-8" style={{
-      background: 'linear-gradient(to bottom, rgba(30, 10, 40, 0.95), rgba(20, 0, 30, 0.95), rgba(15, 0, 20, 0.95))',
+      background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))',
       borderColor: COLORS.gold,
       boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'
     }}>
@@ -923,7 +923,7 @@ const FlashcardModals = ({
 
          {showModal && (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowModal(false)}>
-    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <div className="rounded-xl p-6 max-w-md w-full border-2 relative" style={{background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => setShowModal(false)} 

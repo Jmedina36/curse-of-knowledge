@@ -99,7 +99,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank,
         onClick={e => e.stopPropagation()}
         className="rounded-xl p-8 text-center max-w-xs w-full"
         style={{
-          background: `linear-gradient(to bottom, rgba(8,8,18,0.98), rgba(4,4,12,0.98))`,
+          background: `linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))`,
           border: `2px solid ${config.color}`,
           boxShadow: `0 0 25px ${config.glow}, 0 0 60px ${config.glow.replace(/[\d.]+\)$/, '0.25)')}`,
         }}

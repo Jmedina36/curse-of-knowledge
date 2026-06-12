@@ -15,7 +15,7 @@ const ImportModal = ({
 }) => {
   return (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowImportModal(false)}>
-    <motion.div className="rounded-xl p-6 max-w-md w-full border-2 relative" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
+    <motion.div className="rounded-xl p-6 max-w-md w-full border-2 relative" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))', borderColor: COLORS.gold, boxShadow: '0 0 12px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.1)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => { sounds.click(); setShowImportModal(false); }}
@@ -78,15 +78,13 @@ const ImportModal = ({
               }}
               onMouseEnter={(e) => {
                 if (taskCount > 0 && !isRealWorldToday) {
-                  e.currentTarget.style.borderColor = 'rgba(93, 211, 211, 0.6)';
-                  e.currentTarget.style.borderLeft = '3px solid rgba(93, 211, 211, 0.7)';
-                  e.currentTarget.style.backgroundColor = 'rgba(0, 50, 50, 0.4)';
+                  e.currentTarget.style.borderColor = 'rgba(212, 175, 55, 0.5)';
+                  e.currentTarget.style.backgroundColor = 'rgba(212, 175, 55, 0.08)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (taskCount > 0 && !isRealWorldToday) {
                   e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.3)';
-                  e.currentTarget.style.borderLeft = '2px solid transparent';
                   e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
                 }
               }}
@@ -108,14 +106,14 @@ const ImportModal = ({
       <button 
         onClick={() => setShowImportModal(false)} 
         className="w-full mt-4 py-2 rounded-lg transition-all border-2"
-        style={{backgroundColor: 'rgba(30, 50, 50, 0.6)', borderColor: 'rgba(128, 128, 128, 0.4)', color: '#F5F5DC'}}
+        style={{backgroundColor: 'rgba(0, 0, 0, 0.3)', borderColor: 'rgba(155, 139, 126, 0.3)', color: '#F5F5DC'}}
         onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = 'rgba(35, 60, 60, 0.7)';
-          e.currentTarget.style.borderColor = 'rgba(93, 211, 211, 0.4)';
+          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.45)';
+          e.currentTarget.style.borderColor = 'rgba(155, 139, 126, 0.5)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = 'rgba(30, 50, 50, 0.6)';
-          e.currentTarget.style.borderColor = 'rgba(128, 128, 128, 0.4)';
+          e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+          e.currentTarget.style.borderColor = 'rgba(155, 139, 126, 0.3)';
         }}
       >
         Cancel

@@ -57,7 +57,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="rounded-xl p-6 w-full max-w-sm"
         style={{
-          background: 'linear-gradient(to bottom, rgba(8,8,22,0.99), rgba(4,4,14,0.99))',
+          background: 'linear-gradient(to bottom, rgba(26,22,18,0.99), rgba(15,13,10,0.99))',
           border: '2px solid rgba(212,175,55,0.6)',
           boxShadow: '0 0 32px rgba(212,175,55,0.25), 0 0 80px rgba(212,175,55,0.08)',
         }}

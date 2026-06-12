@@ -24,7 +24,7 @@ const CalendarModal = ({
 }) => {
   return (
   <div className="fixed inset-0 bg-black bg-opacity-90 flex items-start justify-center p-4 z-50 overflow-y-auto" onClick={() => setShowCalendarModal(false)}>
-    <motion.div className="rounded-xl p-6 max-w-md w-full border-2 my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: 'linear-gradient(to bottom, rgba(15, 35, 45, 0.98), rgba(10, 25, 35, 0.98), rgba(8, 18, 25, 0.98))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1), inset 0 0 40px rgba(0, 0, 0, 0.15)'}} onClick={e => e.stopPropagation()}>
+    <motion.div className="rounded-xl p-6 max-w-md w-full border-2 my-8" initial={{ opacity: 0, scale: 0.97, y: 12 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ duration: 0.18, ease: 'easeOut' }} style={{background: 'linear-gradient(to bottom, rgba(26,22,18,0.97), rgba(15,13,10,0.97))', borderColor: COLORS.gold, boxShadow: '0 0 15px rgba(212, 175, 55, 0.25), 0 0 30px rgba(212, 175, 55, 0.1), inset 0 0 40px rgba(0, 0, 0, 0.15)'}} onClick={e => e.stopPropagation()}>
       <div className="mb-6 relative">
         <button 
           onClick={() => { sounds.click(); setShowCalendarModal(false); }}
@@ -61,9 +61,9 @@ const CalendarModal = ({
   })()}
 </div>
           <div className="flex items-center justify-center gap-2 mt-2">
-            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(88, 180, 120, 0.3))'}}></div>
-            <span style={{color: 'rgba(88, 180, 120, 0.4)', fontSize: '8px'}}>◆</span>
-            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(88, 180, 120, 0.3))'}}></div>
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
+            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
         </div>
       </div>
@@ -87,15 +87,15 @@ const CalendarModal = ({
               }
             }}
             className="flex-1 p-3 rounded-lg border focus:outline-none" 
-            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#F5F5DC', borderColor: 'rgba(88, 180, 120, 0.4)', fontFamily: 'Cinzel, serif', boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'}}
+            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#F5F5DC', borderColor: 'rgba(212, 175, 55, 0.35)', fontFamily: 'Cinzel, serif', boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'}}
             onFocus={e => {
-              e.target.style.borderColor = 'rgba(88, 180, 120, 0.8)';
+              e.target.style.borderColor = 'rgba(212, 175, 55, 0.7)';
               // Pre-fill with current focus if exists
               if (!newFocus && calendarFocus[selectedDate]) {
                 setNewFocus(calendarFocus[selectedDate]);
               }
             }}
-            onBlur={e => e.target.style.borderColor = 'rgba(88, 180, 120, 0.4)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(212, 175, 55, 0.35)'}
           />
           <button
             onClick={() => {
@@ -108,14 +108,14 @@ const CalendarModal = ({
             disabled={!newFocus.trim()}
             className="px-4 py-2 rounded-lg transition-all border-2"
             style={{
-              backgroundColor: !newFocus.trim() ? '#2C3E50' : 'rgba(61, 107, 69, 0.85)',
-              borderColor: !newFocus.trim() ? '#95A5A6' : 'rgba(88, 180, 120, 0.7)',
+              backgroundColor: !newFocus.trim() ? 'rgba(0,0,0,0.3)' : 'rgba(184, 134, 11, 0.4)',
+              borderColor: !newFocus.trim() ? 'rgba(155,139,126,0.25)' : 'rgba(212, 175, 55, 0.6)',
               color: '#F5F5DC',
               cursor: !newFocus.trim() ? 'not-allowed' : 'pointer',
               opacity: !newFocus.trim() ? 0.5 : 1
             }}
-            onMouseEnter={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = 'rgba(75, 130, 85, 0.95)'}}
-            onMouseLeave={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 69, 0.85)'}}
+            onMouseEnter={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.6)'}}
+            onMouseLeave={(e) => {if (newFocus.trim()) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.4)'}}
           >
             Save
           </button>
@@ -144,7 +144,7 @@ const CalendarModal = ({
       {/* Decorative divider */}
       <div className="flex items-center justify-center gap-2 mb-4">
         <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(88, 180, 120, 0.3))'}}></div>
-        <span style={{color: 'rgba(88, 180, 120, 0.4)', fontSize: '8px'}}>◆</span>
+        <span style={{color: 'rgba(212, 175, 55, 0.35)', fontSize: '8px'}}>◆</span>
         <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(88, 180, 120, 0.3))'}}></div>
       </div>
       
@@ -170,9 +170,9 @@ const CalendarModal = ({
               }
             }}
             className="flex-1 p-3 rounded-lg border focus:outline-none" 
-            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#F5F5DC', borderColor: 'rgba(88, 180, 120, 0.4)', fontFamily: 'Cinzel, serif', boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'}}
-            onFocus={e => e.target.style.borderColor = 'rgba(88, 180, 120, 0.8)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(88, 180, 120, 0.4)'}
+            style={{backgroundColor: 'rgba(0, 0, 0, 0.5)', color: '#F5F5DC', borderColor: 'rgba(212, 175, 55, 0.35)', fontFamily: 'Cinzel, serif', boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.2)'}}
+            onFocus={e => e.target.style.borderColor = 'rgba(212, 175, 55, 0.7)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(212, 175, 55, 0.35)'}
           />
           <button
             onClick={() => {
@@ -188,14 +188,14 @@ const CalendarModal = ({
             disabled={!newEvent.trim()}
             className="px-4 py-2 rounded-lg transition-all border-2"
             style={{
-              backgroundColor: !newEvent.trim() ? '#2C3E50' : 'rgba(61, 107, 69, 0.85)',
-              borderColor: !newEvent.trim() ? '#95A5A6' : 'rgba(88, 180, 120, 0.7)',
+              backgroundColor: !newEvent.trim() ? 'rgba(0,0,0,0.3)' : 'rgba(184, 134, 11, 0.4)',
+              borderColor: !newEvent.trim() ? 'rgba(155,139,126,0.25)' : 'rgba(212, 175, 55, 0.6)',
               color: '#F5F5DC',
               cursor: !newEvent.trim() ? 'not-allowed' : 'pointer',
               opacity: !newEvent.trim() ? 0.5 : 1
             }}
-            onMouseEnter={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = 'rgba(75, 130, 85, 0.95)'}}
-            onMouseLeave={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = 'rgba(61, 107, 69, 0.85)'}}
+            onMouseEnter={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.6)'}}
+            onMouseLeave={(e) => {if (newEvent.trim()) e.currentTarget.style.backgroundColor = 'rgba(184, 134, 11, 0.4)'}}
           >
             Add
           </button>
