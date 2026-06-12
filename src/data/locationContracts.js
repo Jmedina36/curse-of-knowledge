@@ -704,8 +704,10 @@ export const LOCATION_CONTRACTS = [
     },
     encounter: {
       enemyType: 'bandit',
-      waveSize: 3,
-      enemyNames: ['Vorn', 'Sable'],
+      members: [
+        { img: '/bandits/captain-3.png', name: 'Vorn',  isCapt: true, isLeader: false },
+        { img: '/bandits/captain-2.png', name: 'Sable', isCapt: true, isLeader: false },
+      ],
       dialogue: [
         "You think the monolith was the plan. It was a rehearsal.",
       ],
@@ -770,6 +772,7 @@ He said C isn't a person. It's a title. The work doesn't end when the holder doe
     encounter: {
       enemyType: 'daughters',
       members: [
+        { img: '/daughters-of-dusk/captain-2.png', name: 'Seris', isCapt: true,  isLeader: false },
         { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne', isCapt: true,  isLeader: false },
         { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',  isCapt: true,  isLeader: false },
         { img: '/daughters-of-dusk/leader.png',    name: 'Mira',  isCapt: false, isLeader: true  },
