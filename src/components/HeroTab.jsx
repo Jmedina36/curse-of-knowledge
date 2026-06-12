@@ -373,7 +373,7 @@ const HeroTab = ({
                 style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '1px solid rgba(212,175,55,0.2)', flexShrink: 0, opacity: 0.75 }}
                 onError={e => { e.currentTarget.style.display = 'none'; }}
               />
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.68rem', fontStyle: 'italic', color: 'rgba(190,170,130,0.38)', lineHeight: 1.55, margin: 0 }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.68rem', fontStyle: 'italic', lineHeight: 1.6, color: 'rgba(190,170,130,0.38)', margin: 0 }}>
                 "{sorenQuote}"<br />
                 <span style={{ fontStyle: 'normal', color: 'rgba(212,175,55,0.3)', fontSize: '0.65rem', letterSpacing: '0.1em' }}>— Soren</span>
               </p>
@@ -544,7 +544,7 @@ const HeroTab = ({
 
             if (!tree) return (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'rgba(150,130,100,0.3)', fontStyle: 'italic' }}>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.72rem', color: 'rgba(150,130,100,0.3)', fontStyle: 'italic', lineHeight: 1.6 }}>
                   Skill tree coming soon.
                 </p>
               </div>
@@ -604,7 +604,7 @@ const HeroTab = ({
                       {skillPoints} skill point{skillPoints !== 1 ? 's' : ''} available
                     </span>
                   ) : (
-                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: 'rgba(130,115,85,0.3)', fontStyle: 'italic', letterSpacing: '0.1em' }}>
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: 'rgba(130,115,85,0.3)', fontStyle: 'italic', lineHeight: 1.6, letterSpacing: '0.1em' }}>
                       Earn points by leveling up
                     </span>
                   )}
@@ -693,7 +693,7 @@ const HeroTab = ({
 
                                   {/* Flavor */}
                                   {node.flavor && (
-                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', textAlign: 'center', margin: '0 0 7px', lineHeight: 1.5, fontStyle: 'italic', color: isUnlocked ? 'rgba(140,125,90,0.45)' : 'rgba(90,82,60,0.28)' }}>
+                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', textAlign: 'center', margin: '0 0 7px', lineHeight: 1.6, fontStyle: 'italic', color: isUnlocked ? 'rgba(140,125,90,0.45)' : 'rgba(90,82,60,0.28)' }}>
                                       "{node.flavor}"
                                     </p>
                                   )}

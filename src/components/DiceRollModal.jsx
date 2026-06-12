@@ -142,8 +142,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank,
             fontFamily: 'Cinzel, serif',
             fontSize: '0.85rem',
             color: 'rgba(245,245,220,0.7)',
-            fontStyle: 'italic',
-            lineHeight: 1.6,
+            fontStyle: 'italic', lineHeight: 1.6,
             marginBottom: hasBonus ? '14px' : '20px',
           }}
         >"{config.messages[msgIdx]}"</motion.p>

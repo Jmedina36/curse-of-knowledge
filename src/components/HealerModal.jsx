@@ -195,7 +195,7 @@ const HealerModal = ({
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.05rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
         <p style={{ fontSize: '0.88rem', color: effectColor }}>{effect}</p>
-        {soldOut && <p style={{ fontSize: '0.85rem', color: 'rgba(200,100,100,0.8)', marginTop: '2px', fontStyle: 'italic' }}>Limit reached today</p>}
+        {soldOut && <p style={{ fontSize: '0.85rem', color: 'rgba(200,100,100,0.8)', marginTop: '2px', fontStyle: 'italic', lineHeight: 1.6 }}>Limit reached today</p>}
       </div>
       <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '24px', textAlign: 'center' }}>{count}</span>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>
@@ -261,7 +261,7 @@ const HealerModal = ({
             }}
           />
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: green, letterSpacing: '0.12em', textAlign: 'center' }}>SISTER MARA</p>
-          <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.6)', fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
+          <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.6)', fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
           <div style={{
             marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
             background: 'rgba(0,20,15,0.9)', border: `1px solid ${greenBorder}`,
@@ -302,7 +302,7 @@ const HealerModal = ({
         }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: green, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(212,175,55,0.5)' }}>THE APOTHECARY</p>
-            <p style={{ fontSize: '11px', color: greenDim, fontStyle: 'italic', marginTop: '4px' }}>Sister Mara · Apothecary & Healer</p>
+            <p style={{ fontSize: '11px', color: greenDim, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>Sister Mara · Apothecary & Healer</p>
           </div>
           <button
             onClick={() => { sounds.click(); setShowHealerModal(false); }}
@@ -481,7 +481,7 @@ const HealerModal = ({
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', marginBottom: '2px' }}>{name}</p>
                         <p style={{ fontSize: '0.85rem', color: effectColor }}>{effect}</p>
-                        {isActive && <p style={{ fontSize: '0.82rem', color: '#D4AF37', fontStyle: 'italic', marginTop: '2px' }}>Active — awaiting next chest</p>}
+                        {isActive && <p style={{ fontSize: '0.82rem', color: '#D4AF37', fontStyle: 'italic', lineHeight: 1.6, marginTop: '2px' }}>Active — awaiting next chest</p>}
                       </div>
                       <span style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1rem', color: '#F5F5DC', minWidth: '20px', textAlign: 'center' }}>{count}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', flexShrink: 0 }}>

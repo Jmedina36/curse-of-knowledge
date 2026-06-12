@@ -92,7 +92,7 @@ export default function AuthModal({ onClose, onSignIn }) {
         <div style={{ padding: '24px 24px 16px', textAlign: 'center' }}>
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', margin: '0 0 6px' }}>Cloud Sync</p>
           <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: 'rgba(212,175,55,0.9)', fontWeight: 'normal', margin: 0 }}>Bind Your Chronicle</h2>
-          <p style={{ fontSize: '0.82rem', color: 'rgba(160,140,110,0.6)', fontStyle: 'italic', marginTop: '8px' }}>
+          <p style={{ fontSize: '0.82rem', color: 'rgba(160,140,110,0.6)', fontStyle: 'italic', lineHeight: 1.6, marginTop: '8px' }}>
             Sign in to carry your progress across devices.
           </p>
         </div>
@@ -128,7 +128,7 @@ export default function AuthModal({ onClose, onSignIn }) {
           {/* After 3 failed attempts — reset prompt */}
           {showResetPrompt && !resetSent && (
             <div style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '6px', padding: '10px 12px' }}>
-              <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic' }}>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic', lineHeight: 1.6 }}>
                 Having trouble signing in?
               </p>
               <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.82rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
@@ -138,7 +138,7 @@ export default function AuthModal({ onClose, onSignIn }) {
           )}
 
           {status && (
-            <div style={{ fontSize: '0.82rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', lineHeight: 1.5 }}>
+            <div style={{ fontSize: '0.82rem', fontStyle: 'italic', lineHeight: 1.6, color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)' }}>
               {status.msg}
             </div>
           )}
@@ -147,7 +147,7 @@ export default function AuthModal({ onClose, onSignIn }) {
             {loading ? 'Working...' : mode === 'signin' ? 'Sign In' : mode === 'signup' ? 'Create Account' : 'Send Magic Link'}
           </button>
 
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(140,125,95,0.5)', fontSize: '0.78rem', fontStyle: 'italic', cursor: 'pointer', fontFamily: 'Georgia, serif', padding: '4px 0' }}>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(140,125,95,0.5)', fontSize: '0.78rem', fontStyle: 'italic', lineHeight: 1.6, cursor: 'pointer', fontFamily: 'Georgia, serif', padding: '4px 0' }}>
             Continue without signing in
           </button>
         </form>

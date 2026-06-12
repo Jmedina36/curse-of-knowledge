@@ -243,7 +243,7 @@ const CraftingModal = ({
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>{elf.name}</p>
-          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>{elf.title}</p>
+          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{elf.title}</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
             <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
@@ -263,7 +263,7 @@ const CraftingModal = ({
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
-              <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
+              <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
             </div>
             <button
               onClick={() => { sounds.click(); setShowCraftingModal(false); }}

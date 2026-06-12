@@ -1347,7 +1347,7 @@ const WorldMapTab = ({
                   <div style={{
                     fontSize: '0.62rem', color: 'rgba(180,200,180,0.5)',
                     letterSpacing: '0.1em', textTransform: 'uppercase',
-                    marginBottom: '8px', fontStyle: 'italic',
+                    marginBottom: '8px', fontStyle: 'italic', lineHeight: 1.6,
                   }}>Trivial for your level</div>
                 )}
 
@@ -1499,7 +1499,7 @@ const WorldMapTab = ({
                         background: 'rgba(220,40,40,0.05)',
                         border: '1px solid rgba(220,80,80,0.15)',
                         borderRadius: '4px', padding: '6px 8px',
-                        textAlign: 'center', letterSpacing: '0.06em', fontStyle: 'italic',
+                        textAlign: 'center', letterSpacing: '0.06em', fontStyle: 'italic', lineHeight: 1.6,
                       }}>Something stirs nearby — finish your contract first.</div>
                     ) : (
                       <button
@@ -1647,7 +1647,7 @@ const WorldMapTab = ({
                 )}
 
                 {/* Lore */}
-                <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.55)', lineHeight: 1.65, marginBottom: '12px', fontStyle: 'italic' }}>
+                <p style={{ fontSize: '0.6rem', color: 'rgba(180,165,150,0.55)', lineHeight: 1.6, marginBottom: '12px', fontStyle: 'italic' }}>
                   {displayed.desc}
                 </p>
 
@@ -1839,7 +1839,7 @@ const WorldMapTab = ({
                     lineHeight: 1.7,
                   }}>
                     Point of Interest<br />
-                    <span style={{ fontSize: '0.65rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', opacity: 0.75 }}>
+                    <span style={{ fontSize: '0.65rem', textTransform: 'none', letterSpacing: '0.06em', fontStyle: 'italic', lineHeight: 1.6, opacity: 0.75 }}>
                       No contracts originate here
                     </span>
                   </div>

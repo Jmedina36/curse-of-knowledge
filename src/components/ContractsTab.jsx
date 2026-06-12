@@ -463,7 +463,7 @@ const ContractsTab = ({
                     {/* Description */}
                     <p style={{
                       fontSize: '0.82rem', color: 'rgba(180,165,140,0.6)',
-                      lineHeight: 1.55, marginBottom: '10px', fontStyle: 'italic', textAlign: 'center',
+                      lineHeight: 1.6, marginBottom: '10px', fontStyle: 'italic', textAlign: 'center',
                     }}>{lc.desc}</p>
 
                     {/* Story note — revealed after completion */}
@@ -602,7 +602,7 @@ const ContractsTab = ({
                   {mercyContracts.length > 0 && (
                     <>
                       <TierDivider tier="gold" label="Mercy Contracts — The Cursed" />
-                      <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'rgba(212,175,55,0.35)', fontStyle: 'italic', marginBottom: '12px' }}>
+                      <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'rgba(212,175,55,0.35)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '12px' }}>
                         Fallen heroes who cannot rest. Find them. End it.
                       </p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>

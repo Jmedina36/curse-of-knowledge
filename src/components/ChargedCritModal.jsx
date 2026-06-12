@@ -72,7 +72,7 @@ const ChargedCritModal = ({ data, onClose }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.65 }}
           style={{
-            fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontStyle: 'italic',
+            fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontStyle: 'italic', lineHeight: 1.6,
             color: 'rgba(245,245,220,0.38)', marginBottom: '10px',
           }}
         >"{tier.sub}"</motion.p>

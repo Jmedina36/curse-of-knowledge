@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -185,7 +185,7 @@ const InventoryModal = ({
   };
 
   const emptyMsg = (text = 'No items found yet.') => (
-    <p style={{ color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', padding: '28px 0', fontSize: '13px', opacity: 0.6 }}>
+    <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', padding: '28px 0', fontSize: '13px', opacity: 0.6 }}>
       {text}
     </p>
   );
@@ -376,7 +376,7 @@ const InventoryModal = ({
           style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
         <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', textAlign: 'center' }}>{dwarf.name}</p>
-        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', textAlign: 'center', marginTop: '-10px' }}>{dwarf.title}</p>
+        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{dwarf.title}</p>
         {/* Dialogue bubble */}
         <div style={{
           marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
@@ -416,7 +416,7 @@ const InventoryModal = ({
         }}>
           <div style={{ textAlign: 'center' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.18em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
-            <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', marginTop: '4px' }}>{dwarf.name.charAt(0) + dwarf.name.slice(1).toLowerCase()} · {dwarf.title}</p>
+            <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{dwarf.name.charAt(0) + dwarf.name.slice(1).toLowerCase()} · {dwarf.title}</p>
           </div>
           <button
             onClick={() => { sounds.click(); setShowInventoryModal(false); }}
@@ -479,7 +479,7 @@ const InventoryModal = ({
                   {equippedWeapon.affixes?.poisonChance > 0 && <p style={{ color: '#9370DB', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison</p>}
                 </>
               ) : (
-                <p style={{ color: COLORS.silver, fontStyle: 'italic', fontSize: '12px', opacity: 0.4 }}>Empty slot</p>
+                <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, fontSize: '12px', opacity: 0.4 }}>Empty slot</p>
               )}
             </div>
 
@@ -501,7 +501,7 @@ const InventoryModal = ({
                         {item.affixes?.flatHP     > 0 && <p style={{ color: '#FF6B6B', fontSize: '9px' }}>+{Math.floor(item.affixes.flatHP)} HP</p>}
                       </>
                     ) : (
-                      <p style={{ color: COLORS.silver, fontStyle: 'italic', fontSize: '11px', opacity: 0.4 }}>Empty</p>
+                      <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px', opacity: 0.4 }}>Empty</p>
                     )}
                   </div>
                 );
@@ -522,7 +522,7 @@ const InventoryModal = ({
                     {equippedGrimoire.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '9px' }}>+{Math.floor(equippedGrimoire.affixes.xpBonus)}% XP</p>}
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
+                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
                 )}
               </div>
               <div style={slotBox(equippedTome)}>
@@ -538,7 +538,7 @@ const InventoryModal = ({
                     {equippedTome.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '9px' }}>+{Math.floor(equippedTome.affixes.goldBonus)}% Gold</p>}
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', fontSize: '11px' }}>Empty</p>
+                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
                 )}
               </div>
             </div>

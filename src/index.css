@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Body text readability */
+  p {
+    line-height: 1.6;
+  }
+
+  /* Universal button hover feedback */
+  button:not(:disabled) {
+    transition: opacity 0.15s ease;
+  }
+  button:not(:disabled):hover {
+    opacity: 0.85;
+  }
+}

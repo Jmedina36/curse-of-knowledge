@@ -175,7 +175,7 @@ export default function AuthGate({ onEnter }) {
           {/* After 3 failed sign-in attempts */}
           {showResetPrompt && !resetSent && (
             <div style={{ background: 'rgba(212,175,55,0.06)', border: '1px solid rgba(212,175,55,0.2)', borderRadius: '6px', padding: '10px 12px' }}>
-              <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic' }}>Having trouble signing in?</p>
+              <p style={{ fontSize: '0.7rem', color: 'rgba(212,175,55,0.75)', margin: '0 0 8px', fontStyle: 'italic', lineHeight: 1.6 }}>Having trouble signing in?</p>
               <button type="button" onClick={handleReset} disabled={loading} style={{ background: 'none', border: 'none', color: 'rgba(212,175,55,0.8)', fontSize: '0.82rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}>
                 Send password reset email →
               </button>
@@ -183,7 +183,7 @@ export default function AuthGate({ onEnter }) {
           )}
 
           {status && (
-            <p style={{ fontSize: '0.85rem', fontStyle: 'italic', color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', margin: 0, lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.85rem', fontStyle: 'italic', lineHeight: 1.6, color: status.type === 'error' ? 'rgba(220,100,80,0.9)' : 'rgba(120,200,120,0.9)', margin: 0 }}>
               {status.msg}
             </p>
           )}
@@ -231,7 +231,7 @@ export default function AuthGate({ onEnter }) {
               border: 'none',
               color: 'rgba(140,125,95,0.5)',
               fontSize: '0.82rem',
-              fontStyle: 'italic',
+              fontStyle: 'italic', lineHeight: 1.6,
               cursor: 'pointer',
               fontFamily: 'Georgia, serif',
               letterSpacing: '0.02em',

@@ -83,7 +83,7 @@ const EncounterModal = ({ encounter, onAccept }) => {
             fontFamily: 'Cinzel, serif',
             fontSize: '0.82rem',
             color: `${rarity.color}`,
-            fontStyle: 'italic',
+            fontStyle: 'italic', lineHeight: 1.6,
             textAlign: 'center',
             marginBottom: '16px',
             opacity: 0.85,

@@ -102,7 +102,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
           <div style={{
             fontSize: '0.78rem',
             color: foundCount === 0 ? 'rgba(160,140,110,0.45)' : 'rgba(160,140,110,0.7)',
-            fontStyle: 'italic',
+            fontStyle: 'italic', lineHeight: 1.6,
           }}>
             {foundCount === 0
               ? 'No entries yet.'
@@ -138,7 +138,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             <div style={{ fontSize: '0.85rem', color: selectedId === '__prologue__' ? 'rgba(235,220,190,0.95)' : 'rgba(200,185,155,0.85)', lineHeight: 1.35, marginBottom: '2px' }}>
               {PROLOGUE_ENTRY.title}
             </div>
-            <div style={{ fontSize: '0.72rem', color: 'rgba(140,125,95,0.7)', fontStyle: 'italic' }}>
+            <div style={{ fontSize: '0.72rem', color: 'rgba(140,125,95,0.7)', fontStyle: 'italic', lineHeight: 1.6 }}>
               {PROLOGUE_ENTRY.location}
             </div>
           </button>
@@ -198,7 +198,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                         <div style={{
                           fontSize: '0.72rem',
                           color: 'rgba(140,125,95,0.7)',
-                          fontStyle: 'italic',
+                          fontStyle: 'italic', lineHeight: 1.6,
                         }}>
                           {lc.journalEntry.location}
                         </div>
@@ -207,7 +207,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                       <div style={{
                         fontSize: '0.82rem',
                         color: 'rgba(100,90,70,0.4)',
-                        fontStyle: 'italic',
+                        fontStyle: 'italic', lineHeight: 1.6,
                         letterSpacing: '0.05em',
                       }}>
                         — unknown —
@@ -292,7 +292,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               {PROLOGUE_ENTRY.text.split('\n\n').map((para, i) => (
                 <p key={i} style={{
                   fontSize: '0.86rem', lineHeight: 1.85,
-                  color: 'rgba(215,200,170,0.88)', margin: 0, fontStyle: 'italic',
+                  color: 'rgba(215,200,170,0.88)', margin: 0, fontStyle: 'italic', lineHeight: 1.6,
                 }}>
                   {para}
                 </p>
@@ -398,7 +398,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   lineHeight: 1.85,
                   color: 'rgba(215,200,170,0.88)',
                   margin: 0,
-                  fontStyle: 'italic',
+                  fontStyle: 'italic', lineHeight: 1.6,
                 }}>
                   {para}
                 </p>
@@ -421,7 +421,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                 }}>Intel Recovered</p>
                 <p style={{
                   fontSize: '0.8rem', lineHeight: 1.7,
-                  color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic',
+                  color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic', lineHeight: 1.6,
                 }}>
                   {selectedContract.encounter.intelNote}
                 </p>

@@ -53,7 +53,7 @@ export default function SetPasswordModal({ onClose }) {
 
         {done ? (
           <div style={{ padding: '24px 28px 32px', textAlign: 'center' }}>
-            <p style={{ color: 'rgba(120,200,120,0.9)', fontSize: '0.85rem', fontStyle: 'italic', marginBottom: '20px' }}>
+            <p style={{ color: 'rgba(120,200,120,0.9)', fontSize: '0.85rem', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '20px' }}>
               Password updated successfully.
             </p>
             <button onClick={onClose} style={{ padding: '11px 32px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: 'rgba(212,175,55,0.14)', color: 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', cursor: 'pointer' }}>
@@ -78,8 +78,8 @@ export default function SetPasswordModal({ onClose }) {
                 })}
               </div>
             )}
-            {mismatch && <p style={{ fontSize: '0.7rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic' }}>Passwords do not match.</p>}
-            {status && <p style={{ fontSize: '0.82rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic' }}>{status.msg}</p>}
+            {mismatch && <p style={{ fontSize: '0.7rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.6 }}>Passwords do not match.</p>}
+            {status && <p style={{ fontSize: '0.82rem', color: 'rgba(220,100,80,0.9)', margin: 0, fontStyle: 'italic', lineHeight: 1.6 }}>{status.msg}</p>}
 
             <button type="submit" disabled={loading || issues.length > 0 || mismatch} style={{ marginTop: '4px', padding: '13px', borderRadius: '6px', border: '1px solid rgba(212,175,55,0.45)', background: loading || issues.length ? 'rgba(212,175,55,0.06)' : 'rgba(212,175,55,0.14)', color: issues.length ? 'rgba(212,175,55,0.4)' : 'rgba(212,175,55,0.95)', fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.12em', cursor: loading || issues.length > 0 ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Saving...' : 'Update Password'}

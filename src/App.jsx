@@ -8902,7 +8902,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       onMouseLeave={e => e.currentTarget.style.filter = 'brightness(1)'}
                     >
                       <div style={{fontSize: '0.8rem', fontWeight: 'bold'}}>{label}</div>
-                      <div style={{fontSize: '0.6rem', opacity: 0.7, fontStyle: 'italic', marginTop: '2px'}}>{subtitle}</div>
+                      <div style={{fontSize: '0.6rem', opacity: 0.7, fontStyle: 'italic', lineHeight: 1.6, marginTop: '2px'}}>{subtitle}</div>
                       <div style={{fontSize: '0.65rem', opacity: 0.5, marginTop: '4px', letterSpacing: '0.05em'}}>{tier} · Mythril</div>
                     </button>
                   ))}

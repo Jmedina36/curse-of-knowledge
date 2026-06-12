@@ -339,7 +339,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
             }}
           />
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.12em', margin: 0 }}>KAEL</p>
-          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', margin: 0 }}>Beast Warden</p>
+          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, margin: 0 }}>Beast Warden</p>
           <div style={{
             position: 'relative',
             background: 'rgba(10,8,4,0.85)',
@@ -456,7 +456,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                       })()}
 
                       {!unlocked ? (
-                        <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(90,80,65,0.35)', fontStyle: 'italic', margin: '8px 0 0' }}>
+                        <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(90,80,65,0.35)', fontStyle: 'italic', lineHeight: 1.6, margin: '8px 0 0' }}>
                           Not yet encountered. Advance further to learn what awaits.
                         </p>
                       ) : (
@@ -530,7 +530,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                         </span>
                         <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(100,90,70,0.25))' }} />
                       </div>
-                      <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(120,110,90,0.3)', fontStyle: 'italic', margin: 0 }}>
+                      <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(120,110,90,0.3)', fontStyle: 'italic', lineHeight: 1.6, margin: 0 }}>
                         No information recovered. Continue investigating.
                       </p>
                     </div>
@@ -566,7 +566,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                           />
                         </div>
                         <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: 'rgba(80,75,60,0.6)', marginBottom: '6px' }}>???</p>
-                        <p style={{ fontSize: '0.78rem', color: 'rgba(80,75,60,0.4)', fontStyle: 'italic', margin: 0 }}>No information recovered.</p>
+                        <p style={{ fontSize: '0.78rem', color: 'rgba(80,75,60,0.4)', fontStyle: 'italic', lineHeight: 1.6, margin: 0 }}>No information recovered.</p>
                       </div>
                     );
                   }
@@ -674,7 +674,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                         </span>
                         <div style={{ flex: 1, height: '1px', background: `linear-gradient(to left, transparent, ${faction.border})` }} />
                       </div>
-                      <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', margin: '0 0 4px' }}>
+                      <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', lineHeight: 1.6, margin: '0 0 4px' }}>
                         {faction.tagline}
                       </p>
                       <p style={{ textAlign: 'center', fontSize: '0.72rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em', color: `${faction.color}88`, margin: 0 }}>
@@ -724,7 +724,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                       <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#A855F7' }}>Elite Enemies</span>
                       <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(168,85,247,0.35))' }} />
                     </div>
-                    <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', margin: '0 0 16px' }}>
+                    <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', lineHeight: 1.6, margin: '0 0 16px' }}>
                       Exceptional warriors deployed or awakened against you. Each one is a statement.
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px' }}>
@@ -772,7 +772,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                       <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.25em', textTransform: 'uppercase', color: '#D4AF37' }}>The Order</span>
                       <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.4))' }} />
                     </div>
-                    <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', margin: '0 0 16px' }}>
+                    <p style={{ textAlign: 'center', fontSize: '0.7rem', color: 'rgba(200,185,150,0.45)', fontStyle: 'italic', lineHeight: 1.6, margin: '0 0 16px' }}>
                       The architects behind everything. They move through shadows and speak through others.
                     </p>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px' }}>
@@ -845,7 +845,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                     <img src={member.img} alt="unknown" style={{ width: solo ? 110 : 90, height: solo ? 110 : 90, objectFit: 'contain', display: 'block', filter: 'brightness(0) contrast(0.5)' }} />
                   </div>
                   <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: solo ? '1.05rem' : '0.95rem', color: 'rgba(80,65,100,0.55)', marginBottom: '6px' }}>???</p>
-                  <p style={{ fontSize: '0.78rem', color: 'rgba(80,65,100,0.4)', fontStyle: 'italic', margin: 0 }}>A soul still wandering. Find them.</p>
+                  <p style={{ fontSize: '0.78rem', color: 'rgba(80,65,100,0.4)', fontStyle: 'italic', lineHeight: 1.6, margin: 0 }}>A soul still wandering. Find them.</p>
                 </div>
               );
 
@@ -881,7 +881,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
               <div>
                 {/* Header */}
                 <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-                  <p style={{ fontSize: '0.82rem', color: 'rgba(190,170,220,0.4)', fontStyle: 'italic', margin: '0 0 6px' }}>
+                  <p style={{ fontSize: '0.82rem', color: 'rgba(190,170,220,0.4)', fontStyle: 'italic', lineHeight: 1.6, margin: '0 0 6px' }}>
                     Heroes who came before you. Every one of them failed. Some are still out there.
                   </p>
                   <p style={{ fontSize: '0.72rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.12em', color: 'rgba(170,150,210,0.4)', margin: 0 }}>
