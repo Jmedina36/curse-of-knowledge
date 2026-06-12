@@ -3943,7 +3943,11 @@ if (battleType === 'elite' && activeContractRef.current?.type === 'elite') {
       setTimeout(() => spawnBanditEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
       return;
     }
-    // All contract enemies down — clear bandit flag and fall through to regular victory path
+    // All contract enemies down — record all for bestiary, clear flag, fall through
+    setDefeatedFactionMembers(prev => {
+      const imgs = lineup.map(m => m.img).filter(Boolean);
+      return [...prev, ...imgs.filter(i => !prev.includes(i))];
+    });
     setIsBanditWave(false);
     skipBanditRaidHandler = true;
   }
@@ -3980,7 +3984,11 @@ if (battleType === 'elite' && activeContractRef.current?.type === 'elite') {
       setTimeout(() => spawnDaughtersEnemy(lineup[nextIdx], nextIdx, lineup.length), 1500);
       return;
     }
-    // All contract enemies down — clear daughters flag and fall through to regular victory path
+    // All contract enemies down — record all for bestiary, clear flag, fall through
+    setDefeatedFactionMembers(prev => {
+      const imgs = lineup.map(m => m.img).filter(Boolean);
+      return [...prev, ...imgs.filter(i => !prev.includes(i))];
+    });
     setIsDaughtersWave(false);
     skipDaughtersRaidHandler = true;
   }
