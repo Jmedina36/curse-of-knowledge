@@ -3091,93 +3091,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     setTimeout(() => spawnDaughtersWave(waveNum, captDefeated), 1500);
   };
 
-  const spawnRandomMiniBoss = (force = false) => {
-    const completedTasks = tasks.filter(t => t.done).length;
-    const totalTasks = tasks.length;
-    
-    if (!force && totalTasks === 0) return;
-    if (force) setStamina(getMaxStamina());
-    
-    const bossNumber = miniBossCount + 1;
-    const completionRate = totalTasks > 0 ? completedTasks / totalTasks : 0.5;
-    
-    // Exponential scaling from SCALING_CONFIG
-    const config = GAME_CONSTANTS.SCALING_CONFIG.elite;
-    const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
-    
-    const scaledHp = Math.floor(baseHp * (1 + bossNumber * 0.2));
-    const bossHealth = Math.floor(scaledHp * (2 - completionRate));
-    
-    setCurrentAnimation('screen-shake');
-    setTimeout(() => setCurrentAnimation(null), 500);
-    sounds.bossEntrance();
 
-    const ELITE_POOL = [
-      { name: 'Korruk the Merciless',          img: '/bosses/orc-warrior.png'         },
-      { name: 'Gryvara, Ironblood Matriarch',  img: '/bosses/orc-lady.png'            },
-      { name: 'Grakthar the Unbroken',         img: '/bosses/orc-chief.png'           },
-      { name: 'Morvane, the Frozen Condemned', img: '/bosses/frozen-zombie.png'       },
-      { name: 'Seraphine the Bloodless',       img: '/bosses/undead-vampire-woman.png'},
-    ];
-    const elite = ELITE_POOL[Math.floor(Math.random() * ELITE_POOL.length)];
-    setBossName(elite.name);
-    setBanditEnemyImg(elite.img);
-    setBossHp(bossHealth);
-    setBossMax(bossHealth);
-    setShowBoss(true);
-    setBattling(true);
-    setBattleMenu('main'); // Reset to main menu
-    setBattleMode(true);
-    setIsFinalBoss(false);
-    setCanFlee(true);
-    setMiniBossCount(bossNumber);
-    setBossDebuffs({ poisonTurns: 0, poisonDamage: 0, poisonedVulnerability: 0, stunned: false, burnTurns: 0, burnDamage: 0 });
-    setKnightWarlordsRoarTurns(0); setKnightUnbreakableTurns(0); setKnightRampartTurns(0);
-    setKnightRetributionStance(false); setKnightNoQuarterStacks(0);
-    setBossChilledTurns(0); setBossChillDefStacks(0); setBossFrozenTurns(0);
-    setBossBleedTurns(0); setBossBleedDamage(0); setAssassinShadowStacks(0); setAssassinSmokeVeilActive(false);
-  setBossShockedTurns(0); setBossShockDamage(0); setCrusaderAegisTurns(0);
-  setPlayerDebuffs({ bleedTurns: 0, bleedDamage: 0, armorShredTurns: 0 });
-    setVictoryLoot([]);
-    setVictoryChest(null); // Clear previous loot
 
-    // Reset charges at start of each battle
-    setChargeStacks(0);
-
-    setEnragedTurns(0);
-    setHasFled(false); // Reset fled status
-    
-    // Set cycling boss dialogue (day 1-7 repeating)
-    const bossDialogueKey = `DAY_${((currentDay - 1) % 7) + 1}`;
-    const bossDialogue = GAME_CONSTANTS.BOSS_DIALOGUE[bossDialogueKey];
-    if (bossDialogue) {
-      setEnemyDialogue(bossDialogue.START);
-    }
-    
-    addLog(`AMBUSH! ${elite.name} emerges from the shadows!`);
-  // Initiative — player D20+DEX vs elite D20+2
-  const _dexMod_mb = hero?.abilities ? Math.floor((hero.abilities.dex - 10) / 2) : 0;
-  const _wis_mb = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
-  const _rawAtk_mb = GAME_CONSTANTS.BOSS_ATTACK_BASE + currentDay * GAME_CONSTANTS.BOSS_ATTACK_DAY_SCALING;
-  const _pRoll_mb = Math.ceil(Math.random() * 20);
-  const _pTotal_mb = _pRoll_mb + _dexMod_mb;
-  const _eMod_mb = 2;
-  const _eRoll_mb = Math.ceil(Math.random() * 20);
-  const _eTotal_mb = _eRoll_mb + _eMod_mb;
-  const _mbFirst = _pTotal_mb >= _eTotal_mb;
-  const _margin_mb = Math.abs(_pTotal_mb - _eTotal_mb);
-  const _decisive_mb = _margin_mb >= 5;
-  const _openDmg_mb = _mbFirst ? 0 : Math.max(3, Math.floor(_rawAtk_mb * (_decisive_mb ? 0.65 : 0.40) * (1 - _wis_mb * 0.02)));
-  const _stunned_mb = !_mbFirst && _decisive_mb;
-  setTimeout(() => setInitiativeRoll({
-    playerRoll: _pRoll_mb, playerMod: _dexMod_mb, playerTotal: _pTotal_mb,
-    enemyRoll: _eRoll_mb, enemyMod: _eMod_mb, enemyTotal: _eTotal_mb,
-    playerFirst: _mbFirst, decisive: _decisive_mb, margin: _margin_mb,
-    openingDamage: _openDmg_mb, stunned: _stunned_mb,
-    openingLog: _mbFirst ? '' : `Enemy strikes first for ${_openDmg_mb} damage.${_stunned_mb ? ' You are stunned.' : ''}`,
-  }), 3200);
-  };
-  
   const ANTAGONISTS = {
     cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditIntro(),        sfxKey: 'bandit',         dialogue: '"The order didn\'t send me. I came because I wanted to."' },
     mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersIntro(),     sfxKey: 'daughters',      dialogue: '"You spilled bandit blood. Now you face the dark."' },
@@ -3426,11 +3341,12 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       addLog(`Complete ${requiredTasks} tasks to summon the Blood Contract guardian. (${completedTasks}/${requiredTasks})`);
       return;
     }
-    
+
     setBattleType('elite');
     audioManager.cut();
     audioManager.play(TRACKS.darkling);
-    spawnRandomMiniBoss();
+    const { eliteId, eliteDialogue } = activeContractRef.current || {};
+    spawnSpecificElite(eliteId, eliteDialogue);
     setCanFlee(false);
   };
   
@@ -8528,7 +8444,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 contractEncounterRef.current = { tierWeights: challengeTierWeights[zone] || challengeTierWeights[1] };
                 if (faction === 'bandit') {
                   const grunt = BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
-                  wildCreatureOverrideRef.current = { name: grunt.names[Math.floor(Math.random() * grunt.names.length)], img: grunt.img };
+                  wildCreatureOverrideRef.current = { name: grunt.name, img: grunt.img };
                 } else if (faction === 'daughters') {
                   const member = DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
                   wildCreatureOverrideRef.current = { name: member.name, img: member.img };
@@ -8567,24 +8483,53 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 const _ac = activeContractRef.current;
                 if (_ac?.type === 'location') {
                   const lc = _ac.contract;
-                  const { enemyType, waveSize, tierWeights } = lc.encounter;
-                  addLog(`Contract battle: "${lc.name}" — ${waveSize} enemies stand between you and your reward.`);
+                  const { enemyType, waveSize, tierWeights, members } = lc.encounter;
+                  const _fightSize = members?.length || waveSize || 1;
+                  addLog(`Contract battle: "${lc.name}" — ${_fightSize} ${_fightSize === 1 ? 'enemy stands' : 'enemies stand'} between you and your reward.`);
                   if (enemyType === 'bandit') {
-                    const { enemyNames, dialogue } = lc.encounter;
-                    const namedName = enemyNames?.[0];
-                    const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName);
-                    const namedCapt  = BANDIT_POOL.captains.find(c => c.name === namedName);
-                    const namedBandit = namedGrunt || namedCapt || BANDIT_POOL.grunts[Math.floor(Math.random() * BANDIT_POOL.grunts.length)];
-                    const enemy = { img: namedBandit.img, name: namedBandit.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null };
-                    setTimeout(() => spawnBanditEnemy(enemy, 0, 1, true), 1000);
+                    const { members, enemyNames, dialogue } = lc.encounter;
+                    if (members?.length) {
+                      banditLineupRef.current = members;
+                      banditLineupIdxRef.current = 0;
+                      setIsBanditWave(true);
+                      setBanditWaveNumber(1);
+                      setBanditCaptainsDefeated([]);
+                      setBattleType('wave');
+                      setCurrentWaveEnemy(1);
+                      setTotalWaveEnemies(members.length);
+                      setWaveGoldTotal(0);
+                      setTimeout(() => spawnBanditEnemy(members[0], 0, members.length), 1000);
+                    } else {
+                      const namedName = enemyNames?.[0];
+                      const namedGrunt = BANDIT_POOL.grunts.find(g => g.name === namedName);
+                      const namedCapt  = BANDIT_POOL.captains.find(c => c.name === namedName);
+                      const namedBandit = namedGrunt || namedCapt;
+                      if (!namedBandit) { addLog(`Contract error: bandit "${namedName}" not found.`); return; }
+                      const enemy = { img: namedBandit.img, name: namedBandit.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null };
+                      setTimeout(() => spawnBanditEnemy(enemy, 0, 1, true), 1000);
+                    }
                   } else if (enemyType === 'daughters') {
-                    const { enemyNames, dialogue } = lc.encounter;
-                    const namedName = enemyNames?.[0];
-                    const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName);
-                    const namedCapt   = DAUGHTERS_POOL.captains.find(c => c.name === namedName);
-                    const namedDaughter = namedMember || namedCapt || DAUGHTERS_POOL.members[Math.floor(Math.random() * DAUGHTERS_POOL.members.length)];
-                    const enemy = { img: namedDaughter.img, name: namedDaughter.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null };
-                    setTimeout(() => spawnDaughtersEnemy(enemy, 0, 1, true), 1000);
+                    const { members, enemyNames, dialogue } = lc.encounter;
+                    if (members?.length) {
+                      daughtersLineupRef.current = members;
+                      daughtersLineupIdxRef.current = 0;
+                      setIsDaughtersWave(true);
+                      setDaughtersWaveNumber(1);
+                      setDaughtersCaptainsDefeated([]);
+                      setBattleType('wave');
+                      setCurrentWaveEnemy(1);
+                      setTotalWaveEnemies(members.length);
+                      setWaveGoldTotal(0);
+                      setTimeout(() => spawnDaughtersEnemy(members[0], 0, members.length), 1000);
+                    } else {
+                      const namedName = enemyNames?.[0];
+                      const namedMember = DAUGHTERS_POOL.members.find(m => m.name === namedName);
+                      const namedCapt   = DAUGHTERS_POOL.captains.find(c => c.name === namedName);
+                      const namedDaughter = namedMember || namedCapt;
+                      if (!namedDaughter) { addLog(`Contract error: daughter "${namedName}" not found.`); return; }
+                      const enemy = { img: namedDaughter.img, name: namedDaughter.name, isCapt: !!namedCapt, isLeader: false, contractDialogue: dialogue?.[0] || null };
+                      setTimeout(() => spawnDaughtersEnemy(enemy, 0, 1, true), 1000);
+                    }
                   } else if (enemyType === 'elite') {
                     const { eliteId, dialogue: eliteDialogue } = lc.encounter;
                     setTimeout(() => spawnSpecificElite(eliteId, eliteDialogue), 1000);
@@ -8745,7 +8690,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setTotalWaveEnemies(3); setCurrentWaveEnemy(1); spawnRegularEnemy(true, 1, 3);
                     addLog('Debug: Wave (3)');
                   }} className="bg-yellow-800 hover:bg-yellow-700 px-4 py-2 rounded text-xs transition-all border border-yellow-600" style={{color: '#F5F5DC'}}>Wave (3)</button>
-                  <button onClick={() => { setBattleType('elite'); audioManager.cut(); audioManager.play(TRACKS.darkling); spawnRandomMiniBoss(true); addLog('Debug: Elite boss'); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>Elite Boss</button>
+                  {['e5','e4','e3','e1','e2'].map(id => { const c = CREATURE_INDEX.find(x => x.id === id); return c ? <button key={id} onClick={() => { setBattleType('elite'); audioManager.cut(); audioManager.play(TRACKS.darkling); spawnSpecificElite(id, null); addLog(`Debug: ${c.name}`); }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs transition-all border border-red-600" style={{color: '#F5F5DC'}}>{c.name.split(',')[0].split(' ').slice(0,2).join(' ')}</button> : null; })}
                   <button onClick={() => {
                     const lineup = [
                       { img: '/cursed/young-paladin.png', name: 'Aldric', hp: 90, dialogue: "I can't stop. I can't remember how." },

@@ -701,7 +701,7 @@ const ContractsTab = ({
                       <button
                         onClick={() => {
                           sounds.click();
-                          setActiveContract({ type: 'elite' });
+                          setActiveContract({ type: 'elite', eliteId: lc.encounter?.eliteId, eliteDialogue: lc.encounter?.dialogue });
                           setActiveTab('map');
                         }}
                         disabled={isDisabled}
