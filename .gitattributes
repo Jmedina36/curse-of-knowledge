@@ -1,0 +1,18 @@
+# Normalize line endings: LF in the repo, native on checkout
+* text=auto
+
+# Binary assets — never touch line endings
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.rar binary
+*.zip binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
