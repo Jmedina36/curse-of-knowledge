@@ -334,14 +334,14 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                 }}>
                   <div style={{
                     flexShrink: 0,
-                    width: '20px',
-                    height: '20px',
+                    width: '24px',
+                    height: '24px',
                     borderRadius: '50%',
                     border: '1px solid rgba(212,175,55,0.35)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.6rem',
+                    fontSize: '0.7rem',
                     color: 'rgba(212,175,55,0.78)',
                     fontFamily: 'Cinzel, serif',
                     marginTop: '1px',
@@ -350,8 +350,8 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   </div>
                   <p style={{
                     fontFamily: 'EB Garamond, serif',
-                    fontSize: '0.9rem',
-                    lineHeight: 1.7,
+                    fontSize: '1.08rem',
+                    lineHeight: 1.65,
                     color: 'rgba(210,195,165,0.85)',
                     margin: 0,
                   }}>
@@ -421,8 +421,8 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   color: 'rgba(212,160,30,0.78)', margin: '0 0 8px',
                 }}>Intel Recovered</p>
                 <p style={{
-                  fontSize: '0.8rem', lineHeight: 1.7,
-                  color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic', lineHeight: 1.6,
+                  fontSize: '0.95rem', lineHeight: 1.65,
+                  color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic',
                 }}>
                   {selectedContract.encounter.intelNote}
                 </p>
