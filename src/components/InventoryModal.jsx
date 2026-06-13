@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 // Armor sprite assignment — slot-specific, 5 variants each
 const ARMOR_SPRITES = {
@@ -106,6 +107,7 @@ const InventoryModal = ({
   const dwarf = DWARF_NPCS[(currentDay ?? 1) % DWARF_NPCS.length];
   const dq = DWARF_QUOTES[dwarf.name];
   const [category, setCategory] = useState('weapons');
+  useEscapeClose(() => setShowInventoryModal(false));
   const [grimdarQuote, setGrimdarQuote] = useState(() => dq.idle[Math.floor(Math.random() * dq.idle.length)]);
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
   useEffect(() => {

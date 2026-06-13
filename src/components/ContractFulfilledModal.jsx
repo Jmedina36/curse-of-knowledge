@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 const TIER_CONFIG = {
   platinum: {
@@ -33,6 +34,7 @@ const TIER_CONFIG = {
 
 const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose }) => {
   const cfg = TIER_CONFIG[tier] || TIER_CONFIG.platinum;
+  useEscapeClose(onClose);
   const completedTasks = tasks.filter(t => t.done).length;
   const totalTasks = tasks.length;
   const allTasksDone = completedTasks === totalTasks && totalTasks > 0;

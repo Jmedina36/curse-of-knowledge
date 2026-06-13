@@ -1,6 +1,7 @@
 ﻿import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 const TIERS = {
   1.5: { label: 'GLANCING CRIT',    color: '#9CA3AF', glow: 'rgba(156,163,175,0.6)', sub: 'The charge fizzles — but still connects.' },
@@ -13,6 +14,7 @@ const TIERS = {
 const ChargedCritModal = ({ data, onClose }) => {
   const { roll, multiplier, attackName } = data;
   const tier = TIERS[multiplier] ?? TIERS[2.0];
+  useEscapeClose(onClose);
 
   useEffect(() => {
     const t = setTimeout(onClose, 3000);

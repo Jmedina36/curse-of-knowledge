@@ -110,6 +110,14 @@ const HeroTab = ({
   const [sorenQuote] = useState(() => SOREN_QUOTES[Math.floor(Math.random() * SOREN_QUOTES.length)]);
   const [activePanel, setActivePanel] = useState('chronicle');
   const [pendingAlloc, setPendingAlloc] = useState({ ...EMPTY_ALLOC });
+  const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
+
+  useEffect(() => {
+    const fn = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
+  }, []);
+  const isNarrow = windowWidth < 700;
 
   // Reset pending alloc when we get fresh points
   useEffect(() => {
@@ -292,15 +300,17 @@ const HeroTab = ({
         borderRadius: '4px',
         overflow: 'hidden',
         display: 'flex',
-        height: 'calc(100vh - 180px)',
-        minHeight: '560px',
+        flexDirection: isNarrow ? 'column' : 'row',
+        height: isNarrow ? 'auto' : 'calc(100vh - 180px)',
+        minHeight: isNarrow ? 0 : '560px',
       }}>
 
         {/* LEFT: Portrait column */}
         <div style={{
-          width: '220px', flexShrink: 0,
+          width: isNarrow ? '100%' : '220px', flexShrink: 0,
           background: 'rgba(0,0,0,0.4)',
-          borderRight: '1px solid rgba(212,175,55,0.1)',
+          borderRight: isNarrow ? 'none' : '1px solid rgba(212,175,55,0.1)',
+          borderBottom: isNarrow ? '1px solid rgba(212,175,55,0.1)' : 'none',
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           padding: '24px 16px 20px', gap: '12px',
         }}>
@@ -384,7 +394,7 @@ const HeroTab = ({
         </div>
 
         {/* RIGHT: Content column */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: isNarrow ? 'visible' : 'hidden' }}>
 
           {/* ── Tab bar ── */}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', padding: '14px 20px', borderBottom: '1px solid rgba(212,175,55,0.12)', flexShrink: 0 }}>

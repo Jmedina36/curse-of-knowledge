@@ -2,6 +2,7 @@
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 const ROLL_CONFIG = {
   fumble: {
@@ -78,6 +79,7 @@ const DiceRollModal = ({ roll, bonusXP, bonusGold, guildPointsEarned, guildRank,
   const config = getConfig(roll);
   const [msgIdx] = useState(() => Math.floor(Math.random() * config.messages.length));
   const [showBonus, setShowBonus] = useState(false);
+  useEscapeClose(onClose);
 
   useEffect(() => {
     const t = setTimeout(() => setShowBonus(true), 800);

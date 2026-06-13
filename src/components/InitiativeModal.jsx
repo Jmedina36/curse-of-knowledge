@@ -2,9 +2,11 @@
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 const InitiativeModal = ({ data, onClose }) => {
   const { playerRoll, playerMod, playerTotal, enemyRoll, enemyMod, enemyTotal, playerFirst, decisive } = data;
+  useEscapeClose(onClose);
 
   const tier = playerFirst
     ? (decisive ? 'decisive_win' : 'win')

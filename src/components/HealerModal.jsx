@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { GAME_CONSTANTS, COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 const ApothRates = ({ entries }) => (
   <div className="rounded-lg p-2 mb-4 border"
@@ -89,6 +90,7 @@ const HealerModal = ({
   const [suppliesMode, setSuppliesMode] = useState('buy');
   const [sellConfirm, setSellConfirm] = useState(null);
   const [quote, setQuote] = useState(() => MARA_QUOTES.idle[Math.floor(Math.random() * MARA_QUOTES.idle.length)]);
+  useEscapeClose(() => { if (sellConfirm) setSellConfirm(null); else setShowHealerModal(false); });
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {

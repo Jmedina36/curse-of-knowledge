@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -186,6 +187,7 @@ const CraftingModal = ({
   const eq = ELF_QUOTES[elf.name];
   const [sellConfirm, setSellConfirm] = useState(null);
   const [merchantQuote, setMerchantQuote] = useState(() => eq.idle[Math.floor(Math.random() * eq.idle.length)]);
+  useEscapeClose(() => { if (sellConfirm) setSellConfirm(null); else setShowCraftingModal(false); });
   const [windowWidth, setWindowWidth] = useState(() => window.innerWidth);
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import React from 'react';
 import { X, Check } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import useEscapeClose from '../hooks/useEscapeClose';
 
 const FlashcardModals = ({
   // Deck modal
@@ -76,6 +77,13 @@ const FlashcardModals = ({
   showModal,
   setShowModal,
 }) => {
+  // Escape closes the simple create dialogs only — study/quiz/match keep
+  // their explicit close buttons so in-progress sessions aren't lost.
+  useEscapeClose(() => {
+    if (showDeckModal) setShowDeckModal(false);
+    else if (showCardModal) setShowCardModal(false);
+    else if (showModal) setShowModal(false);
+  }, showDeckModal || showCardModal || showModal);
   return (
     <>
 {showDeckModal && (
