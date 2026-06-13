@@ -41,7 +41,7 @@ const ChargedCritModal = ({ data, onClose }) => {
       >
         <p style={{
           fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em',
-          textTransform: 'uppercase', color: 'rgba(245,245,220,0.35)', marginBottom: '12px',
+          textTransform: 'uppercase', color: 'rgba(245,245,220,0.7)', marginBottom: '12px',
         }}>⚡ Charged {attackName}</p>
 
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '14px' }}>
@@ -75,13 +75,13 @@ const ChargedCritModal = ({ data, onClose }) => {
           transition={{ delay: 0.65 }}
           style={{
             fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontStyle: 'italic', lineHeight: 1.6,
-            color: 'rgba(245,245,220,0.38)', marginBottom: '10px',
+            color: 'rgba(245,245,220,0.7)', marginBottom: '10px',
           }}
         >"{tier.sub}"</motion.p>
 
         <p style={{
           fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
-          color: 'rgba(245,245,220,0.18)', letterSpacing: '0.15em',
+          color: 'rgba(245,245,220,0.55)', letterSpacing: '0.15em',
         }}>click to dismiss</p>
       </motion.div>
     </div>

@@ -43,7 +43,7 @@ const CustomizeModal = ({
           <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>CUSTOMIZE YOUR HERO</h3>
           <div className="flex items-center justify-center gap-2">
             <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
         </div>

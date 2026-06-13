@@ -99,7 +99,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
           </p>
           <p style={{
             fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em',
-            color: 'rgba(245,245,220,0.3)', margin: 0,
+            color: 'rgba(245,245,220,0.7)', margin: 0,
           }}>
             {conMod !== 0
               ? `CON ${conMod > 0 ? `+${conMod}` : conMod} · need ${10 - conMod}+`
@@ -115,7 +115,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
               return (
                 <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   <GhostDie />
-                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.15)', margin: 0 }}>
+                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.55)', margin: 0 }}>
                     —
                   </p>
                 </div>
@@ -161,7 +161,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
               </p>
               <p style={{
                 fontFamily: 'Cinzel, serif', fontSize: '0.75rem',
-                color: 'rgba(245,245,220,0.35)', margin: '0 0 18px', letterSpacing: '0.05em',
+                color: 'rgba(245,245,220,0.7)', margin: '0 0 18px', letterSpacing: '0.05em',
               }}>
                 {survived ? 'Restored to 1 HP. The fight is not over.' : 'The curse claims what remains.'}
               </p>
@@ -183,7 +183,7 @@ const DeathSaveModal = ({ conMod, onClose }) => {
           ) : (
             <p style={{
               fontFamily: 'Cinzel, serif', fontSize: '0.75rem', letterSpacing: '0.15em',
-              color: 'rgba(245,245,220,0.22)',
+              color: 'rgba(245,245,220,0.55)',
               animation: 'intro-hint-pulse 1.5s ease-in-out infinite',
               margin: 0,
             }}>

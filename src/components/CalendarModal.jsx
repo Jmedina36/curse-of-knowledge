@@ -64,7 +64,7 @@ const CalendarModal = ({
 </div>
           <div className="flex items-center justify-center gap-2 mt-2">
             <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
         </div>
@@ -146,7 +146,7 @@ const CalendarModal = ({
       {/* Decorative divider */}
       <div className="flex items-center justify-center gap-2 mb-4">
         <div style={{width: '100px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(88, 180, 120, 0.3))'}}></div>
-        <span style={{color: 'rgba(212, 175, 55, 0.35)', fontSize: '8px'}}>◆</span>
+        <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
         <div style={{width: '100px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(88, 180, 120, 0.3))'}}></div>
       </div>
       

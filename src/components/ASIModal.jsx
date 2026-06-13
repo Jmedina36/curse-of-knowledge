@@ -69,7 +69,7 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
         }}>ABILITY SCORE IMPROVEMENT</p>
         <p style={{
           fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.15em',
-          color: 'rgba(245,245,220,0.4)', textAlign: 'center', marginBottom: '18px',
+          color: 'rgba(245,245,220,0.7)', textAlign: 'center', marginBottom: '18px',
         }}>LEVEL {newLevel} — CHOOSE YOUR ADVANCEMENT</p>
 
         {/* Mode toggle */}
@@ -122,14 +122,14 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
                     {preview
                       ? <>{score}<span style={{ color: '#34D399', fontSize: '0.78rem' }}>→{preview}</span></>
                       : score}
-                    <span style={{ fontSize: '0.7rem', marginLeft: '3px', color: 'rgba(245,245,220,0.4)', fontWeight: 400 }}>
+                    <span style={{ fontSize: '0.7rem', marginLeft: '3px', color: 'rgba(245,245,220,0.7)', fontWeight: 400 }}>
                       ({modStr(preview ?? score)})
                     </span>
                   </span>
                 </div>
                 <p style={{
                   fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
-                  color: 'rgba(245,245,220,0.38)', lineHeight: 1.3, margin: 0,
+                  color: 'rgba(245,245,220,0.7)', lineHeight: 1.3, margin: 0,
                 }}>{info.desc}</p>
               </motion.button>
             );

@@ -71,10 +71,10 @@ const ContractsTab = ({
             letterSpacing: '0.2em', textTransform: 'uppercase', color: '#D4AF37',
             textShadow: '0 0 28px rgba(212,175,55,0.85), 0 0 60px rgba(212,175,55,0.3)', marginBottom: '0.3rem',
           }}>Curse of Knowledge</h1>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'rgba(245,245,220,0.35)', marginBottom: '1.5rem' }}>A Fantasy Study Quest</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.5em', textTransform: 'uppercase', color: 'rgba(245,245,220,0.7)', marginBottom: '1.5rem' }}>A Fantasy Study Quest</p>
           <div className="flex items-center justify-center gap-2 mb-4">
             <div style={{width:'80px',height:'1px',background:'linear-gradient(to right,transparent,rgba(212,175,55,0.5))'}}/>
-            <span style={{color:'rgba(212,175,55,0.6)',fontSize:'8px'}}>◆</span>
+            <span style={{color:'rgba(212,175,55,0.78)',fontSize:'8px'}}>◆</span>
             <div style={{width:'80px',height:'1px',background:'linear-gradient(to left,transparent,rgba(212,175,55,0.5))'}}/>
           </div>
           <h2 className="text-3xl font-bold mb-2 uppercase" style={{ color: '#D4AF37', fontFamily: 'Cinzel, serif', letterSpacing: '0.15em', textShadow: '0 0 8px rgba(212,175,55,0.6)' }}>
@@ -85,7 +85,7 @@ const ContractsTab = ({
           </p>
           <div className="flex items-center justify-center gap-2 mb-4">
             <div style={{width:'60px',height:'1px',background:'linear-gradient(to right,transparent,rgba(212,175,55,0.5))'}}/>
-            <span style={{color:'rgba(212,175,55,0.6)',fontSize:'8px'}}>◆</span>
+            <span style={{color:'rgba(212,175,55,0.78)',fontSize:'8px'}}>◆</span>
             <div style={{width:'60px',height:'1px',background:'linear-gradient(to left,transparent,rgba(212,175,55,0.5))'}}/>
           </div>
           <p className="text-sm italic mb-3" style={{color: '#FF6B6B'}}>BEGIN YOUR TRIALS</p>
@@ -99,7 +99,7 @@ const ContractsTab = ({
           >START DAY</button>
           <div className="flex items-center justify-center gap-2 mt-6">
             <div style={{width:'80px',height:'1px',background:'linear-gradient(to right,transparent,rgba(212,175,55,0.5))'}}/>
-            <span style={{color:'rgba(212,175,55,0.6)',fontSize:'8px'}}>◆</span>
+            <span style={{color:'rgba(212,175,55,0.78)',fontSize:'8px'}}>◆</span>
             <div style={{width:'80px',height:'1px',background:'linear-gradient(to left,transparent,rgba(212,175,55,0.5))'}}/>
           </div>
         </div>
@@ -124,7 +124,7 @@ const ContractsTab = ({
               <div style={{ marginBottom: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '6px' }}>
                   <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, transparent, rgba(120,75,20,0.8))' }} />
-                  <span style={{ color: 'rgba(180,120,40,0.6)', fontSize: '10px' }}>✦</span>
+                  <span style={{ color: 'rgba(180,120,40,0.78)', fontSize: '10px' }}>✦</span>
                   <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to left, transparent, rgba(120,75,20,0.8))' }} />
                 </div>
                 <h2 style={{
@@ -140,7 +140,7 @@ const ContractsTab = ({
                 }}>Guild Notice Board</h2>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginTop: '6px' }}>
                   <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to right, transparent, rgba(120,75,20,0.8))' }} />
-                  <span style={{ color: 'rgba(180,120,40,0.6)', fontSize: '10px' }}>✦</span>
+                  <span style={{ color: 'rgba(180,120,40,0.78)', fontSize: '10px' }}>✦</span>
                   <div style={{ flex: 1, height: '2px', background: 'linear-gradient(to left, transparent, rgba(120,75,20,0.8))' }} />
                 </div>
               </div>
@@ -190,7 +190,7 @@ const ContractsTab = ({
               {/* Tier legend */}
               <div className="flex items-center justify-center gap-3 mb-3">
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
-                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <span style={{color:'rgba(212,175,55,0.7)',fontSize:'8px'}}>◆</span>
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
               </div>
               <div className="flex items-center justify-center gap-5 flex-wrap">
@@ -202,7 +202,7 @@ const ContractsTab = ({
               </div>
               <div className="flex items-center justify-center gap-3 mt-3">
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
-                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <span style={{color:'rgba(212,175,55,0.7)',fontSize:'8px'}}>◆</span>
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
               </div>
             </div>
@@ -232,7 +232,7 @@ const ContractsTab = ({
             {/* ── COPPER / SILVER TASK CARDS ── */}
             {tasks.length === 0 ? (
               <div className="text-center py-10">
-                <p style={{fontFamily:'Cinzel,serif',fontSize:'0.8rem',letterSpacing:'0.2em',color:'rgba(160,135,80,0.5)',textTransform:'uppercase'}}>The board is bare. Post a contract to begin.</p>
+                <p style={{fontFamily:'Cinzel,serif',fontSize:'0.8rem',letterSpacing:'0.2em',color:'rgba(160,135,80,0.78)',textTransform:'uppercase'}}>The board is bare. Post a contract to begin.</p>
               </div>
             ) : (
               <>
@@ -446,7 +446,7 @@ const ContractsTab = ({
                       }}>
                         {isCompleted ? 'Sealed' : tierLabel}
                       </span>
-                      <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.7rem', color: 'rgba(180,160,120,0.6)' }}>
+                      <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.7rem', color: 'rgba(180,160,120,0.78)' }}>
                         {lc.locationName}
                       </span>
                     </div>
@@ -462,7 +462,7 @@ const ContractsTab = ({
 
                     {/* Description */}
                     <p style={{
-                      fontSize: '0.82rem', color: 'rgba(180,165,140,0.6)',
+                      fontSize: '0.82rem', color: 'rgba(180,165,140,0.78)',
                       lineHeight: 1.6, marginBottom: '10px', fontStyle: 'italic', textAlign: 'center',
                     }}>{lc.desc}</p>
 
@@ -602,7 +602,7 @@ const ContractsTab = ({
                   {mercyContracts.length > 0 && (
                     <>
                       <TierDivider tier="gold" label="Mercy Contracts — The Cursed" />
-                      <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'rgba(212,175,55,0.35)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '12px' }}>
+                      <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'rgba(212,175,55,0.7)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '12px' }}>
                         Fallen heroes who cannot rest. Find them. End it.
                       </p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
@@ -736,18 +736,18 @@ const ContractsTab = ({
             <div className="text-center mb-4">
               <div className="flex items-center justify-center gap-3 mb-3">
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
-                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <span style={{color:'rgba(212,175,55,0.7)',fontSize:'8px'}}>◆</span>
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
               </div>
               <h3 style={{fontFamily:'Cinzel,serif',fontSize:'1.3rem',fontWeight:900,letterSpacing:'0.25em',color:'#D4AF37',textShadow:'0 0 18px rgba(212,175,55,0.4)',marginBottom:'0.75rem'}}>CHRONICLE OF EVENTS</h3>
               <div className="flex items-center justify-center gap-3">
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to right,transparent,rgba(101,67,33,0.6))'}}/>
-                <span style={{color:'rgba(212,175,55,0.4)',fontSize:'8px'}}>◆</span>
+                <span style={{color:'rgba(212,175,55,0.7)',fontSize:'8px'}}>◆</span>
                 <div style={{flex:1,height:'1px',background:'linear-gradient(to left,transparent,rgba(101,67,33,0.6))'}}/>
               </div>
             </div>
             {log.length === 0
-              ? <p className="italic text-center" style={{fontSize:'0.9rem',color:'rgba(160,150,120,0.6)'}}>The journey begins...</p>
+              ? <p className="italic text-center" style={{fontSize:'0.9rem',color:'rgba(160,150,120,0.78)'}}>The journey begins...</p>
               : <div className="space-y-2">{log.map((l, i) => <p key={i} style={{fontSize:'0.9rem',color:'rgba(210,200,175,0.9)',fontFamily:'Cinzel,serif',letterSpacing:'0.05em'}}>{l}</p>)}</div>
             }
           </div>

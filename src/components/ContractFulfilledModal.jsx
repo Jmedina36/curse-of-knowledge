@@ -121,7 +121,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
             }}>
               Contract Fulfilled
             </p>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.3)', margin: 0 }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.7)', margin: 0 }}>
               {cfg.tagline}
             </p>
           </motion.div>
@@ -147,7 +147,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
               }}>
                 {completedTasks}/{totalTasks}
               </p>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(245,245,220,0.3)', margin: 0 }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(245,245,220,0.7)', margin: 0 }}>
                 Tasks
               </p>
             </div>
@@ -160,7 +160,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
               }}>
                 +{xpEarned}
               </p>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(245,245,220,0.3)', margin: 0 }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(245,245,220,0.7)', margin: 0 }}>
                 XP
               </p>
             </div>

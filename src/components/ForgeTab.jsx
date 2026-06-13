@@ -485,7 +485,7 @@ const ForgeTab = ({
           background: VISUAL_STYLES.card.default,
           borderColor: 'rgba(212, 175, 55, 0.4)'
         }}>
-          <Sparkles size={32} style={{color: 'rgba(212, 175, 55, 0.3)', margin: '0 auto 12px'}}/>
+          <Sparkles size={32} style={{color: 'rgba(212,175,55,0.7)', margin: '0 auto 12px'}}/>
           <p className="text-sm mb-2" style={{color: '#C9A961', fontWeight: '500'}}>Your forge awaits...</p>
           <p className="text-xs" style={{color: '#95A5A6'}}>Craft your first knowledge relic above</p>
         </div>
@@ -611,7 +611,7 @@ const ForgeTab = ({
                         )}
                       </p>
                       <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap flex items-center gap-1" style={{color: '#95A5A6'}}>
-                        <span style={{color: 'rgba(155, 139, 126, 0.5)'}}>⚡</span>
+                        <span style={{color: 'rgba(155,139,126,0.78)'}}>⚡</span>
                         {domain || site.url.replace(/^https?:\/\//, '')}
                       </p>
                     </a>

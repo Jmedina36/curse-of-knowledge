@@ -478,7 +478,7 @@ const CraftingModal = ({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.7)', marginBottom: '10px' }}>
               CONFIRM SALE
             </p>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: sellConfirm.rarityColor || '#F5F5DC', marginBottom: '4px' }}>
@@ -490,7 +490,7 @@ const CraftingModal = ({
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => { sounds.click(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.7)', cursor: 'pointer' }}
               >
                 Cancel
               </button>

@@ -115,7 +115,7 @@ export default function AuthGate({ onEnter }) {
           fontFamily: 'Cinzel, serif',
           fontSize: '0.6rem',
           letterSpacing: '0.35em',
-          color: 'rgba(212,175,55,0.35)',
+          color: 'rgba(212,175,55,0.7)',
           textTransform: 'uppercase',
           marginBottom: '14px',
         }}>
@@ -218,7 +218,7 @@ export default function AuthGate({ onEnter }) {
         {/* Divider */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '0 28px' }}>
           <div style={{ flex: 1, height: '1px', background: 'rgba(212,175,55,0.08)' }} />
-          <span style={{ fontSize: '7px', color: 'rgba(212,175,55,0.2)' }}>◆</span>
+          <span style={{ fontSize: '7px', color: 'rgba(212,175,55,0.55)' }}>◆</span>
           <div style={{ flex: 1, height: '1px', background: 'rgba(212,175,55,0.08)' }} />
         </div>
 
@@ -229,7 +229,7 @@ export default function AuthGate({ onEnter }) {
             style={{
               background: 'none',
               border: 'none',
-              color: 'rgba(140,125,95,0.5)',
+              color: 'rgba(140,125,95,0.78)',
               fontSize: '0.82rem',
               fontStyle: 'italic', lineHeight: 1.6,
               cursor: 'pointer',

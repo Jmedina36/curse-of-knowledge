@@ -43,7 +43,7 @@ const BattleModal = lazy(() => import('./components/BattleModal'));
 
 const TabLoading = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 0' }}>
-    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)' }}>
+    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>
       Loading…
     </p>
   </div>
@@ -7694,7 +7694,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   position: 'absolute', top: '24px', right: '28px',
                   fontFamily: "'Cinzel', serif", fontSize: '0.75rem',
                   letterSpacing: '0.25em', textTransform: 'uppercase',
-                  color: 'rgba(180,180,180,0.3)', background: 'none', border: 'none',
+                  color: 'rgba(180,180,180,0.7)', background: 'none', border: 'none',
                   cursor: 'pointer', transition: 'color 0.2s',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.color = 'rgba(220,220,220,0.7)'; }}
@@ -7739,7 +7739,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 position: 'absolute', bottom: '28px',
                 fontFamily: "'Cinzel', serif", fontSize: '0.7rem',
                 letterSpacing: '0.3em', textTransform: 'uppercase',
-                color: 'rgba(212,175,55,0.3)',
+                color: 'rgba(212,175,55,0.7)',
                 animation: 'intro-hint-pulse 2.5s ease-in-out 1.2s infinite',
               }}>
                 {narrationIndex < NARRATION_PAGES.length - 1 ? '✦ click to continue ✦' : '✦ click to begin your journey ✦'}
@@ -7754,7 +7754,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* Step 0: Name */}
               {charCreateStep === 0 && (
                 <div key="cc-name" style={{ maxWidth: '520px', width: '100%', textAlign: 'center', animation: 'intro-fade-up 0.7s ease-out both' }}>
-                  <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '28px' }}>
+                  <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', marginBottom: '28px' }}>
                     ✶ The Narrator Speaks ✶
                   </p>
                   <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.5vw, 1.25rem)', lineHeight: 1.9, letterSpacing: '0.05em', color: 'rgba(210,190,170,0.88)', whiteSpace: 'pre-line', marginBottom: '40px' }}>
@@ -7813,7 +7813,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 ];
                 return (
                   <div key="cc-class" style={{ maxWidth: '600px', width: '100%', textAlign: 'center', animation: 'intro-fade-up 0.7s ease-out both' }}>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '20px' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', marginBottom: '20px' }}>
                       ✶ The Narrator Speaks ✶
                     </p>
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.05em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
@@ -7873,7 +7873,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 const portraits = charCreateClass ? (PORTRAIT_MAP[charCreateClass.name] || PORTRAIT_MAP.Knight) : PORTRAIT_MAP.Knight;
                 return (
                   <div key="cc-gender" style={{ maxWidth: '520px', width: '100%', textAlign: 'center', animation: 'intro-fade-up 0.7s ease-out both' }}>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '20px' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', marginBottom: '20px' }}>
                       ✶ The Narrator Speaks ✶
                     </p>
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.95rem, 2.2vw, 1.15rem)', lineHeight: 1.9, letterSpacing: '0.05em', color: 'rgba(210,190,170,0.88)', marginBottom: '32px' }}>
@@ -7941,13 +7941,13 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     }}
                     style={{ maxWidth: '560px', width: '100%', textAlign: 'center', cursor: 'pointer', animation: 'intro-fade-up 0.7s ease-out both' }}
                   >
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '28px' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(0.75rem, 1.8vw, 0.9rem)', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', marginBottom: '28px' }}>
                       ✶ The Narrator Speaks ✶
                     </p>
                     <p style={{ fontFamily: "'Cinzel', serif", fontSize: 'clamp(1rem, 2.4vw, 1.2rem)', lineHeight: 2, letterSpacing: '0.05em', color: 'rgba(245,245,220,0.93)', whiteSpace: 'pre-line', marginBottom: '12px', textShadow: '0 0 30px rgba(200,30,30,0.35)' }}>
                       {charCreateName.trim() + ".\n\n" + sendoff + "\n\nHave faith when the darkness is absolute.\nHave hope when every champion before you has failed.\nHave perseverance — because the Abyss is counting on you to stop.\n\nYour chronicle begins now."}
                     </p>
-                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '0.7rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.3)', marginTop: '40px', animation: 'intro-hint-pulse 2.5s ease-in-out 1s infinite' }}>
+                    <p style={{ fontFamily: "'Cinzel', serif", fontSize: '0.7rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)', marginTop: '40px', animation: 'intro-hint-pulse 2.5s ease-in-out 1s infinite' }}>
                       ✶ click to enter the world ✶
                     </p>
                   </div>
@@ -8014,7 +8014,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   fontSize: 'clamp(0.6rem, 1.5vw, 0.72rem)',
                   letterSpacing: '0.3em',
                   textTransform: 'uppercase',
-                  color: 'rgba(212,175,55,0.4)',
+                  color: 'rgba(212,175,55,0.7)',
                   marginBottom: '8px',
                 }}>Choose your path</p>
 
@@ -8036,7 +8036,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '240px' }}>
                   <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.2))' }} />
-                  <span style={{ color: 'rgba(212,175,55,0.25)', fontSize: '7px' }}>◆</span>
+                  <span style={{ color: 'rgba(212,175,55,0.55)', fontSize: '7px' }}>◆</span>
                   <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.2))' }} />
                 </div>
 
@@ -8045,7 +8045,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   style={{
                     fontFamily: "'Cinzel', serif", fontWeight: 600,
                     fontSize: 'clamp(0.85rem, 2vw, 1rem)', letterSpacing: '0.25em',
-                    textTransform: 'uppercase', color: 'rgba(212,175,55,0.55)',
+                    textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)',
                     background: 'none', border: 'none', padding: '12px 64px',
                     cursor: 'pointer', minWidth: '300px', transition: 'all 0.25s',
                     textShadow: '0 0 10px rgba(212,175,55,0.2)',
@@ -8085,7 +8085,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '240px' }}>
                   <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.25))' }} />
-                  <span style={{ color: 'rgba(212,175,55,0.3)', fontSize: '7px' }}>◆</span>
+                  <span style={{ color: 'rgba(212,175,55,0.7)', fontSize: '7px' }}>◆</span>
                   <div style={{ flex: 1, height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.25))' }} />
                 </div>
 
@@ -8210,7 +8210,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     style={{
                       fontFamily: "'Cinzel', serif", fontWeight: 500,
                       fontSize: 'clamp(0.8rem, 2vw, 0.95rem)', letterSpacing: '0.15em',
-                      textTransform: 'uppercase', color: 'rgba(180,180,180,0.5)',
+                      textTransform: 'uppercase', color: 'rgba(180,180,180,0.78)',
                       background: 'none', border: 'none', padding: '12px 40px',
                       cursor: 'pointer', transition: 'all 0.25s',
                     }}
@@ -8629,7 +8629,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ARCANE CONSOLE</h3>
                 <div className="flex items-center justify-center gap-2">
                   <div style={{width: '60px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.5))'}}></div>
-                  <span style={{color: 'rgba(212,175,55,0.6)', fontSize: '8px'}}>◆</span>
+                  <span style={{color: 'rgba(212,175,55,0.78)', fontSize: '8px'}}>◆</span>
                   <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))'}}></div>
                 </div>
                 <p className="text-sm italic mt-2" style={{color: '#C0C0C0'}}>"Bend reality to your will..."</p>
@@ -8682,7 +8682,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   {godMode ? '✦ GOD MODE — ACTIVE' : '✦ GOD MODE — OFF'}
                 </button>
                 {godMode && (
-                  <p className="text-xs text-center mt-2" style={{color: 'rgba(212,175,55,0.55)', fontStyle: 'italic'}}>
+                  <p className="text-xs text-center mt-2" style={{color: 'rgba(212,175,55,0.78)', fontStyle: 'italic'}}>
                     Enemies die in 1 hit · Hero immune to all damage
                   </p>
                 )}
@@ -8846,7 +8846,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* ── LOST SOULS — INDIVIDUALS ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>LOST SOULS — INDIVIDUALS</h4>
-                <p className="text-xs text-center mb-3" style={{color: 'rgba(160,145,110,0.55)', fontStyle: 'italic'}}>Each soul spawns as a solo mercy battle with Grim Idol music.</p>
+                <p className="text-xs text-center mb-3" style={{color: 'rgba(160,145,110,0.78)', fontStyle: 'italic'}}>Each soul spawns as a solo mercy battle with Grim Idol music.</p>
                 {[
                   { group: 'Zone I', souls: [
                     { img: '/cursed/young-paladin.png',       name: 'Aldric',       hp: 90,  dialogue: "I can't stop. I can't remember how." },
@@ -8902,7 +8902,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               {/* ── COMBAT — THE ORDER ── */}
               <div className="mb-4">
                 <h4 className="text-center text-sm font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>COMBAT — THE ORDER</h4>
-                <p className="text-xs text-center mb-3" style={{color: 'rgba(180,165,130,0.55)', fontStyle: 'italic'}}>Each antagonist has unique music, SFX, HP scaling, and opening dialogue.</p>
+                <p className="text-xs text-center mb-3" style={{color: 'rgba(180,165,130,0.78)', fontStyle: 'italic'}}>Each antagonist has unique music, SFX, HP scaling, and opening dialogue.</p>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
                     { id: 'cutter',   label: 'Cutter',   subtitle: 'Bandit Lord',      tier: 'Zone IV', bg: 'rgba(160,30,30,0.2)',   border: 'rgba(220,70,70,0.5)',   text: '#FF9999' },
@@ -8957,7 +8957,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     addLog('Debug: All zones unlocked');
                   }} className="bg-yellow-900 hover:bg-yellow-800 px-4 py-2 rounded text-xs border border-yellow-700" style={{color: '#F5F5DC'}}>Unlock All Zones</button>
                 </div>
-                <p className="text-xs text-center mb-2" style={{color: 'rgba(160,145,110,0.6)'}}>Unlock by zone:</p>
+                <p className="text-xs text-center mb-2" style={{color: 'rgba(160,145,110,0.78)'}}>Unlock by zone:</p>
                 <div className="grid grid-cols-5 gap-2">
                   {[1,2,3,4,5].map(z => {
                     const zoneIds = LOCATION_CONTRACTS.filter(lc => lc.zone === z).map(lc => lc.id);
@@ -9503,7 +9503,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px',
             animation: 'day-banner-sub 2.4s ease-in-out forwards' }}>
             <div style={{ width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.6))' }} />
-            <span style={{ color: 'rgba(212,175,55,0.5)', fontSize: '9px', letterSpacing: '0.5em' }}>DAY {dayBannerOverlay.day}</span>
+            <span style={{ color: 'rgba(212,175,55,0.78)', fontSize: '9px', letterSpacing: '0.5em' }}>DAY {dayBannerOverlay.day}</span>
             <div style={{ width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.6))' }} />
           </div>
           {/* Day number slam */}

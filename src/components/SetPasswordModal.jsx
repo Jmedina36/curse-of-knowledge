@@ -47,7 +47,7 @@ export default function SetPasswordModal({ onClose }) {
         boxShadow: '0 20px 60px rgba(0,0,0,0.8)', overflow: 'hidden',
       }}>
         <div style={{ padding: '28px 28px 8px', textAlign: 'center' }}>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.45)', textTransform: 'uppercase', margin: '0 0 6px' }}>Account Security</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.2em', color: 'rgba(212,175,55,0.7)', textTransform: 'uppercase', margin: '0 0 6px' }}>Account Security</p>
           <h2 style={{ fontFamily: 'Cinzel, serif', fontSize: '1.2rem', color: 'rgba(212,175,55,0.9)', fontWeight: 'normal', margin: 0 }}>Set New Password</h2>
         </div>
 

@@ -263,7 +263,7 @@ const HealerModal = ({
             }}
           />
           <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: green, letterSpacing: '0.1em', textAlign: 'center' }}>SISTER MARA</p>
-          <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.6)', fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
+          <p style={{ fontSize: '11px', color: 'rgba(212,175,55,0.78)', fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Apothecary & Healer</p>
           <div style={{
             marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
             background: 'rgba(0,20,15,0.9)', border: `1px solid ${greenBorder}`,
@@ -333,7 +333,7 @@ const HealerModal = ({
               }}>
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: greenDim, marginBottom: '6px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Current HP</p>
                 <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '2rem', color: hp / maxHp < 0.25 ? '#EF4444' : '#fff', marginBottom: '8px' }}>
-                  {hp} <span style={{ fontSize: '1rem', color: 'rgba(245,245,220,0.4)' }}>/ {maxHp}</span>
+                  {hp} <span style={{ fontSize: '1rem', color: 'rgba(245,245,220,0.7)' }}>/ {maxHp}</span>
                 </p>
                 {/* HP bar */}
                 <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
@@ -343,7 +343,7 @@ const HealerModal = ({
                     borderRadius: '3px', transition: 'width 0.3s ease',
                   }}/>
                 </div>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: 'rgba(212,175,55,0.4)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', color: 'rgba(212,175,55,0.7)', marginTop: '6px' }}>{costPerHp} gold per HP</p>
               </div>
 
               {missing > 0 ? (
@@ -417,7 +417,7 @@ const HealerModal = ({
                   );
                 })}
               </div>
-              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)', marginBottom: '16px', textAlign: 'center' }}>
+              <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)', marginBottom: '16px', textAlign: 'center' }}>
                 Gold on hand: <span style={{ color: '#D4AF37', fontWeight: 700 }}>{gold}</span>
               </p>
 
@@ -461,7 +461,7 @@ const HealerModal = ({
 
               {/* ── GEMS (BUY) ── */}
               {suppliesMode === 'buy' && <div style={{ marginTop: '24px', borderTop: '1px solid rgba(212,175,55,0.2)', paddingTop: '20px' }}>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.82rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.5)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.82rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', marginBottom: '14px', textAlign: 'center' }}>Arcane Shards — Single Use</p>
                 {[
                   { type: 'ruby',   img: '/items/GEM-4.png', name: 'Ruby Shard',     effect: '+15% max HP for today',           effectColor: '#FF6B6B', border: 'rgba(180,35,35,0.5)',    price: 200, activeFlag: rubyGemActive },
                   { type: 'blue',   img: '/items/GEM-2.png', name: 'Sapphire Shard', effect: '+15% max Stamina for today',      effectColor: '#6BB6FF', border: 'rgba(59,130,246,0.5)',   price: 150, activeFlag: sapphireGemActive },
@@ -538,7 +538,7 @@ const HealerModal = ({
                   ]} />
                   {sellItems.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px 20px', border: '1px solid rgba(212,175,55,0.15)', borderRadius: '10px', background: VISUAL_STYLES.card.default }}>
-                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', color: 'rgba(212,175,55,0.45)' }}>Nothing to sell.</p>
+                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', color: 'rgba(212,175,55,0.7)' }}>Nothing to sell.</p>
                   </div>
                   ) : (
                   sellItems.map(({ key, emoji, name, count, border, setCount }) => {
@@ -595,7 +595,7 @@ const HealerModal = ({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.35)', marginBottom: '10px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.7)', marginBottom: '10px' }}>
               CONFIRM SALE
             </p>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: '#F5F5DC', marginBottom: '4px' }}>
@@ -607,7 +607,7 @@ const HealerModal = ({
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => { sounds.click(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.45)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.7)', cursor: 'pointer' }}
               >Cancel</button>
               <button
                 onClick={() => { sounds.click(); sellConfirm.onConfirm(); setSellConfirm(null); }}

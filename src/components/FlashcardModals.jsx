@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { X, Check } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
@@ -98,7 +98,7 @@ const FlashcardModals = ({
           <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>CREATE DECK</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
           <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Forge knowledge in the fires of determination..."</p>
@@ -182,7 +182,7 @@ const FlashcardModals = ({
           <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>ADD CARD</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
           <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"{flashcardDecks[selectedDeck].name}"</p>
@@ -325,7 +325,7 @@ const FlashcardModals = ({
           <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em', fontFamily: 'Cinzel, serif'}}>{flashcardDecks[selectedDeck].name}</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
           <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Each card brings you closer to mastery..."</p>
@@ -508,7 +508,7 @@ const FlashcardModals = ({
               <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em', fontFamily: 'Cinzel, serif'}}>{flashcardDecks[selectedDeck].name}</h2>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-                <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+                <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
                 <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
               </div>
               <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Test your knowledge in the crucible of trial..."</p>
@@ -649,7 +649,7 @@ const FlashcardModals = ({
             <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>TRIAL COMPLETE</h2>
             <div className="flex items-center justify-center gap-2 mb-4">
               <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-              <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+              <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
               <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
             </div>
             <p className="text-5xl font-bold mb-4" style={{color: '#F5F5DC'}}>{quizScore} / {quizQuestions.length}</p>
@@ -795,7 +795,7 @@ const FlashcardModals = ({
           <h2 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em', fontFamily: 'Cinzel, serif'}}>{flashcardDecks[selectedDeck].name}</h2>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '150px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
           <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"Match the pairs before time slips away..."</p>
@@ -956,7 +956,7 @@ const FlashcardModals = ({
           <h3 className="text-3xl font-bold mb-2" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>NEW TRIAL</h3>
           <div className="flex items-center justify-center gap-2 mb-2">
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3))'}}></div>
-            <span style={{color: 'rgba(212, 175, 55, 0.4)', fontSize: '8px'}}>◆</span>
+            <span style={{color: 'rgba(212,175,55,0.7)', fontSize: '8px'}}>◆</span>
             <div style={{width: '120px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212, 175, 55, 0.3))'}}></div>
           </div>
           <p className="text-sm mt-2 italic" style={{color: COLORS.silver}}>"The darkness demands sacrifice..."</p>

@@ -524,7 +524,7 @@ const InventoryModal = ({
                     {equippedGrimoire.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '9px' }}>+{Math.floor(equippedGrimoire.affixes.xpBonus)}% XP</p>}
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
+                  <p style={{ color: 'rgba(192,192,192,0.55)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
                 )}
               </div>
               <div style={slotBox(equippedTome)}>
@@ -540,7 +540,7 @@ const InventoryModal = ({
                     {equippedTome.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '9px' }}>+{Math.floor(equippedTome.affixes.goldBonus)}% Gold</p>}
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(192,192,192,0.18)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
+                  <p style={{ color: 'rgba(192,192,192,0.55)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
                 )}
               </div>
             </div>

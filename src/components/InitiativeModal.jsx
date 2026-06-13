@@ -78,7 +78,7 @@ const InitiativeModal = ({ data, onClose }) => {
         }}>
           <p style={{
             fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.5em',
-            textTransform: 'uppercase', color: 'rgba(245,245,220,0.3)', margin: 0,
+            textTransform: 'uppercase', color: 'rgba(245,245,220,0.7)', margin: 0,
           }}>
             Initiative
           </p>
@@ -89,13 +89,13 @@ const InitiativeModal = ({ data, onClose }) => {
 
           {/* Player */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.3)', textTransform: 'uppercase', margin: 0 }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.7)', textTransform: 'uppercase', margin: 0 }}>
               You
             </p>
             <DiceD20 roll={playerRoll} color={playerColor} glow={playerGlow} size={82} rolling />
             <div>
               {playerMod !== 0 && (
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(245,245,220,0.35)', margin: '0 0 2px', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(245,245,220,0.7)', margin: '0 0 2px', textAlign: 'center' }}>
                   {playerRoll} {playerMod > 0 ? '+' : ''}{playerMod} DEX
                 </p>
               )}
@@ -110,19 +110,19 @@ const InitiativeModal = ({ data, onClose }) => {
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
             <div style={{ width: '1px', height: '36px', background: 'rgba(245,245,220,0.07)' }} />
             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900, letterSpacing: '0.2em',
-              color: 'rgba(245,245,220,0.18)', margin: 0 }}>VS</p>
+              color: 'rgba(245,245,220,0.55)', margin: 0 }}>VS</p>
             <div style={{ width: '1px', height: '36px', background: 'rgba(245,245,220,0.07)' }} />
           </div>
 
           {/* Enemy */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.3)', textTransform: 'uppercase', margin: 0 }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.35em', color: 'rgba(245,245,220,0.7)', textTransform: 'uppercase', margin: 0 }}>
               Enemy
             </p>
             <DiceD20 roll={enemyRoll} color={enemyColor} glow={enemyGlow} size={82} rolling />
             <div>
               {enemyMod !== 0 && (
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(245,245,220,0.35)', margin: '0 0 2px', textAlign: 'center' }}>
+                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(245,245,220,0.7)', margin: '0 0 2px', textAlign: 'center' }}>
                   {enemyRoll} +{enemyMod} mod
                 </p>
               )}
@@ -151,7 +151,7 @@ const InitiativeModal = ({ data, onClose }) => {
           }}>
             {config.label}
           </p>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', color: 'rgba(245,245,220,0.4)', margin: 0, letterSpacing: '0.05em' }}>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', color: 'rgba(245,245,220,0.7)', margin: 0, letterSpacing: '0.05em' }}>
             {config.sub}
           </p>
         </motion.div>

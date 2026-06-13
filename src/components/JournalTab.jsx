@@ -88,7 +88,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             fontFamily: 'Cinzel, serif',
             fontSize: '0.72rem',
             letterSpacing: '0.1em',
-            color: 'rgba(212,175,55,0.55)',
+            color: 'rgba(212,175,55,0.78)',
             textTransform: 'uppercase',
             margin: '0 0 4px',
           }}>Field Journal</p>
@@ -118,7 +118,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             fontFamily: 'Cinzel, serif',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
-            color: 'rgba(212,175,55,0.45)',
+            color: 'rgba(212,175,55,0.7)',
           }}>
             Prologue
           </div>
@@ -206,7 +206,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                     ) : (
                       <div style={{
                         fontSize: '0.82rem',
-                        color: 'rgba(100,90,70,0.4)',
+                        color: 'rgba(100,90,70,0.7)',
                         fontStyle: 'italic', lineHeight: 1.6,
                         letterSpacing: '0.05em',
                       }}>
@@ -244,7 +244,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                 fontFamily: 'Cinzel, serif',
                 fontSize: '0.75rem',
                 letterSpacing: '0.1em',
-                color: 'rgba(212,175,55,0.6)',
+                color: 'rgba(212,175,55,0.78)',
                 textTransform: 'uppercase',
               }}>
                 What I Know
@@ -277,7 +277,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
           <div style={{ maxWidth: '620px' }}>
             <div style={{
               fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.15em',
-              color: 'rgba(212,175,55,0.4)', textTransform: 'uppercase', marginBottom: '6px',
+              color: 'rgba(212,175,55,0.7)', textTransform: 'uppercase', marginBottom: '6px',
             }}>
               Prologue · {PROLOGUE_ENTRY.location}
             </div>
@@ -308,7 +308,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               fontFamily: 'Cinzel, serif',
               fontSize: '0.6rem',
               letterSpacing: '0.15em',
-              color: 'rgba(212,175,55,0.45)',
+              color: 'rgba(212,175,55,0.7)',
               textTransform: 'uppercase',
               marginBottom: '6px',
             }}>
@@ -342,7 +342,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontSize: '0.6rem',
-                    color: 'rgba(212,175,55,0.55)',
+                    color: 'rgba(212,175,55,0.78)',
                     fontFamily: 'Cinzel, serif',
                     marginTop: '1px',
                   }}>
@@ -370,7 +370,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               fontFamily: 'Cinzel, serif',
               fontSize: '0.6rem',
               letterSpacing: '0.15em',
-              color: 'rgba(212,175,55,0.4)',
+              color: 'rgba(212,175,55,0.7)',
               textTransform: 'uppercase',
               marginBottom: '6px',
             }}>
@@ -417,7 +417,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                 <p style={{
                   fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 700,
                   letterSpacing: '0.25em', textTransform: 'uppercase',
-                  color: 'rgba(212,160,30,0.6)', margin: '0 0 8px',
+                  color: 'rgba(212,160,30,0.78)', margin: '0 0 8px',
                 }}>Intel Recovered</p>
                 <p style={{
                   fontSize: '0.8rem', lineHeight: 1.7,
@@ -434,7 +434,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
               paddingTop: '16px',
               borderTop: '1px solid rgba(212,175,55,0.12)',
               fontSize: '0.75rem',
-              color: 'rgba(140,125,95,0.5)',
+              color: 'rgba(140,125,95,0.78)',
               fontFamily: 'Cinzel, serif',
               letterSpacing: '0.08em',
             }}>
