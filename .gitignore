@@ -6,3 +6,6 @@ build/
 .env*.local
 .DS_Store
 .vscode/
+
+# Third-party asset source packs — only the curated copies in public/skills/ ship
+public/250 WARRIOR ICONS*
