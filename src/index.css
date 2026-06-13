@@ -15,4 +15,29 @@
   button:not(:disabled):hover {
     opacity: 0.85;
   }
+
+  /* Images fade in on load (class added by the capture-phase listener in
+     main.jsx). Images with an inline opacity style are unaffected — inline
+     wins — and simply skip the fade. */
+  img {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  img.img-loaded {
+    opacity: 1;
+  }
+}
+
+/* Respect the OS reduced-motion setting: collapse animations and
+   transitions to imperceptible durations. Framer Motion is handled
+   separately via MotionConfig reducedMotion="user" in main.jsx. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
