@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Hammer, Plus, Sparkles, X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
+import { CornerFrame } from './Ornaments';
 
 const RYLAN_IDLE = [
   "Pain is just weakness leaving the mind. Now open a deck.",
@@ -105,6 +106,7 @@ const ForgeTab = ({
       )}
 
     <div style={{
+      position: 'relative',
       width: showNPC ? 'min(60vw, 900px)' : 'min(90vw, calc(100vw - 32px))',
       margin: '0 auto',
       height: 'calc(100vh - 180px)',
@@ -114,6 +116,7 @@ const ForgeTab = ({
       backgroundImage: 'url(/Stonewall1.png)',
       backgroundSize: 'cover', backgroundPosition: 'center',
     }}>
+      <CornerFrame size={28} opacity={0.5} offset={10} />
 
       <div style={{ flexShrink: 0, padding: '16px 24px 0', background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
         {onClose && (

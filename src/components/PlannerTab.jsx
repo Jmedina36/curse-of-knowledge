@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GripVertical, Plus, X } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
+import { CornerFrame } from './Ornaments';
 
 const PlannerTab = ({
   weeklyPlan,
@@ -30,6 +31,7 @@ const PlannerTab = ({
 }) => {
   return (
     <div style={{
+      position: 'relative',
       height: 'calc(100vh - 180px)',
       display: 'flex',
       flexDirection: 'column',
@@ -37,6 +39,7 @@ const PlannerTab = ({
       border: '2px solid rgba(212, 175, 55, 0.6)',
       borderRadius: '12px',
     }}>
+      <CornerFrame size={28} opacity={0.5} offset={10} />
 
       {/* Fixed header section */}
       <div style={{ flexShrink: 0, padding: '16px 24px 0' }}>

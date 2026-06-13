@@ -8265,12 +8265,15 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         </div>
 
         {/* Navigation Section - Full Width */}
-        <nav className="flex flex-wrap gap-4 justify-center items-center mb-8 py-3 border-b-2" style={{
+        <nav className="flex flex-wrap gap-4 justify-center items-center mb-8 py-3 relative" style={{
           marginLeft: 'calc(-50vw + 50%)',
           marginRight: 'calc(-50vw + 50%)',
-          borderColor: 'rgba(212, 175, 55, 0.2)',
+          borderTop: '1px solid rgba(212, 175, 55, 0.16)',
+          borderBottom: '1px solid rgba(212, 175, 55, 0.38)',
           background: 'linear-gradient(to bottom, rgba(28, 22, 14, 0.6), rgba(18, 14, 9, 0.6))',
-          boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.3)'
+          // inner darkening + a faint second gold rule above the bottom edge
+          // (double-rule effect) + a soft drop shadow for depth
+          boxShadow: 'inset 0 0 30px rgba(0, 0, 0, 0.3), inset 0 -3px 0 -1px rgba(212, 175, 55, 0.13), 0 2px 10px rgba(0, 0, 0, 0.4)'
         }}>
           {[
                 {id:'quest', icon:Sword, label:'Guild'},

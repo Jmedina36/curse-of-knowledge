@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { sounds } from '../sounds';
+import { CornerFrame, FlourishDivider } from './Ornaments';
 import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE, CRUSADER_SKILL_TREE } from '../constants';
 
 const SOREN_QUOTES = [
@@ -295,6 +296,7 @@ const HeroTab = ({
 
       {/* ── Main panel ── */}
       <div style={{
+        position: 'relative',
         background: 'rgba(6,5,3,0.96)',
         border: '1px solid rgba(212,175,55,0.18)',
         borderRadius: '4px',
@@ -304,6 +306,7 @@ const HeroTab = ({
         height: isNarrow ? 'auto' : 'calc(100vh - 180px)',
         minHeight: isNarrow ? 0 : '560px',
       }}>
+        <CornerFrame size={28} opacity={0.45} offset={8} />
 
         {/* LEFT: Portrait column */}
         <div style={{
@@ -450,7 +453,7 @@ const HeroTab = ({
                   </span>
                 )}
               </div>
-              <Divider gold />
+              <FlourishDivider width="120px" margin="8px auto 10px" />
 
               <StatRowStatic label="Level"    value={level}              highlight />
               <StatRowStatic label="Day"      value={currentDay} />
