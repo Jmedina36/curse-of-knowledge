@@ -46,7 +46,7 @@ const CalendarModal = ({
           <X size={20}/>
         </button>
         <div className="text-center">
-          <div className="text-4xl font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em'}}>
+          <div className="font-bold" style={{color: '#D4AF37', letterSpacing: '0.1em', fontSize: 'clamp(1.5rem, 7vw, 2.25rem)'}}>
   {(() => {
     const [year, month, day] = selectedDate.split('-').map(Number);
     const date = new Date(year, month - 1, day);
@@ -55,7 +55,7 @@ const CalendarModal = ({
     return (
       <>
         <div>{weekday}</div>
-        <div className="text-2xl mt-1">{monthDay}</div>
+        <div className="mt-1" style={{fontSize: 'clamp(1.1rem, 4.5vw, 1.5rem)'}}>{monthDay}</div>
       </>
     );
   })()}
