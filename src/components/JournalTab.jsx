@@ -350,8 +350,8 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   </div>
                   <p style={{
                     fontFamily: 'EB Garamond, serif',
-                    fontSize: '1.25rem',
-                    lineHeight: 1.6,
+                    fontSize: '1.45rem',
+                    lineHeight: 1.55,
                     color: 'rgba(210,195,165,0.85)',
                     margin: 0,
                   }}>
@@ -421,7 +421,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   color: 'rgba(212,160,30,0.78)', margin: '0 0 8px',
                 }}>Intel Recovered</p>
                 <p style={{
-                  fontSize: '1.1rem', lineHeight: 1.6,
+                  fontSize: '1.25rem', lineHeight: 1.55,
                   color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic',
                 }}>
                   {selectedContract.encounter.intelNote}
