@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES } from '../constants';
 import { CREATURE_INDEX } from '../creatures';
@@ -369,7 +369,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
               borderBottom: '7px solid transparent',
               borderLeft: '8px solid rgba(10,8,4,0.85)',
             }} />
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '11px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
+            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '11px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, margin: 0 }}>
               "{kaelQuote}"
             </p>
           </div>

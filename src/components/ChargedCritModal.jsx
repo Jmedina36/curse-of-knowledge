@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DiceD20 from './DiceD20';
 import useEscapeClose from '../hooks/useEscapeClose';
@@ -74,7 +74,7 @@ const ChargedCritModal = ({ data, onClose }) => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.65 }}
           style={{
-            fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontStyle: 'italic', lineHeight: 1.6,
+            fontFamily: 'EB Garamond, serif', fontSize: '0.6rem', fontStyle: 'italic', lineHeight: 1.6,
             color: 'rgba(245,245,220,0.7)', marginBottom: '10px',
           }}
         >"{tier.sub}"</motion.p>

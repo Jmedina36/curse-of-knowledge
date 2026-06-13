@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { getCreatureQuality } from '../creatures';
@@ -1130,7 +1130,7 @@ const BattleModal = ({
                   style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid ' + borderColor, boxShadow: '0 0 24px ' + glowColor + ', inset 0 1px 0 rgba(255,255,255,0.04)' }}
                 >
                   <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid ' + borderColor }} />
-                  <p className="text-xl italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'Cinzel, serif' }}>
+                  <p className="text-xl italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'EB Garamond, serif' }}>
                     "<TypewriterText key={dialogueText} text={dialogueText} speed={20} />"
                   </p>
                 </motion.div>
@@ -1254,7 +1254,7 @@ const BattleModal = ({
                 style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid rgba(104,211,145,0.6)', boxShadow: '0 0 20px rgba(104,211,145,0.12), inset 0 1px 0 rgba(255,255,255,0.04)' }}
               >
                 <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid rgba(104,211,145,0.6)' }} />
-                <p className="text-base italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'Cinzel, serif' }}>
+                <p className="text-base italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'EB Garamond, serif' }}>
                   "<TypewriterText key={heroDialogue} text={heroDialogue} speed={22} />"
                 </p>
                 <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.15em', color: 'rgba(104,211,145,0.78)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>

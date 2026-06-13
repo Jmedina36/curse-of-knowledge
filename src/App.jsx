@@ -7397,11 +7397,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Pirata+One&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&display=swap');
-        
+
         * {
           font-family: 'Cinzel', serif;
+        }
+
+        /* Typography hierarchy: structural text (headers, labels, stats,
+           buttons) stays Cinzel; prose/flavor/quotes switch to the humanist
+           EB Garamond, which reads far better at body sizes. Italic inline
+           style is the app's flavor-text signal — the attribute selector
+           outranks the global * rule, so most flavor text converts with no
+           per-element edits. Slightly larger to match Cinzel's x-height. */
+        [style*="italic"] {
+          font-family: 'EB Garamond', 'Cinzel', serif;
+          font-size: 1.04em;
         }
         
         @keyframes pulse-glow {
