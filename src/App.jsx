@@ -1,19 +1,17 @@
 ﻿// FANTASY STUDY QUEST - v4.15.1
 // Refactored: App.jsx split into components
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from './sounds';
 import { audioManager, TRACKS } from './audioManager';
 import { Sword, Play, Calendar, Map, BookOpen, Settings, ScrollText, LogIn, LogOut } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS, HERO_TITLES, globalStyles, STARTING_ABILITIES, PRIMARY_ABILITY, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE, CRUSADER_SKILL_TREE } from './constants';
 import { pickCreatureForDay, pickCreatureForZone, rollCreatureStats, CREATURE_INDEX } from './creatures';
-import WorldMapTab from './components/WorldMapTab';
 import QuestTab from './components/QuestTab';
 import ContractsTab from './components/ContractsTab';
 import PlannerTab from './components/PlannerTab';
 import ForgeTab from './components/ForgeTab';
-import BestiaryTab from './components/BestiaryTab';
 import JournalTab from './components/JournalTab';
 import InventoryModal from './components/InventoryModal';
 import CraftingModal from './components/CraftingModal';
@@ -32,12 +30,24 @@ import { DAILY_ENCOUNTERS } from './data/encounters';
 import { LOCATION_CONTRACTS, REWARD_LABELS } from './data/locationContracts';
 import HeroTab from './components/HeroTab';
 import CalendarModal from './components/CalendarModal';
-import BattleModal from './components/BattleModal';
 import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
 import SetPasswordModal from './components/SetPasswordModal';
 import { supabase } from './lib/supabase';
 import { loadSave, writeSave } from './lib/saveManager';
+
+// Code-split the heaviest components — loaded on first use, not at startup
+const WorldMapTab = lazy(() => import('./components/WorldMapTab'));
+const BestiaryTab = lazy(() => import('./components/BestiaryTab'));
+const BattleModal = lazy(() => import('./components/BattleModal'));
+
+const TabLoading = () => (
+  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '120px 0' }}>
+    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.45)' }}>
+      Loading…
+    </p>
+  </div>
+);
 
 const NARRATION_PAGES = [
   "Once, knowledge kept the darkness at bay.\n\nScholars, warriors, seekers of truth. They held the line together.\n\nThen, one by one, they stopped.",
@@ -8396,6 +8406,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {activeTab === 'bestiary' && (
+            <Suspense fallback={<TabLoading />}>
             <BestiaryTab
               defeatedFactionMembers={defeatedFactionMembers}
               restedCursed={restedCursed}
@@ -8406,6 +8417,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               discoveredCreatures={discoveredCreatures}
               onClose={() => setActiveTab('quest')}
             />
+            </Suspense>
           )}
           {activeTab === 'hero' && (
             <HeroTab
@@ -8433,6 +8445,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {activeTab === 'map' && (
+            <Suspense fallback={<TabLoading />}>
             <WorldMapTab
               currentDay={currentDay}
               level={level}
@@ -8603,6 +8616,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               onEliteBoss={miniBoss}
               onFinalBoss={finalBoss}
             />
+            </Suspense>
           )}
           {activeTab === 'debug' && (
             <div className="max-w-4xl mx-auto mb-6 rounded-xl p-6 border-2 relative" style={{
@@ -9321,6 +9335,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {showBoss && (
+            <Suspense fallback={<div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.88)' }} />}>
             <BattleModal
               bossHp={bossHp} bossMax={bossMax} bossName={bossName}
               bossFlash={bossFlash} bossDebuffs={bossDebuffs} enragedTurns={enragedTurns}
@@ -9374,6 +9389,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               playerStunned={playerStunned} setPlayerStunned={setPlayerStunned}
               currentBattleCreature={currentBattleCreature}
             />
+            </Suspense>
           )}
           {showPomodoro && pomodoroTask && (
             <PomodoroModal
