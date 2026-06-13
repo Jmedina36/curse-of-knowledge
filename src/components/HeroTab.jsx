@@ -387,26 +387,30 @@ const HeroTab = ({
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
           {/* ── Tab bar ── */}
-          <div style={{ display: 'flex', borderBottom: '1px solid rgba(212,175,55,0.12)', flexShrink: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', padding: '14px 20px', borderBottom: '1px solid rgba(212,175,55,0.12)', flexShrink: 0 }}>
             {[
               { id: 'chronicle', label: 'Chronicle' },
               { id: 'skills',    label: 'Skills', badge: skillPoints > 0 ? skillPoints : null },
-            ].map(tab => (
+            ].map(tab => {
+              const active = activePanel === tab.id;
+              return (
               <button
                 key={tab.id}
                 onClick={() => setActivePanel(tab.id)}
                 style={{
-                  fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900,
+                  fontFamily: 'Cinzel, serif', fontSize: '0.8rem', fontWeight: 900,
                   letterSpacing: '0.2em', textTransform: 'uppercase',
-                  padding: '12px 22px', border: 'none', cursor: 'pointer',
-                  background: 'none',
-                  color: activePanel === tab.id ? 'rgba(212,175,55,0.9)' : 'rgba(160,145,110,0.35)',
-                  borderBottom: activePanel === tab.id ? '2px solid rgba(212,175,55,0.6)' : '2px solid transparent',
+                  padding: '10px 32px', cursor: 'pointer',
+                  background: active ? 'rgba(184,134,11,0.4)' : 'rgba(0,0,0,0.3)',
+                  border: `2px solid ${active ? 'rgba(212,175,55,0.7)' : 'rgba(155,139,126,0.25)'}`,
+                  borderRadius: '8px',
+                  color: active ? '#D4AF37' : 'rgba(245,245,220,0.5)',
+                  boxShadow: active ? '0 0 12px rgba(212,175,55,0.15)' : 'none',
                   transition: 'all 0.15s',
                   display: 'flex', alignItems: 'center', gap: '8px',
                 }}
-                onMouseEnter={e => { if (activePanel !== tab.id) e.currentTarget.style.color = 'rgba(212,175,55,0.55)'; }}
-                onMouseLeave={e => { if (activePanel !== tab.id) e.currentTarget.style.color = 'rgba(160,145,110,0.35)'; }}
+                onMouseEnter={e => { if (!active) { e.currentTarget.style.color = 'rgba(212,175,55,0.75)'; e.currentTarget.style.borderColor = 'rgba(212,175,55,0.4)'; } }}
+                onMouseLeave={e => { if (!active) { e.currentTarget.style.color = 'rgba(245,245,220,0.5)'; e.currentTarget.style.borderColor = 'rgba(155,139,126,0.25)'; } }}
               >
                 {tab.label}
                 {tab.badge && (
@@ -418,7 +422,7 @@ const HeroTab = ({
                   }}>{tab.badge}</span>
                 )}
               </button>
-            ))}
+            );})}
           </div>
 
           {/* ── Chronicle panel ── */}
