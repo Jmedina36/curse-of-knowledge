@@ -110,6 +110,40 @@ export default function JournalTab({ completedLocationContracts = [] }) {
           </div>
         </div>
 
+        {/* What I Know — pinned at top so the running assessment is easy to find */}
+        {unlockedDeductions.length > 0 && (
+          <button
+            onClick={() => setSelectedId(selectedId === '__deductions__' ? null : '__deductions__')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '8px',
+              textAlign: 'left', cursor: 'pointer',
+              margin: '12px 12px 4px', width: 'calc(100% - 24px)',
+              padding: '10px 12px', borderRadius: '6px',
+              background: selectedId === '__deductions__' ? 'rgba(212,175,55,0.16)' : 'rgba(212,175,55,0.06)',
+              border: `1px solid ${selectedId === '__deductions__' ? 'rgba(212,175,55,0.6)' : 'rgba(212,175,55,0.28)'}`,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { if (selectedId !== '__deductions__') e.currentTarget.style.background = 'rgba(212,175,55,0.11)'; }}
+            onMouseLeave={e => { if (selectedId !== '__deductions__') e.currentTarget.style.background = 'rgba(212,175,55,0.06)'; }}
+          >
+            <span style={{ fontSize: '0.9rem' }}>📜</span>
+            <div>
+              <div style={{
+                fontFamily: 'Cinzel, serif', fontSize: '0.75rem', letterSpacing: '0.1em',
+                color: 'rgba(212,175,55,0.9)', textTransform: 'uppercase', fontWeight: 700,
+              }}>
+                What I Know
+              </div>
+              <div style={{
+                fontFamily: 'EB Garamond, serif', fontStyle: 'italic',
+                fontSize: '0.8rem', color: 'rgba(190,170,130,0.7)', lineHeight: 1.3,
+              }}>
+                {unlockedDeductions.length} {unlockedDeductions.length === 1 ? 'deduction' : 'deductions'}
+              </div>
+            </div>
+          </button>
+        )}
+
         {/* Prologue — always visible */}
         <div>
           <div style={{
@@ -220,38 +254,6 @@ export default function JournalTab({ completedLocationContracts = [] }) {
           );
         })}
 
-        {/* What I Know section */}
-        {unlockedDeductions.length > 0 && (
-          <div style={{
-            marginTop: 'auto',
-            borderTop: '1px solid rgba(212,175,55,0.15)',
-            padding: '14px 16px',
-          }}>
-            <button
-              onClick={() => setSelectedId(selectedId === '__deductions__' ? null : '__deductions__')}
-              style={{
-                display: 'block',
-                width: '100%',
-                textAlign: 'left',
-                background: selectedId === '__deductions__' ? 'rgba(212,175,55,0.1)' : 'transparent',
-                border: 'none',
-                borderLeft: selectedId === '__deductions__' ? '2px solid rgba(212,175,55,0.5)' : '2px solid transparent',
-                padding: '6px 0',
-                cursor: 'pointer',
-              }}
-            >
-              <div style={{
-                fontFamily: 'Cinzel, serif',
-                fontSize: '0.75rem',
-                letterSpacing: '0.1em',
-                color: 'rgba(212,175,55,0.78)',
-                textTransform: 'uppercase',
-              }}>
-                What I Know
-              </div>
-            </button>
-          </div>
-        )}
       </div>
 
       {/* ── Right panel: entry detail ──────────────────────────────────── */}
