@@ -86,7 +86,7 @@ export default function AuthModal({ onClose, onSignIn }) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.88)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
-      <div style={{ width: '360px', background: 'linear-gradient(to bottom, rgba(30,18,8,0.98), rgba(15,8,3,0.98))', border: '1px solid rgba(212,175,55,0.25)', borderRadius: '10px', boxShadow: '0 0 40px rgba(0,0,0,0.8)', overflow: 'hidden' }}>
+      <div style={{ width: '100%', maxWidth: '360px', margin: '0 16px', background: 'linear-gradient(to bottom, rgba(30,18,8,0.98), rgba(15,8,3,0.98))', border: '1px solid rgba(212,175,55,0.25)', borderRadius: '10px', boxShadow: '0 0 40px rgba(0,0,0,0.8)', overflow: 'hidden' }}>
 
         {/* Header */}
         <div style={{ padding: '24px 24px 16px', textAlign: 'center' }}>
