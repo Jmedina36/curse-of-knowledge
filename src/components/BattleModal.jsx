@@ -1471,7 +1471,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.05em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.78rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.02em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
@@ -1547,7 +1547,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.05em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.78rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.02em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
@@ -1630,7 +1630,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.05em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.78rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.02em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>
@@ -1706,7 +1706,7 @@ const BattleModal = ({
                                   )}
                                 </div>
                                 <div style={{ textAlign: 'right' }}>
-                                  <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.05em' }}>{sk.desc}</div>
+                                  <div style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.78rem', color: 'rgba(200,185,155,0.78)', letterSpacing: '0.02em' }}>{sk.desc}</div>
                                   <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: noSP ? 'rgba(220,80,80,0.7)' : 'rgba(100,180,240,0.6)', marginTop: '2px' }}>
                                     {noSP ? 'Not enough SP' : `${sk.spCost} SP`}
                                   </div>

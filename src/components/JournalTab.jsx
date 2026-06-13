@@ -349,8 +349,9 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                     {i + 1}
                   </div>
                   <p style={{
-                    fontSize: '0.82rem',
-                    lineHeight: 1.75,
+                    fontFamily: 'EB Garamond, serif',
+                    fontSize: '0.9rem',
+                    lineHeight: 1.7,
                     color: 'rgba(210,195,165,0.85)',
                     margin: 0,
                   }}>

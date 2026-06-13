@@ -9437,7 +9437,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 <h3 className="font-bold text-xl mb-1" style={{color: COLORS.gold}}>
                   {showAchievementNotification.name}
                 </h3>
-                <p className="text-sm mb-2" style={{color: COLORS.silver}}>
+                <p className="text-sm mb-2" style={{color: COLORS.silver, fontFamily: 'EB Garamond, serif'}}>
                   {showAchievementNotification.desc}
                 </p>
               </div>

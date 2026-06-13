@@ -70,8 +70,8 @@ const EncounterModal = ({ encounter, onAccept }) => {
 
           {/* Description */}
           <p style={{
-            fontFamily: 'Cinzel, serif',
-            fontSize: '0.88rem',
+            fontFamily: 'EB Garamond, serif',
+            fontSize: '0.95rem',
             color: 'rgba(245,245,220,0.75)',
             lineHeight: 1.7,
             marginBottom: '12px',

@@ -128,8 +128,8 @@ const ASIModal = ({ hero, newLevel, onClose }) => {
                   </span>
                 </div>
                 <p style={{
-                  fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
-                  color: 'rgba(245,245,220,0.7)', lineHeight: 1.3, margin: 0,
+                  fontFamily: 'EB Garamond, serif', fontSize: '0.72rem',
+                  color: 'rgba(245,245,220,0.7)', lineHeight: 1.35, margin: 0,
                 }}>{info.desc}</p>
               </motion.button>
             );

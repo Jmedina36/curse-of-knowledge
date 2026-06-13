@@ -316,7 +316,7 @@ const InventoryModal = ({
         <span style={{ fontSize: '22px' }}>{emoji}</span>
         <div style={{ flex: 1 }}>
           <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{name}</p>
-          <p style={{ color, fontSize: '11px' }}>{desc}</p>
+          <p style={{ color, fontSize: '12px', fontFamily: 'EB Garamond, serif' }}>{desc}</p>
         </div>
         <span style={{ color, fontWeight: 700, fontSize: '18px', minWidth: '28px', textAlign: 'center' }}>{count}</span>
         <button disabled={disabled} onClick={onUse} style={{ ...equipBtnStyle, opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer', background: disabled ? 'rgba(0,0,0,0.3)' : equipBtnStyle.background, borderColor: disabled ? 'rgba(155,139,126,0.3)' : 'rgba(212,175,55,0.5)' }}>Use</button>

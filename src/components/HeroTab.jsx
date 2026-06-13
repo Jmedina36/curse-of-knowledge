@@ -705,7 +705,7 @@ const HeroTab = ({
                                   </p>
 
                                   {/* Desc */}
-                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', textAlign: 'center', margin: '0 0 6px', lineHeight: 1.5, color: isUnlocked ? 'rgba(175,158,115,0.7)' : isAvailable ? 'rgba(140,128,96,0.5)' : 'rgba(85,78,55,0.35)' }}>
+                                  <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.72rem', textAlign: 'center', margin: '0 0 6px', lineHeight: 1.5, color: isUnlocked ? 'rgba(175,158,115,0.7)' : isAvailable ? 'rgba(140,128,96,0.5)' : 'rgba(85,78,55,0.35)' }}>
                                     {node.desc}
                                   </p>
 

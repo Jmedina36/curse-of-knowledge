@@ -121,7 +121,7 @@ const ContractFulfilledModal = ({ tasks, xpEarned, tier = 'platinum', onClose })
             }}>
               Contract Fulfilled
             </p>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.1em', color: 'rgba(245,245,220,0.7)', margin: 0 }}>
+            <p style={{ fontFamily: 'EB Garamond, serif', fontStyle: 'italic', fontSize: '0.78rem', letterSpacing: '0.04em', color: 'rgba(245,245,220,0.7)', margin: 0 }}>
               {cfg.tagline}
             </p>
           </motion.div>
