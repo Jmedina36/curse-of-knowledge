@@ -495,26 +495,6 @@ const ContractsTab = ({
                       </div>
                     )}
 
-                    {/* Wax seal — gold, blood, mythril tiers */}
-                    {!isCompleted && (lc.contractTier === 'gold' || lc.contractTier === 'blood' || lc.contractTier === 'mythril') && (
-                      <div style={{
-                        position: 'absolute', top: '10px', right: '10px',
-                        width: '30px', height: '30px', borderRadius: '50%',
-                        background: lc.contractTier === 'mythril'
-                          ? 'radial-gradient(circle at 38% 32%, rgba(180,255,255,0.95), rgba(60,180,200,0.85))'
-                          : lc.contractTier === 'blood'
-                            ? 'radial-gradient(circle at 38% 32%, rgba(220,80,60,0.95), rgba(140,20,20,0.9))'
-                            : 'radial-gradient(circle at 38% 32%, rgba(245,215,90,0.95), rgba(175,125,15,0.9))',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,255,255,0.3)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 900,
-                        color: 'rgba(0,0,0,0.65)',
-                        border: '1px solid rgba(255,255,255,0.15)',
-                      }}>
-                        {lc.contractTier === 'mythril' ? 'M' : lc.contractTier === 'blood' ? '✦' : 'G'}
-                      </div>
-                    )}
-
                     {/* Action */}
                     {!isCompleted && (
                       isPending ? (
