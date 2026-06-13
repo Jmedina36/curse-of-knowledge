@@ -283,7 +283,7 @@ const HeroTab = ({
   };
 
   return (
-    <div style={{ maxWidth: '820px', margin: '0 auto', paddingBottom: '40px' }}>
+    <div style={{ margin: '0 auto' }}>
 
       {/* ── Main panel ── */}
       <div style={{
@@ -292,6 +292,7 @@ const HeroTab = ({
         borderRadius: '4px',
         overflow: 'hidden',
         display: 'flex',
+        height: 'calc(100vh - 180px)',
         minHeight: '560px',
       }}>
 
