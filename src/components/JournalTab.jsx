@@ -291,8 +291,8 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {PROLOGUE_ENTRY.text.split('\n\n').map((para, i) => (
                 <p key={i} style={{
-                  fontSize: '0.86rem', lineHeight: 1.85,
-                  color: 'rgba(215,200,170,0.88)', margin: 0, fontStyle: 'italic', lineHeight: 1.6,
+                  fontSize: '1.15rem',
+                  color: 'rgba(215,200,170,0.88)', margin: 0, fontStyle: 'italic', lineHeight: 1.7,
                 }}>
                   {para}
                 </p>
@@ -350,8 +350,8 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   </div>
                   <p style={{
                     fontFamily: 'EB Garamond, serif',
-                    fontSize: '1.45rem',
-                    lineHeight: 1.55,
+                    fontSize: '1.15rem',
+                    lineHeight: 1.65,
                     color: 'rgba(210,195,165,0.85)',
                     margin: 0,
                   }}>
@@ -395,11 +395,10 @@ export default function JournalTab({ completedLocationContracts = [] }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {selectedContract.journalEntry.text.split('\n\n').map((para, i) => (
                 <p key={i} style={{
-                  fontSize: '0.86rem',
-                  lineHeight: 1.85,
+                  fontSize: '1.15rem',
                   color: 'rgba(215,200,170,0.88)',
                   margin: 0,
-                  fontStyle: 'italic', lineHeight: 1.6,
+                  fontStyle: 'italic', lineHeight: 1.7,
                 }}>
                   {para}
                 </p>
@@ -421,7 +420,7 @@ export default function JournalTab({ completedLocationContracts = [] }) {
                   color: 'rgba(212,160,30,0.78)', margin: '0 0 8px',
                 }}>Intel Recovered</p>
                 <p style={{
-                  fontSize: '1.25rem', lineHeight: 1.55,
+                  fontSize: '1.15rem', lineHeight: 1.65,
                   color: 'rgba(210,185,130,0.8)', margin: 0, fontStyle: 'italic',
                 }}>
                   {selectedContract.encounter.intelNote}
