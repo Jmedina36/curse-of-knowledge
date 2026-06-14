@@ -91,14 +91,14 @@ const ForgeTab = ({
           <img src="/npcs/warrior.png" alt="Rylan"
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(220,38,38,0.5), 0 0 100px rgba(220,38,38,0.15)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '15px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>RYLAN</p>
-          <p style={{ fontSize: '13px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Drill Master</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '17px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>RYLAN</p>
+          <p style={{ fontSize: '15px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Drill Master</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
             background: 'rgba(20,15,5,0.85)', border: '1px solid rgba(212,175,55,0.35)',
             boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid rgba(212,175,55,0.35)' }}/>
             <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
-            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '14px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
+            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '16px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
               "{rylanQuote}"
             </p>
           </div>
@@ -139,7 +139,7 @@ const ForgeTab = ({
           <button
             key={tab}
             onClick={() => { sounds.click(); setForgeSubTab(tab); }}
-            className="px-6 py-2 rounded-lg transition-all border-2 font-bold uppercase text-sm"
+            className="px-6 py-2 rounded-lg transition-all border-2 font-bold uppercase text-base"
             style={{
               background: active
                 ? 'linear-gradient(to bottom, rgba(184,134,11,0.75), rgba(139,105,20,0.75))'
@@ -162,8 +162,8 @@ const ForgeTab = ({
     <>
     <div className="flex justify-between items-center mb-6">
       <div>
-        <p className="text-lg" style={{color: '#F5F5DC'}}>Your Decks: <span className="font-bold" style={{color: '#D4AF37'}}>{flashcardDecks.length}</span></p>
-        <p className="text-sm" style={{color: '#95A5A6'}}>Study to earn XP and loot!</p>
+        <p className="text-xl" style={{color: '#F5F5DC'}}>Your Decks: <span className="font-bold" style={{color: '#D4AF37'}}>{flashcardDecks.length}</span></p>
+        <p className="text-base" style={{color: '#95A5A6'}}>Study to earn XP and loot!</p>
       </div>
       <button 
         onClick={() => { sounds.click(); setShowDeckModal(true); }}
@@ -186,8 +186,8 @@ const ForgeTab = ({
         background: VISUAL_STYLES.card.default,
         borderColor: 'rgba(212, 175, 55, 0.4)'
       }}>
-        <p className="mb-2 text-lg" style={{color: '#C0C0C0'}}>The forge stands empty...</p>
-        <p className="text-sm" style={{color: '#95A5A6'}}>Create your first deck to begin forging knowledge</p>
+        <p className="mb-2 text-xl" style={{color: '#C0C0C0'}}>The forge stands empty...</p>
+        <p className="text-base" style={{color: '#95A5A6'}}>Create your first deck to begin forging knowledge</p>
       </div>
     ) : (
       <div className="space-y-4">
@@ -199,11 +199,11 @@ const ForgeTab = ({
           }}>
             <div className="flex justify-between items-start mb-2">
               <div className="flex-1">
-                <h3 className="text-xl font-bold" style={{
+                <h3 className="text-2xl font-bold" style={{
                   color: '#D4AF37',
                   fontFamily: 'Cinzel, serif'
                 }}>{deck.name}</h3>
-                <p className="text-sm" style={{color: '#C0C0C0'}}>
+                <p className="text-base" style={{color: '#C0C0C0'}}>
                   {deck.cards.length} card{deck.cards.length !== 1 ? 's' : ''} • 
                   {deck.cards.filter(c => c.mastered).length} mastered
                 </p>
@@ -246,10 +246,10 @@ const ForgeTab = ({
             
             {deck.cards.length > 0 && (
               <div className="mt-1 pt-3" style={{borderTop: '1px solid rgba(212, 175, 55, 0.3)'}}>
-                <p className="text-xs mb-2" style={{color: '#B8B8B8'}}>Cards in this deck:</p>
+                <p className="text-sm mb-2" style={{color: '#B8B8B8'}}>Cards in this deck:</p>
                 <div className="space-y-1 max-h-32 overflow-y-auto">
                   {deck.cards.map((card, cardIdx) => (
-                    <div key={cardIdx} className="flex justify-between items-center text-sm rounded p-2" style={{
+                    <div key={cardIdx} className="flex justify-between items-center text-base rounded p-2" style={{
                       background: 'rgba(20, 15, 5, 0.7)',
                       border: '1px solid rgba(212, 175, 55, 0.25)'
                     }}>
@@ -362,7 +362,7 @@ const ForgeTab = ({
     {forgeSubTab === 'resources' && (
     <>
     <div>
-      <p className="text-sm mb-6 italic text-center" style={{color: COLORS.silver}}>"Forge the chains that bind knowledge to will..."</p>
+      <p className="text-base mb-6 italic text-center" style={{color: COLORS.silver}}>"Forge the chains that bind knowledge to will..."</p>
       
       {/* Forge New Link Form */}
       <div className="rounded-lg p-4 mb-6 border-2 relative overflow-hidden" style={{
@@ -407,7 +407,7 @@ const ForgeTab = ({
               background: 'rgba(20,15,5,0.8)',
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
-              fontSize: '17px',
+              fontSize: '20px',
               boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
             }}
           />
@@ -427,7 +427,7 @@ const ForgeTab = ({
               background: 'rgba(20,15,5,0.8)',
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
-              fontSize: '17px',
+              fontSize: '20px',
               boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
             }}
           />
@@ -446,7 +446,7 @@ const ForgeTab = ({
               }
             }}
             disabled={!newWebsiteName.trim() || !newWebsiteUrl.trim()}
-            className="px-4 py-3 rounded font-bold transition-all border-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase text-sm relative overflow-hidden"
+            className="px-4 py-3 rounded font-bold transition-all border-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase text-base relative overflow-hidden"
             style={{
               background: (!newWebsiteName.trim() || !newWebsiteUrl.trim()) 
                 ? 'rgba(100, 100, 100, 0.3)' 
@@ -489,8 +489,8 @@ const ForgeTab = ({
           borderColor: 'rgba(212, 175, 55, 0.4)'
         }}>
           <Sparkles size={32} style={{color: 'rgba(212,175,55,0.7)', margin: '0 auto 12px'}}/>
-          <p className="text-sm mb-2" style={{color: '#C9A961', fontWeight: '500'}}>Your forge awaits...</p>
-          <p className="text-xs" style={{color: '#95A5A6'}}>Craft your first knowledge relic above</p>
+          <p className="text-base mb-2" style={{color: '#C9A961', fontWeight: '500'}}>Your forge awaits...</p>
+          <p className="text-sm" style={{color: '#95A5A6'}}>Craft your first knowledge relic above</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -572,7 +572,7 @@ const ForgeTab = ({
                       />
                     )}
                     <div className="flex flex-col items-center">
-                      <span style={{fontSize: '24px', lineHeight: '1'}}>{domainInfo.icon}</span>
+                      <span style={{fontSize: '28px', lineHeight: '1'}}>{domainInfo.icon}</span>
                       <span style={{
                         fontSize: '8px',
                         color: domainInfo.color,
@@ -597,14 +597,14 @@ const ForgeTab = ({
                     >
                       <p className="font-bold group-hover:underline mb-1 flex items-center gap-2" style={{
                         color: '#D4AF37',
-                        fontSize: '18px',
+                        fontSize: '21px',
                         letterSpacing: '0.05em',
                         textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                       }}>
                         {site.name}
                         {site.clicks > 0 && (
                           <span style={{
-                            fontSize: '12px',
+                            fontSize: '14px',
                             color: '#95A5A6',
                             fontWeight: '400',
                             marginLeft: '4px'
@@ -613,7 +613,7 @@ const ForgeTab = ({
                           </span>
                         )}
                       </p>
-                      <p className="text-xs overflow-hidden text-ellipsis whitespace-nowrap flex items-center gap-1" style={{color: '#95A5A6'}}>
+                      <p className="text-sm overflow-hidden text-ellipsis whitespace-nowrap flex items-center gap-1" style={{color: '#95A5A6'}}>
                         <span style={{color: 'rgba(155,139,126,0.78)'}}>⚡</span>
                         {domain || site.url.replace(/^https?:\/\//, '')}
                       </p>
