@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -10,8 +10,8 @@ import useEscapeClose from '../hooks/useEscapeClose';
 const MarketRates = ({ entries, footer }) => (
   <div className="rounded-lg p-2 mb-4 border"
     style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
-    <p className="text-xs font-bold mb-2 text-center" style={{ color: '#D4AF37' }}>TODAY'S MARKET RATES</p>
-    <div className={`text-xs ${entries.length <= 3 ? 'flex justify-center gap-4' : 'grid grid-cols-4 gap-2'}`}>
+    <p className="text-sm font-bold mb-2 text-center" style={{ color: '#D4AF37' }}>TODAY'S MARKET RATES</p>
+    <div className={`text-sm ${entries.length <= 3 ? 'flex justify-center gap-4' : 'grid grid-cols-4 gap-2'}`}>
       {entries.map(({ label, mod }) => (
         <div key={label} className="text-center">
           <p style={{ color: COLORS.silver }}>{label}</p>
@@ -21,14 +21,14 @@ const MarketRates = ({ entries, footer }) => (
         </div>
       ))}
     </div>
-    <p className="text-xs italic text-center mt-2" style={{ color: '#9CA3AF' }}>{footer}</p>
+    <p className="text-sm italic text-center mt-2" style={{ color: '#9CA3AF' }}>{footer}</p>
   </div>
 );
 
 const SellBtn = ({ onClick, children }) => (
   <button
     onClick={() => { sounds.click(); onClick(); }}
-    className="px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all"
+    className="px-4 py-2 rounded-lg text-base font-bold border-2 transition-all"
     style={{
       background: 'linear-gradient(to bottom, rgba(184,134,11,0.5), rgba(139,101,8,0.55))',
       borderColor: 'rgba(212,175,55,0.7)',
@@ -59,15 +59,15 @@ const BuyPotionBtn = ({ label, price, effect, effectColor, lore, canBuy, active,
       onMouseEnter={e => { if (canBuy) { e.currentTarget.style.background = hBg; e.currentTarget.style.transform = 'translateY(-2px)'; } }}
       onMouseLeave={e => { if (canBuy) { e.currentTarget.style.background = bg; e.currentTarget.style.transform = 'translateY(0)'; } }}
     >
-      <p className="font-bold text-sm mb-1" style={{ color: '#F5F5DC' }}>{label}</p>
-      <p className="text-xs font-bold mb-1" style={{ color: '#D4AF37' }}>{price}g</p>
-      <p className="text-xs mb-1" style={{ color: effectColor }}>
+      <p className="font-bold text-base mb-1" style={{ color: '#F5F5DC' }}>{label}</p>
+      <p className="text-sm font-bold mb-1" style={{ color: '#D4AF37' }}>{price}g</p>
+      <p className="text-sm mb-1" style={{ color: effectColor }}>
         {effect}{active && <span className="ml-1" style={{ color: '#90EE90' }}>✓</span>}
       </p>
-      <p className="text-xs italic" style={{ color: COLORS.silver, fontSize: '10px' }}>
+      <p className="text-sm italic" style={{ color: COLORS.silver, fontSize: '12px' }}>
         {soldOut ? 'Sold out today' : lore}
       </p>
-      {soldOut && <p className="text-xs mt-1" style={{ color: '#EF4444' }}>Daily limit reached</p>}
+      {soldOut && <p className="text-sm mt-1" style={{ color: '#EF4444' }}>Daily limit reached</p>}
     </button>
   );
 };
@@ -244,12 +244,12 @@ const CraftingModal = ({
           <img src={elf.img} alt={elf.name}
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>{elf.name}</p>
-          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{elf.title}</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '15px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>{elf.name}</p>
+          <p style={{ fontSize: '13px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{elf.title}</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px', background: 'rgba(20,15,5,0.85)', border: `1px solid rgba(212,175,55,0.35)`, boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
             <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
-            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>"{merchantQuote}"</p>
+            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '14px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>"{merchantQuote}"</p>
           </div>
         </motion.div>}
 
@@ -264,8 +264,8 @@ const CraftingModal = ({
           {/* ── HEADER ── */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 20px', flexShrink: 0, borderBottom: `1px solid rgba(212,175,55,0.3)`, background: 'rgba(10,9,6,0.65)', position: 'relative' }}>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
-              <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
+              <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '31px', color: COLORS.gold, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE MARKET</p>
+              <p style={{ fontSize: '13px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{elf.name.charAt(0) + elf.name.slice(1).toLowerCase()} · {elf.title}</p>
             </div>
             <button
               onClick={() => { sounds.click(); setShowCraftingModal(false); }}
@@ -284,7 +284,7 @@ const CraftingModal = ({
             const active = merchantTab === key;
             return (
               <button key={key} onClick={() => { sounds.click(); setMerchantTab(key); }}
-                className="py-3 rounded-lg font-bold uppercase text-sm transition-all border-2"
+                className="py-3 rounded-lg font-bold uppercase text-base transition-all border-2"
                 style={{ background: active ? activeGrad : 'rgba(37,33,24,0.88)', borderColor: active ? activeBorder : inactiveBorder, color: '#F5F5DC', cursor: 'pointer' }}
                 onMouseEnter={e => { e.currentTarget.style.background = active ? hoverGrad : 'rgba(50,45,35,0.95)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = active ? activeGrad : 'rgba(37,33,24,0.88)'; e.currentTarget.style.transform = 'translateY(0)'; }}
@@ -330,18 +330,18 @@ const CraftingModal = ({
                               filter: `drop-shadow(0 0 4px ${getRarityColor(item.rarity)}60)` }}/>
                         )}
                         <div style={{ flex: 1 }}>
-                          <p className="text-sm font-bold mb-1" style={{ color: getRarityColor(item.rarity) }}>{item.name}</p>
-                          <p className="text-xs mb-1" style={{ color: COLORS.silver }}>
+                          <p className="text-base font-bold mb-1" style={{ color: getRarityColor(item.rarity) }}>{item.name}</p>
+                          <p className="text-sm mb-1" style={{ color: COLORS.silver }}>
                             {GAME_CONSTANTS.RARITY_TIERS[item.rarity].name} {item.type === 'armor' ? item.slot : item.type}
                           </p>
-                          {item.type === 'weapon'  && <p className="text-xs" style={{ color: '#68D391' }}>+{item.attack} Attack</p>}
-                          {item.type === 'armor'   && <p className="text-xs" style={{ color: '#6BB6FF' }}>+{item.defense} Defense</p>}
-                          {item.type === 'grimoire' && <p className="text-xs" style={{ color: '#68D391' }}>+{item.hp} Health</p>}
-                          {item.type === 'tome'    && <p className="text-xs" style={{ color: '#6BB6FF' }}>+{item.stamina} STA</p>}
+                          {item.type === 'weapon'  && <p className="text-sm" style={{ color: '#68D391' }}>+{item.attack} Attack</p>}
+                          {item.type === 'armor'   && <p className="text-sm" style={{ color: '#6BB6FF' }}>+{item.defense} Defense</p>}
+                          {item.type === 'grimoire' && <p className="text-sm" style={{ color: '#68D391' }}>+{item.hp} Health</p>}
+                          {item.type === 'tome'    && <p className="text-sm" style={{ color: '#6BB6FF' }}>+{item.stamina} STA</p>}
                           {item.affixes && Object.keys(item.affixes).length > 0 && (
                             <div className="mt-1">
                               {Object.entries(item.affixes).map(([affix, value]) => (
-                                <p key={affix} className="text-xs" style={{ color: '#D4AF37' }}>
+                                <p key={affix} className="text-sm" style={{ color: '#D4AF37' }}>
                                   +{Math.round(value * 10) / 10} {affix.replace(/([A-Z])/g, ' $1').toLowerCase()}
                                 </p>
                               ))}
@@ -352,7 +352,7 @@ const CraftingModal = ({
                         <button
                           onClick={() => { sounds.click(); handleBuyEquipment(item); }}
                           disabled={!canAfford}
-                          className="px-4 py-2 rounded-lg font-bold text-sm transition-all border-2 ml-3"
+                          className="px-4 py-2 rounded-lg font-bold text-base transition-all border-2 ml-3"
                           style={{
                             background: canAfford ? 'linear-gradient(to bottom, rgba(184,134,11,0.6), rgba(139,101,8,0.65))' : 'rgba(60,60,60,0.5)',
                             borderColor: canAfford ? 'rgba(212,175,55,0.7)' : '#555',
@@ -372,7 +372,7 @@ const CraftingModal = ({
               ) : (
                 <div className="text-center py-8">
                   <p style={{ color: COLORS.silver }}>The merchant's shelves are empty.</p>
-                  <p className="text-xs mt-2" style={{ color: '#9CA3AF' }}>
+                  <p className="text-sm mt-2" style={{ color: '#9CA3AF' }}>
                     Check back in {GAME_CONSTANTS.SHOP_CONFIG.refreshInterval - (currentDay % GAME_CONSTANTS.SHOP_CONFIG.refreshInterval)} day(s)
                   </p>
                 </div>
@@ -407,13 +407,13 @@ const CraftingModal = ({
               <div className="space-y-4 max-h-96 overflow-y-auto">
                 {isEmpty ? (
                   <div className="rounded-lg p-8 border-2 text-center" style={{ background: 'rgba(37,33,24,0.88)', borderColor: 'rgba(212,175,55,0.3)' }}>
-                    <p className="text-sm italic" style={{ color: '#9CA3AF' }}>No equipment to sell. Defeat enemies to gather loot.</p>
+                    <p className="text-base italic" style={{ color: '#9CA3AF' }}>No equipment to sell. Defeat enemies to gather loot.</p>
                   </div>
                 ) : (
                   sellRows.map(({ title, items, getStat, onSell, sellType }) =>
                     items.length > 0 && (
                       <div key={title}>
-                        <h3 className="font-bold text-sm mb-2" style={{ color: '#D4AF37' }}>{title}</h3>
+                        <h3 className="font-bold text-base mb-2" style={{ color: '#D4AF37' }}>{title}</h3>
                         <div className="space-y-2">
                           {items.map(item => {
                             const color = getRarityColor(item.rarity || 'common');
@@ -431,10 +431,10 @@ const CraftingModal = ({
                                       filter: `drop-shadow(0 0 4px ${color}60)` }}/>
                                 )}
                                 <div className="flex-1">
-                                  <p className="text-sm font-bold" style={{ color }}>{item.name}</p>
-                                  <p className="text-xs" style={{ color: '#F5F5DC' }}>{getStat(item)}</p>
+                                  <p className="text-base font-bold" style={{ color }}>{item.name}</p>
+                                  <p className="text-sm" style={{ color: '#F5F5DC' }}>{getStat(item)}</p>
                                   {item.rarity && (
-                                    <p className="text-xs italic" style={{ color }}>
+                                    <p className="text-sm italic" style={{ color }}>
                                       {GAME_CONSTANTS.RARITY_TIERS[item.rarity].name}
                                     </p>
                                   )}
@@ -478,25 +478,25 @@ const CraftingModal = ({
             }}
             onClick={e => e.stopPropagation()}
           >
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.7)', marginBottom: '10px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.77rem', letterSpacing: '0.3em', color: 'rgba(245,245,220,0.7)', marginBottom: '10px' }}>
               CONFIRM SALE
             </p>
-            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '0.95rem', color: sellConfirm.rarityColor || '#F5F5DC', marginBottom: '4px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.12rem', color: sellConfirm.rarityColor || '#F5F5DC', marginBottom: '4px' }}>
               {sellConfirm.label}
             </p>
-            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.3rem', color: '#D4AF37', marginBottom: '22px' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.53rem', color: '#D4AF37', marginBottom: '22px' }}>
               {sellConfirm.price} Gold
             </p>
             <div style={{ display: 'flex', gap: '10px' }}>
               <button
                 onClick={() => { sounds.click(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.7)', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.83rem', fontWeight: 700, letterSpacing: '0.1em', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(245,245,220,0.18)', color: 'rgba(245,245,220,0.7)', cursor: 'pointer' }}
               >
                 Cancel
               </button>
               <button
                 onClick={() => { sounds.click(); sellConfirm.onConfirm(); setSellConfirm(null); }}
-                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '10px 0', borderRadius: '8px', fontFamily: 'Cinzel, serif', fontSize: '0.83rem', fontWeight: 700, letterSpacing: '0.1em', background: 'linear-gradient(to bottom, rgba(184,134,11,0.85), rgba(139,101,8,0.9))', border: '1px solid rgba(212,175,55,0.6)', color: '#F5F5DC', cursor: 'pointer' }}
               >
                 Sell
               </button>
