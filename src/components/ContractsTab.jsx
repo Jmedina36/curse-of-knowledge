@@ -435,8 +435,8 @@ const ContractsTab = ({
                     opacity: isCompleted ? 0.65 : 1,
                   }}>
 
-                    {/* Tier + location badge */}
-                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    {/* Tier badge */}
+                    <div style={{ marginBottom: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <span style={{
                         fontFamily: 'Cinzel,serif', fontSize: '1rem', letterSpacing: '0.2em',
                         textTransform: 'uppercase', padding: '2px 8px', borderRadius: '2px',
@@ -446,9 +446,6 @@ const ContractsTab = ({
                       }}>
                         {isCompleted ? 'Sealed' : tierLabel}
                       </span>
-                      <span style={{ fontFamily: 'Cinzel,serif', fontSize: '0.83rem', color: 'rgba(180,160,120,0.78)' }}>
-                        {lc.locationName}
-                      </span>
                     </div>
 
                     {/* Contract title */}
@@ -457,8 +454,14 @@ const ContractsTab = ({
                       letterSpacing: '0.05em', lineHeight: 1.4, textAlign: 'center',
                       color: isCompleted ? 'rgba(180,175,150,0.65)' : '#F5F0E0',
                       textDecoration: isCompleted ? 'line-through' : 'none',
-                      marginBottom: '6px',
+                      marginBottom: '4px',
                     }}>{lc.name}</p>
+
+                    {/* Location — where the mission takes place */}
+                    <p style={{
+                      fontFamily: 'Cinzel,serif', fontSize: '0.9rem', letterSpacing: '0.08em',
+                      textAlign: 'center', color: 'rgba(180,160,120,0.8)', marginBottom: '8px',
+                    }}>📍 {lc.locationName}</p>
 
                     {/* Description */}
                     <p style={{
