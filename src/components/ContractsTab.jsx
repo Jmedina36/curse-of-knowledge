@@ -580,9 +580,12 @@ const ContractsTab = ({
                     </>
                   )}
                   {bloodContracts.length > 0 && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
-                      {bloodContracts.map(renderCard)}
-                    </div>
+                    <>
+                      <TierDivider tier="platinum" label="Platinum Contracts" />
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
+                        {bloodContracts.map(renderCard)}
+                      </div>
+                    </>
                   )}
                   {mythrilContracts.length > 0 && (
                     <>
