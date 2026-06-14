@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Calendar, Plus } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
@@ -603,101 +603,6 @@ const ContractsTab = ({
             })()}
 
 
-            {/* ── PLATINUM CONTRACT ── */}
-            {(() => {
-              const completedTasks = tasks.filter(t => t.done).length;
-              const requiredTasks = Math.min(3, tasks.length);
-              const taskGateMet = tasks.length > 0 && completedTasks >= requiredTasks;
-              const isDisabled = !isDayActive || eliteBossDefeatedToday || !taskGateMet;
-              const pct = tasks.length === 0 ? 0 : Math.min(100, (completedTasks / Math.max(1, requiredTasks)) * 100);
-
-              return (
-                <>
-                  <div style={{
-                    borderRadius: '10px',
-                    border: `1px solid ${eliteBossDefeatedToday ? 'rgba(80,200,100,0.3)' : taskGateMet && isDayActive ? 'rgba(220,220,220,0.45)' : TIER.platinum.border}`,
-                    background: 'linear-gradient(160deg, rgba(50,50,75,0.52) 0%, rgba(35,35,58,0.52) 100%)',
-                    boxShadow: taskGateMet && !eliteBossDefeatedToday && isDayActive
-                      ? '0 0 28px rgba(232,232,232,0.1), 0 0 60px rgba(220,220,220,0.04)'
-                      : 'none',
-                    overflow: 'hidden',
-                    opacity: !isDayActive ? 0.5 : 1,
-                  }}>
-                    <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid rgba(220,220,220,0.06)' }}>
-                      {eliteBossDefeatedToday && (
-                        <div className="flex items-center justify-end mb-2">
-                          <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.88rem', letterSpacing:'0.2em', color:'rgba(80,200,100,0.8)', textTransform:'uppercase' }}>
-                            Sealed today
-                          </span>
-                        </div>
-                      )}
-                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.42rem', fontWeight:800, color: eliteBossDefeatedToday ? 'rgba(180,220,180,0.85)' : '#F0F0F5', letterSpacing:'0.1em', margin:'0 0 4px' }}>
-                        Blood Contract
-                      </p>
-                      <p style={{ fontFamily:'Cinzel,serif', fontSize:'1rem', color:'rgba(210,210,225,0.75)', margin:0 }}>
-                        {eliteBossDefeatedToday
-                          ? 'The guardian has been silenced. Curse clears at midnight.'
-                          : 'Complete your daily trials to summon the guardian.'}
-                      </p>
-                    </div>
-                    <div style={{ padding: '14px 20px 16px' }}>
-                      {!eliteBossDefeatedToday && (
-                        <div style={{ marginBottom: '12px' }}>
-                          {/* Progress bar track */}
-                          <div style={{
-                            width:'100%', height:'5px', borderRadius:'3px',
-                            background:'rgba(255,255,255,0.06)', overflow:'hidden', marginBottom:'6px',
-                          }}>
-                            <div style={{
-                              height:'100%',
-                              width: `${pct}%`,
-                              background: taskGateMet
-                                ? `linear-gradient(to right, ${TIER.platinum.color}, #ffffff)`
-                                : 'linear-gradient(to right, rgba(180,150,80,0.6), rgba(212,175,55,0.8))',
-                              borderRadius:'3px',
-                              transition:'width 0.45s ease',
-                              boxShadow: taskGateMet ? `0 0 8px ${TIER.platinum.glow}` : 'none',
-                            }} />
-                          </div>
-                          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'1rem', letterSpacing:'0.1em', color: taskGateMet ? TIER.platinum.color : 'rgba(210,185,120,0.9)', textTransform:'uppercase' }}>
-                              {tasks.length === 0 ? 'Add tasks to unlock' : taskGateMet ? 'Guardian awakens' : `${completedTasks} / ${requiredTasks} tasks`}
-                            </span>
-                            <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.97rem', color:'rgba(210,210,225,0.65)' }}>
-                              {Math.round(pct)}%
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                      <button
-                        onClick={() => {
-                          sounds.click();
-                          setActiveContract({ type: 'elite', eliteId: lc.encounter?.eliteId, eliteDialogue: lc.encounter?.dialogue });
-                          setActiveTab('map');
-                        }}
-                        disabled={isDisabled}
-                        style={{
-                          width:'100%', padding:'10px', borderRadius:'6px',
-                          fontFamily:'Cinzel,serif', fontSize:'0.94rem', fontWeight:700,
-                          letterSpacing:'0.2em', textTransform:'uppercase',
-                          background: isDisabled ? 'rgba(20,20,28,0.5)' : activeContract?.type === 'elite' ? TIER.platinum.color : 'rgba(40,40,55,0.8)',
-                          border: `1px solid ${isDisabled ? 'rgba(180,180,200,0.12)' : TIER.platinum.border}`,
-                          color: isDisabled ? 'rgba(180,180,200,0.3)' : activeContract?.type === 'elite' ? '#000' : TIER.platinum.color,
-                          cursor: isDisabled ? 'not-allowed' : 'pointer',
-                          transition:'all 0.2s',
-                          boxShadow: taskGateMet && !isDisabled ? `0 0 16px ${TIER.platinum.glow}` : 'none',
-                          animation: taskGateMet && !isDisabled && activeContract?.type !== 'elite' ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
-                        }}
-                        onMouseEnter={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=`0 0 22px ${TIER.platinum.glow}`; } }}
-                        onMouseLeave={e => { if (!isDisabled) { e.currentTarget.style.boxShadow=taskGateMet ? `0 0 16px ${TIER.platinum.glow}` : 'none'; } }}
-                      >
-                        {eliteBossDefeatedToday ? 'Contract Complete' : activeContract?.type === 'elite' ? '✦ Active — Go to Dungeon' : taskGateMet ? 'Accept Blood Contract' : 'Locked'}
-                      </button>
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
 
 
           </div>
