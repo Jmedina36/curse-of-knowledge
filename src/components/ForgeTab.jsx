@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Hammer, Plus, Sparkles, X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
@@ -91,14 +91,14 @@ const ForgeTab = ({
           <img src="/npcs/warrior.png" alt="Rylan"
             style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
               border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(220,38,38,0.5), 0 0 100px rgba(220,38,38,0.15)' }}/>
-          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>RYLAN</p>
-          <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Drill Master</p>
+          <p style={{ fontFamily: 'Cinzel, serif', fontSize: '15px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>RYLAN</p>
+          <p style={{ fontSize: '13px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>Drill Master</p>
           <div style={{ marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
             background: 'rgba(20,15,5,0.85)', border: '1px solid rgba(212,175,55,0.35)',
             boxShadow: '0 2px 12px rgba(0,0,0,0.5)', position: 'relative' }}>
             <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid rgba(212,175,55,0.35)' }}/>
             <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
-            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
+            <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '14px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
               "{rylanQuote}"
             </p>
           </div>
@@ -407,7 +407,7 @@ const ForgeTab = ({
               background: 'rgba(20,15,5,0.8)',
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
-              fontSize: '14px',
+              fontSize: '17px',
               boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
             }}
           />
@@ -427,7 +427,7 @@ const ForgeTab = ({
               background: 'rgba(20,15,5,0.8)',
               borderColor: 'rgba(212, 175, 55, 0.3)',
               color: '#F5F5DC',
-              fontSize: '14px',
+              fontSize: '17px',
               boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)'
             }}
           />
@@ -572,7 +572,7 @@ const ForgeTab = ({
                       />
                     )}
                     <div className="flex flex-col items-center">
-                      <span style={{fontSize: '20px', lineHeight: '1'}}>{domainInfo.icon}</span>
+                      <span style={{fontSize: '24px', lineHeight: '1'}}>{domainInfo.icon}</span>
                       <span style={{
                         fontSize: '8px',
                         color: domainInfo.color,
@@ -597,14 +597,14 @@ const ForgeTab = ({
                     >
                       <p className="font-bold group-hover:underline mb-1 flex items-center gap-2" style={{
                         color: '#D4AF37',
-                        fontSize: '15px',
+                        fontSize: '18px',
                         letterSpacing: '0.05em',
                         textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                       }}>
                         {site.name}
                         {site.clicks > 0 && (
                           <span style={{
-                            fontSize: '10px',
+                            fontSize: '12px',
                             color: '#95A5A6',
                             fontWeight: '400',
                             marginLeft: '4px'
