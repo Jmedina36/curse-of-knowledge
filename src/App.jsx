@@ -29,6 +29,7 @@ import ChargedCritModal from './components/ChargedCritModal';
 import { DAILY_ENCOUNTERS } from './data/encounters';
 import { LOCATION_CONTRACTS, REWARD_LABELS } from './data/locationContracts';
 import HeroTab from './components/HeroTab';
+import ErrorBoundary from './components/ErrorBoundary';
 import CalendarModal from './components/CalendarModal';
 import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
@@ -8342,6 +8343,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
           >
+          <ErrorBoundary onReset={() => setActiveTab('quest')}>
           {activeTab === 'quest' && (
             <QuestTab
               hero={hero} hp={hp} stamina={stamina} xp={xp} level={level}
@@ -9203,6 +9205,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             </div>
 
           )}
+          </ErrorBoundary>
           </motion.div>
           </AnimatePresence>
           {showInventoryModal && (
@@ -9350,6 +9353,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             />
           )}
           {showBoss && (
+            <ErrorBoundary onReset={() => { setShowBoss(false); setActiveTab('quest'); }}>
             <Suspense fallback={<div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.88)' }} />}>
             <BattleModal
               bossHp={bossHp} bossMax={bossMax} bossName={bossName}
@@ -9405,6 +9409,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
               currentBattleCreature={currentBattleCreature}
             />
             </Suspense>
+            </ErrorBoundary>
           )}
           {showPomodoro && pomodoroTask && (
             <PomodoroModal
