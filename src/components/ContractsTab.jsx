@@ -624,16 +624,13 @@ const ContractsTab = ({
                     opacity: !isDayActive ? 0.5 : 1,
                   }}>
                     <div style={{ padding: '16px 20px 12px', borderBottom: '1px solid rgba(220,220,220,0.06)' }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.97rem', letterSpacing:'0.35em', color: TIER.platinum.color, textTransform:'uppercase', opacity:0.9 }}>
-                          Platinum Contract
-                        </span>
-                        {eliteBossDefeatedToday && (
+                      {eliteBossDefeatedToday && (
+                        <div className="flex items-center justify-end mb-2">
                           <span style={{ fontFamily:'Cinzel,serif', fontSize:'0.88rem', letterSpacing:'0.2em', color:'rgba(80,200,100,0.8)', textTransform:'uppercase' }}>
                             Sealed today
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                       <p style={{ fontFamily:'Cinzel,serif', fontSize:'1.42rem', fontWeight:800, color: eliteBossDefeatedToday ? 'rgba(180,220,180,0.85)' : '#F0F0F5', letterSpacing:'0.1em', margin:'0 0 4px' }}>
                         Blood Contract
                       </p>
