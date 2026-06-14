@@ -581,7 +581,10 @@ const ContractsTab = ({
                   )}
                   {bloodContracts.length > 0 && (
                     <>
-                      <TierDivider tier="platinum" label="Platinum Contracts" />
+                      <TierDivider tier="platinum" label="Blood Contracts — The Order's Champions" />
+                      <p style={{ textAlign: 'center', fontSize: '0.92rem', color: 'rgba(212,175,55,0.7)', fontStyle: 'italic', lineHeight: 1.6, marginBottom: '12px' }}>
+                        Elite quarry sworn to the Order. Cut them down.
+                      </p>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '12px', marginBottom: '4px' }}>
                         {bloodContracts.map(renderCard)}
                       </div>
