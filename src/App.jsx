@@ -577,13 +577,11 @@ const [isBanditWave, setIsBanditWave] = useState(false);
 const banditLineupRef = useRef([]);
 const banditLineupIdxRef = useRef(0);
 const [banditCaptainsDefeated, setBanditCaptainsDefeated] = useState([]);
-const [banditWaveNumber, setBanditWaveNumber] = useState(0);
 const [banditEnemyImg, setBanditEnemyImg] = useState('');
 const [isDaughtersWave, setIsDaughtersWave] = useState(false);
 const daughtersLineupRef = useRef([]);
 const daughtersLineupIdxRef = useRef(0);
 const [daughtersCaptainsDefeated, setDaughtersCaptainsDefeated] = useState([]);
-const [daughtersWaveNumber, setDaughtersWaveNumber] = useState(0);
 const [isCursedWave, setIsCursedWave] = useState(false);
 const [enemyGender, setEnemyGender] = useState(null);
 const [eliteSfxKey, setEliteSfxKey] = useState(null);
@@ -2837,7 +2835,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const lineup = buildBanditLineup(waveNum, captainsDefeated, defeatedFactionMembers, _ZONE_TW[_hz] || _ZONE_TW[1]);
     banditLineupRef.current = lineup;
     banditLineupIdxRef.current = 0;
-    setBanditWaveNumber(waveNum);
     setWaveCount(wc => wc + 1);
     spawnBanditEnemy(lineup[0], 0, lineup.length);
   };
@@ -2930,7 +2927,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     const lineup = buildDaughtersLineup(waveNum, captainsDefeated, defeatedFactionMembers, _ZONE_TW[_hz] || _ZONE_TW[1]);
     daughtersLineupRef.current = lineup;
     daughtersLineupIdxRef.current = 0;
-    setDaughtersWaveNumber(waveNum);
     setWaveCount(wc => wc + 1);
     spawnDaughtersEnemy(lineup[0], 0, lineup.length);
   };
@@ -8304,7 +8300,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       banditLineupRef.current = members;
                       banditLineupIdxRef.current = 0;
                       setIsBanditWave(true);
-                      setBanditWaveNumber(1);
                       setBanditCaptainsDefeated([]);
                       setBattleType('wave');
                       setCurrentWaveEnemy(1);
@@ -8326,7 +8321,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       daughtersLineupRef.current = members;
                       daughtersLineupIdxRef.current = 0;
                       setIsDaughtersWave(true);
-                      setDaughtersWaveNumber(1);
                       setDaughtersCaptainsDefeated([]);
                       setBattleType('wave');
                       setCurrentWaveEnemy(1);
@@ -8551,7 +8545,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         const enemy = { ...grunt, isCapt: false, isLeader: false };
                         banditLineupRef.current = [enemy];
                         banditLineupIdxRef.current = 0;
-                        setIsBanditWave(true); setBanditWaveNumber(1); setBanditCaptainsDefeated([]);
+                        setIsBanditWave(true); setBanditCaptainsDefeated([]);
                         audioManager.play(TRACKS.malicious);
                         spawnBanditEnemy(enemy, 0, 1);
                         addLog('Debug: Bandit grunt ' + grunt.name);
@@ -8567,7 +8561,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         const enemy = { ...capt, isCapt: true, isLeader: false };
                         banditLineupRef.current = [enemy];
                         banditLineupIdxRef.current = 0;
-                        setIsBanditWave(true); setBanditWaveNumber(1); setBanditCaptainsDefeated([]);
+                        setIsBanditWave(true); setBanditCaptainsDefeated([]);
                         audioManager.play(TRACKS.malicious);
                         spawnBanditEnemy(enemy, 0, 1);
                         addLog('Debug: Bandit captain ' + capt.name);
@@ -8577,7 +8571,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       const leader = { ...BANDIT_POOL.leader, isCapt: false, isLeader: true };
                       banditLineupRef.current = [leader];
                       banditLineupIdxRef.current = 0;
-                      setIsBanditWave(true); setBanditWaveNumber(1); setBanditCaptainsDefeated(['captain-1','captain-2','captain-3']);
+                      setIsBanditWave(true); setBanditCaptainsDefeated(['captain-1','captain-2','captain-3']);
                       audioManager.play(TRACKS.malicious);
                       spawnBanditEnemy(leader, 0, 1);
                       addLog('Debug: Bandit Lord Cutter');
@@ -8597,7 +8591,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         const enemy = { ...member, isCapt: false, isLeader: false };
                         daughtersLineupRef.current = [enemy];
                         daughtersLineupIdxRef.current = 0;
-                        setIsDaughtersWave(true); setDaughtersWaveNumber(1); setDaughtersCaptainsDefeated([]);
+                        setIsDaughtersWave(true); setDaughtersCaptainsDefeated([]);
                         audioManager.play(TRACKS.malicious);
                         spawnDaughtersEnemy(enemy, 0, 1);
                         addLog('Debug: Daughters member ' + member.name);
@@ -8613,7 +8607,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                         const enemy = { ...capt, isCapt: true, isLeader: false };
                         daughtersLineupRef.current = [enemy];
                         daughtersLineupIdxRef.current = 0;
-                        setIsDaughtersWave(true); setDaughtersWaveNumber(1); setDaughtersCaptainsDefeated([]);
+                        setIsDaughtersWave(true); setDaughtersCaptainsDefeated([]);
                         audioManager.play(TRACKS.malicious);
                         spawnDaughtersEnemy(enemy, 0, 1);
                         addLog('Debug: Daughters captain ' + capt.name);
@@ -8623,7 +8617,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       const leader = { ...DAUGHTERS_POOL.leader, isCapt: false, isLeader: true };
                       daughtersLineupRef.current = [leader];
                       daughtersLineupIdxRef.current = 0;
-                      setIsDaughtersWave(true); setDaughtersWaveNumber(1); setDaughtersCaptainsDefeated(['captain-1','captain-2','captain-3']);
+                      setIsDaughtersWave(true); setDaughtersCaptainsDefeated(['captain-1','captain-2','captain-3']);
                       audioManager.play(TRACKS.malicious);
                       spawnDaughtersEnemy(leader, 0, 1);
                       addLog('Debug: Dusk Queen Mira');
@@ -8946,8 +8940,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0); setPhase3TurnCounter(0);
                     setShadowAdds([]); setAoeWarning(false); setBossFlash(false); setPlayerFlash(false);
                     setCurrentWaveEnemy(0); setTotalWaveEnemies(1); setWaveCount(0); setCurrentBattleCreature(null);
-                    setIsBanditWave(false); setBanditWaveNumber(0); setBanditCaptainsDefeated([]);
-                    setIsDaughtersWave(false); setDaughtersWaveNumber(0); setDaughtersCaptainsDefeated([]);
+                    setIsBanditWave(false); setBanditCaptainsDefeated([]);
+                    setIsDaughtersWave(false); setDaughtersCaptainsDefeated([]);
                     setIsCursedWave(false); setIsEliteWave(false); setIsOrderFinal(false);
                     setDefeatedFactionMembers([]); setHuntingChallenges({});
                     setRestedCursed([]); setIntelUnlocked([]); setDiscoveredCreatures([]); setLastEncounterDay(0);
