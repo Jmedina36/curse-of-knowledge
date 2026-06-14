@@ -71,20 +71,6 @@ const SectionHeader = ({ label, badge }) => (
 
 const EMPTY_ALLOC = { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
 
-const SKILL_TREE = [
-  [{ id: 'sk1', label: 'Iron Will',        desc: '+5 Max HP',          reqLevel: 3  }],
-  [
-    { id: 'sk2', label: 'Keen Edge',        desc: '+2 Attack',          reqLevel: 5  },
-    { id: 'sk3', label: 'Endurance',        desc: '+5 Max SP',          reqLevel: 5  },
-  ],
-  [
-    { id: 'sk4', label: 'Battle-Hardened',  desc: '+3% Defense',        reqLevel: 8  },
-    { id: 'sk5', label: "Scholar's Mind",   desc: '+XP gain',           reqLevel: 8  },
-    { id: 'sk6', label: 'Resilience',       desc: 'Reduce curse dmg',   reqLevel: 8  },
-  ],
-  [{ id: 'sk7', label: 'Mastery',           desc: 'Unlock class power', reqLevel: 12 }],
-];
-
 const HeroTab = ({
   hero,
   xp,

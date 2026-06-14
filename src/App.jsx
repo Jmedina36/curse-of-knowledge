@@ -184,7 +184,6 @@ const FantasyStudyQuest = () => {
   const [xp, setXp] = useState(0);
   const [level, setLevel] = useState(1);
   const [gold, setGold] = useState(0); // Currency from combat
-  const [currency, setCurrency] = useState(0); // Gold for shop purchases
   const [dailyQuestCompleted, setDailyQuestCompleted] = useState(false); // Track if today's quests are done
   const [merchantTab, setMerchantTab] = useState('buyEquipment');
   const [marketModifiers, setMarketModifiers] = useState({
@@ -202,7 +201,6 @@ const FantasyStudyQuest = () => {
   const [daysSinceShop, setDaysSinceShop] = useState(0); // Track shop refresh
   const [gauntletMilestone, setGauntletMilestone] = useState(1500); // Next XP threshold for Gauntlet (increased from 1000)
   const [gauntletUnlocked, setGauntletUnlocked] = useState(false); // Is Gauntlet currently available
-  const [timeUntilMidnight, setTimeUntilMidnight] = useState(''); // Countdown to day reset
   const [isDayActive, setIsDayActive] = useState(false); // Is current game day active (vs dormant)
   
   const [healthPots, setHealthPots] = useState(0);
@@ -648,13 +646,11 @@ const orderFinalIdxRef = useRef(0);
   const [phase1TurnCounter, setPhase1TurnCounter] = useState(0);
   const [phase2TurnCounter, setPhase2TurnCounter] = useState(0);
   const [phase2DamageStacks, setPhase2DamageStacks] = useState(0);
-  const [hasSpawnedPreviewAdd, setHasSpawnedPreviewAdd] = useState(false);
   const [shadowAdds, setShadowAdds] = useState([]); // Array of {id, hp, maxHp}
   const [aoeWarning, setAoeWarning] = useState(false);
   const [showDodgeButton, setShowDodgeButton] = useState(false);
   const [dodgeReady, setDodgeReady] = useState(false);
   const [phase3TurnCounter, setPhase3TurnCounter] = useState(0);
-  const [finalBossPhase, setFinalBossPhase] = useState(0);
   const finalBossPhaseRef = useRef(0);
   const [lifeDrainCounter, setLifeDrainCounter] = useState(0);
   
@@ -665,7 +661,6 @@ const orderFinalIdxRef = useRef(0);
   const [victoryFlash, setVictoryFlash] = useState(false);
   const [victoryLoot, setVictoryLoot] = useState([]);
   const [victoryChest, setVictoryChest] = useState(null); // { rarity, img }
-  const [showDebug, setShowDebug] = useState(false);
   const [canCustomize, setCanCustomize] = useState(true);
 const [showCustomizeModal, setShowCustomizeModal] = useState(false);
 const [customName, setCustomName] = useState('');
@@ -738,8 +733,6 @@ const [godMode, setGodMode] = useState(false);
     weeklyHistory: []
   });
   
-  const [sessionStartTime, setSessionStartTime] = useState(null);
-  const [taskPauseCount, setTaskPauseCount] = useState(0);
   
   const classes = [
     { name: 'Knight', color: 'red', emblem: '⚔︎', gradient: ['from-red-900', 'from-red-800', 'from-red-700', 'from-red-600'], glow: ['shadow-red-900/50', 'shadow-red-700/60', 'shadow-red-600/70', 'shadow-red-500/80'] },
@@ -1292,32 +1285,6 @@ skillPoints, unlockedSkillNodes,
       addLog(`The Gauntlet has been unlocked! Face the trial when ready...`);
     }
   }, [xp, gauntletMilestone, gauntletUnlocked, addLog]);
-  
-  // Update countdown to midnight every second (only shows last hour)
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date();
-      const midnight = new Date(now);
-      midnight.setHours(24, 0, 0, 0);
-      
-      const diff = midnight - now;
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      // Only show countdown if less than 1 hour remains
-      if (hours < 1) {
-        setTimeUntilMidnight(`${minutes}m ${seconds}s`);
-      } else {
-        setTimeUntilMidnight('');
-      }
-    };
-    
-    updateCountdown(); // Initial update
-    const interval = setInterval(updateCountdown, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
   
   // Detect when real calendar day changes and auto-advance
   useEffect(() => {
@@ -2256,8 +2223,6 @@ if (tasks.length === 0) {
       setTimer(seconds);
       setTimerEndTime(Date.now() + (seconds * 1000));
       setRunning(true);
-      setSessionStartTime(Date.now());
-      setTaskPauseCount(0);
       addLog(`The hero begins the trial: ${task.title}`);
     }
   };
@@ -3409,7 +3374,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     if (phase === 1) setDefeatedFactionMembers(prev => prev.includes('/bandits/leader.png') ? prev : [...prev, '/bandits/leader.png']);
     if (phase === 2) setDefeatedFactionMembers(prev => prev.includes('/daughters-of-dusk/leader.png') ? prev : [...prev, '/daughters-of-dusk/leader.png']);
     finalBossPhaseRef.current = phase + 1;
-    setFinalBossPhase(phase + 1);
     setTimeout(() => spawnFinalBossPhase(phase + 1), 2500);
     return true;
   };
@@ -3464,11 +3428,10 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     // Reset phase states
     setInPhase3(false); setInPhase2(false); setInPhase1(false);
     setPhase1TurnCounter(0); setPhase2TurnCounter(0); setPhase2DamageStacks(0);
-    setHasSpawnedPreviewAdd(false); setShadowAdds([]);
+    setShadowAdds([]);
     setAoeWarning(false); setShowDodgeButton(false); setDodgeReady(false);
     setPhase3TurnCounter(0); setLifeDrainCounter(0);
     finalBossPhaseRef.current = 1;
-    setFinalBossPhase(1);
 
     // Phase 1 — Cutter, Bandit Lord
     const cutterHp = Math.floor(bossHealth * 0.55);
@@ -8132,7 +8095,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       setXp(0);
                       setLevel(1);
                       setGold(0);
-                      setCurrency(0);
                       setHealthPots(0);
                       setStaminaPots(0);
                       setCleansePots(0);
