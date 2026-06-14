@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES } from '../constants';
 import { CREATURE_INDEX } from '../creatures';
@@ -565,7 +565,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                             style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'brightness(0) contrast(0.6)' }}
                           />
                         </div>
-                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.12rem', color: 'rgba(80,75,60,0.78)', marginBottom: '6px' }}>???</p>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.3rem', color: 'rgba(80,75,60,0.78)', marginBottom: '6px' }}>???</p>
                         <p style={{ fontSize: '0.92rem', color: 'rgba(80,75,60,0.7)', fontStyle: 'italic', lineHeight: 1.6, margin: 0 }}>No information recovered.</p>
                       </div>
                     );
@@ -604,9 +604,9 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                             style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: `drop-shadow(0 0 10px ${faction.color}66)` }}
                           />
                         </div>
-                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.12rem', color: faction.color, marginBottom: '2px', lineHeight: 1.3 }}>{entry.name}</p>
-                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(200,185,150,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{entry.title}</p>
-                        <p style={{ fontSize: '0.83rem', color: 'rgba(220,210,185,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{entry.lore}</p>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.3rem', color: faction.color, marginBottom: '2px', lineHeight: 1.3 }}>{entry.name}</p>
+                        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(200,185,150,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{entry.title}</p>
+                        <p style={{ fontSize: '1.0rem', color: 'rgba(220,210,185,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{entry.lore}</p>
                       </div>
                     );
                   }
@@ -656,9 +656,9 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                           whiteSpace: 'nowrap', pointerEvents: 'none',
                         }}>SLAIN</div>
                       </div>
-                      <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.12rem', color: 'rgba(140,130,110,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{entry.name}</p>
-                      <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{entry.title}</p>
-                      <p style={{ fontSize: '0.83rem', color: 'rgba(120,110,90,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{entry.lore}</p>
+                      <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.3rem', color: 'rgba(140,130,110,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{entry.name}</p>
+                      <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{entry.title}</p>
+                      <p style={{ fontSize: '1.0rem', color: 'rgba(120,110,90,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{entry.lore}</p>
                     </div>
                   );
                 };
@@ -739,9 +739,9 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                               <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.45)' }} />
                               <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-18deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.59rem', letterSpacing: '0.2em', color: 'rgba(200,30,30,0.92)', border: '3px solid rgba(200,30,30,0.85)', padding: '2px 8px', borderRadius: '3px', textShadow: '0 0 8px rgba(200,30,30,0.6)', boxShadow: '0 0 10px rgba(200,30,30,0.3), inset 0 0 6px rgba(0,0,0,0.4)', background: 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>SLAIN</div>
                             </div>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.12rem', color: 'rgba(140,130,110,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
-                            <p style={{ fontSize: '0.83rem', color: 'rgba(120,110,90,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.3rem', color: 'rgba(140,130,110,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '1.0rem', color: 'rgba(120,110,90,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
                           </div>
                         );
                         return (
@@ -750,9 +750,9 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                             <div style={{ width: 90, margin: '14px auto 12px' }}>
                               <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 10px rgba(168,85,247,0.55))' }} />
                             </div>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.12rem', color: '#A855F7', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(200,185,150,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
-                            <p style={{ fontSize: '0.83rem', color: 'rgba(220,210,185,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.3rem', color: '#A855F7', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(200,185,150,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontSize: '1.0rem', color: 'rgba(220,210,185,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
                           </div>
                         );
                       })}
@@ -786,7 +786,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                               <img src={e.img} alt="unknown" style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'brightness(0) contrast(0.5)' }} />
                             </div>
                             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.18rem', color: 'rgba(100,85,40,0.7)', marginBottom: '2px', lineHeight: 1.3 }}>???</p>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(100,85,40,0.7)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(100,85,40,0.7)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
                             <p style={{ fontSize: '0.97rem', color: 'rgba(100,85,40,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>The order keeps its own hidden. Find out more.</p>
                           </div>
                         );
@@ -798,7 +798,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                               <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-18deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: e.img === '/main bad.png' ? '1.1rem' : '1.35rem', letterSpacing: '0.2em', color: e.img === '/main bad.png' ? 'rgba(100,80,200,0.92)' : 'rgba(200,30,30,0.92)', border: `3px solid ${e.img === '/main bad.png' ? 'rgba(100,80,200,0.85)' : 'rgba(200,30,30,0.85)'}`, padding: '2px 8px', borderRadius: '3px', textShadow: `0 0 8px ${e.img === '/main bad.png' ? 'rgba(100,80,200,0.6)' : 'rgba(200,30,30,0.6)'}`, boxShadow: `0 0 10px ${e.img === '/main bad.png' ? 'rgba(100,80,200,0.3)' : 'rgba(200,30,30,0.3)'}, inset 0 0 6px rgba(0,0,0,0.4)`, background: 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>{e.img === '/main bad.png' ? 'SEALED' : 'SLAIN'}</div>
                             </div>
                             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.18rem', color: 'rgba(140,130,110,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
                             <p style={{ fontSize: '0.97rem', color: 'rgba(120,110,90,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
                           </div>
                         );
@@ -809,7 +809,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                               <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.5))' }} />
                             </div>
                             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.18rem', color: '#D4AF37', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
-                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', letterSpacing: '0.1em', color: 'rgba(200,185,150,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
+                            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(200,185,150,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>
                             <p style={{ fontSize: '0.97rem', color: 'rgba(220,210,185,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{e.lore}</p>
                           </div>
                         );
@@ -855,11 +855,11 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                   <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.77rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.55)', border: '1px solid rgba(150,170,220,0.4)', color: 'rgba(170,190,240,0.85)' }}>At Rest</div>
                   <div style={{ position: 'relative', width: solo ? 110 : 90, margin: '14px auto 12px' }}>
                     <img src={member.img} alt={member.name} style={{ width: solo ? 110 : 90, height: solo ? 110 : 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.4)' }} />
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-15deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.12rem', letterSpacing: '0.15em', color: 'rgba(160,180,230,0.88)', border: '2px solid rgba(160,180,230,0.75)', padding: '2px 8px', borderRadius: '3px', textShadow: '0 0 8px rgba(140,160,220,0.5)', boxShadow: '0 0 10px rgba(140,160,220,0.2), inset 0 0 6px rgba(0,0,0,0.4)', background: 'rgba(0,0,0,0.4)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>AT REST</div>
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-15deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '1.3rem', letterSpacing: '0.15em', color: 'rgba(160,180,230,0.88)', border: '2px solid rgba(160,180,230,0.75)', padding: '2px 8px', borderRadius: '3px', textShadow: '0 0 8px rgba(140,160,220,0.5)', boxShadow: '0 0 10px rgba(140,160,220,0.2), inset 0 0 6px rgba(0,0,0,0.4)', background: 'rgba(0,0,0,0.4)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>AT REST</div>
                   </div>
                   <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: solo ? '1.24rem' : '1.12rem', color: 'rgba(130,120,150,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{member.name}</p>
                   <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', letterSpacing: '0.1em', color: 'rgba(100,95,115,0.7)', textTransform: 'uppercase', marginBottom: '10px' }}>{member.title}</p>
-                  <p style={{ fontSize: '0.83rem', color: 'rgba(100,95,115,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{member.lore}</p>
+                  <p style={{ fontSize: '1.0rem', color: 'rgba(100,95,115,0.7)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{member.lore}</p>
                 </div>
               );
 
@@ -872,7 +872,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                   </div>
                   <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: solo ? '1.24rem' : '1.12rem', color: 'rgba(210,185,240,0.9)', marginBottom: '2px', lineHeight: 1.3 }}>{member.name}</p>
                   <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', letterSpacing: '0.1em', color: 'rgba(180,160,200,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{member.title}</p>
-                  <p style={{ fontSize: '0.83rem', color: 'rgba(210,200,225,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{member.lore}</p>
+                  <p style={{ fontSize: '1.0rem', color: 'rgba(210,200,225,0.78)', fontStyle: 'italic', lineHeight: 1.55, margin: 0 }}>{member.lore}</p>
                 </div>
               );
             };
