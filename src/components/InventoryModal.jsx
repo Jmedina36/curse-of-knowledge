@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
@@ -174,20 +174,20 @@ const InventoryModal = ({
 
   // ── Shared styles ──
   const equipBtnStyle = {
-    padding: '5px 11px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
+    padding: '5px 11px', borderRadius: '6px', fontSize: '13px', fontWeight: 700,
     border: '1px solid rgba(212,175,55,0.5)', cursor: 'pointer', flexShrink: 0,
     background: 'linear-gradient(to bottom, rgba(184,134,11,0.5), rgba(139,101,8,0.55))',
     color: '#F5F5DC',
   };
 
   const equippedBadge = {
-    padding: '4px 9px', borderRadius: '6px', fontSize: '10px', fontWeight: 700,
+    padding: '4px 9px', borderRadius: '6px', fontSize: '12px', fontWeight: 700,
     border: '1px solid rgba(212,175,55,0.5)',
     background: 'rgba(212,175,55,0.15)', color: '#D4AF37', flexShrink: 0,
   };
 
   const emptyMsg = (text = 'No items found yet.') => (
-    <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', padding: '28px 0', fontSize: '13px', opacity: 0.6 }}>
+    <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', padding: '28px 0', fontSize: '15px', opacity: 0.6 }}>
       {text}
     </p>
   );
@@ -211,10 +211,10 @@ const InventoryModal = ({
           style={{ width: 44, height: 44, objectFit: 'contain', flexShrink: 0,
             filter: `drop-shadow(0 0 5px ${getRarityColor(wpn.rarity || 'common')}70)` }}/>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ color: getRarityColor(wpn.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wpn.name}</p>
-          <p style={{ color: '#68D391', fontSize: '11px', marginBottom: '2px' }}>+{wpn.attack} Attack</p>
+          <p style={{ color: getRarityColor(wpn.rarity || 'common'), fontWeight: 700, fontSize: '15px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wpn.name}</p>
+          <p style={{ color: '#68D391', fontSize: '13px', marginBottom: '2px' }}>+{wpn.attack} Attack</p>
           {!wpn._eq && equippedWeapon && (
-            <p style={{ fontSize: '10px', color: weaponEffective(wpn) > weaponEffective(equippedWeapon) ? '#34D399' : weaponEffective(wpn) < weaponEffective(equippedWeapon) ? '#EF4444' : 'rgba(192,192,192,0.4)' }}>
+            <p style={{ fontSize: '12px', color: weaponEffective(wpn) > weaponEffective(equippedWeapon) ? '#34D399' : weaponEffective(wpn) < weaponEffective(equippedWeapon) ? '#EF4444' : 'rgba(192,192,192,0.4)' }}>
               {weaponEffective(wpn) > weaponEffective(equippedWeapon) ? `▲ +${weaponEffective(wpn) - weaponEffective(equippedWeapon)}` : weaponEffective(wpn) < weaponEffective(equippedWeapon) ? `▼ ${weaponEffective(wpn) - weaponEffective(equippedWeapon)}` : '='} vs equipped
             </p>
           )}
@@ -236,7 +236,7 @@ const InventoryModal = ({
       if (!items.length) return null;
       return (
         <div key={key} style={{ marginBottom: '14px' }}>
-          <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</p>
+          <p style={{ color: COLORS.silver, fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>{label}</p>
           {items.map((piece, i) => (
             <div key={piece.id ?? i} style={{
               display: 'flex', alignItems: 'center', gap: '10px',
@@ -248,10 +248,10 @@ const InventoryModal = ({
                 style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
                   filter: `drop-shadow(0 0 4px ${getRarityColor(piece.rarity || 'common')}60)` }}/>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ color: getRarityColor(piece.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{piece.name}</p>
-                <p style={{ color: '#68D391', fontSize: '11px' }}>+{piece.defense} Defense</p>
+                <p style={{ color: getRarityColor(piece.rarity || 'common'), fontWeight: 700, fontSize: '15px', marginBottom: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{piece.name}</p>
+                <p style={{ color: '#68D391', fontSize: '13px' }}>+{piece.defense} Defense</p>
                 {!piece._eq && equippedArmor[key] && (
-                  <p style={{ fontSize: '10px', color: armorEffective(piece) > armorEffective(equippedArmor[key]) ? '#34D399' : '#EF4444' }}>
+                  <p style={{ fontSize: '12px', color: armorEffective(piece) > armorEffective(equippedArmor[key]) ? '#34D399' : '#EF4444' }}>
                     {armorEffective(piece) > armorEffective(equippedArmor[key]) ? `▲ +${armorEffective(piece) - armorEffective(equippedArmor[key])}` : `▼ ${armorEffective(piece) - armorEffective(equippedArmor[key])}`} vs equipped
                   </p>
                 )}
@@ -274,15 +274,15 @@ const InventoryModal = ({
       <>
         {allPendants.length > 0 && (
           <div style={{ marginBottom: '14px' }}>
-            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Grimoire</p>
+            <p style={{ color: COLORS.silver, fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Grimoire</p>
             {allPendants.map((pend, i) => (
               <div key={pend.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(pend.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
                 <img src={getBookSprite(pend)} alt={pend.name}
                   style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
                     filter: `drop-shadow(0 0 5px ${getRarityColor(pend.rarity || 'common')}70)` }}/>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: getRarityColor(pend.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{pend.name}</p>
-                  <p style={{ color: '#FF6B6B', fontSize: '11px' }}>+{pend.hp} HP</p>
+                  <p style={{ color: getRarityColor(pend.rarity || 'common'), fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>{pend.name}</p>
+                  <p style={{ color: '#FF6B6B', fontSize: '13px' }}>+{pend.hp} HP</p>
                 </div>
                 {pend._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipGrimoire(pend); }}>Equip</button>}
               </div>
@@ -291,15 +291,15 @@ const InventoryModal = ({
         )}
         {allRings.length > 0 && (
           <div>
-            <p style={{ color: COLORS.silver, fontSize: '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Tome</p>
+            <p style={{ color: COLORS.silver, fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '6px' }}>Tome</p>
             {allRings.map((rng, i) => (
               <div key={rng.id ?? i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', marginBottom: '6px', borderRadius: '8px', border: `1px solid ${getRarityColor(rng.rarity || 'common')}44`, background: VISUAL_STYLES.card.default }}>
                 <img src={getBookSprite(rng)} alt={rng.name}
                   style={{ width: 40, height: 40, objectFit: 'contain', flexShrink: 0,
                     filter: `drop-shadow(0 0 5px ${getRarityColor(rng.rarity || 'common')}70)` }}/>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ color: getRarityColor(rng.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{rng.name}</p>
-                  <p style={{ color: '#6BB6FF', fontSize: '11px' }}>+{rng.stamina} Stamina</p>
+                  <p style={{ color: getRarityColor(rng.rarity || 'common'), fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>{rng.name}</p>
+                  <p style={{ color: '#6BB6FF', fontSize: '13px' }}>+{rng.stamina} Stamina</p>
                 </div>
                 {rng._eq ? <span style={equippedBadge}>✓ Equipped</span> : <button style={equipBtnStyle} onClick={() => { sounds.click(); equipTome(rng); }}>Equip</button>}
               </div>
@@ -313,12 +313,12 @@ const InventoryModal = ({
   const renderPotions = () => {
     const potionRow = ({ emoji, name, desc, count, color, border, disabled, onUse }) => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', marginBottom: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: VISUAL_STYLES.card.default }}>
-        <span style={{ fontSize: '22px' }}>{emoji}</span>
+        <span style={{ fontSize: '26px' }}>{emoji}</span>
         <div style={{ flex: 1 }}>
-          <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>{name}</p>
-          <p style={{ color, fontSize: '12px', fontFamily: 'EB Garamond, serif' }}>{desc}</p>
+          <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>{name}</p>
+          <p style={{ color, fontSize: '14px', fontFamily: 'EB Garamond, serif' }}>{desc}</p>
         </div>
-        <span style={{ color, fontWeight: 700, fontSize: '18px', minWidth: '28px', textAlign: 'center' }}>{count}</span>
+        <span style={{ color, fontWeight: 700, fontSize: '21px', minWidth: '28px', textAlign: 'center' }}>{count}</span>
         <button disabled={disabled} onClick={onUse} style={{ ...equipBtnStyle, opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer', background: disabled ? 'rgba(0,0,0,0.3)' : equipBtnStyle.background, borderColor: disabled ? 'rgba(155,139,126,0.3)' : 'rgba(212,175,55,0.5)' }}>Use</button>
       </div>
     );
@@ -329,10 +329,10 @@ const InventoryModal = ({
         {potionRow({ emoji: '🔮', name: 'Cleanse Potion', desc: 'Removes 1 curse level', count: cleansePots, color: '#B794F4', border: `rgba(107,44,145,${curseLevel > 0 ? 0.6 : 0.3})`, disabled: cleansePots === 0 || curseLevel === 0, onUse: () => { sounds.click(); useCleanse(); } })}
         {luckyCharmActive && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(47,82,51,0.5)', background: 'rgba(47,82,51,0.1)' }}>
-            <span style={{ fontSize: '22px' }}>🍀</span>
+            <span style={{ fontSize: '26px' }}>🍀</span>
             <div>
-              <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '13px', marginBottom: '2px' }}>Fortune Philter</p>
-              <p style={{ color: '#68D391', fontSize: '11px' }}>2× loot from next elite boss · <span style={{ color: '#68D391', fontWeight: 700 }}>Active</span></p>
+              <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>Fortune Philter</p>
+              <p style={{ color: '#68D391', fontSize: '13px' }}>2× loot from next elite boss · <span style={{ color: '#68D391', fontWeight: 700 }}>Active</span></p>
             </div>
           </div>
         )}
@@ -377,8 +377,8 @@ const InventoryModal = ({
         <img src={dwarf.img} alt={dwarf.name}
           style={{ width: 'clamp(110px, 13vw, 210px)', height: 'clamp(110px, 13vw, 210px)', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top',
             border: `3px solid ${COLORS.gold}`, boxShadow: '0 0 40px rgba(201,169,97,0.65), 0 0 100px rgba(201,169,97,0.2)' }}/>
-        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '13px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>{dwarf.name}</p>
-        <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{dwarf.title}</p>
+        <p style={{ fontFamily: 'Cinzel, serif', fontSize: '15px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.1em', textAlign: 'center' }}>{dwarf.name}</p>
+        <p style={{ fontSize: '13px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, textAlign: 'center', marginTop: '-10px' }}>{dwarf.title}</p>
         {/* Dialogue bubble */}
         <div style={{
           marginTop: '8px', padding: '12px 16px', borderRadius: '10px', maxWidth: '280px',
@@ -388,7 +388,7 @@ const InventoryModal = ({
           {/* Speech arrow pointing up */}
           <div style={{ position: 'absolute', top: '-8px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: `8px solid rgba(212,175,55,0.35)` }}/>
           <div style={{ position: 'absolute', top: '-6px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent', borderBottom: '7px solid rgba(20,15,5,0.85)' }}/>
-          <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '12px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
+          <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '14px', color: '#F5F5DC', fontStyle: 'italic', lineHeight: 1.5, textAlign: 'center', margin: 0 }}>
             "{grimdarQuote}"
           </p>
         </div>
@@ -417,8 +417,8 @@ const InventoryModal = ({
           position: 'relative',
         }}>
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '26px', color: COLORS.gold, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
-            <p style={{ fontSize: '11px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{dwarf.name.charAt(0) + dwarf.name.slice(1).toLowerCase()} · {dwarf.title}</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: '31px', color: COLORS.gold, letterSpacing: '0.2em', lineHeight: 1, textShadow: '0 0 20px rgba(201,169,97,0.5)' }}>THE ARMORY</p>
+            <p style={{ fontSize: '13px', color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, marginTop: '4px' }}>{dwarf.name.charAt(0) + dwarf.name.slice(1).toLowerCase()} · {dwarf.title}</p>
           </div>
           <button
             onClick={() => { sounds.click(); setShowInventoryModal(false); }}
@@ -440,7 +440,7 @@ const InventoryModal = ({
                 <button key={key}
                   onClick={() => { sounds.click(); setCategory(key); }}
                   style={{
-                    flex: 1, padding: '8px 4px', borderRadius: '6px', fontSize: '11px', fontWeight: 700,
+                    flex: 1, padding: '8px 4px', borderRadius: '6px', fontSize: '13px', fontWeight: 700,
                     border: `1px solid ${category === key ? 'rgba(212,175,55,0.6)' : 'rgba(155,139,126,0.25)'}`,
                     background: category === key ? 'rgba(184,134,11,0.75)' : 'rgba(37,33,24,0.88)',
                     color: category === key ? COLORS.gold : COLORS.silver,
@@ -448,7 +448,7 @@ const InventoryModal = ({
                   }}
                 >
                   {label}
-                  {counts[key] > 0 && <span style={{ marginLeft: '4px', opacity: 0.75, fontSize: '10px' }}>({counts[key]})</span>}
+                  {counts[key] > 0 && <span style={{ marginLeft: '4px', opacity: 0.75, fontSize: '12px' }}>({counts[key]})</span>}
                 </button>
               ))}
             </div>
@@ -464,24 +464,24 @@ const InventoryModal = ({
           {/* RIGHT — Equipped gear */}
           <div style={{ width: '44%', overflowY: 'auto', padding: '16px 18px 24px', background: 'rgba(15,13,8,0.65)', flexShrink: 0 }}>
 
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '10px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.2em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '12px', fontWeight: 700, color: COLORS.gold, letterSpacing: '0.2em', textAlign: 'center', marginBottom: '14px' }}>EQUIPPED GEAR</p>
 
             {/* Weapon slot */}
             <div style={{ ...slotBox(equippedWeapon), marginBottom: '10px', minHeight: '100px', gap: '6px' }}>
-              <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.1em' }}>WEAPON</p>
+              <p style={{ fontSize: '11px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.1em' }}>WEAPON</p>
               {equippedWeapon ? (
                 <>
                   <img src={getWeaponSprite(equippedWeapon)} alt={equippedWeapon.name}
                     style={{ width: 58, height: 58, objectFit: 'contain',
                       filter: `drop-shadow(0 0 7px ${getRarityColor(equippedWeapon.rarity || 'common')}90)` }}/>
-                  <p style={{ color: getRarityColor(equippedWeapon.rarity || 'common'), fontWeight: 700, fontSize: '12px', marginBottom: '2px' }}>{equippedWeapon.name}</p>
-                  <p style={{ color: '#68D391', fontSize: '11px' }}>+{equippedWeapon.attack} Attack</p>
-                  {equippedWeapon.affixes?.flatDamage  > 0 && <p style={{ color: '#90EE90', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Flat Damage</p>}
-                  {equippedWeapon.affixes?.critChance  > 0 && <p style={{ color: '#FFD700', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.critChance)}% Crit Chance</p>}
-                  {equippedWeapon.affixes?.poisonChance > 0 && <p style={{ color: '#9370DB', fontSize: '10px' }}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison</p>}
+                  <p style={{ color: getRarityColor(equippedWeapon.rarity || 'common'), fontWeight: 700, fontSize: '14px', marginBottom: '2px' }}>{equippedWeapon.name}</p>
+                  <p style={{ color: '#68D391', fontSize: '13px' }}>+{equippedWeapon.attack} Attack</p>
+                  {equippedWeapon.affixes?.flatDamage  > 0 && <p style={{ color: '#90EE90', fontSize: '12px' }}>+{Math.floor(equippedWeapon.affixes.flatDamage)} Flat Damage</p>}
+                  {equippedWeapon.affixes?.critChance  > 0 && <p style={{ color: '#FFD700', fontSize: '12px' }}>+{Math.floor(equippedWeapon.affixes.critChance)}% Crit Chance</p>}
+                  {equippedWeapon.affixes?.poisonChance > 0 && <p style={{ color: '#9370DB', fontSize: '12px' }}>+{Math.floor(equippedWeapon.affixes.poisonChance)}% Poison</p>}
                 </>
               ) : (
-                <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, fontSize: '12px', opacity: 0.4 }}>Empty slot</p>
+                <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, fontSize: '14px', opacity: 0.4 }}>Empty slot</p>
               )}
             </div>
 
@@ -491,19 +491,19 @@ const InventoryModal = ({
                 const item = equippedArmor[key];
                 return (
                   <div key={key} style={slotBox(item)}>
-                    <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{label.toUpperCase()}</p>
+                    <p style={{ fontSize: '11px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>{label.toUpperCase()}</p>
                     {item ? (
                       <>
                         <img src={getArmorSprite(item, key)} alt={item.name}
                           style={{ width: 36, height: 36, objectFit: 'contain', marginBottom: '4px',
                             filter: `drop-shadow(0 0 5px ${getRarityColor(item.rarity || 'common')}70)` }}/>
-                        <p style={{ color: getRarityColor(item.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
-                        <p style={{ color: '#68D391', fontSize: '10px' }}>+{item.defense} Def</p>
-                        {item.affixes?.percentDR > 0 && <p style={{ color: '#68D391', fontSize: '9px' }}>{Math.floor(item.affixes.percentDR)}% DR</p>}
-                        {item.affixes?.flatHP     > 0 && <p style={{ color: '#FF6B6B', fontSize: '9px' }}>+{Math.floor(item.affixes.flatHP)} HP</p>}
+                        <p style={{ color: getRarityColor(item.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                        <p style={{ color: '#68D391', fontSize: '12px' }}>+{item.defense} Def</p>
+                        {item.affixes?.percentDR > 0 && <p style={{ color: '#68D391', fontSize: '11px' }}>{Math.floor(item.affixes.percentDR)}% DR</p>}
+                        {item.affixes?.flatHP     > 0 && <p style={{ color: '#FF6B6B', fontSize: '11px' }}>+{Math.floor(item.affixes.flatHP)} HP</p>}
                       </>
                     ) : (
-                      <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px', opacity: 0.4 }}>Empty</p>
+                      <p style={{ color: COLORS.silver, fontStyle: 'italic', lineHeight: 1.6, fontSize: '13px', opacity: 0.4 }}>Empty</p>
                     )}
                   </div>
                 );
@@ -513,34 +513,34 @@ const InventoryModal = ({
             {/* Accessory slots — 1×2 */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '16px' }}>
               <div style={slotBox(equippedGrimoire)}>
-                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>GRIMOIRE</p>
+                <p style={{ fontSize: '11px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>GRIMOIRE</p>
                 {equippedGrimoire ? (
                   <>
                     <img src={getBookSprite(equippedGrimoire)} alt={equippedGrimoire.name}
                       style={{ width: 36, height: 36, objectFit: 'contain', marginBottom: '4px',
                         filter: `drop-shadow(0 0 5px ${getRarityColor(equippedGrimoire.rarity || 'common')}70)` }}/>
-                    <p style={{ color: getRarityColor(equippedGrimoire.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedGrimoire.name}</p>
-                    <p style={{ color: '#FF6B6B', fontSize: '10px' }}>+{equippedGrimoire.hp} HP</p>
-                    {equippedGrimoire.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '9px' }}>+{Math.floor(equippedGrimoire.affixes.xpBonus)}% XP</p>}
+                    <p style={{ color: getRarityColor(equippedGrimoire.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedGrimoire.name}</p>
+                    <p style={{ color: '#FF6B6B', fontSize: '12px' }}>+{equippedGrimoire.hp} HP</p>
+                    {equippedGrimoire.affixes?.xpBonus > 0 && <p style={{ color: '#F59E0B', fontSize: '11px' }}>+{Math.floor(equippedGrimoire.affixes.xpBonus)}% XP</p>}
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(192,192,192,0.55)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
+                  <p style={{ color: 'rgba(192,192,192,0.55)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '13px' }}>Empty</p>
                 )}
               </div>
               <div style={slotBox(equippedTome)}>
-                <p style={{ fontSize: '9px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>TOME</p>
+                <p style={{ fontSize: '11px', color: COLORS.silver, fontWeight: 700, letterSpacing: '0.08em', marginBottom: '5px' }}>TOME</p>
                 {equippedTome ? (
                   <>
                     <img src={getBookSprite(equippedTome)} alt={equippedTome.name}
                       style={{ width: 36, height: 36, objectFit: 'contain', marginBottom: '4px',
                         filter: `drop-shadow(0 0 5px ${getRarityColor(equippedTome.rarity || 'common')}70)` }}/>
-                    <p style={{ color: getRarityColor(equippedTome.rarity || 'common'), fontWeight: 700, fontSize: '11px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedTome.name}</p>
-                    <p style={{ color: '#6BB6FF', fontSize: '10px' }}>+{equippedTome.stamina} STA</p>
-                    {equippedTome.affixes?.critChance > 0 && <p style={{ color: '#FFD700', fontSize: '9px' }}>+{Math.floor(equippedTome.affixes.critChance)}% Crit</p>}
-                    {equippedTome.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '9px' }}>+{Math.floor(equippedTome.affixes.goldBonus)}% Gold</p>}
+                    <p style={{ color: getRarityColor(equippedTome.rarity || 'common'), fontWeight: 700, fontSize: '13px', marginBottom: '2px', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{equippedTome.name}</p>
+                    <p style={{ color: '#6BB6FF', fontSize: '12px' }}>+{equippedTome.stamina} STA</p>
+                    {equippedTome.affixes?.critChance > 0 && <p style={{ color: '#FFD700', fontSize: '11px' }}>+{Math.floor(equippedTome.affixes.critChance)}% Crit</p>}
+                    {equippedTome.affixes?.goldBonus  > 0 && <p style={{ color: '#34D399', fontSize: '11px' }}>+{Math.floor(equippedTome.affixes.goldBonus)}% Gold</p>}
                   </>
                 ) : (
-                  <p style={{ color: 'rgba(192,192,192,0.55)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '11px' }}>Empty</p>
+                  <p style={{ color: 'rgba(192,192,192,0.55)', fontStyle: 'italic', lineHeight: 1.6, fontSize: '13px' }}>Empty</p>
                 )}
               </div>
             </div>
