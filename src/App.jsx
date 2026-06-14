@@ -3344,23 +3344,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     }
   };
   
-  const miniBoss = () => {
-    const completedTasks = tasks.filter(t => t.done).length;
-    const requiredTasks = Math.min(3, tasks.length);
-
-    if (tasks.length === 0 || completedTasks < requiredTasks) {
-      addLog(`Complete ${requiredTasks} tasks to summon the Blood Contract guardian. (${completedTasks}/${requiredTasks})`);
-      return;
-    }
-
-    setBattleType('elite');
-    audioManager.cut();
-    audioManager.play(TRACKS.darkling);
-    const { eliteId, eliteDialogue } = activeContractRef.current || {};
-    spawnSpecificElite(eliteId, eliteDialogue);
-    setCanFlee(false);
-  };
-  
   const spawnFinalBossPhase = (phase) => {
     const config = GAME_CONSTANTS.SCALING_CONFIG.boss;
     const baseHp = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
@@ -8364,7 +8347,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
           {activeTab === 'contracts' && (
             <ContractsTab
               hasStarted={hasStarted} isDayActive={isDayActive} currentDay={currentDay}
-              eliteBossDefeatedToday={eliteBossDefeatedToday}
               tasks={tasks} setShowModal={setShowModal}
               hideCompletedTasks={hideCompletedTasks} setHideCompletedTasks={setHideCompletedTasks}
               handleDragStart={handleDragStart} handleDragEnd={handleDragEnd}
@@ -8630,7 +8612,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                 setPomodoroRunning(true);
                 addLog(`Focus session: "${t.title}"`);
               }}
-              onEliteBoss={miniBoss}
               onFinalBoss={finalBoss}
             />
             </Suspense>

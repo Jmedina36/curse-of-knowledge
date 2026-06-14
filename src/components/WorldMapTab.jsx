@@ -574,7 +574,7 @@ const TIER_META = {
 const WorldMapTab = ({
   currentDay, level, gold, hp, maxHp, selectedZone, setSelectedZone,
   activeContract, setActiveContract,
-  onBeginContract, onEliteBoss, onFinalBoss,
+  onBeginContract, onFinalBoss,
   isDayActive,
   completedLocationContracts, debugUnlockedZones, huntingChallenges,
   onWildEncounter, onOpenBestiary, onDebugToggleZone, onHuntingChallenge,
@@ -1653,28 +1653,10 @@ const WorldMapTab = ({
 
                 {/* Status / Action */}
                 {displayed.id === 'dungeon_fallen' ? (
-                  // Elite boss location
-                  activeContract?.type === 'elite' ? (
-                    <button
-                      onClick={() => { onEliteBoss(); setActiveContract(null); }}
-                      disabled={!isDayActive}
-                      style={{
-                        width: '100%', fontSize: '0.8rem', fontWeight: 700,
-                        color: isDayActive ? '#000' : 'rgba(168,85,247,0.3)',
-                        background: isDayActive ? '#A855F7' : 'rgba(20,10,30,0.5)',
-                        border: '1px solid rgba(168,85,247,0.5)',
-                        borderRadius: '4px', padding: '8px',
-                        cursor: isDayActive ? 'pointer' : 'not-allowed',
-                        letterSpacing: '0.1em', textTransform: 'uppercase',
-                        boxShadow: isDayActive ? '0 0 16px rgba(168,85,247,0.4)' : 'none',
-                        animation: isDayActive ? 'intro-hint-pulse 2s ease-in-out infinite' : 'none',
-                      }}
-                    >Begin Blood Contract</button>
-                  ) : (
-                    <div style={{ fontSize: '0.8rem', color: 'rgba(168,85,247,0.7)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                      Accept on Contracts Board
-                    </div>
-                  )
+                  // Elite boss location — currently dormant
+                  <div style={{ fontSize: '0.8rem', color: 'rgba(168,85,247,0.6)', textAlign: 'center', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+                    Dormant
+                  </div>
                 ) : displayed.id === 'skull_cave' ? (
                   // Legendary boss location
                   !isUnlocked(displayed) ? (

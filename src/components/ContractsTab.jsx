@@ -31,7 +31,6 @@ const ContractsTab = ({
   hasStarted,
   isDayActive,
   currentDay,
-  eliteBossDefeatedToday,
   tasks,
   setShowModal,
   hideCompletedTasks,
