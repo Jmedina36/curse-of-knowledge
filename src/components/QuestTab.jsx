@@ -1,6 +1,5 @@
 ﻿import React from 'react';
 import { ShieldCheck, Swords } from 'lucide-react';
-import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';
 
 const DWARF_NPCS = [

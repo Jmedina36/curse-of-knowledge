@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { X, Check } from 'lucide-react';
-import { COLORS, GAME_CONSTANTS } from '../constants';
+import { COLORS } from '../constants';
 import { sounds } from '../sounds';
 import useEscapeClose from '../hooks/useEscapeClose';
 

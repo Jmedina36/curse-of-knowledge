@@ -1611,40 +1611,6 @@ skillPoints, unlockedSkillNodes,
     }
   }, [xp, level, addLog, getMaxHp, hero]);
   
-  const applySkipPenalty = useCallback(() => {
-    const newSkipCount = skipCount + 1;
-    setSkipCount(newSkipCount);
-    setConsecutiveDays(0);
-    
-    // Reset streak when skipping
-    setAchievementStats(prev => ({ ...prev, streak_days: 0 }));
-    
-    const penaltyIndex = Math.min(newSkipCount - 1, GAME_CONSTANTS.SKIP_PENALTIES.length - 1);
-    const penalty = GAME_CONSTANTS.SKIP_PENALTIES[penaltyIndex];
-    
-    addLog(penalty.message);
-    
-    setHp(h => {
-      const newHp = Math.max(0, h - penalty.hp);
-      if (newHp <= 0 || penalty.death) {
-        setTimeout(() => die(), 1000);
-      }
-      return newHp;
-    });
-    
-    if (penalty.levelLoss > 0) {
-      setLevel(l => Math.max(1, l - penalty.levelLoss));
-      addLog(`The hero lost ${penalty.levelLoss} level${penalty.levelLoss > 1 ? 's' : ''}!`);
-    }
-    
-    if (penalty.equipmentDebuff > 0) {
-      setWeapon(w => Math.floor(w * (1 - penalty.equipmentDebuff)));
-      setArmor(a => Math.floor(a * (1 - penalty.equipmentDebuff)));
-      addLog(`The hero's equipment has been weakened by ${penalty.equipmentDebuff * 100}%!`);
-    }
-    
-  }, [skipCount, addLog]);
-  
   const applyEncounter = (encounter) => {
     const e = encounter.effect;
     if (e.type === 'xp')           setXp(x => x + e.value);
@@ -2210,21 +2176,6 @@ if (tasks.length === 0) {
     
     // Remove from shop inventory
     setShopInventory(prev => prev.filter(i => i.id !== item.id));
-  };
-  
-  const startTask = (id) => {
-    if (canCustomize) {
-  setCanCustomize(false);
-}
-    const task = tasks.find(t => t.id === id);
-    if (task && !task.done && !activeTask) {
-      setActiveTask(id);
-      const seconds = task.time * 60;
-      setTimer(seconds);
-      setTimerEndTime(Date.now() + (seconds * 1000));
-      setRunning(true);
-      addLog(`The hero begins the trial: ${task.title}`);
-    }
   };
   
   // FIXED: Added weapon, armor, overdueTask to dependencies
@@ -2891,20 +2842,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     spawnBanditEnemy(lineup[0], 0, lineup.length);
   };
 
-  const handleBeg = () => {
-    // Reset the current wave — no xp/gold credit
-    sounds.banditTaunt();
-    addLog('🏃 You begged for mercy. The bandits laugh and reset their formation...');
-    setIsBanditWave(false);
-    setBattling(false);
-    setBattleMode(false);
-    setShowBoss(false);
-    // Re-spawn the same wave after a short delay
-    const waveNum = banditWaveNumber;
-    const captDefeated = banditCaptainsDefeated;
-    setTimeout(() => spawnBanditWave(waveNum, captDefeated), 1500);
-  };
-
   const spawnDaughtersEnemy = (enemy, idx, total, isContract = false) => {
     const config = GAME_CONSTANTS.SCALING_CONFIG.normal;
     const base = Math.floor(config.hpBase * Math.pow(config.hpGrowth, currentDay - 1));
@@ -3055,19 +2992,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       openingLog: playerFirst ? '' : `Enemy strikes first for ${openDmg} damage.${stunned ? ' You are stunned.' : ''}`,
     }), 3200);
   };
-
-  const handleDaughtersBeg = () => {
-    addLog('🏳️ You plead for mercy. The Daughters melt back into the shadows... and regroup.');
-    setIsDaughtersWave(false);
-    setBattling(false);
-    setBattleMode(false);
-    setShowBoss(false);
-    const waveNum = daughtersWaveNumber;
-    const captDefeated = daughtersCaptainsDefeated;
-    setTimeout(() => spawnDaughtersWave(waveNum, captDefeated), 1500);
-  };
-
-
 
   const ANTAGONISTS = {
     cutter:   { name: 'Cutter',                    img: '/bandits/leader.png',             hpMult: 2.8, music: TRACKS.cutter,   sfx: () => sounds.banditIntro(),        sfxKey: 'bandit',         dialogue: '"The order didn\'t send me. I came because I wanted to."' },
@@ -3226,28 +3150,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     addLog(`💊 Used Health Potion! +${healAmount} HP`);
   }
 };
-  const useStamina = () => {
-    const staminaCost = 5;
-    const timeBonus = 5 * 60;
-    
-    if (stamina >= staminaCost && activeTask) {
-      setStamina(s => s - staminaCost);
-      setTimer(t => t + timeBonus);
-      
-      if (overdueTask === activeTask) {
-        setOverdueTask(null);
-      }
-      
-      if (!running || timer <= 0) {
-        setRunning(true);
-        setTimerEndTime(Date.now() + ((timer + timeBonus) * 1000));
-      } else {
-        setTimerEndTime(prev => prev ? prev + (timeBonus * 1000) : null);
-      }
-      
-      addLog(`⚡ Spent ${staminaCost} Stamina! +5 minutes to timer`);
-    }
-  };
   
  const useCleanse = () => {
   if (cleansePots > 0 && curseLevel > 0) {
@@ -7001,14 +6903,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   };
   
 
-  const shakedownEnemy = () => {
-    const day = Math.max(1, currentDay || 1);
-    const goldGained = Math.floor(5 + Math.random() * day * 3);
-    setGold(g => g + goldGained);
-    addLog(`You shake down the weakened creature for ${goldGained} gold!`);
-    return goldGained;
-  };
-
   const captureMonster = (bossName, bossHpPct, battleType, isFinalBoss, img, preRolledStats) => {
     if (capturedMonsters.length >= 4) {
       addLog('Your stable is full! Release a monster first.');
@@ -7045,56 +6939,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     } else {
       addLog(`${bossName} resisted capture! The creature breaks free.`);
       return { success: false, reason: 'resisted', chance: Math.round(chance * 100) };
-    }
-  };
-
-  const releaseMonster = (id) => {
-    setCapturedMonsters(prev => prev.filter(m => m.id !== id));
-    addLog('Monster released back into the wild.');
-  };
-
-  const negotiate = (method, bribeAmount = 0) => {
-    const wisMod = Math.floor(((hero.abilities?.wis || 10) - 10) / 2);
-
-    let success = false;
-    let resultLine = '';
-
-    if (method === 'persuade') {
-      const chance = Math.max(0.05, 0.30 + wisMod * 0.08);
-      success = Math.random() < chance;
-      resultLine = success
-        ? `...You remind me of something I once knew. Go. Before I change my mind.`
-        : `Mercy is for the living. You are already dead.`;
-    } else if (method === 'bribe') {
-      if (gold < bribeAmount) {
-        addLog(`Not enough gold. The shadow demands ${bribeAmount}g.`);
-        setEnemyDialogue(`Gold? You insult me with empty hands.`);
-        return { success: false, enraged: false };
-      }
-      setGold(g => g - bribeAmount);
-      success = true;
-      resultLine = `Gold. How predictable. But... acceptable.`;
-    }
-
-    if (success) {
-      const loot = method === 'bribe'
-        ? [`-${bribeAmount} Gold`, 'Shadow Dismissed', '✓ Survived']
-        : ['Shadow Dismissed', '✓ Survived'];
-      setEnemyDialogue(resultLine);
-      addLog(`You survived by ${method === 'bribe' ? 'gold' : 'words'}.`);
-      setVictoryLoot(loot);
-      setBossHp(0);
-      setBattling(false);
-      setBattleMode(false);
-      setKnightConsecutiveUses(0);
-      setKnightCrushingBlowCooldown(false);
-      setCrusaderSmiteCooldown(false);
-      setRecklessStacks(0);
-      return { success: true, enraged: false };
-    } else {
-      setEnemyDialogue(resultLine);
-      isBanditWave ? sounds.banditLaugh() : sounds.negotiateFail();
-      return { success: false, enraged: true };
     }
   };
 
@@ -7289,21 +7133,6 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     }
   };
   
-  const fmt = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-  
-  const getColor = (difficulty) => {
-    switch(difficulty) {
-      case 'easy': return 'bg-green-900 text-green-400';
-      case 'medium': return 'bg-yellow-900 text-yellow-400';
-      case 'hard': return 'bg-red-900 text-red-400';
-      default: return 'bg-gray-900 text-gray-400';
-    }
-  };
-
   if (!hero) return (
     <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center" style={{ fontFamily: "'Cinzel', serif" }}>
       <div className="text-2xl">Loading your fate...</div>
