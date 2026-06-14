@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { sounds } from '../sounds';
 import { CornerFrame, FlourishDivider } from './Ornaments';
 import { GAME_CONSTANTS, KNIGHT_SKILL_TREE, WIZARD_SKILL_TREE, ASSASSIN_SKILL_TREE, CRUSADER_SKILL_TREE } from '../constants';
@@ -52,12 +52,12 @@ const Divider = ({ gold }) => (
 const SectionHeader = ({ label, badge }) => (
   <div style={{ paddingTop: '10px', paddingBottom: '4px', display: 'flex', alignItems: 'center', gap: '10px' }}>
     <span style={{
-      fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900,
+      fontFamily: 'Cinzel, serif', fontSize: '0.83rem', fontWeight: 900,
       letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)',
     }}>{label}</span>
     {badge && (
       <span style={{
-        fontFamily: 'Cinzel, serif', fontSize: '0.68rem', fontWeight: 900,
+        fontFamily: 'Cinzel, serif', fontSize: '0.8rem', fontWeight: 900,
         letterSpacing: '0.1em', textTransform: 'uppercase',
         color: 'rgba(255,220,80,0.9)',
         background: 'rgba(212,175,55,0.15)',
@@ -184,7 +184,7 @@ const HeroTab = ({
     }}>
       <span style={{
         fontFamily: 'Cinzel, serif',
-        fontSize: dim ? '0.72rem' : '0.82rem',
+        fontSize: dim ? '0.85rem' : '0.97rem',
         fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
         color: highlight ? 'rgba(212,175,55,0.85)' : dim ? 'rgba(160,145,118,0.4)' : 'rgba(190,175,148,0.65)',
         flex: 1,
@@ -193,7 +193,7 @@ const HeroTab = ({
         <div style={{ width: '50px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1))' }} />
         <span style={{
           fontFamily: 'Cinzel, serif',
-          fontSize: dim ? '0.75rem' : '0.88rem',
+          fontSize: dim ? '0.88rem' : '1.04rem',
           fontWeight: 900, letterSpacing: '0.05em',
           color: highlight ? 'rgba(255,235,160,0.92)' : dim ? 'rgba(180,165,138,0.4)' : 'rgba(235,225,205,0.85)',
           minWidth: '50px', textAlign: 'right',
@@ -220,7 +220,7 @@ const HeroTab = ({
       }}>
         {/* Label */}
         <span style={{
-          fontFamily: 'Cinzel, serif', fontSize: '0.82rem', fontWeight: 700,
+          fontFamily: 'Cinzel, serif', fontSize: '0.97rem', fontWeight: 700,
           letterSpacing: '0.1em', textTransform: 'uppercase', flex: 1,
           color: isPrimary ? 'rgba(212,175,55,0.85)' : 'rgba(190,175,148,0.65)',
         }}>
@@ -237,7 +237,7 @@ const HeroTab = ({
             border: `1px solid ${canSub ? 'rgba(212,175,55,0.4)' : 'rgba(255,255,255,0.06)'}`,
             color: canSub ? 'rgba(212,175,55,0.85)' : 'rgba(255,255,255,0.15)',
             cursor: canSub ? 'pointer' : 'default',
-            fontFamily: 'Cinzel, serif', fontSize: '0.8rem', fontWeight: 900,
+            fontFamily: 'Cinzel, serif', fontSize: '0.94rem', fontWeight: 900,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             lineHeight: 1, flexShrink: 0,
             transition: 'all 0.15s',
@@ -247,21 +247,21 @@ const HeroTab = ({
         {/* Value display */}
         <div style={{ minWidth: '80px', textAlign: 'center', padding: '0 6px' }}>
           {alloc > 0 ? (
-            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 900 }}>
+            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1.04rem', fontWeight: 900 }}>
               <span style={{ color: 'rgba(200,185,155,0.78)' }}>{score}</span>
-              <span style={{ color: 'rgba(212,175,55,0.78)', fontSize: '0.75rem', margin: '0 3px' }}>→</span>
+              <span style={{ color: 'rgba(212,175,55,0.78)', fontSize: '0.88rem', margin: '0 3px' }}>→</span>
               <span style={{ color: 'rgba(255,220,80,0.95)' }}>{preview}</span>
-              <span style={{ color: 'rgba(160,220,130,0.7)', fontSize: '0.72rem', marginLeft: '4px' }}>
+              <span style={{ color: 'rgba(160,220,130,0.7)', fontSize: '0.85rem', marginLeft: '4px' }}>
                 ({mod >= 0 ? '+' : ''}{mod})
               </span>
             </span>
           ) : (
             <span style={{
-              fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 900,
+              fontFamily: 'Cinzel, serif', fontSize: '1.04rem', fontWeight: 900,
               color: 'rgba(235,225,205,0.75)',
             }}>
               {score}
-              <span style={{ color: 'rgba(160,145,118,0.7)', fontSize: '0.72rem', marginLeft: '4px' }}>
+              <span style={{ color: 'rgba(160,145,118,0.7)', fontSize: '0.85rem', marginLeft: '4px' }}>
                 ({mod >= 0 ? '+' : ''}{mod})
               </span>
             </span>
@@ -278,7 +278,7 @@ const HeroTab = ({
             border: `1px solid ${canAdd ? 'rgba(212,175,55,0.55)' : 'rgba(255,255,255,0.06)'}`,
             color: canAdd ? 'rgba(255,225,100,0.9)' : 'rgba(255,255,255,0.15)',
             cursor: canAdd ? 'pointer' : 'default',
-            fontFamily: 'Cinzel, serif', fontSize: '0.8rem', fontWeight: 900,
+            fontFamily: 'Cinzel, serif', fontSize: '0.94rem', fontWeight: 900,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             lineHeight: 1, flexShrink: 0,
             transition: 'all 0.15s',
@@ -335,8 +335,8 @@ const HeroTab = ({
           {/* Name */}
           <div style={{ textAlign: 'center', width: '100%' }}>
             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: 'clamp(0.9rem,2vw,1.1rem)', letterSpacing: '0.08em', color: 'rgba(240,228,200,0.9)', margin: '0 0 3px' }}>{hero.name}</p>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', margin: '0 0 2px' }}>{hero.class.name}</p>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(180,165,135,0.7)', margin: 0 }}>{hero.title}</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.78)', margin: '0 0 2px' }}>{hero.class.name}</p>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.83rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(180,165,135,0.7)', margin: 0 }}>{hero.title}</p>
           </div>
 
           <Divider />
@@ -344,8 +344,8 @@ const HeroTab = ({
           {/* HP bar */}
           <div style={{ width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(220,90,90,0.78)' }}>HP</span>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(230,210,180,0.65)' }}>{hp} / {maxHp}</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(220,90,90,0.78)' }}>HP</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', color: 'rgba(230,210,180,0.65)' }}>{hp} / {maxHp}</span>
             </div>
             <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(100,0,0,0.3)', overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: '2px', width: `${hpPct}%`, background: hpPct < 25 ? '#7f1d1d' : 'linear-gradient(to right, #7f1d1d, #dc2626)', transition: 'width 0.4s' }} />
@@ -355,8 +355,8 @@ const HeroTab = ({
           {/* SP bar */}
           <div style={{ width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(60,120,220,0.78)' }}>SP</span>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(230,210,180,0.65)' }}>{stamina} / {maxSp}</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(60,120,220,0.78)' }}>SP</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', color: 'rgba(230,210,180,0.65)' }}>{stamina} / {maxSp}</span>
             </div>
             <div style={{ height: '4px', borderRadius: '2px', background: 'rgba(0,0,80,0.3)', overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: '2px', width: `${spPct}%`, background: 'linear-gradient(to right, #1e3a8a, #3b82f6)', transition: 'width 0.4s' }} />
@@ -368,13 +368,13 @@ const HeroTab = ({
           {/* XP bar */}
           <div style={{ width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>Experience</span>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'rgba(212,175,55,0.78)' }}>{Math.round(xpPct)}%</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>Experience</span>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', color: 'rgba(212,175,55,0.78)' }}>{Math.round(xpPct)}%</span>
             </div>
             <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(100,80,10,0.25)', overflow: 'hidden' }}>
               <div style={{ height: '100%', borderRadius: '2px', width: `${xpPct}%`, background: 'linear-gradient(to right, #78350f, #d97706)', transition: 'width 0.4s' }} />
             </div>
-            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.68rem', color: 'rgba(180,155,100,0.7)', textAlign: 'right', marginTop: '3px', letterSpacing: '0.05em' }}>
+            <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.8rem', color: 'rgba(180,155,100,0.7)', textAlign: 'right', marginTop: '3px', letterSpacing: '0.05em' }}>
               {xpNeeded - xpThisLevel} to Lv {level + 1}
             </p>
           </div>
@@ -387,9 +387,9 @@ const HeroTab = ({
                 style={{ width: '28px', height: '28px', borderRadius: '50%', objectFit: 'cover', objectPosition: 'top', border: '1px solid rgba(212,175,55,0.2)', flexShrink: 0, opacity: 0.75 }}
                 onError={e => { e.currentTarget.style.display = 'none'; }}
               />
-              <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.68rem', fontStyle: 'italic', lineHeight: 1.6, color: 'rgba(190,170,130,0.7)', margin: 0 }}>
+              <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.8rem', fontStyle: 'italic', lineHeight: 1.6, color: 'rgba(190,170,130,0.7)', margin: 0 }}>
                 "{sorenQuote}"<br />
-                <span style={{ fontStyle: 'normal', color: 'rgba(212,175,55,0.7)', fontSize: '0.65rem', letterSpacing: '0.1em' }}>— Soren</span>
+                <span style={{ fontStyle: 'normal', color: 'rgba(212,175,55,0.7)', fontSize: '0.77rem', letterSpacing: '0.1em' }}>— Soren</span>
               </p>
             </div>
           </div>
@@ -411,7 +411,7 @@ const HeroTab = ({
                 key={tab.id}
                 onClick={() => setActivePanel(tab.id)}
                 style={{
-                  fontFamily: 'Cinzel, serif', fontSize: '0.8rem', fontWeight: 900,
+                  fontFamily: 'Cinzel, serif', fontSize: '0.94rem', fontWeight: 900,
                   letterSpacing: '0.2em', textTransform: 'uppercase',
                   padding: '10px 32px', cursor: 'pointer',
                   background: active ? 'rgba(184,134,11,0.4)' : 'rgba(0,0,0,0.3)',
@@ -428,7 +428,7 @@ const HeroTab = ({
                 {tab.label}
                 {tab.badge && (
                   <span style={{
-                    fontFamily: 'Cinzel, serif', fontSize: '0.65rem', fontWeight: 900,
+                    fontFamily: 'Cinzel, serif', fontSize: '0.77rem', fontWeight: 900,
                     color: 'rgba(255,220,80,0.9)', background: 'rgba(212,175,55,0.15)',
                     border: '1px solid rgba(212,175,55,0.4)', borderRadius: '3px', padding: '1px 5px',
                     animation: 'pulse 2s ease-in-out infinite',
@@ -444,11 +444,11 @@ const HeroTab = ({
 
               {/* Header row */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '6px' }}>
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>
                   The Chronicle
                 </span>
                 {guildRank && (
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: guildRank.name === 'Initiate' ? 'rgba(180,160,120,0.4)' : guildRank.color, opacity: 0.75 }}>
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: guildRank.name === 'Initiate' ? 'rgba(180,160,120,0.4)' : guildRank.color, opacity: 0.75 }}>
                     {guildRank.name}
                   </span>
                 )}
@@ -476,7 +476,7 @@ const HeroTab = ({
                       onClick={confirmAlloc}
                       disabled={!allAllocated}
                       style={{
-                        width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.78rem',
+                        width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.92rem',
                         letterSpacing: '0.2em', textTransform: 'uppercase', padding: '10px',
                         borderRadius: '3px', cursor: allAllocated ? 'pointer' : 'not-allowed',
                         background: allAllocated ? 'rgba(212,175,55,0.15)' : 'rgba(255,255,255,0.03)',
@@ -531,10 +531,10 @@ const HeroTab = ({
               <Divider />
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '5px 0' }}>
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.82rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(190,175,148,0.65)' }}>Curse</span>
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.97rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(190,175,148,0.65)' }}>Curse</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{ width: '50px', height: '1px', background: 'linear-gradient(to right, transparent, rgba(212,175,55,0.1))' }} />
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 900, letterSpacing: '0.05em', color: curseLevel > 0 ? CURSE_COLORS[curseLevel] : 'rgba(180,165,138,0.4)', minWidth: '50px', textAlign: 'right' }}>
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1.04rem', fontWeight: 900, letterSpacing: '0.05em', color: curseLevel > 0 ? CURSE_COLORS[curseLevel] : 'rgba(180,165,138,0.4)', minWidth: '50px', textAlign: 'right' }}>
                     {curseLevel > 0 ? `${CURSE_NAMES[curseLevel]}  (${curseLevel}/3)` : 'None'}
                   </span>
                 </div>
@@ -562,7 +562,7 @@ const HeroTab = ({
 
             if (!tree) return (
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.72rem', color: 'rgba(150,130,100,0.7)', fontStyle: 'italic', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.85rem', color: 'rgba(150,130,100,0.7)', fontStyle: 'italic', lineHeight: 1.6 }}>
                   Skill tree coming soon.
                 </p>
               </div>
@@ -601,10 +601,10 @@ const HeroTab = ({
 
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.71rem', fontWeight: 900, letterSpacing: '0.3em', textTransform: 'uppercase', color: 'rgba(212,175,55,0.7)' }}>
                     {cls} Mastery
                   </span>
-                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', color: 'rgba(160,145,110,0.7)', letterSpacing: '0.1em' }}>
+                  <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.83rem', color: 'rgba(160,145,110,0.7)', letterSpacing: '0.1em' }}>
                     {unlockedCount} / {tree.length} unlocked
                   </span>
                 </div>
@@ -614,7 +614,7 @@ const HeroTab = ({
                 <div style={{ marginBottom: '16px', marginTop: '8px', textAlign: 'center' }}>
                   {skillPoints > 0 ? (
                     <span style={{
-                      fontFamily: 'Cinzel, serif', fontSize: '0.6rem', fontWeight: 900, letterSpacing: '0.15em',
+                      fontFamily: 'Cinzel, serif', fontSize: '0.71rem', fontWeight: 900, letterSpacing: '0.15em',
                       textTransform: 'uppercase', color: 'rgba(255,220,80,0.9)',
                       background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.35)',
                       borderRadius: '3px', padding: '4px 12px',
@@ -622,7 +622,7 @@ const HeroTab = ({
                       {skillPoints} skill point{skillPoints !== 1 ? 's' : ''} available
                     </span>
                   ) : (
-                    <span style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.65rem', color: 'rgba(130,115,85,0.7)', fontStyle: 'italic', lineHeight: 1.6, letterSpacing: '0.1em' }}>
+                    <span style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.77rem', color: 'rgba(130,115,85,0.7)', fontStyle: 'italic', lineHeight: 1.6, letterSpacing: '0.1em' }}>
                       Earn points by leveling up
                     </span>
                   )}
@@ -631,16 +631,16 @@ const HeroTab = ({
                 {/* Branch labels */}
                 <div style={{ display: 'flex', gap: '16px', marginBottom: '10px' }}>
                   <div style={{ flex: 1, textAlign: 'center', paddingBottom: '6px', borderBottom: `1px solid ${hasRight ? 'rgba(100,90,70,0.2)' : bm.lc.replace('0.6', '0.3')}` }}>
-                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: hasRight ? 'rgba(100,90,70,0.3)' : bm.lc }}>
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.83rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: hasRight ? 'rgba(100,90,70,0.3)' : bm.lc }}>
                       {bm.left}
                     </span>
-                    {hasRight && <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: 'rgba(120,100,70,0.7)', marginLeft: '6px' }}>locked</span>}
+                    {hasRight && <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.77rem', color: 'rgba(120,100,70,0.7)', marginLeft: '6px' }}>locked</span>}
                   </div>
                   <div style={{ flex: 1, textAlign: 'center', paddingBottom: '6px', borderBottom: `1px solid ${hasLeft ? 'rgba(100,90,70,0.2)' : bm.rc.replace('0.6', '0.3')}` }}>
-                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: hasLeft ? 'rgba(100,90,70,0.3)' : bm.rc }}>
+                    <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.83rem', fontWeight: 900, letterSpacing: '0.2em', textTransform: 'uppercase', color: hasLeft ? 'rgba(100,90,70,0.3)' : bm.rc }}>
                       {bm.right}
                     </span>
-                    {hasLeft && <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', color: 'rgba(120,100,70,0.7)', marginLeft: '6px' }}>locked</span>}
+                    {hasLeft && <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.77rem', color: 'rgba(120,100,70,0.7)', marginLeft: '6px' }}>locked</span>}
                   </div>
                 </div>
 
@@ -649,7 +649,7 @@ const HeroTab = ({
                   <div key={tier}>
                     {/* Tier label */}
                     <div style={{ textAlign: 'center', marginBottom: '8px' }}>
-                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(130,115,85,0.55)' }}>
+                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.77rem', letterSpacing: '0.25em', textTransform: 'uppercase', color: 'rgba(130,115,85,0.55)' }}>
                         Tier {tier}
                       </span>
                     </div>
@@ -695,23 +695,23 @@ const HeroTab = ({
                                   }}>
                                     {node.icon
                                       ? <img src={node.icon} alt="" style={{ width: '34px', height: '34px', objectFit: 'contain' }} />
-                                      : <span style={{ fontSize: '0.9rem', color: isUnlocked ? 'rgba(212,175,55,0.5)' : 'rgba(70,62,42,0.25)' }}>◆</span>
+                                      : <span style={{ fontSize: '1.06rem', color: isUnlocked ? 'rgba(212,175,55,0.5)' : 'rgba(70,62,42,0.25)' }}>◆</span>
                                     }
                                   </div>
 
                                   {/* Name */}
-                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.76rem', fontWeight: 900, letterSpacing: '0.05em', textAlign: 'center', margin: '0 0 5px', color: isUnlocked ? 'rgba(230,215,165,0.92)' : isAvailable ? 'rgba(185,170,132,0.75)' : 'rgba(90,82,58,0.45)' }}>
+                                  <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.9rem', fontWeight: 900, letterSpacing: '0.05em', textAlign: 'center', margin: '0 0 5px', color: isUnlocked ? 'rgba(230,215,165,0.92)' : isAvailable ? 'rgba(185,170,132,0.75)' : 'rgba(90,82,58,0.45)' }}>
                                     {node.name}
                                   </p>
 
                                   {/* Desc */}
-                                  <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.72rem', textAlign: 'center', margin: '0 0 6px', lineHeight: 1.5, color: isUnlocked ? 'rgba(175,158,115,0.7)' : isAvailable ? 'rgba(140,128,96,0.5)' : 'rgba(85,78,55,0.35)' }}>
+                                  <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.85rem', textAlign: 'center', margin: '0 0 6px', lineHeight: 1.5, color: isUnlocked ? 'rgba(175,158,115,0.7)' : isAvailable ? 'rgba(140,128,96,0.5)' : 'rgba(85,78,55,0.35)' }}>
                                     {node.desc}
                                   </p>
 
                                   {/* Flavor */}
                                   {node.flavor && (
-                                    <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.65rem', textAlign: 'center', margin: '0 0 7px', lineHeight: 1.6, fontStyle: 'italic', color: isUnlocked ? 'rgba(140,125,90,0.45)' : 'rgba(90,82,60,0.28)' }}>
+                                    <p style={{ fontFamily: 'EB Garamond, serif', fontSize: '0.77rem', textAlign: 'center', margin: '0 0 7px', lineHeight: 1.6, fontStyle: 'italic', color: isUnlocked ? 'rgba(140,125,90,0.45)' : 'rgba(90,82,60,0.28)' }}>
                                       "{node.flavor}"
                                     </p>
                                   )}
@@ -719,7 +719,7 @@ const HeroTab = ({
                                   {/* Active badge */}
                                   {node.type === 'active' && (
                                     <div style={{ textAlign: 'center', marginBottom: '7px' }}>
-                                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isUnlocked ? 'rgba(100,175,240,0.7)' : 'rgba(55,85,115,0.35)', background: 'rgba(20,50,90,0.2)', borderRadius: '2px', padding: '2px 6px', border: '1px solid rgba(50,90,150,0.15)' }}>
+                                      <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.59rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: isUnlocked ? 'rgba(100,175,240,0.7)' : 'rgba(55,85,115,0.35)', background: 'rgba(20,50,90,0.2)', borderRadius: '2px', padding: '2px 6px', border: '1px solid rgba(50,90,150,0.15)' }}>
                                         Active · {node.spCost} SP
                                       </span>
                                     </div>
@@ -727,7 +727,7 @@ const HeroTab = ({
 
                                   {/* Cost */}
                                   {!isUnlocked && !branchLocked && (
-                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.5rem', textAlign: 'center', margin: '0 0 6px', color: 'rgba(140,125,88,0.7)', letterSpacing: '0.05em' }}>
+                                    <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.59rem', textAlign: 'center', margin: '0 0 6px', color: 'rgba(140,125,88,0.7)', letterSpacing: '0.05em' }}>
                                       {node.cost} pt{node.cost !== 1 ? 's' : ''}
                                     </p>
                                   )}
@@ -737,7 +737,7 @@ const HeroTab = ({
                                     <button
                                       onClick={() => onUnlockSkillNode && onUnlockSkillNode(node.id, node.cost)}
                                       style={{
-                                        display: 'block', width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.65rem',
+                                        display: 'block', width: '100%', fontFamily: 'Cinzel, serif', fontSize: '0.77rem',
                                         letterSpacing: '0.1em', textTransform: 'uppercase', padding: '6px 0',
                                         borderRadius: '2px', cursor: 'pointer',
                                         background: 'rgba(212,175,55,0.1)',
