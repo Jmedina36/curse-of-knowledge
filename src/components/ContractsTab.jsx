@@ -461,7 +461,7 @@ const ContractsTab = ({
                     <p style={{
                       fontFamily: 'Cinzel,serif', fontSize: '0.9rem', letterSpacing: '0.08em',
                       textAlign: 'center', color: 'rgba(180,160,120,0.8)', marginBottom: '8px',
-                    }}>📍 {lc.locationName}</p>
+                    }}>{lc.locationName}</p>
 
                     {/* Description */}
                     <p style={{
