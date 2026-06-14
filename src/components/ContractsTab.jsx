@@ -469,20 +469,6 @@ const ContractsTab = ({
                       lineHeight: 1.6, marginBottom: '10px', fontStyle: 'italic', textAlign: 'center',
                     }}>{lc.desc}</p>
 
-                    {/* Story note — revealed after completion */}
-                    {lc.storyNote && isCompleted && (
-                      <div style={{
-                        marginBottom: '10px', padding: '8px 10px', borderRadius: '3px',
-                        background: 'rgba(20,15,0,0.5)',
-                        border: '1px solid rgba(212,175,55,0.2)',
-                        borderLeft: '2px solid rgba(212,175,55,0.5)',
-                      }}>
-                        <p style={{ fontSize: '0.92rem', color: 'rgba(212,175,55,0.75)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
-                          📜 {lc.storyNote}
-                        </p>
-                      </div>
-                    )}
-
                     {/* Rewards */}
                     {!isCompleted && (
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '10px', justifyContent: 'center' }}>
