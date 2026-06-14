@@ -613,7 +613,6 @@ const ContractsTab = ({
 
               return (
                 <>
-                  <TierDivider tier="platinum" label="Platinum Contract" />
                   <div style={{
                     borderRadius: '10px',
                     border: `1px solid ${eliteBossDefeatedToday ? 'rgba(80,200,100,0.3)' : taskGateMet && isDayActive ? 'rgba(220,220,220,0.45)' : TIER.platinum.border}`,
