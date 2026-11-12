@@ -1,7 +1,12 @@
 import { supabase } from './supabase';
 
 const LOCAL_KEY = 'fantasyStudyQuest';
-let writeTimer = null;
+const LOCAL_DEBOUNCE_MS = 1000;  // batch rapid changes (HP ticks etc.) into one write
+const CLOUD_DEBOUNCE_MS = 5000;
+let writeTimer = null;           // cloud write
+let localTimer = null;           // localStorage write
+let pendingLocal = null;         // latest state not yet written to localStorage
+const savedListeners = new Set();
 
 function clamp(val, min, max, fallback) {
   const n = Number(val);
@@ -81,7 +86,8 @@ function sanitizeSave(data) {
 // ─── Save syncing ───────────────────────────────────────────────────────────
 // Every save is stamped with `savedAt` (ms timestamp) and `ownerId` (the
 // Supabase user whose save is loaded, or null when playing signed out).
-// localStorage is written immediately; the cloud write is debounced, so the
+// localStorage writes are batched (≤1/sec) and flushed synchronously when the
+// tab is hidden or closed; the cloud write is debounced further, so the
 // local copy can be newer than the cloud one if the tab closes before the
 // debounce fires. loadSave() therefore picks whichever copy is newest instead
 // of always trusting the cloud.
@@ -117,6 +123,8 @@ async function pushToCloud(save) {
 }
 
 export async function loadSave() {
+  // Don't let a batched write sit unwritten while we compare saves
+  commitLocal();
   const userId = await sessionUserId();
   const local = readLocal();
 
@@ -159,21 +167,53 @@ export async function loadSave() {
   return local;
 }
 
+// Queue the current game state. Rapid calls are batched: only the latest
+// state is written, at most once per LOCAL_DEBOUNCE_MS.
 export function writeSave(saveData) {
-  const save = { ...saveData, savedAt: Date.now(), ownerId: activeOwnerId };
+  pendingLocal = saveData;
+  if (!localTimer) localTimer = setTimeout(commitLocal, LOCAL_DEBOUNCE_MS);
+}
 
-  // Write locally immediately
+// Write any batched state to localStorage now (synchronous), then queue the
+// cloud write.
+function commitLocal() {
+  clearTimeout(localTimer);
+  localTimer = null;
+  if (!pendingLocal) return;
+  const save = { ...pendingLocal, savedAt: Date.now(), ownerId: activeOwnerId };
+  pendingLocal = null;
+
   localStorage.setItem(LOCAL_KEY, JSON.stringify(save));
+  savedListeners.forEach(fn => fn());
   if (!save.ownerId) return;
 
   // Debounce Supabase write (max once every 5 seconds)
   pendingSave = save;
   clearTimeout(writeTimer);
-  writeTimer = setTimeout(flushSave, 5000);
+  writeTimer = setTimeout(flushSave, CLOUD_DEBOUNCE_MS);
 }
 
-// Send any debounced cloud write right away.
+// Subscribe to "a save was written" (for the auto-save indicator).
+// Returns an unsubscribe function.
+export function onSaved(fn) {
+  savedListeners.add(fn);
+  return () => savedListeners.delete(fn);
+}
+
+// Delete the local save and cancel anything queued, so a pending write
+// can't recreate it.
+export function clearSave() {
+  clearTimeout(localTimer);
+  localTimer = null;
+  pendingLocal = null;
+  clearTimeout(writeTimer);
+  pendingSave = null;
+  localStorage.removeItem(LOCAL_KEY);
+}
+
+// Write everything queued right away: localStorage synchronously, then the cloud.
 export async function flushSave() {
+  commitLocal();
   clearTimeout(writeTimer);
   const save = pendingSave;
   pendingSave = null;

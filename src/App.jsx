@@ -34,7 +34,7 @@ import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
 import SetPasswordModal from './components/SetPasswordModal';
 import { supabase } from './lib/supabase';
-import { loadSave, writeSave, flushSave } from './lib/saveManager';
+import { loadSave, writeSave, flushSave, clearSave, onSaved } from './lib/saveManager';
 import { APP_VERSION, VERSION_NAME } from './version';
 
 // Code-split the heaviest components — loaded on first use, not at startup
@@ -1252,27 +1252,41 @@ const getDateKey = useCallback((date) => {
     }
   }, [hero, equippedArmor.helmet, equippedWeapon]);
   
+  // ── Autosave ────────────────────────────────────────────────────────────
+  // The single list of saved fields. Anything listed here is both saved and
+  // watched for changes (the effect's dependencies are derived from it), so
+  // the two can't drift apart. To save a new field: add it here AND restore it
+  // in applyLoadedData (and sanitizeSave in lib/saveManager.js if it needs
+  // validation).
+  const saveData = {
+    hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters,
+    weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory,
+    equippedGrimoire, equippedTome, grimoireInventory, tomeInventory,
+    tasks, flashcardDecks, graveyard, hasStarted, skipCount, consecutiveDays,
+    lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
+    gauntletMilestone, gauntletUnlocked,
+    isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
+    studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
+    restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures,
+    skillPoints, unlockedSkillNodes,
+  };
+
+  // Queue a save whenever any saved field changes. writeSave batches rapid
+  // changes (e.g. HP ticking in battle) into at most one write per second.
+  // The dependency array is the object's values — always the same length and
+  // order, because the object literal above never changes shape.
   useEffect(() => {
-    if (hero) {
-     const saveData = {
-  hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters,
-  weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, 
-  equippedGrimoire, equippedTome, grimoireInventory, tomeInventory,
-  tasks, flashcardDecks, graveyard, hasStarted, skipCount, consecutiveDays,
-  lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents,
-  gauntletMilestone, gauntletUnlocked,
-  isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted,
-  studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers,
-  restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures,
-skillPoints, unlockedSkillNodes,
-};
-      writeSave(saveData);
-      
-      // Show auto-save indicator
-      setShowSavedIndicator(true);
-      setTimeout(() => setShowSavedIndicator(false), 1500);
-    }
- }, [hero, currentDay, hp, stamina, xp, gold, level, healthPots, staminaPots, cleansePots, fusionCrystals, capturedMonsters, weapon, armor, equippedWeapon, weaponInventory, equippedArmor, armorInventory, equippedGrimoire, equippedTome, grimoireInventory, tomeInventory, tasks, graveyard, hasStarted, skipCount, consecutiveDays, lastPlayedDate, curseLevel, eliteBossDefeatedToday, lastRealDay, studyStats, weeklyPlan, calendarTasks, calendarFocus, calendarEvents, flashcardDecks, gauntletMilestone, gauntletUnlocked, isDayActive, marketModifiers, lastMarketUpdateDay, shopInventory, daysSinceShop, dailyQuestCompleted, studyWebsites, guildPoints, completedLocationContracts, pendingLocationRewards, huntingChallenges, defeatedFactionMembers, restedCursed, lastEncounterDay, gemCounts, unspentStatPoints, intelUnlocked, discoveredCreatures, skillPoints, unlockedSkillNodes]);
+    if (hero) writeSave(saveData);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, Object.values(saveData));
+
+  // Flash the "saved" indicator when a write actually lands
+  const savedIndicatorTimerRef = useRef(null);
+  useEffect(() => onSaved(() => {
+    setShowSavedIndicator(true);
+    clearTimeout(savedIndicatorTimerRef.current);
+    savedIndicatorTimerRef.current = setTimeout(() => setShowSavedIndicator(false), 1500);
+  }), []);
   
   // ESC key to close modals
   useEffect(() => {
@@ -7991,7 +8005,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                       setFlashcardDecks([]);
                       setAchievementStats({ tasksCompleted: 0, studyMinutes: 0, deepWorkSessions: 0, perfectDays: 0, bossesDefeated: 0, eliteBossesDefeated: 0, battlesFled: 0, battlesWon: 0, cardsStudied: 0, consecutiveDays: 0 });
                       setUnlockedAchievements([]);
-                      localStorage.removeItem('fantasyStudyQuest');
+                      clearSave();
                       // Start Night Vigil and launch the narration
                       audioManager.play(TRACKS.nightVigil);
                       setNarrationIndex(0);
@@ -8928,7 +8942,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <button onClick={() => { setLog([]); addLog('Debug: Chronicle cleared'); }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Chronicle</button>
                   <button onClick={() => { if (window.confirm('Clear calendar?')) { setCalendarTasks({}); addLog('Debug: Calendar cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Calendar</button>
                   <button onClick={() => { if (window.confirm('Clear planner?')) { setWeeklyPlan({ Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] }); addLog('Debug: Planner cleared'); } }} className="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded text-xs border border-gray-600" style={{color: '#F5F5DC'}}>Clear Planner</button>
-                  <button onClick={() => { if (window.confirm('Clear save data from localStorage?')) { localStorage.removeItem('fantasyStudyQuest'); addLog('Debug: Save cleared — refresh to apply'); } }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Clear Save Data</button>
+                  <button onClick={() => { if (window.confirm('Clear save data from localStorage?')) { clearSave(); addLog('Debug: Save cleared — refresh to apply'); } }} className="bg-red-800 hover:bg-red-700 px-4 py-2 rounded text-xs border border-red-600" style={{color: '#F5F5DC'}}>Clear Save Data</button>
                 </div>
               </div>
 
@@ -8985,7 +8999,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                     setFlashcardDecks([]); setSelectedDeck(null); setCurrentCardIndex(0); setStudyQueue([]); setWrongCardIndices([]);
                     setAchievementStats({ tasksCompleted: 0, studyMinutes: 0, deepWorkSessions: 0, perfectDays: 0, bossesDefeated: 0, eliteBossesDefeated: 0, battlesFled: 0, battlesWon: 0, cardsStudied: 0, consecutiveDays: 0 });
                     setUnlockedAchievements([]);
-                    localStorage.removeItem('fantasyStudyQuest');
+                    clearSave();
                     addLog('Debug: FULL RESET complete');
                     setActiveTab('quest');
                   }
