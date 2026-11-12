@@ -35,6 +35,7 @@ import AuthModal from './components/AuthModal';
 import SetPasswordModal from './components/SetPasswordModal';
 import { supabase } from './lib/supabase';
 import { loadSave, writeSave, flushSave } from './lib/saveManager';
+import { APP_VERSION, VERSION_NAME } from './version';
 
 // Code-split the heaviest components — loaded on first use, not at startup
 const WorldMapTab = lazy(() => import('./components/WorldMapTab'));
@@ -8415,6 +8416,9 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   <div style={{width: '60px', height: '1px', background: 'linear-gradient(to left, transparent, rgba(212,175,55,0.5))'}}></div>
                 </div>
                 <p className="text-sm italic mt-2" style={{color: '#C0C0C0'}}>"Bend reality to your will..."</p>
+                <p className="text-xs mt-2" style={{color: 'rgba(212,175,55,0.7)', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em'}}>
+                  v{APP_VERSION} — {VERSION_NAME}
+                </p>
               </div>
 
               {/* ── CLOUD SYNC ── */}
