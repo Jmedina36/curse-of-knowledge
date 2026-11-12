@@ -4185,9 +4185,10 @@ if (playerDebuffs.armorShredTurns > 0) {
   setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: prev.armorShredTurns - 1 }));
 }
 
-// Enemy special move (final boss has its own phase system — skip)
+// Enemy special move (final boss has its own phase system — skip).
+// Disabled via GAME_CONSTANTS.ENEMY_SPECIALS_ENABLED until specials are redesigned.
 let overwhelmingForceUsed = false;
-if (battleType !== 'final') {
+if (GAME_CONSTANTS.ENEMY_SPECIALS_ENABLED && battleType !== 'final') {
   const specialChance = battleType === 'elite'
     ? 0.25 + (currentDay - 1) * 0.025
     : battleType === 'wave'

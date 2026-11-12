@@ -256,6 +256,10 @@ export const GAME_CONSTANTS = {
   PITY_TIMER_THRESHOLD: 10,  // Guaranteed upgrade after 10 fights
   
   BOSS_ATTACK_DELAY: 1000,
+  // Enemy special moves (bleed, armor break, Overwhelming Force) after a basic
+  // Attack. Off for now: every enemy uses only normal attacks until special
+  // moves are redesigned. Set to true to restore the old behavior.
+  ENEMY_SPECIALS_ENABLED: false,
   LOG_MAX_ENTRIES: 8,
   SKIP_PENALTIES: [
     { hp: 20, message: '💀 The curse festers... -20 HP', levelLoss: 0, equipmentDebuff: 0, cursed: false },
