@@ -71,47 +71,129 @@ function sanitizeSave(data) {
     if (typeof d.hero.name !== 'string' || !d.hero.name.trim()) d.hero.name = 'Unknown';
   }
 
+  // Save metadata (see writeSave): legacy saves have neither field
+  d.savedAt = Number.isFinite(Number(d.savedAt)) ? Number(d.savedAt) : 0;
+  if (typeof d.ownerId !== 'string') d.ownerId = null;
+
   return d;
 }
 
-export async function loadSave() {
-  // If authenticated, fetch from Supabase (cloud save takes priority)
-  const { data: { user } } = await supabase.auth.getUser();
-  if (user) {
-    const { data, error } = await supabase
-      .from('saves')
-      .select('data')
-      .eq('user_id', user.id)
-      .single();
-    if (!error && data?.data) {
-      const clean = sanitizeSave(data.data);
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(clean));
-      return clean;
-    }
-  }
-  // Fall back to localStorage (offline or not signed in)
-  const local = localStorage.getItem(LOCAL_KEY);
-  if (!local) return null;
+// ─── Save syncing ───────────────────────────────────────────────────────────
+// Every save is stamped with `savedAt` (ms timestamp) and `ownerId` (the
+// Supabase user whose save is loaded, or null when playing signed out).
+// localStorage is written immediately; the cloud write is debounced, so the
+// local copy can be newer than the cloud one if the tab closes before the
+// debounce fires. loadSave() therefore picks whichever copy is newest instead
+// of always trusting the cloud.
+
+// The user whose save is currently loaded. Only loadSave() changes it, so
+// writes made between a sign-in and its loadSave() can't claim the new account.
+let activeOwnerId = null;
+let pendingSave = null;
+
+async function sessionUserId() {
+  // getSession reads the stored session — no network round-trip, works offline
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.user?.id ?? null;
+}
+
+function readLocal() {
+  const raw = localStorage.getItem(LOCAL_KEY);
+  if (!raw) return null;
   try {
-    return sanitizeSave(JSON.parse(local));
+    return sanitizeSave(JSON.parse(raw));
   } catch {
     localStorage.removeItem(LOCAL_KEY);
     return null;
   }
 }
 
+async function pushToCloud(save) {
+  const { error } = await supabase.from('saves').upsert(
+    { user_id: save.ownerId, data: save, updated_at: new Date().toISOString() },
+    { onConflict: 'user_id' }
+  );
+  return !error;
+}
+
+export async function loadSave() {
+  const userId = await sessionUserId();
+  const local = readLocal();
+
+  if (!userId) {
+    activeOwnerId = null;
+    return local;
+  }
+
+  const { data, error } = await supabase
+    .from('saves')
+    .select('data')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    // Cloud unreachable (offline etc.) — play from the local copy. Keep
+    // syncing as this user unless the local save belongs to someone else.
+    activeOwnerId = local?.ownerId && local.ownerId !== userId ? null : userId;
+    return local;
+  }
+
+  activeOwnerId = userId;
+  const cloud = data?.data ? sanitizeSave(data.data) : null;
+  const localIsMine = local?.ownerId === userId;
+
+  // This user's local copy is newer: the last cloud write never landed.
+  // Use it, and push it up now so other devices get it too.
+  if (localIsMine && local.savedAt > (cloud?.savedAt ?? 0)) {
+    pushToCloud(local);
+    return local;
+  }
+
+  if (cloud) {
+    cloud.ownerId = userId;
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(cloud));
+    return cloud;
+  }
+
+  // No cloud save yet — carry on with whatever is local
+  return local;
+}
+
 export function writeSave(saveData) {
+  const save = { ...saveData, savedAt: Date.now(), ownerId: activeOwnerId };
+
   // Write locally immediately
-  localStorage.setItem(LOCAL_KEY, JSON.stringify(saveData));
+  localStorage.setItem(LOCAL_KEY, JSON.stringify(save));
+  if (!save.ownerId) return;
 
   // Debounce Supabase write (max once every 5 seconds)
+  pendingSave = save;
   clearTimeout(writeTimer);
-  writeTimer = setTimeout(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    await supabase.from('saves').upsert(
-      { user_id: user.id, data: saveData, updated_at: new Date().toISOString() },
-      { onConflict: 'user_id' }
-    );
-  }, 5000);
+  writeTimer = setTimeout(flushSave, 5000);
+}
+
+// Send any debounced cloud write right away.
+export async function flushSave() {
+  clearTimeout(writeTimer);
+  const save = pendingSave;
+  pendingSave = null;
+  if (!save) return;
+
+  // Signed out or switched accounts since this was written — don't upload.
+  // The local copy keeps its ownerId, so loadSave() can still recover it.
+  if (await sessionUserId() !== save.ownerId) return;
+
+  const ok = await pushToCloud(save);
+  // On failure, keep it queued for the next flush unless something newer arrived
+  if (!ok && !pendingSave) pendingSave = save;
+}
+
+// Flush when the tab is hidden or closed, so the cloud copy doesn't lag behind.
+// Browsers may cut off requests during unload; loadSave()'s newest-wins check
+// is the safety net for that case.
+if (typeof document !== 'undefined') {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushSave();
+  });
+  window.addEventListener('pagehide', flushSave);
 }

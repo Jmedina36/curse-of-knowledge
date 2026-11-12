@@ -35,7 +35,7 @@ import PomodoroModal from './components/PomodoroModal';
 import AuthModal from './components/AuthModal';
 import SetPasswordModal from './components/SetPasswordModal';
 import { supabase } from './lib/supabase';
-import { loadSave, writeSave } from './lib/saveManager';
+import { loadSave, writeSave, flushSave } from './lib/saveManager';
 
 // Code-split the heaviest components — loaded on first use, not at startup
 const WorldMapTab = lazy(() => import('./components/WorldMapTab'));
@@ -1099,7 +1099,7 @@ const getDateKey = useCallback((date) => {
     const resetTimer = () => {
       clearTimeout(inactivityTimerRef.current);
       inactivityTimerRef.current = setTimeout(async () => {
-        await supabase.auth.signOut();
+        await flushSave(); await supabase.auth.signOut();
         setSupabaseUser(null);
         supabaseUserRef.current = null;
       }, TIMEOUT);
@@ -8078,7 +8078,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             onClick={async () => {
               sounds.click();
               if (supabaseUser) {
-                await supabase.auth.signOut();
+                await flushSave(); await supabase.auth.signOut();
                 setSupabaseUser(null);
               } else {
                 setShowAuthModal(true);
@@ -8424,7 +8424,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
                   {supabaseUser ? `☁ Synced — ${supabaseUser.email}` : '○ Offline — progress saved locally only'}
                 </div>
                 <button
-                  onClick={async () => { if (supabaseUser) { await supabase.auth.signOut(); setSupabaseUser(null); } else { setShowAuthModal(true); } }}
+                  onClick={async () => { if (supabaseUser) { await flushSave(); await supabase.auth.signOut(); setSupabaseUser(null); } else { setShowAuthModal(true); } }}
                   className="text-xs px-3 py-1 rounded border"
                   style={{ borderColor: 'rgba(212,175,55,0.3)', color: 'rgba(212,175,55,0.7)', background: 'transparent', cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '0.08em' }}
                 >
