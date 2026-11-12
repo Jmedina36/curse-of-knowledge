@@ -1,5 +1,4 @@
-﻿// FANTASY STUDY QUEST - v4.15.1
-// Refactored: App.jsx split into components
+﻿// CURSE OF KNOWLEDGE — main app shell (state, save/load, tab routing)
 
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';

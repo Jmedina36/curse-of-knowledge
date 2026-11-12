@@ -12,3 +12,6 @@ public/250 WARRIOR ICONS*
 
 # Machine-specific Claude Code permissions
 .claude/settings.local.json
+
+# Raw asset-pack downloads — kept outside the repo, never shipped
+public/*.zip
