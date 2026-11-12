@@ -593,6 +593,17 @@ const [isOrderFinal, setIsOrderFinal] = useState(false);
 const orderFinalLineupRef = useRef([]);
 const orderFinalIdxRef = useRef(0);
   const [battling, setBattling] = useState(false);
+  // Latest values for delayed enemy turns. A setTimeout callback otherwise sees
+  // `battling`/`hp` as they were when the player clicked, not when the enemy acts.
+  const battlingRef = useRef(battling);
+  battlingRef.current = battling;
+  const hpRef = useRef(hp);
+  hpRef.current = hp;
+  // What the enemy actually did on its turn ('hit', 'bleed', 'frozen', ...).
+  // BattleModal reads this to narrate the real move. null = enemy didn't act.
+  const enemyMoveRef = useRef(null);
+  const enemyTurnRef = useRef(() => {});
+  const reportEnemyMove = (kind) => { enemyMoveRef.current = kind; };
   const [battleMenu, setBattleMenu] = useState('main'); // 'main', 'fight', 'items'
   const [isFinalBoss, setIsFinalBoss] = useState(false);
   const [miniBossCount, setMiniBossCount] = useState(0);
@@ -3426,7 +3437,8 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
       
       // Still trigger boss counter-attack after killing add
       setTimeout(() => {
-        if (!battling || hp <= 0) return;
+        if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
         
         setCurrentAnimation('battle-shake');
         setTimeout(() => setCurrentAnimation(null), 250);
@@ -3446,7 +3458,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
         setPlayerFlash(true);
         sounds.playerDamage();
         setTimeout(() => setPlayerFlash(false), 200);
-      }, 1000);
+      }, enemyDelay);
       
       return;
     }
@@ -4109,12 +4121,13 @@ if (battleType === 'elite' && activeContractRef.current?.type === 'elite') {
     }
     
     setTimeout(() => {
-      if (!battling || hp <= 0) return;
+      if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
 
       // Wizard freeze check: frozen enemies skip their attack
       if (bossFrozenTurns > 0) {
         setBossFrozenTurns(t => t - 1);
-        addLog(`❄️ Enemy is FROZEN and cannot act!`);
+        reportEnemyMove('frozen'); addLog(`❄️ Enemy is FROZEN and cannot act!`);
         return;
       }
       // Wizard chill: accumulate DEF shred each chilled turn
@@ -4179,11 +4192,11 @@ if (battleType !== 'final') {
     if (move === 'bleed') {
       const dmg = Math.max(3, Math.floor(rawEnemyDamage * 0.28));
       setPlayerDebuffs(prev => ({ ...prev, bleedTurns: 3, bleedDamage: dmg }));
-      addLog(`Enemy opens a deep wound! You bleed for ${dmg} damage per turn (3 turns).`);
+      reportEnemyMove('bleed'); addLog(`Enemy opens a deep wound! You bleed for ${dmg} damage per turn (3 turns).`);
       return; // skip normal attack this turn
     } else if (move === 'armorBreak') {
       setPlayerDebuffs(prev => ({ ...prev, armorShredTurns: 2 }));
-      addLog(`Enemy SHATTERS your guard! Defense reduced 35% for 2 turns.`);
+      reportEnemyMove('armorBreak'); addLog(`Enemy SHATTERS your guard! Defense reduced 35% for 2 turns.`);
       return; // skip normal attack this turn
     } else {
       overwhelmingForceUsed = true; // 2.5× damage applied after calc
@@ -4199,7 +4212,7 @@ let bossDamage = Math.max(1, Math.floor(rawEnemyDamage * damageReduction));
 
 if (overwhelmingForceUsed) {
   bossDamage = Math.floor(bossDamage * 2.5);
-  addLog(`OVERWHELMING FORCE! The enemy attacks with devastating power!`);
+  reportEnemyMove('overwhelming'); addLog(`OVERWHELMING FORCE! The enemy attacks with devastating power!`);
 }
 
 // Apply percentDR from armor affixes
@@ -4225,7 +4238,7 @@ if (_wisMod > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod *
 // DEX dodge (3% per modifier point, cap 20%) — exits enemy turn early
 const _dexMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
 if (_dexMod > 0 && Math.random() < Math.min(0.20, _dexMod * 0.03)) {
-  addLog(`⚡ You dodge the attack! (DEX)`);
+  reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`);
   return;
 }
 
@@ -4245,7 +4258,7 @@ if (enragedTurns > 0) {
   
   // 25% miss chance when enraged (wild swings)
   if (Math.random() < 0.25) {
-    addLog(`The enemy's wild strike misses!`);
+    reportEnemyMove('missed'); addLog(`The enemy's wild strike misses!`);
     
     // Decrement enraged turns even on miss
     setEnragedTurns(prev => {
@@ -4450,7 +4463,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       }
 
       setTimeout(() => {
-        if (!battling) return;
+        if (!battlingRef.current) return;
         
         if (bossDebuffs.poisonTurns > 0) {
           let poisonDmg = bossDebuffs.poisonDamage;
@@ -5017,7 +5030,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     if (!skipCounterAttack) {
       setTimeout(() => {
-        if (!battling || hp <= 0) return;
+        if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
         
         setBossDebuffs(prev => ({ ...prev, stunned: false }));
 
@@ -5085,7 +5099,7 @@ if (_wisMod > 0) bossDamage = Math.max(1, Math.floor(bossDamage * (1 - _wisMod *
 // DEX dodge (3% per modifier point, cap 20%) — exits enemy turn early
 const _dexMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
 if (_dexMod > 0 && Math.random() < Math.min(0.20, _dexMod * 0.03)) {
-  addLog(`⚡ You dodge the attack! (DEX)`);
+  reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`);
   return;
 }
 
@@ -5105,7 +5119,7 @@ if (enragedTurns > 0) {
   
   // 25% miss chance when enraged (wild swings)
   if (Math.random() < 0.25) {
-    addLog(`The enemy's wild strike misses!`);
+    reportEnemyMove('missed'); addLog(`The enemy's wild strike misses!`);
     
     // Decrement enraged turns even on miss
     setEnragedTurns(prev => {
@@ -5257,7 +5271,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         }
         
         setTimeout(() => {
-          if (!battling) return;
+          if (!battlingRef.current) return;
           
           if (bossDebuffs.poisonTurns > 0) {
             let poisonDmg = bossDebuffs.poisonDamage;
@@ -5424,7 +5438,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
 
     // Enemy counter-attack
     setTimeout(() => {
-      if (!battling || hp <= 0) return;
+      if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
       setBossDebuffs(prev => ({ ...prev, stunned: false }));
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
@@ -5459,7 +5474,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       if (wisMod > 0) bDmg = Math.max(1, Math.floor(bDmg * (1 - wisMod * 0.02)));
 
       const dexMod = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
-      if (dexMod > 0 && Math.random() < Math.min(0.20, dexMod * 0.03)) { addLog(`⚡ You dodge the attack! (DEX)`); return; }
+      if (dexMod > 0 && Math.random() < Math.min(0.20, dexMod * 0.03)) { reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`); return; }
 
       let knightDef = 0;
       if (knightBloodOathTurns > 0 && hero?.class?.name === 'Knight') knightDef -= GAME_CONSTANTS.SPECIAL_ATTACKS.Knight.defenseReduction;
@@ -5738,7 +5753,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     // Boss counter-attack (same as regular attack)
     setTimeout(() => {
-      if (!battling || hp <= 0) return;
+      if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
       
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
@@ -5766,7 +5782,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // DEX dodge
       const _dexMod2 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
       if (_dexMod2 > 0 && Math.random() < Math.min(0.20, _dexMod2 * 0.03)) {
-        addLog(`⚡ You dodge the attack! (DEX)`);
+        reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`);
         return;
       }
       
@@ -5785,7 +5801,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         bossDamage += enragedBonus;
         
         if (Math.random() < 0.25) {
-          addLog(`The enemy's wild strike misses!`);
+          reportEnemyMove('missed'); addLog(`The enemy's wild strike misses!`);
           setEnragedTurns(prev => {
             const newTurns = prev - 1;
             if (newTurns === 0) {
@@ -6005,7 +6021,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     // Boss counter-attack (simplified)
     setTimeout(() => {
-      if (!battling || hp <= 0) return;
+      if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
       
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
@@ -6027,7 +6044,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // DEX dodge
       const _dexMod3 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
       if (_dexMod3 > 0 && Math.random() < Math.min(0.20, _dexMod3 * 0.03)) {
-        addLog(`⚡ You dodge the attack! (DEX)`);
+        reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`);
         return;
       }
       
@@ -6136,7 +6153,8 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     
     // CRITICAL: Trigger enemy counter-attack (tactical skill ends your turn)
     setTimeout(() => {
-      if (!battling || hp <= 0) return;
+      if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
       
       setCurrentAnimation('battle-shake');
       setTimeout(() => setCurrentAnimation(null), 250);
@@ -6165,7 +6183,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       // DEX dodge
       const _dexMod4 = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
       if (_dexMod4 > 0 && Math.random() < Math.min(0.20, _dexMod4 * 0.03)) {
-        addLog(`⚡ You dodge the attack! (DEX)`);
+        reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`);
         return;
       }
       
@@ -6273,20 +6291,23 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
   };
   
   // ── Standalone enemy counter-attack (used by skill tree handlers) ───────
-  const enemyAttack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
-    setTimeout(() => {
-      if (!battling || hp <= 0) return;
+  // The enemy's turn after a class skill. enemyTurnRef always points at the
+  // latest render's enemyTurn, so it sees state the skill just changed (e.g. an
+  // Ice Lance freeze applies this turn instead of being missed).
+  const enemyTurn = () => {
+      if (!battlingRef.current || hpRef.current <= 0) return;
+      reportEnemyMove('hit');
       // Frozen: skip turn
       if (bossFrozenTurns > 0) {
         setBossFrozenTurns(t => t - 1);
-        addLog(`❄️ Enemy is FROZEN and cannot act!`);
+        reportEnemyMove('frozen'); addLog(`❄️ Enemy is FROZEN and cannot act!`);
         return;
       }
       // Shocked: chance to skip turn
       if (bossShockedTurns > 0) {
         const skipChance = unlockedSkillNodes.includes('cr_galvanize') ? 0.35 : 0.25;
         if (Math.random() < skipChance) {
-          addLog(`⚡ Enemy is PARALYZED by lightning and loses their turn!`);
+          reportEnemyMove('paralyzed'); addLog(`⚡ Enemy is PARALYZED by lightning and loses their turn!`);
           setBossShockedTurns(t => t - 1);
           // Still tick shock DoT
           if (bossShockDamage > 0 && unlockedSkillNodes.includes('cr_galvanize')) {
@@ -6315,7 +6336,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       const _wm = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.wis - 10) / 2)) : 0;
       if (_wm > 0) bDmg = Math.max(1, Math.floor(bDmg * (1 - _wm * 0.02)));
       const _dm = hero?.abilities ? Math.max(0, Math.floor((hero.abilities.dex - 10) / 2)) : 0;
-      if (_dm > 0 && Math.random() < Math.min(0.20, _dm * 0.03)) { addLog(`⚡ You dodge the attack! (DEX)`); return; }
+      if (_dm > 0 && Math.random() < Math.min(0.20, _dm * 0.03)) { reportEnemyMove('dodged'); addLog(`⚡ You dodge the attack! (DEX)`); return; }
       if (curseLevel === 2) bDmg = Math.floor(bDmg * 1.2);
       else if (curseLevel === 3) bDmg = Math.floor(bDmg * 1.4);
       // Knight defense modifiers
@@ -6334,7 +6355,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
       }
       // Blessed Armor: 20% chance to block entirely
       if (unlockedSkillNodes.includes('cr_blessed_armor') && hero?.class?.name === 'Crusader' && Math.random() < 0.20) {
-        addLog(`✙ Blessed Armor blocked the attack!`);
+        reportEnemyMove('blocked'); addLog(`✙ Blessed Armor blocked the attack!`);
         // Still do end-of-turn ticks below, but skip damage
         if (crusaderAegisTurns > 0) { setHp(h => Math.min(getMaxHp(), h + 8)); setCrusaderAegisTurns(t => t - 1); }
         if (bossShockedTurns > 0) { if (bossShockDamage > 0) { setBossHp(h => godMode ? h : Math.max(0, h - bossShockDamage)); addLog(`⚡ -${bossShockDamage} shock DoT`); } setBossShockedTurns(t => t - 1); }
@@ -6404,7 +6425,10 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
         addLog(`✙ Aegis of Light: +8 HP (${crusaderAegisTurns - 1} turns left)`);
         setCrusaderAegisTurns(t => t - 1);
       }
-    }, enemyDelay);
+  };
+  enemyTurnRef.current = enemyTurn;
+  const enemyAttack = (enemyDelay = GAME_CONSTANTS.BOSS_ATTACK_DELAY) => {
+    setTimeout(() => enemyTurnRef.current(), enemyDelay);
   };
 
   // ── Wizard Skill Tree Handlers ────────────────────────────────────────
@@ -6432,7 +6456,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`✨ MANA SURGE! ${damage} damage + BURNED (${burnDmg}/turn, 3 turns)!`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useIceLance = (enemyDelay = 1000) => {
@@ -6461,7 +6485,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`❄️ ICE LANCE! ${damage} damage, enemy chilled!${frozeMsg}`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useCataclysm = (enemyDelay = 1000) => {
@@ -6491,7 +6515,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`💥 CATACLYSM! GUARANTEED CRIT! ${damage} damage!${detonateMsg}`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useAbsoluteZero = (enemyDelay = 1000) => {
@@ -6520,7 +6544,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`❄️ ABSOLUTE ZERO! ${frozenMsg} — ${damage} damage!`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   // ── Skill Tree ─────────────────────────────────────────────────────────
@@ -6582,7 +6606,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`⚡ THUNDER STRIKE! ${damage} damage + SHOCKED (3 turns)!`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useLightningJudgment = (enemyDelay = 1000) => {
@@ -6609,7 +6633,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`⚡ LIGHTNING JUDGMENT! ${damage} damage${isShocked ? ` (5× DETONATION — Shock consumed!)` : ' (3.5×)'}`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useConsecration = (enemyDelay = 1000) => {
@@ -6636,7 +6660,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`✙ CONSECRATION! ${damage} damage · +${healAmt} HP · debuffs cleansed!`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useAegisOfLight = (enemyDelay = 1000) => {
@@ -6658,7 +6682,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`✙ AEGIS OF LIGHT! ${damage} damage · 30% dmg reduction · +8 HP/turn for 3 turns!`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   // ── Assassin Skill Tree Handlers ─────────────────────────────────────
@@ -6688,7 +6712,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`🗡️ EVISCERATE! ${damage} damage${alreadyBleeding ? ' (+40% open wound!)' : ''} + BLEED (${bleedDmg}/turn)`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useCoupDeGrace = (enemyDelay = 1000) => {
@@ -6726,7 +6750,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     if (bleedBurst > 0) parts.push(`+${bleedBurst} bleed detonated`);
     addLog(parts.join(' '));
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useSmokeVeil = () => {
@@ -6760,7 +6784,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setBossFlash(true); setTimeout(() => setBossFlash(false), 200);
     addLog(`🌑 AMBUSH! ${damage} damage (2.5× × ${stackMult.toFixed(2)} — ${stacksUsed} stack${stacksUsed !== 1 ? 's' : ''} consumed)`);
     setTurnPhase('enemy');
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const usePhantomStrike = (enemyDelay = 1000) => {
@@ -6792,7 +6816,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     addLog(parts.join(' '));
     setTurnPhase('enemy');
     // No counter-attack
-    if (newBossHp > 0) setTimeout(() => { if (battling) enemyAttack(); }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useWarlordsRoar = (enemyDelay = 1000) => {
@@ -6803,7 +6827,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setKnightWarlordsRoarTurns(2);
     addLog(`⚔️ WARLORD'S ROAR! +30% ATK, +15% Crit for 2 turns!`);
     setTurnPhase('enemy');
-    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+    enemyAttack(enemyDelay);
   };
 
   const useUnbreakable = (enemyDelay = 1000) => {
@@ -6814,7 +6838,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setKnightUnbreakableTurns(2);
     addLog(`🛡️ UNBREAKABLE! +30% damage reduction for 2 turns!`);
     setTurnPhase('enemy');
-    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+    enemyAttack(enemyDelay);
   };
 
   const useRampart = (enemyDelay = 1000) => {
@@ -6825,7 +6849,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setKnightRampartTurns(2);
     addLog(`🛡️ RAMPART! Enemy -30% ATK for 2 turns!`);
     setTurnPhase('enemy');
-    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+    enemyAttack(enemyDelay);
   };
 
   const useNoQuarter = (enemyDelay = 1000) => {
@@ -6848,7 +6872,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setCurrentAnimation('battle-shake');
     setTimeout(() => setCurrentAnimation(null), 250);
     setTurnPhase('enemy');
-    setTimeout(() => { if (battling && newBossHp > 0) { enemyAttack(); } }, enemyDelay);
+    if (newBossHp > 0) enemyAttack(enemyDelay);
   };
 
   const useRetribution = (enemyDelay = 1000) => {
@@ -6859,7 +6883,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
     setKnightRetributionStance(true);
     addLog(`⚔️ RETRIBUTION STANCE — counter 2× the next hit!`);
     setTurnPhase('enemy');
-    setTimeout(() => { if (battling) { enemyAttack(); } }, enemyDelay);
+    enemyAttack(enemyDelay);
   };
   // ── End Skill Tree ──────────────────────────────────────────────────
 
@@ -9126,6 +9150,7 @@ if (crusaderBastionOfFaith > 0 && hero?.class?.name === 'Crusader') {
             <Suspense fallback={<div className="fixed inset-0 z-50" style={{ background: 'rgba(0,0,0,0.88)' }} />}>
             <BattleModal
               bossHp={bossHp} bossMax={bossMax} bossName={bossName}
+              enemyMoveRef={enemyMoveRef}
               bossFlash={bossFlash} bossDebuffs={bossDebuffs} enragedTurns={enragedTurns}
               playerFlash={playerFlash} playerDebuffs={playerDebuffs}
               battleType={battleType} isFinalBoss={isFinalBoss}

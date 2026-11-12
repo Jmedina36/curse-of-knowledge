@@ -87,6 +87,27 @@ const pickMove = (isFinalBoss, battleType) => {
   return pool[Math.floor(Math.random() * pool.length)];
 };
 
+// Narration for what the enemy actually did this turn. `kind` comes from
+// App's enemyMoveRef; null means the enemy didn't act (no text shown).
+const describeEnemyMove = (kind, enemyName, isFinalBoss, battleType) => {
+  const flavor = () => {
+    const move = pickMove(isFinalBoss, battleType);
+    return `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
+  };
+  switch (kind) {
+    case 'hit':          return flavor();
+    case 'overwhelming': return `${enemyName} used Overwhelming Force! It strikes with devastating power!`;
+    case 'bleed':        return `${enemyName} used Rending Wound! It tears you open — you're bleeding.`;
+    case 'armorBreak':   return `${enemyName} used Guard Breaker! Your defenses shatter.`;
+    case 'frozen':       return `${enemyName} is frozen solid and cannot act!`;
+    case 'paralyzed':    return `${enemyName} is paralyzed by lightning and loses its turn!`;
+    case 'dodged':       return `${enemyName} lunges — but you dodge the attack!`;
+    case 'missed':       return `${enemyName} lashes out wildly — and misses!`;
+    case 'blocked':      return `${enemyName} strikes — but your Blessed Armor blocks the blow!`;
+    default:             return null;
+  }
+};
+
 // ─── Typewriter text component ───────────────────────────────────────────────
 const TypewriterText = ({ text, speed = 28, color = '#F5F5DC' }) => {
   const [displayed, setDisplayed] = useState('');
@@ -132,6 +153,7 @@ const getLogColor = (entry) => {
 
 const BattleModal = ({
   // Enemy state
+  enemyMoveRef,
   bossHp,
   bossMax,
   bossName,
@@ -270,9 +292,6 @@ const BattleModal = ({
   const [capturePhase, setCapturePhase] = useState('idle'); // 'idle'|'result'
   const [captureResult, setCaptureResult] = useState(null);
   const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
-
-  const bossMaxStamina = isFinalBoss ? 150 : battleType === 'elite' ? 100 : 80;
-  const [bossStamina, setBossStamina] = useState(() => isFinalBoss ? 150 : battleType === 'elite' ? 100 : 80);
 
   // Stats generated once when battle opens — carried over if captured
   const [bossStats] = useState(() => {
@@ -484,12 +503,12 @@ const BattleModal = ({
     // Delay before enemy acts = time for player text to fully type + read pause
     const enemyActDelay = playerText.length * CHAR_SPEED + READ_PAUSE;
 
+    // Clear last turn's enemy move; App records this turn's when the enemy acts
+    if (enemyMoveRef) enemyMoveRef.current = null;
+
     // Pass the delay so the enemy counter-attack fires in sync with the text
     actionFn(skipEnemyTurn ? undefined : enemyActDelay);
     if (skipEnemyTurn) return;
-
-    const move = pickMove(isFinalBoss, battleType);
-    const enemyText = `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
 
     turnTimers.current.forEach(clearTimeout);
     turnTimers.current = [];
@@ -497,20 +516,21 @@ const BattleModal = ({
     setBattleLine(playerText);
     setTurnPhase('narrating');
 
-    // Show enemy text at the exact moment enemy damage fires
-    schedule(() => {
-      setBattleLine(enemyText);
-      setBossStamina(prev => Math.max(0, prev - Math.floor(18 + Math.random() * 18)));
-    }, enemyActDelay);
-
-    // After enemy text finishes typing, return control to player
-    const enemyTextDuration = enemyText.length * CHAR_SPEED + ENEMY_READ_PAUSE;
-    schedule(() => {
+    const returnControl = () => {
       setBattleLine('');
       setTurnPhase('player');
       turnCountRef.current++;
-      setBossStamina(prev => Math.min(bossMaxStamina, prev + 12));
-    }, enemyActDelay + enemyTextDuration);
+    };
+
+    // Just after the enemy acts, narrate what it actually did. The small
+    // offset lets App's enemy-turn timer (same delay) run first.
+    schedule(() => {
+      const enemyText = describeEnemyMove(enemyMoveRef?.current ?? null, enemyName, isFinalBoss, battleType);
+      if (!enemyText) { returnControl(); return; } // enemy didn't act (defeated, potion, etc.)
+      setBattleLine(enemyText);
+      // After enemy text finishes typing, return control to player
+      schedule(returnControl, enemyText.length * CHAR_SPEED + ENEMY_READ_PAUSE);
+    }, enemyActDelay + 50);
   };
 
   // ── Derived values ──────────────────────────────────────────────────────────
@@ -1052,22 +1072,6 @@ const BattleModal = ({
                     : 'linear-gradient(to right, #3B0000, #7B0000, #B22222)',
                   boxShadow: '0 0 8px rgba(220, 20, 60, 0.5)',
                 }}
-              />
-            </div>
-          </div>
-
-          {/* Boss SP Bar */}
-          <div className="mb-1">
-            <div className="flex justify-between items-baseline mb-1">
-              <span className="text-sm uppercase tracking-widest font-bold" style={{ color: '#06B6D4' }}>SP</span>
-              <span className="text-sm" style={{ color: 'rgba(245,245,220,0.78)' }}>{bossStamina} / {bossMaxStamina}</span>
-            </div>
-            <div className="h-3 w-full rounded-sm overflow-hidden" style={{ backgroundColor: 'rgba(0,0,0,0.7)', border: '1px solid rgba(6,182,212,0.25)' }}>
-              <motion.div
-                className="h-full"
-                animate={{ width: `${(bossStamina / bossMaxStamina) * 100}%` }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                style={{ background: 'linear-gradient(to right, #0E7490, #06B6D4)', boxShadow: '0 0 6px rgba(6,182,212,0.4)' }}
               />
             </div>
           </div>
