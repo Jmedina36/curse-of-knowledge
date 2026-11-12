@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { COLORS, VISUAL_STYLES, GAME_CONSTANTS } from '../constants';
+import { COLORS, VISUAL_STYLES } from '../constants';
 import { sounds } from '../sounds';
 import useEscapeClose from '../hooks/useEscapeClose';
 
@@ -310,36 +310,6 @@ const InventoryModal = ({
     );
   };
 
-  const renderPotions = () => {
-    const potionRow = ({ emoji, name, desc, count, color, border, disabled, onUse }) => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', marginBottom: '8px', borderRadius: '8px', border: `1px solid ${border}`, background: VISUAL_STYLES.card.default }}>
-        <span style={{ fontSize: '26px' }}>{emoji}</span>
-        <div style={{ flex: 1 }}>
-          <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>{name}</p>
-          <p style={{ color, fontSize: '14px', fontFamily: 'EB Garamond, serif' }}>{desc}</p>
-        </div>
-        <span style={{ color, fontWeight: 700, fontSize: '21px', minWidth: '28px', textAlign: 'center' }}>{count}</span>
-        <button disabled={disabled} onClick={onUse} style={{ ...equipBtnStyle, opacity: disabled ? 0.4 : 1, cursor: disabled ? 'not-allowed' : 'pointer', background: disabled ? 'rgba(0,0,0,0.3)' : equipBtnStyle.background, borderColor: disabled ? 'rgba(155,139,126,0.3)' : 'rgba(212,175,55,0.5)' }}>Use</button>
-      </div>
-    );
-    return (
-      <>
-        {potionRow({ emoji: '🧪', name: 'Health Potion', desc: 'Restores 30 HP', count: healthPots, color: '#FF6B6B', border: 'rgba(139,0,0,0.4)', disabled: healthPots === 0 || hp >= getMaxHp(), onUse: () => { sounds.click(); useHealth(); } })}
-        {potionRow({ emoji: '💙', name: 'Stamina Potion', desc: 'Restores 50% SP', count: staminaPots, color: '#6BB6FF', border: 'rgba(30,58,95,0.4)', disabled: staminaPots === 0 || stamina >= getMaxStamina(), onUse: () => { sounds.click(); if (staminaPots > 0 && stamina < getMaxStamina()) { setStaminaPots(s => s - 1); const max = getMaxStamina(); const amt = Math.max(GAME_CONSTANTS.STAMINA_POTION_MIN, Math.floor(max * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100))); setStamina(s => Math.min(max, s + amt)); addLog(`Used Stamina Potion! +${Math.max(GAME_CONSTANTS.STAMINA_POTION_MIN, Math.floor(getMaxStamina() * (GAME_CONSTANTS.STAMINA_POTION_RESTORE_PERCENT / 100)))} SP`); } } })}
-        {potionRow({ emoji: '🔮', name: 'Cleanse Potion', desc: 'Removes 1 curse level', count: cleansePots, color: '#B794F4', border: `rgba(107,44,145,${curseLevel > 0 ? 0.6 : 0.3})`, disabled: cleansePots === 0 || curseLevel === 0, onUse: () => { sounds.click(); useCleanse(); } })}
-        {luckyCharmActive && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(47,82,51,0.5)', background: 'rgba(47,82,51,0.1)' }}>
-            <span style={{ fontSize: '26px' }}>🍀</span>
-            <div>
-              <p style={{ color: '#F5F5DC', fontWeight: 700, fontSize: '15px', marginBottom: '2px' }}>Fortune Philter</p>
-              <p style={{ color: '#68D391', fontSize: '13px' }}>2× loot from next elite boss · <span style={{ color: '#68D391', fontWeight: 700 }}>Active</span></p>
-            </div>
-          </div>
-        )}
-      </>
-    );
-  };
-
   // ── RIGHT PANEL helpers ──
   const slotBox = (item) => ({
     padding: '10px', borderRadius: '8px', minHeight: '68px',
@@ -349,8 +319,6 @@ const InventoryModal = ({
     boxShadow: item ? `0 0 8px ${getRarityColor(item.rarity || 'common')}18` : 'none',
   });
 
-  const totalDR      = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.percentDR || 0), 0);
-  const totalBonusHP = Object.values(equippedArmor).reduce((s, p) => s + (p?.affixes?.flatHP   || 0), 0) + (equippedGrimoire?.hp || 0);
 
   const counts = {
     weapons:     (equippedWeapon ? 1 : 0) + weaponInventory.length,

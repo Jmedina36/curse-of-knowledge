@@ -24,15 +24,6 @@ const ABILITY_LABEL = {
   cha: 'Charisma',
 };
 
-const ABILITY_DESC = {
-  str: 'Attack damage',
-  dex: 'Dodge & initiative',
-  con: 'Max HP',
-  int: 'XP gain',
-  wis: 'Damage reduction',
-  cha: 'Gold drops',
-};
-
 const getHeroPortrait = (className, gender) => {
   const classMap = { Knight: 'knight', Wizard: 'sorcerer', Assassin: 'thief', Crusader: 'crusader' };
   const g = gender === 'female' ? 'f' : gender === 'male' ? 'm' : gender || 'm';

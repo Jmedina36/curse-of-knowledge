@@ -47,7 +47,7 @@ const ELITE_ROSTER = [
 const ORDER_ROSTER = [
   { img: '/bosses/dark-elf-queen.png', name: 'Sylvaris, Queen of Ruin',   title: 'The Custodian', lore: "She dismantled an empire from within. Didn't join the order — recognized Malachar as someone doing what she'd been doing, just longer. Every time Malachar died, Sylvaris held the structure together until he returned." },
   { img: '/undead-king.png',           name: 'Malachar, the Eternal Lich', title: 'The Architect', lore: 'Built the order over decades under a title, not a name. Has died seventeen times. His phylactery has never been found. C is not a person. C is what he became. The order was always his.' },
-  { img: '/main bad.png',              name: 'The Omen',                   title: 'The Creditor',  lore: "It was not created by the order. It predates it. The deal Malachar made in his first life — the one that let him return seventeen times — this is who he made it with. The order was the payment. Five zones of preparation, building the path for something sealed and waiting long before any record existed." },
+  { img: '/Main bad.png',              name: 'The Omen',                   title: 'The Creditor',  lore: "It was not created by the order. It predates it. The deal Malachar made in his first life — the one that let him return seventeen times — this is who he made it with. The order was the payment. Five zones of preparation, building the path for something sealed and waiting long before any record existed." },
 ];
 
 // ── Cursed member → mercy contract mapping ──────────────────────────────────
@@ -69,7 +69,6 @@ const CURSED_MERCY_MAP = {
   '/cursed/gladiator.png':           { id: 'mc_brek',         req: [] },
 };
 
-const TIER_LABELS = { 1: 'Grunt', 2: 'Predator', 3: 'Dire', 4: 'Elite', 5: 'Legendary' };
 const TIER_COLORS = { 1: '#A8A8A8', 2: '#CD7F32', 3: '#DC2626', 4: '#A855F7', 5: '#F59E0B' };
 const TIER_BORDER = { 1: 'rgba(168,168,168,0.35)', 2: 'rgba(205,127,50,0.45)', 3: 'rgba(220,38,38,0.45)', 4: 'rgba(168,85,247,0.45)', 5: 'rgba(245,158,11,0.55)' };
 const TIER_GLOW   = { 1: 'rgba(168,168,168,0.08)', 2: 'rgba(205,127,50,0.1)', 3: 'rgba(220,38,38,0.1)', 4: 'rgba(168,85,247,0.12)', 5: 'rgba(245,158,11,0.15)' };
@@ -795,7 +794,7 @@ const BestiaryTab = ({ defeatedFactionMembers = [], restedCursed = [], intelUnlo
                             <div style={{ position: 'absolute', top: '8px', right: '8px', fontSize: '0.83rem', fontFamily: 'Cinzel, serif', letterSpacing: '0.1em', padding: '2px 7px', borderRadius: '3px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(80,200,80,0.4)', color: 'rgba(100,220,100,0.9)' }}>Defeated</div>
                             <div style={{ position: 'relative', width: 90, margin: '14px auto 12px' }}>
                               <img src={e.img} alt={e.name} style={{ width: 90, height: 90, objectFit: 'contain', display: 'block', filter: 'grayscale(1) brightness(0.45)' }} />
-                              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-18deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: e.img === '/main bad.png' ? '1.1rem' : '1.35rem', letterSpacing: '0.2em', color: e.img === '/main bad.png' ? 'rgba(100,80,200,0.92)' : 'rgba(200,30,30,0.92)', border: `3px solid ${e.img === '/main bad.png' ? 'rgba(100,80,200,0.85)' : 'rgba(200,30,30,0.85)'}`, padding: '2px 8px', borderRadius: '3px', textShadow: `0 0 8px ${e.img === '/main bad.png' ? 'rgba(100,80,200,0.6)' : 'rgba(200,30,30,0.6)'}`, boxShadow: `0 0 10px ${e.img === '/main bad.png' ? 'rgba(100,80,200,0.3)' : 'rgba(200,30,30,0.3)'}, inset 0 0 6px rgba(0,0,0,0.4)`, background: 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>{e.img === '/main bad.png' ? 'SEALED' : 'SLAIN'}</div>
+                              <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-18deg)', fontFamily: 'Cinzel, serif', fontWeight: 900, fontSize: e.img === '/Main bad.png' ? '1.1rem' : '1.35rem', letterSpacing: '0.2em', color: e.img === '/Main bad.png' ? 'rgba(100,80,200,0.92)' : 'rgba(200,30,30,0.92)', border: `3px solid ${e.img === '/Main bad.png' ? 'rgba(100,80,200,0.85)' : 'rgba(200,30,30,0.85)'}`, padding: '2px 8px', borderRadius: '3px', textShadow: `0 0 8px ${e.img === '/Main bad.png' ? 'rgba(100,80,200,0.6)' : 'rgba(200,30,30,0.6)'}`, boxShadow: `0 0 10px ${e.img === '/Main bad.png' ? 'rgba(100,80,200,0.3)' : 'rgba(200,30,30,0.3)'}, inset 0 0 6px rgba(0,0,0,0.4)`, background: 'rgba(0,0,0,0.35)', whiteSpace: 'nowrap', pointerEvents: 'none' }}>{e.img === '/Main bad.png' ? 'SEALED' : 'SLAIN'}</div>
                             </div>
                             <p style={{ fontFamily: 'Cinzel, serif', fontWeight: 700, fontSize: '1.18rem', color: 'rgba(140,130,110,0.78)', marginBottom: '2px', lineHeight: 1.3 }}>{e.name}</p>
                             <p style={{ fontFamily: 'Cinzel, serif', fontSize: '1.0rem', letterSpacing: '0.1em', color: 'rgba(120,110,90,0.78)', textTransform: 'uppercase', marginBottom: '10px' }}>{e.title}</p>

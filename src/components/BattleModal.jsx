@@ -134,24 +134,6 @@ const TypewriterText = ({ text, speed = 28, color = '#F5F5DC' }) => {
   );
 };
 
-// ─── Log entry color coding ───────────────────────────────────────────────────
-const getLogColor = (entry) => {
-  if (/❤|heal|Heal|restored|recovered/i.test(entry)) return '#4ADE80';
-  if (/💙|Stamina|stamina potion/i.test(entry)) return '#22D3EE';
-  if (/☠|[Pp]oison/i.test(entry)) return '#A3E635';
-  if (/[Bb]leed/i.test(entry)) return '#F87171';
-  if (/SHATTERS|[Aa]rmor shred/i.test(entry)) return '#FB923C';
-  if (/OVERWHELMING FORCE/i.test(entry)) return '#EF4444';
-  if (/✨|[Ss]tun/i.test(entry)) return '#C084FC';
-  if (/💰|[Gg]old|XP|⭐|[Ll]evel/i.test(entry)) return '#FBBF24';
-  if (/🏃|[Ff]le[ed]/i.test(entry)) return '#94A3B8';
-  if (/🛡|[Bb]lock|[Bb]arrier|[Dd]odge/i.test(entry)) return '#60A5FA';
-  if (/⚡|[Ee]nrage|[Rr]ampage/i.test(entry)) return '#FB923C';
-  if (/⚔|[Ss]trike|[Aa]ttack|[Bb]low|[Ss]mite|[Dd]amage|[Hh]it/i.test(entry)) return '#FCA5A5';
-  if (/PHASE|[Pp]hase/i.test(entry)) return '#FF6B6B';
-  return 'rgba(245,245,220,0.65)';
-};
-
 
 const BattleModal = ({
   // Enemy state
@@ -284,15 +266,12 @@ const BattleModal = ({
   const [musicMuted, setMusicMuted] = useState(() => audioManager.muted);
   const [phaseCard, setPhaseCard] = useState(null);
   const [critAnim, setCritAnim] = useState(false);
-  const [heroDialogue, setHeroDialogue] = useState('');
 
 
   const [enemySpecialAnim, setEnemySpecialAnim] = useState(null); // 'bleed' | 'armorBreak' | 'overwhelmingForce'
   const [turnPhase, setTurnPhase] = useState('player'); // 'player' | 'narrating'
   const [battleLine, setBattleLine] = useState('');
   const [bossEntered, setBossEntered] = useState(false);
-  const [capturePhase, setCapturePhase] = useState('idle'); // 'idle'|'result'
-  const [captureResult, setCaptureResult] = useState(null);
   const [battleBgIdx] = useState(() => Math.floor(Math.random() * 8) + 1);
 
   // Stats generated once when battle opens — carried over if captured
@@ -1246,29 +1225,6 @@ const BattleModal = ({
               {chargeStacks === 3 && <span className="text-sm font-bold ml-1" style={{ color: COLORS.gold }}>⚡ READY</span>}
             </div>
           )}
-
-          {/* Hero Dialogue — Speech Bubble */}
-          <AnimatePresence>
-            {heroDialogue && (
-              <motion.div
-                key={heroDialogue}
-                initial={{ opacity: 0, y: 10, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.96 }}
-                transition={{ duration: 0.22 }}
-                className="rounded-lg px-4 py-2 relative mb-2"
-                style={{ backgroundColor: 'rgba(0,0,0,0.75)', border: '2px solid rgba(104,211,145,0.6)', boxShadow: '0 0 20px rgba(104,211,145,0.12), inset 0 1px 0 rgba(255,255,255,0.04)' }}
-              >
-                <div style={{ position: 'absolute', top: '-11px', left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderBottom: '11px solid rgba(104,211,145,0.6)' }} />
-                <p className="text-base italic text-center leading-snug" style={{ color: '#F5F5DC', fontFamily: 'EB Garamond, serif' }}>
-                  "<TypewriterText key={heroDialogue} text={heroDialogue} speed={22} />"
-                </p>
-                <p style={{ fontFamily: 'Cinzel, serif', fontSize: '0.7rem', letterSpacing: '0.15em', color: 'rgba(104,211,145,0.78)', textAlign: 'center', marginTop: '6px', textTransform: 'uppercase' }}>
-                  — {hero?.name}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* ══════════════════════════════════════════════════════════════════ */}
           {/*  BATTLE ACTIONS                                                   */}

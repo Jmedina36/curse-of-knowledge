@@ -687,7 +687,6 @@ const WorldMapTab = ({
     return prevContracts.every(c => completedLocationContracts?.includes(c.id));
   };
 
-  const isZoneContractUnlocked = (loc) => isZoneComplete(loc.contractZone ?? loc.zone ?? 1);
 
   const isUnlocked = (loc) => isZoneComplete(loc.contractZone ?? loc.zone ?? 1);
 

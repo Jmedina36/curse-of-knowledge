@@ -403,7 +403,6 @@ const FlashcardModals = ({
               const newQueue = studyQueue.slice(1);
               
               if (newQueue.length === 0) {
-                const cardsStudied = flashcardDecks[selectedDeck].cards.length;
                 const xpGain = 25;
                 setXp(x => x + xpGain);
                 addLog(`Completed deck! +${xpGain} bonus XP`);

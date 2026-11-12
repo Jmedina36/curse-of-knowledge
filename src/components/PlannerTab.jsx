@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { GripVertical, Plus, X } from 'lucide-react';
 import { COLORS, GAME_CONSTANTS } from '../constants';
 import { sounds } from '../sounds';

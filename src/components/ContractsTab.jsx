@@ -251,7 +251,6 @@ const ContractsTab = ({
                   .filter(task => !hideCompletedTasks || !task.done)
                   .map(t => {
                     const tier = t.done ? null : t.overdue ? null : t.priority === 'important' ? TIER.silver : TIER.copper;
-                    const pinColor = t.done ? 'rgba(80,120,60,0.8)' : t.overdue ? 'rgba(180,40,30,0.9)' : t.priority === 'important' ? TIER.silver.color : TIER.copper.color;
                     return (
                       <div
                         key={t.id}

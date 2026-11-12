@@ -62,20 +62,20 @@ const NARRATION_PAGES = [
 // ─── Bandit faction data ────────────────────────────────────────────────────
 const BANDIT_POOL = {
   grunts: [
-    { img: '/bandits/bandit-1.png', name: 'Rook',  laughIdx: 0 },
-    { img: '/bandits/bandit-2.png', name: 'Slag',  laughIdx: 1 },
-    { img: '/bandits/bandit-3.png', name: 'Finn',  laughIdx: 2 },
-    { img: '/bandits/bandit-4.png', name: 'Gorse', laughIdx: 0 },
-    { img: '/bandits/bandit-5.png', name: 'Mace',  laughIdx: 1 },
-    { img: '/bandits/bandit-6.png', name: 'Dray',  laughIdx: 2 },
-    { img: '/bandits/bandit-7.png', name: 'Vetch', laughIdx: 0 },
+    { img: '/bandits/bandit-1.png', name: 'Rook' },
+    { img: '/bandits/bandit-2.png', name: 'Slag' },
+    { img: '/bandits/bandit-3.png', name: 'Finn' },
+    { img: '/bandits/bandit-4.png', name: 'Gorse' },
+    { img: '/bandits/bandit-5.png', name: 'Mace' },
+    { img: '/bandits/bandit-6.png', name: 'Dray' },
+    { img: '/bandits/bandit-7.png', name: 'Vetch' },
   ],
   captains: [
-    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain', laughIdx: 1 },
-    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain', laughIdx: 2 },
-    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain', laughIdx: 0 },
+    { img: '/bandits/captain-1.png', name: 'Harrow', title: 'Blade Captain' },
+    { img: '/bandits/captain-2.png', name: 'Sable',  title: 'Blade Captain' },
+    { img: '/bandits/captain-3.png', name: 'Vorn',   title: 'Blade Captain' },
   ],
-  leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord', laughIdx: 2 },
+  leader: { img: '/bandits/leader.png', name: 'Cutter', title: 'Bandit Lord' },
 };
 
 const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], tierWeights = {1:10,2:0,3:0}) => {
@@ -86,7 +86,7 @@ const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], tier
   // 1 named grunt if alive, rest are creatures
   if (availableGrunts.length > 0) {
     const g = availableGrunts[Math.floor(Math.random() * availableGrunts.length)];
-    lineup.push({ img: g.img, name: g.name, laughIdx: g.laughIdx, isCapt: false, isLeader: false });
+    lineup.push({ img: g.img, name: g.name, isCapt: false, isLeader: false });
   }
   const creatureSlots = waveSize - lineup.length;
   for (let i = 0; i < creatureSlots; i++) {
@@ -108,18 +108,18 @@ const buildBanditLineup = (waveNumber, captainsDefeated, defeatedImgs = [], tier
 // ─── Daughters of Dusk faction data ─────────────────────────────────────────
 const DAUGHTERS_POOL = {
   members: [
-    { img: '/daughters-of-dusk/member-1.png', name: 'Vael',  laughIdx: 0 },
-    { img: '/daughters-of-dusk/member-2.png', name: 'Zira',  laughIdx: 1 },
-    { img: '/daughters-of-dusk/member-3.png', name: 'Ash',   laughIdx: 2 },
-    { img: '/daughters-of-dusk/member-4.png', name: 'Briar', laughIdx: 0 },
-    { img: '/daughters-of-dusk/member-5.png', name: 'Knell', laughIdx: 1 },
+    { img: '/daughters-of-dusk/member-1.png', name: 'Vael' },
+    { img: '/daughters-of-dusk/member-2.png', name: 'Zira' },
+    { img: '/daughters-of-dusk/member-3.png', name: 'Ash' },
+    { img: '/daughters-of-dusk/member-4.png', name: 'Briar' },
+    { img: '/daughters-of-dusk/member-5.png', name: 'Knell' },
   ],
   captains: [
-    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain', laughIdx: 2 },
-    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris',  title: 'Dusk Captain', laughIdx: 0 },
-    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne',  title: 'Dusk Captain', laughIdx: 1 },
+    { img: '/daughters-of-dusk/captain-1.png', name: 'Lyra',   title: 'Dusk Captain' },
+    { img: '/daughters-of-dusk/captain-2.png', name: 'Seris',  title: 'Dusk Captain' },
+    { img: '/daughters-of-dusk/captain-3.png', name: 'Vayne',  title: 'Dusk Captain' },
   ],
-  leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen', laughIdx: 2 },
+  leader: { img: '/daughters-of-dusk/leader.png', name: 'Mira', title: 'Dusk Queen' },
 };
 
 const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], tierWeights = {1:10,2:0,3:0}) => {
@@ -130,7 +130,7 @@ const buildDaughtersLineup = (waveNumber, captainsDefeated, defeatedImgs = [], t
   // 1 named member if alive, rest are creatures
   if (availableMembers.length > 0) {
     const m = availableMembers[Math.floor(Math.random() * availableMembers.length)];
-    lineup.push({ img: m.img, name: m.name, laughIdx: m.laughIdx, isCapt: false, isLeader: false });
+    lineup.push({ img: m.img, name: m.name, isCapt: false, isLeader: false });
   }
   const creatureSlots = waveSize - lineup.length;
   for (let i = 0; i < creatureSlots; i++) {
@@ -467,6 +467,9 @@ const FantasyStudyQuest = () => {
   const [showModal, setShowModal] = useState(false);
   const [newTask, setNewTask] = useState({ title: '', priority: 'routine' });
   const [activeTask, setActiveTask] = useState(null);
+  // `timer` is never read, but setTimer() ticks every second while a task timer
+  // runs, which re-renders the app. Displays that compute time at render
+  // (flashcard match timer, map cooldowns) may rely on that — keep it.
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(false);
   const [showPomodoro, setShowPomodoro] = useState(false);
@@ -476,7 +479,6 @@ const [pomodoroRunning, setPomodoroRunning] = useState(false);
 const [isBreak, setIsBreak] = useState(false);
 const [pomodorosCompleted, setPomodorosCompleted] = useState(0);
   const [timerEndTime, setTimerEndTime] = useState(null);
-  const [overdueTask, setOverdueTask] = useState(null);
   
   const [weeklyPlan, setWeeklyPlan] = useState({
     Monday: [],
@@ -1428,7 +1430,6 @@ const getDateKey = useCallback((date) => {
         if (remaining <= 0) {
           setRunning(false);
           setTimerEndTime(null);
-          setOverdueTask(activeTask);
           setHp(h => Math.max(1, h - 10));
           
           if (Notification.permission === "granted" && activeTask) {
@@ -1648,7 +1649,6 @@ const getDateKey = useCallback((date) => {
 
   const start = () => {
   const today = new Date().toDateString();
-  const currentHour = new Date().getHours();
   
   // Map game day (1-7, 8-14, etc.) to planner day name
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -2201,7 +2201,7 @@ if (tasks.length === 0) {
     setShopInventory(prev => prev.filter(i => i.id !== item.id));
   };
   
-  // FIXED: Added weapon, armor, overdueTask to dependencies
+  // FIXED: Added weapon, armor to dependencies
   const complete = useCallback((id) => {
   const task = tasks.find(t => t.id === id);
   if (task && !task.done) {
@@ -3019,7 +3019,7 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
     mira:     { name: 'Mira',                       img: '/daughters-of-dusk/leader.png',   hpMult: 2.8, music: TRACKS.mira,     sfx: () => sounds.daughtersIntro(),     sfxKey: 'daughters',      dialogue: '"You spilled bandit blood. Now you face the dark."' },
     sylvaris: { name: 'Sylvaris, Queen of Ruin',    img: '/bosses/dark-elf-queen.png',      hpMult: 4.0, music: TRACKS.sylvaris, sfx: () => sounds.lostSoulsFemale(),    sfxKey: 'lostSoulsFemale', dialogue: '"Impressive. Truly. But this ends now."' },
     malachar: { name: 'Malachar, the Eternal Lich', img: '/undead-king.png',                hpMult: 5.5, music: TRACKS.malachar, sfx: () => sounds.eliteIntro(),         sfxKey: 'malachar',       dialogue: '"I have died seventeen times. I will not die tonight."' },
-    the_omen: { name: 'The Omen',                   img: '/main bad.png',                   hpMult: 8.0, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),       sfxKey: null,             dialogue: 'It does not speak. It does not need to. It has been waiting.' },
+    the_omen: { name: 'The Omen',                   img: '/Main bad.png',                   hpMult: 8.0, music: TRACKS.malachar, sfx: () => sounds.demonicLaugh(),       sfxKey: null,             dialogue: 'It does not speak. It does not need to. It has been waiting.' },
   };
 
   const spawnAntagonist = (antagonistId) => {
@@ -3191,7 +3191,6 @@ const spawnRegularEnemy = useCallback((isWave = false, waveIndex = 0, totalWaves
 
   const useGem = (type) => {
     const maxHp = getMaxHp();
-    const maxSp = getMaxStamina();
     switch (type) {
       case 'ruby':
         if (gemCounts.ruby < 1 || rubyGemActive) return;

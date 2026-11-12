@@ -41,37 +41,6 @@ const SellBtn = ({ onClick, children }) => (
   </button>
 );
 
-const BuyPotionBtn = ({ label, price, effect, effectColor, lore, canBuy, active, soldOut, onClick, bgStop, hoverStop, border }) => {
-  const bg = `linear-gradient(135deg, ${bgStop[0]} 0%, ${bgStop[1]} 50%, ${bgStop[2]} 100%)`;
-  const hBg = `linear-gradient(135deg, ${hoverStop[0]} 0%, ${hoverStop[1]} 50%, ${hoverStop[2]} 100%)`;
-  return (
-    <button
-      onClick={onClick}
-      disabled={!canBuy}
-      className="p-2 rounded-lg border-2 transition-all relative overflow-hidden"
-      style={{
-        background: canBuy ? bg : 'rgba(44,62,80,0.3)',
-        borderColor: canBuy ? border : 'rgba(149,165,166,0.3)',
-        opacity: canBuy ? 1 : 0.5,
-        cursor: canBuy ? 'pointer' : 'not-allowed',
-        boxShadow: canBuy ? VISUAL_STYLES.shadow.subtle : 'none',
-      }}
-      onMouseEnter={e => { if (canBuy) { e.currentTarget.style.background = hBg; e.currentTarget.style.transform = 'translateY(-2px)'; } }}
-      onMouseLeave={e => { if (canBuy) { e.currentTarget.style.background = bg; e.currentTarget.style.transform = 'translateY(0)'; } }}
-    >
-      <p className="font-bold text-base mb-1" style={{ color: '#F5F5DC' }}>{label}</p>
-      <p className="text-sm font-bold mb-1" style={{ color: '#D4AF37' }}>{price}g</p>
-      <p className="text-sm mb-1" style={{ color: effectColor }}>
-        {effect}{active && <span className="ml-1" style={{ color: '#90EE90' }}>✓</span>}
-      </p>
-      <p className="text-sm italic" style={{ color: COLORS.silver, fontSize: '12px' }}>
-        {soldOut ? 'Sold out today' : lore}
-      </p>
-      {soldOut && <p className="text-sm mt-1" style={{ color: '#EF4444' }}>Daily limit reached</p>}
-    </button>
-  );
-};
-
 // ─── Sprite helpers (same as InventoryModal) ─────────────────────────────────
 
 const getWeaponSprite = (wpn) => {
@@ -180,8 +149,6 @@ const CraftingModal = ({
   removeStudyWebsite,
   trackWebsiteClick,
 }) => {
-  const isPotionsTab = merchantTab === 'buy' || merchantTab === 'sellPotions';
-  const isEquipmentTab = merchantTab === 'buyEquipment' || merchantTab === 'sellEquipment';
 
   const elf = ELF_NPCS[(currentDay ?? 1) % ELF_NPCS.length];
   const eq = ELF_QUOTES[elf.name];
@@ -207,10 +174,6 @@ const CraftingModal = ({
 
   const say = (quotes) => setMerchantQuote(quotes[Math.floor(Math.random() * quotes.length)]);
 
-  const handleBuyPotion = (key) => {
-    craftItem(key);
-    say(eq.buy);
-  };
   const handleBuyEquipment = (item) => {
     purchaseShopItem(item);
     say(eq.buy);
