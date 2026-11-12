@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { COLORS, GAME_CONSTANTS } from '../constants';
-import { getCreatureQuality } from '../creatures';
+import { getCreatureQuality, getCreatureAttacks, shortCreatureName } from '../creatures';
 import { audioManager } from '../audioManager';
 import { sounds } from '../sounds';
 
@@ -91,8 +91,10 @@ const pickMove = (isFinalBoss, battleType) => {
 // App's enemyMoveRef; null means the enemy didn't act (no text shown).
 const describeEnemyMove = (kind, enemyName, isFinalBoss, battleType) => {
   const flavor = () => {
-    const move = pickMove(isFinalBoss, battleType);
-    return `${enemyName} used ${move.name}! ${enemyName} ${move.desc}`;
+    // Creatures use their own signature attacks; others fall back to the generic pool
+    const own = getCreatureAttacks(enemyName);
+    const move = own ? own[Math.floor(Math.random() * own.length)] : pickMove(isFinalBoss, battleType);
+    return `${enemyName} used ${move.name}! ${shortCreatureName(enemyName)} ${move.desc}`;
   };
   switch (kind) {
     case 'hit':          return flavor();

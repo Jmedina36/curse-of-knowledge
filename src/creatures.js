@@ -108,6 +108,68 @@ export const CREATURE_INDEX = [
     desc: 'His phylactery has never been found. He has died seventeen times and returned each time stronger.' },
 ];
 
+// ── Signature attacks ───────────────────────────────────────────────────────
+// Three named regular attacks per creature, used for battle narration only
+// (no damage effect). Narrated as: "<Name> used <name>! <Short name> <desc>"
+// Tone by tier: T1 blunt/animal · T2 cunning/elemental · T3 unnatural ·
+// T4 personal/martial · T5 mythic. Keep desc short (~8 words) — it types out.
+const a = (name, desc) => ({ name, desc });
+export const CREATURE_ATTACKS = {
+  // T1 — Grunts
+  c1:  [a('Iron Jaw', 'bites down hard enough to crush iron.'), a('Blood Scent', 'bolts for the smell of your wounds.'), a('Mauling Frenzy', 'mauls you in a snarling blur.')],
+  c4:  [a('Blight Touch', 'smears rot across your skin.'), a('Spore Burst', 'bursts in a cloud of sickly spores.'), a('Creeping Rot', 'oozes over you, eating as it goes.')],
+  c6:  [a('Fever Claw', 'rakes you with hot, sickly claws.'), a('Plague Breath', 'coughs a choking cloud into your face.'), a('Swamp Slam', 'slams into you, reeking of fever-swamp.')],
+  c8:  [a('Essence Siphon', 'sips the warmth right out of you.'), a('Hollowing Grasp', 'takes hold, and something drains away.'), a('Life Leech', 'latches on and feeds.')],
+  c9:  [a('Venom Bite', 'sinks dripping fangs into you.'), a('Corroding Spit', 'spits venom that hisses on your skin.'), a('Dark Pounce', 'leaps from the dark, fangs first.')],
+  c10: [a('Numbing Touch', 'brushes you with fingers of frozen air.'), a('Rime Gust', 'blasts you with a freezing gale.'), a('Cold Snap', 'waits for you to slow, then snaps.')],
+  c12: [a('Ember Fist', 'pounds you with fists of smoldering ash.'), a('Cinder Burst', 'showers you in burning embers.'), a("Fallen's Wrath", 'rages with the fury of a razed village.')],
+  c22: [a('Mire Grasp', 'grabs you with hands of black mud.'), a('Sludge Slam', 'buries you in a wave of bog-muck.'), a('Drowning Pull', 'tries to drag you beneath the mire.')],
+
+  // T2 — Predators
+  c2:  [a('Grave Slam', 'falls on you with the weight of a mass grave.'), a('Unstoppable Advance', 'shambles straight through your guard.'), a('Bone Grinder', 'grinds you beneath its bulk.')],
+  c5:  [a('Bone Plate Bash', 'rams you with fused bone armor.'), a('Spined Tail', 'whips a bone-ridged tail across your ribs.'), a('Ossified Claw', 'tears at you with claws of solid bone.')],
+  c11: [a('Barbed Tendril', 'hooks barbed vines into your flesh.'), a('Thorn Snare', 'tightens a snare of thorns around you.'), a('Bloodletting', 'drinks through a hundred tiny barbs.')],
+  c15: [a('Charged Ram', 'charges, hide crackling with lightning.'), a('Static Discharge', 'jolts you with a crackling arc.'), a('Thunder Stomp', 'stomps, and lightning races through the ground.')],
+  c16: [a('Silent Lunge', 'lunges from the brush without a sound.'), a('Thicket Ambush', 'erupts from a spot you thought was empty.'), a("Hunter's Rend", 'rends you with practiced precision.')],
+  c17: [a('Searing Wail', 'screams, and the air itself burns.'), a('Burning Grasp', 'clutches you with hands still aflame.'), a('Heat Wave', 'scorches everything around it.')],
+  c18: [a('Mindvenom Bite', 'bites, and your thoughts begin to blur.'), a('Serpent Coil', 'coils around you from the shadows.'), a('Shade Fang', "darts from a shadow that wasn't there.")],
+  c19: [a('Petrifying Grip', 'grips you with fingers of creeping stone.'), a('Hardening Crush', 'presses you into the hardening ground.'), a('Stonefall', 'drops a fist like falling rock.')],
+  c21: [a('Lightning Call', 'shrieks, and lightning answers.'), a('Diving Talons', 'dives from above, talons first.'), a('Thunderclap Shriek', 'screeches with a crack like thunder.')],
+
+  // T3 — Horrors
+  c3:  [a('Phase Strike', 'vanishes, then is suddenly inside your guard.'), a('Umbral Grasp', 'reaches for you with arms of living darkness.'), a('Fleshshift Maul', 'becomes flesh just long enough to hit.')],
+  c7:  [a('Hollow Blow', 'hits without pain or hesitation.'), a('Death Pulse', 'pulses with leftover death magic.'), a('Relentless Grip', 'clamps on and never lets go.')],
+  c13: [a("Warden's Blow", 'brings down a blow practiced for a thousand years.'), a('Crypt Shield', 'smashes you with an ancient tomb shield.'), a('Broken Oath', 'fights for an oath long since broken.')],
+  c14: [a('Twilight Wail', 'wails, and your body locks in place.'), a('Dusk Touch', 'passes a chilling hand through your chest.'), a('Last Light', 'snuffs out the light around you.')],
+  c20: [a('Crypt Rend', 'claws at you with grave-dirt talons.'), a('Hatred of the Living', 'hurls itself at you in pure loathing.'), a('Burial Crush', 'pulls you down as if into the earth.')],
+  c23: [a('Void Bite', 'bites, and part of you simply vanishes.'), a('Endless Hunger', 'devours everything within reach.'), a('Null Tendril', 'wraps you in a tendril of nothing.')],
+  c24: [a('Molten Fist', 'pummels you with molten rock.'), a('Magma Spew', 'spews burning magma across you.'), a('Fissure Eruption', 'splits the ground, and fire pours out.')],
+  c25: [a('Planar Rend', 'opens a wound that refuses to close.'), a('Rift Step', 'slips between worlds and appears behind you.'), a('Otherworld Claw', 'rakes you with claws from another world.')],
+
+  // T4 — Elites
+  e1:  [a("Winter's Execution", 'swings the axe that ended him.'), a('Frozen Rage', 'attacks with a fury that never thawed.'), a('Gravefrost Grip', 'seizes you with a hand cold as the grave.')],
+  e2:  [a('Bloodless Whisper', 'whispers, and your strength drains away.'), a('Crimson Kiss', "goes for your throat with a priestess's grace."), a('Sanguine Rite', 'turns an old prayer into a curse.')],
+  e3:  [a('Unbroken Fist', 'hits with fists no blade has stopped.'), a("Challenger's End", 'finishes you as he finished all the rest.'), a('Earthshaker', 'drives both fists into the ground.')],
+  e4:  [a('Warband Charge', 'charges like a dozen warbands at once.'), a('Ironblood Cleave', 'cleaves with a blade forged for war.'), a('Ironblood Rally', 'bellows a war-cry and crashes into you.')],
+  e5:  [a("Veteran's Feint", 'fakes high, then cuts low.'), a("Warlord's Hammer", 'swings a hammer notched by forty years of war.'), a('Execution Stroke', 'aims for the neck, as always.')],
+
+  // T5 — Legends
+  l1:  [a('Unmaking', 'dismantles your defenses piece by piece.'), a('Ashen Decree', 'speaks, and the ashes rise against you.'), a("Empire's Fall", "topples everything you've built.")],
+  l2:  [a("Phylactery's Wrath", 'draws power from a soul no one can find.'), a('Death Remembered', 'unleashes every death he has returned from.'), a("Lich's Touch", 'touches you, and your life begins to fade.')],
+};
+
+// Look up a creature's attacks by its display name (bosses are named after
+// their CREATURE_INDEX entry). Returns null for non-creature enemies
+// (bandits, Daughters of Dusk, the final boss) so callers can fall back.
+export const getCreatureAttacks = (name) => {
+  const creature = CREATURE_INDEX.find(c => c.name === name);
+  return (creature && CREATURE_ATTACKS[creature.id]) || null;
+};
+
+// "Morvane, the Frozen Condemned" → "Morvane"; "Seraphine the Bloodless" → "Seraphine".
+// Used for the second mention in narration so long titles don't repeat.
+export const shortCreatureName = (name) => (name || '').split(/,| the /)[0].trim();
+
 // Only T1–T3 creatures appear as random encounters
 const ENCOUNTER_POOL = CREATURE_INDEX.filter(c => c.tier <= 3);
 
